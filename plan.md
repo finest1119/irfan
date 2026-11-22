@@ -5,7 +5,7 @@
 - Audience: US/UK (tier-1 CPM). Voiceover: English.
 - Format: 9:16 reel, >1 min, 3D animated explainer (Blender script).
 - Structure: **Hook** (verified news fact) → **Message** (general "what usually causes this") → **Metaphor/visual** → **Conclusion + loop/CTA**.
-- Rules: hook must be factual; speculation worded as "could/usually"; no blaming real people; title matches content; no reused news footage.
+- Rules: every video >1 min; high engagement (end with a question); hook must be factual; speculation worded as "could/usually"; no blaming real people; title matches content; no reused news footage.
 
 ## 2. Facebook Reels workflow (from E'Calm video)
 1. Create page from normal profile → page type **Creator**, category **Digital creator**.
@@ -48,6 +48,13 @@ Secondary: explained, why it happened, world events, war news, natural disasters
 19. Inside The Headlines
 20. The Why Behind The News
 
+### Extra names (round 2)
+21. Disaster and News Explained
+22. The World News Breakdown
+23. Headlines Decoded Daily
+24. What Just Happened Explained
+25. Global Disasters Explained
+
 ## 6. Page descriptions (Prompt 2, ≤150 chars)
 1. Breaking news explained in 60 seconds. Disasters, crashes, and world events made clear. Follow for daily updates.
 2. What really happened? We break down world news, disasters, and crashes simply. Follow now and stay informed.
@@ -64,16 +71,16 @@ Secondary: explained, why it happened, world events, war news, natural disasters
 | Job | Free option | Paid option |
 |---|---|---|
 | Script | Claude (this session) | Claude API ~$0.02–0.05/script |
-| Voiceover | Kokoro TTS (local, free, good) | OpenAI TTS ~$0.015/min · ElevenLabs $5/mo (~30 min) or $22/mo (~100 min, best) |
+| Voiceover (**chosen**) | — | Google Gemini API `gemini-3.8-flash-tts`: $9/M audio tokens (25 tok/s) ≈ $0.02 per 70s video ≈ $0.35/week. Needs Gemini API key. |
 | 3D animation | Blender + free CC0 models (Poly Haven, Kenney) | Paid models on Sketchfab/CGTrader |
 | Captions | faster-whisper word timing (free) | — |
 | Music | YouTube Audio Library / Pixabay | Epidemic Sound ~$10–17/mo |
 | Keyword research | Google Trends, FB search | vidIQ (paid tiers) |
 
-Start budget: **$0** (Kokoro) or **~$5/mo** (ElevenLabs Starter).
+Start budget: **< $2/month** (TTS only).
 
 ## 8. Next steps
 1. Pick page name + description.
-2. Confirm voiceover option.
-3. Build Blender pipeline → sample video (private jet crash case).
+2. Get Gemini API key.
+3. Build Blender pipeline → first video from `calendar.md`.
 4. QC, then batch production.
