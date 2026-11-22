@@ -1,6 +1,7 @@
 """Procedural low-poly scene library for the explainer pipeline (Blender 5.3, EEVEE).
 
-Everything is generated from code: no downloaded models or footage.
+Everything is generated from code (no footage) except the cars, which are Kenney Car Kit GLB models
+(CC0, assets/kenney-car-kit, see assets/CREDITS.md), imported once per shot and linked-duplicated.
 Look: navy/teal palette with red accents, shader-based distance fog (cheap, no volumetrics),
 additive glow billboards for lights, camera-locked text cards in the upper safe area.
 
@@ -14,10 +15,12 @@ Blender 5.x notes: use keyframe_insert with the preference interpolation (Action
 layered now), EEVEE engine id 'BLENDER_EEVEE', material.surface_render_method for blending.
 """
 import math
+import os
 import random
+import zlib
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 # ---------------------------------------------------------------- palette
 def hexc(h, a=1.0):
@@ -75,6 +78,9 @@ def smooth(t):
 # ---------------------------------------------------------------- scene setup
 def reset_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    _KENNEY.clear()          # templates point at freed datablocks after a factory reset
+    _CAR_BAG.clear()
+    _CAR_RNG.seed(2026)      # same car mix every time a shot is rebuilt
     scene = bpy.context.scene
     return scene
 
@@ -381,62 +387,214 @@ def lane_x(i, lanes=3, lane_w=3.6):
     return -lanes * lane_w / 2 + lane_w * (i + 0.5)
 
 
-# ---------------------------------------------------------------- car
+# ---------------------------------------------------------------- car (Kenney Car Kit, CC0)
+# Cars are Kenney Car Kit GLB models (assets/kenney-car-kit, CC0, kenney.nl). Each model is imported
+# once per shot as a hidden template; every car is a set of linked duplicates (objects sharing the
+# template meshes), so 14 cars cost about as much as one import.
+# Car contract (unchanged from v1 so all builders keep working): the root empty sits at ground centre,
+# the car faces +Y, bumpers are at y = +/-CAR_LEN/2 = +/-2.2 m, body width ~CAR_W, lanes are 3.6 m.
+KENNEY_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                                           "assets", "kenney-car-kit", "Models", "GLB format"))
+CAR_LEN = 4.4          # every model is normalised to this bumper-to-bumper length (v1 box car: 4.4 m)
+CAR_W = 1.9            # ... and this overall width incl. wheels (v1: 1.8 m body)
+CAR_H_SCALE = 1.0      # vertical scale relative to the width scale (1.0 = Kenney's own proportions)
+PAINT_SAT = 0.62       # Kenney colours, desaturated so they sit in the fog / navy palette
+PAINT_VAL = 0.92
+# ordinary civilian traffic (model, weight). No debris-*, no emergency vehicles unless a shot asks.
+CIVILIAN = [("sedan", 3), ("suv", 3), ("hatchback-sports", 2), ("suv-luxury", 2), ("van", 2),
+            ("sedan-sports", 1), ("taxi", 1), ("delivery", 1)]
+# lamp centres in Kenney model space (front = -Y, rear = +Y): (|x|, y, z) for (tail, head) lamps,
+# measured from the red / yellow lamp texels of each model.
+LAMPS = {
+    "sedan":            ((0.42, 1.25, 0.65), (0.42, -1.15, 0.65)),
+    "suv":              ((0.46, 1.15, 0.60), (0.44, -1.25, 0.64)),
+    "hatchback-sports": ((0.45, 1.21, 0.845), (0.45, -1.30, 0.55)),
+    "sedan-sports":     ((0.45, 1.15, 0.65), (0.42, -1.09, 0.635)),
+    "suv-luxury":       ((0.44, 1.40, 0.75), (0.42, -1.235, 0.69)),
+    "taxi":             ((0.42, 1.35, 0.65), (0.42, -1.25, 0.75)),
+    "delivery":         ((0.52, 1.60, 0.45), (0.46, -1.50, 0.65)),
+    "van":              ((0.42, 1.35, 0.65), (0.44, -1.24, 0.65)),
+}
+_KENNEY = {}           # model -> template dict (cleared in reset_scene)
+_CAR_RNG = random.Random(2026)   # private stream: never disturbs the builders' global random.seed()
+_CAR_BAG = []
+
+
+def kenney_paint():
+    """Shared car material: Kenney colormap, desaturated, through the shot's distance fog."""
+    key = ("kenney_paint", True)
+    if key in _MATS:
+        return _MATS[key]
+    m = bpy.data.materials.new("kenney_paint")
+    nt = m.node_tree
+    p = nt.nodes.get("Principled BSDF")
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(os.path.join(KENNEY_DIR, "Textures", "colormap.png"), check_existing=True)
+    tex.interpolation = "Closest"
+    hs = nt.nodes.new("ShaderNodeHueSaturation")
+    hs.inputs["Saturation"].default_value = PAINT_SAT
+    hs.inputs["Value"].default_value = PAINT_VAL
+    nt.links.new(tex.outputs["Color"], hs.inputs["Color"])
+    nt.links.new(hs.outputs["Color"], p.inputs["Base Color"])
+    p.inputs["Roughness"].default_value = 0.45
+    p.inputs["Metallic"].default_value = 0.1
+    _fog_wrap(m, p.outputs[0])
+    _MATS[key] = m
+    return m
+
+
+def _kenney_template(model):
+    """Import <model>.glb once; keep only mesh datablocks + their placement (objects are removed)."""
+    if model in _KENNEY:
+        return _KENNEY[model]
+    before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=os.path.join(KENNEY_DIR, model + ".glb"))
+    new = [o for o in bpy.data.objects if o not in before]
+    bpy.context.view_layer.update()
+    paint = kenney_paint()
+    lo, hi = Vector((1e9, 1e9, 1e9)), Vector((-1e9, -1e9, -1e9))
+    parts, wheels = [], []
+    for o in new:
+        if o.type != "MESH":
+            continue
+        mw = o.matrix_world.copy()
+        for c in o.bound_box:
+            v = mw @ Vector(c)
+            lo = Vector(map(min, lo, v))
+            hi = Vector(map(max, hi, v))
+        o.data.materials.clear()
+        o.data.materials.append(paint)
+        nm = o.name.split(".")[0]
+        # road wheels spin; anything else (incl. the SUV's rear spare "wheel-back") is a static part
+        if nm.startswith("wheel-") and (nm.endswith("left") or nm.endswith("right")):
+            zs = [(mw @ Vector(c)).z for c in o.bound_box]
+            wheels.append((o.data, mw.translation.copy(), (max(zs) - min(zs)) / 2.0))
+        else:
+            parts.append((o.data, mw))
+    for o in new:
+        bpy.data.objects.remove(o, do_unlink=True)
+    for mt in bpy.data.materials:
+        if mt.name.startswith("colormap") and mt.users == 0:
+            bpy.data.materials.remove(mt)
+    sx = CAR_W / (hi.x - lo.x)
+    sy = CAR_LEN / (hi.y - lo.y)
+    sz = sx * CAR_H_SCALE
+    cy = (hi.y + lo.y) / 2.0
+    tail, head = LAMPS.get(model, ((0.42, hi.y - 0.05, 0.65), (0.42, lo.y + 0.1, 0.65)))
+
+    def to_root(x, y, z):
+        # model space (front -Y) -> car root space (front +Y), centred and normalised
+        return Vector((-x * sx, -(y - cy) * sy, z * sz))
+
+    S = Matrix.Diagonal((sx, sy, sz, 1.0))
+    M = Matrix.Rotation(math.pi, 4, "Z") @ S @ Matrix.Translation((0, -cy, 0))
+    t = {"parts": [(d, M @ mw) for d, mw in parts],
+         "wheels": [(d, to_root(*c), r * sz) for d, c, r in wheels],
+         "scale": (sx, sy, sz),
+         "tail": [to_root(s * tail[0], tail[1], tail[2]) for s in (1, -1)],
+         "head": [to_root(s * head[0], head[1], head[2]) for s in (1, -1)]}
+    _KENNEY[model] = t
+    return t
+
+
+def pick_model(models=None):
+    """Seeded, weighted 'bag' draw so a queue gets a balanced mix (deterministic per shot)."""
+    if models:
+        return models[_CAR_RNG.randrange(len(models))]
+    if not _CAR_BAG:
+        bag = [m for m, w in CIVILIAN for _ in range(w)]
+        _CAR_RNG.shuffle(bag)
+        _CAR_BAG.extend(bag)
+    return _CAR_BAG.pop()
+
+
 class Car:
     def __init__(self, obj, brake_mat, wheels):
         self.obj = obj
         self.brake_mat = brake_mat
         self.wheels = wheels
+        self.wheel_r = 0.34
+        self.head_pos = []
+        self.tail_pos = []
+        self.model = None
 
 
-def make_car(name, color, loc=(0, 0, 0), rot_z=0.0, cam=None, hazard_mat=None, glow=True,
-             brake_mat=None, headlights=True, scale=1.0, head_glow=False, brake_glow=False):
-    """Low-poly car. Origin at ground centre. Returns Car."""
+def make_car(name, color=None, loc=(0, 0, 0), rot_z=0.0, cam=None, hazard_mat=None, glow=True,
+             brake_mat=None, headlights=True, scale=1.0, head_glow=False, brake_glow=False, model=None):
+    """Kenney car (linked duplicate of a once-imported template). Origin at ground centre, faces +Y.
+    `color` is ignored (kept for builder compatibility; paint comes from the Kenney model).
+    `hazard_mat`: anything truthy turns on blinking hazards with a per-car phase offset.
+    `model`: Kenney model name; default = seeded random civilian car."""
+    model = model or pick_model()
+    t = _kenney_template(model)
     root = bpy.data.objects.new(name, None)
     link(root)
     root.location = loc
     root.rotation_euler = (0, 0, rot_z)
     root.scale = (scale, scale, scale)
-    body_m = mat("car_%s" % "%.3f%.3f%.3f" % color[:3], color, rough=0.35, metal=0.2)
-    glass = mat("glass", hexc("1b2a3d"), rough=0.1, metal=0.5)
-    tyre = mat("tyre", hexc("111317"), rough=0.9)
-    box(name + "_body", (1.8, 4.4, 0.62), (0, 0, 0.62), body_m, bevel=0.08, parent=root)
-    cab = box(name + "_cab", (1.55, 2.2, 0.55), (0, -0.25, 1.18), glass, bevel=0.06, parent=root)
-    # taper cabin top
-    for v in cab.data.vertices:
-        if v.co.z > 0:
-            v.co.y *= 0.78
-            v.co.x *= 0.88
-    box(name + "_roof", (1.38, 1.6, 0.06), (0, -0.3, 1.46), body_m, parent=root)
+    for i, (data, mtx) in enumerate(t["parts"]):
+        o = link(bpy.data.objects.new("%s_part%d" % (name, i), data))
+        o.parent = root
+        o.matrix_basis = mtx
+    sx, _, sz = t["scale"]
     wheels = []
-    for sx in (-0.86, 0.86):
-        for sy in (-1.35, 1.35):
-            w = cylinder(name + "_wheel", 0.34, 0.24, (sx, sy, 0.34), (0, math.radians(90), 0), tyre, verts=10, parent=root)
-            wheels.append(w)
+    for i, (data, c, r) in enumerate(t["wheels"]):
+        w = link(bpy.data.objects.new("%s_wheel%d" % (name, i), data))
+        w.parent = root
+        w.location = c
+        # uniform scale in the wheel's YZ plane keeps it round however the body was stretched;
+        # yaw pi = model faces +Y. Spin goes on rotation_euler[0] (local X, applied before the yaw).
+        w.scale = (sx, sz, sz)
+        w.rotation_euler = (0.0, 0.0, math.pi)
+        wheels.append(w)
+    half = CAR_LEN / 2.0
     head = emissive("headlight", hexc("fff4d6"), 6.0)
     if brake_mat is None:
         brake_mat = emissive("tail_" + name, RED, 1.5)
-    for sx in (-0.62, 0.62):
+    hz_glow = hz_body = None
+    if hazard_mat is not None and hazard_mat is not False:
+        # own materials per car -> own blink phase (real hazards are never in sync)
+        rng = random.Random(zlib.crc32(name.encode()))
+        period = 18 + rng.choice((-1, 0, 0, 1))
+        start = 1 - rng.randint(0, 6)
+        end = bpy.context.scene.frame_end
+        hz_body = emissive("hz_body_" + name, AMBER, 3.0)
+        blink(hz_body, start, end, period, on=6.0, off=0.3)
+        if glow and cam is not None:
+            hz_glow = glow_mat("hz_glow_" + name, AMBER, 4.0)
+            blink(hz_glow, start, end, period, on=3.0, off=0.0)
+    for tp, hp in zip(t["tail"], t["head"]):
+        side = 1 if tp.x > 0 else -1
+        # lamp lenses sit a few cm proud of the body (no z-fighting). Each cluster = red (inner) +
+        # amber indicator (outer) on the model's own lamp face, so nothing floats off a chamfered corner.
+        box(name + "_tl", (0.26, 0.05, 0.13), (tp.x - side * 0.04, tp.y - 0.03, tp.z), brake_mat, parent=root)
         if headlights:
-            box(name + "_hl", (0.38, 0.05, 0.14), (sx, 2.21, 0.72), head, parent=root)
-        box(name + "_tl", (0.38, 0.05, 0.14), (sx, -2.21, 0.78), brake_mat, parent=root)
-        if hazard_mat is not None:
-            box(name + "_hz", (0.14, 0.06, 0.1), (sx * 1.35, -2.2, 0.62), emissive("hz_body", AMBER, 3.0), parent=root)
-            box(name + "_hzf", (0.14, 0.06, 0.1), (sx * 1.35, 2.2, 0.62), emissive("hz_body", AMBER, 3.0), parent=root)
-            if glow and cam is not None:
-                billboard(name + "_hzg", 1.5, (sx * 1.35, -2.4, 0.62), hazard_mat, cam, parent=root)
+            box(name + "_hl", (0.28, 0.05, 0.14), (hp.x - side * 0.04, hp.y + 0.03, hp.z), head, parent=root)
+        hzx = tp.x + side * 0.15
+        if hz_body is not None:
+            box(name + "_hz", (0.11, 0.05, 0.11), (hzx, tp.y - 0.03, tp.z), hz_body, parent=root)
+            box(name + "_hzf", (0.11, 0.05, 0.11), (hp.x + side * 0.15, hp.y + 0.03, hp.z), hz_body, parent=root)
+            if hz_glow is not None:
+                billboard(name + "_hzg", 1.5, (hzx, -half - 0.25, tp.z), hz_glow, cam, parent=root)
         if head_glow and cam is not None and headlights:
-            billboard(name + "_hlg", 1.3, (sx, 2.5, 0.72), glow_mat("head_glow", hexc("fff1c9"), 1.6), cam, parent=root)
+            billboard(name + "_hlg", 1.3, (hp.x, half + 0.3, hp.z), glow_mat("head_glow", hexc("fff1c9"), 1.6),
+                      cam, parent=root)
         if brake_glow and cam is not None:
             bg = glow_mat("bglow_" + name, RED, 0.0)
-            billboard(name + "_blg", 1.7, (sx, -2.5, 0.85), bg, cam, parent=root)
+            billboard(name + "_blg", 1.7, (tp.x, -half - 0.3, tp.z + 0.05), bg, cam, parent=root)
     car = Car(root, brake_mat, wheels)
+    car.model = model
+    car.wheel_r = t["wheels"][0][2] if t["wheels"] else 0.34
+    car.head_pos = [Vector(p) for p in t["head"]]
+    car.tail_pos = [Vector(p) for p in t["tail"]]
     car.brake_glow = glow_mat("bglow_" + name, RED, 0.0) if (brake_glow and cam is not None) else None
     return car
 
 
-def drive(car, positions, start_frame=1, wheel_r=0.34):
-    """positions: list of (x, y) per frame from start_frame; keyframes location + wheel spin."""
+def drive(car, positions, start_frame=1, wheel_r=None):
+    """positions: list of (x, y) per frame from start_frame; keyframes location + wheel spin
+    (wheel angle = distance travelled / wheel radius, so the tyres roll without slipping)."""
+    r = wheel_r or car.wheel_r
     dist = 0.0
     prev = None
     for i, (x, y) in enumerate(positions):
@@ -445,6 +603,8 @@ def drive(car, positions, start_frame=1, wheel_r=0.34):
         if prev is not None:
             dist += math.hypot(x - prev[0], y - prev[1])
         prev = (x, y)
+        for w in car.wheels:
+            kf(w, "rotation_euler", f, dist / r, "LINEAR", index=0)
 
 
 def brake_light(car, frame, on=True, strength_on=9.0, strength_off=1.5):
@@ -465,7 +625,7 @@ def brake_light(car, frame, on=True, strength_on=9.0, strength_off=1.5):
 
 def headlight_beams(car, energy=1500, color=(1.0, 0.95, 0.85), spread=55):
     """Real spot lights from the headlights so the road ahead is lit through the fog."""
-    for sx in (-0.62, 0.62):
+    for hp in (car.head_pos or [Vector((s, 2.2, 0.72)) for s in (-0.62, 0.62)]):
         ld = bpy.data.lights.new("beam", "SPOT")
         ld.energy = energy
         ld.color = color
@@ -473,7 +633,7 @@ def headlight_beams(car, energy=1500, color=(1.0, 0.95, 0.85), spread=55):
         ld.spot_blend = 0.6
         lo = link(bpy.data.objects.new("beam", ld))
         lo.parent = car.obj
-        lo.location = (sx, 2.3, 0.75)
+        lo.location = (hp.x, hp.y + 0.1, hp.z + 0.03)
         lo.rotation_euler = (math.radians(84), 0, 0)  # point forward (+Y), slightly down
 
 
@@ -670,10 +830,7 @@ def b_fog_highway(ctx, p):
     add_sun(1.2, (60, 0, 20))
     road(length=500, y0=-150)
     cam = ctx.camera((5.5, -30, 6.5), target=(0, 15, 0.5), lens=30)
-    hz = glow_mat("hz_glow", AMBER, 4.0)
-    blink(hz, 1, ctx.frames, period_frames=18, on=3.0, off=0.0)
-    hzb = emissive("hz_body", AMBER, 3.0)
-    blink(hzb, 1, ctx.frames, period_frames=18, on=6.0, off=0.3)
+    models = p.get("models")  # optional list of Kenney model names (e.g. a shot that asks for "police")
     n = int(p.get("cars", 12))
     y = 0.0
     k = 0
@@ -685,7 +842,8 @@ def b_fog_highway(ctx, p):
             rot = math.radians(random.uniform(-9, 9))
             c = make_car("car%d" % k, CAR_COLORS[k % len(CAR_COLORS)],
                          (lane_x(lane) + random.uniform(-0.5, 0.5), y + jitter + lane * 1.7, 0), rot,
-                         cam=cam, hazard_mat=hz, brake_mat=emissive("tail_static", RED, 5.0))
+                         cam=cam, hazard_mat=True, brake_mat=emissive("tail_static", RED, 5.0),
+                         model=pick_model(models) if models else None)
             k += 1
         y += 6.2
     # one car approaching slowly from behind and stopping with plenty of room
@@ -782,9 +940,7 @@ def b_visibility(ctx, p):
         kf(marker, "location", f, Vector((0, ys[f - 1], 0)))
     ctx.text(p.get("distance_label", "~50 m VISIBLE").upper(), 0.5, 0.40, 0.034, TEAL, FONT_PATH,
              appear=f_mark, panel=NAVY, max_w_frac=0.6)
-    hz = glow_mat("hz_glow", AMBER, 4.0)
-    blink(hz, 1, T, 18, 3.0, 0.0)
-    make_car("stopped", CAR_COLORS[4], (lx, ys[-1] + 34, 0), 0, cam=cam, hazard_mat=hz,
+    make_car("stopped", CAR_COLORS[4], (lx, ys[-1] + 34, 0), 0, cam=cam, hazard_mat=True,
              brake_mat=emissive("tail_static", RED, 5.0))
     if p.get("card"):
         ctx.card(p["card"], p.get("subcard"), y_frac=0.17, size=0.05)

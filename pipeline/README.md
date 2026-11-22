@@ -1,6 +1,7 @@
 # Explainer video pipeline (Blender + Gemini TTS)
 
-One `episode.json` in, one finished 9:16 reel out. Everything is procedural: no footage, no downloaded models.
+One `episode.json` in, one finished 9:16 reel out. Everything is procedural (no footage) except the cars, which are
+Kenney Car Kit GLB models (CC0, `assets/kenney-car-kit/`, credited in `assets/CREDITS.md`).
 
 ```
 .venv/bin/python pipeline/make_episode.py episodes/<id>/episode.json
@@ -13,7 +14,10 @@ Output:
 
 ## Channel voice & script style (decided 22 Nov 2026 — use for EVERY new episode)
 
-- `tts.voice`: **`Fenrir`** (chosen by Irfan). Episode 1 used Charon; do not reuse Charon.
+- `tts.voice`: rotate **`Orus`**, **`Fenrir`**, **`Sadaltager`** (chosen by Irfan). Pick the one that suits the topic:
+  Orus = firm/authoritative (war, politics, security); Fenrir = energetic (disasters, crashes, breaking news);
+  Sadaltager = calm/knowledgeable (science, weather, how-things-work). Never use the same voice for two posts in a row
+  (check the previous episode's `episode.json`). Do not use Charon or Iapetus.
 - `tts.director_notes` (start from this, then add a `Pronunciation:` line for names in the episode):
   > Male documentary-style news explainer for a US/UK social video. Confident, punchy and fast
   > (about 170–185 words per minute), conversational but serious. Short sentences, a brief dramatic
@@ -59,7 +63,7 @@ Output:
 
 | builder | what it shows | params |
 |---|---|---|
-| `fog_highway` | queue of stopped cars, blinking hazards, dense fog, one car arriving slowly | `cars`, `fog` (0–1+), `card`, `subcard`, `camera`: `dolly_in` / `crane_up` |
+| `fog_highway` | queue of stopped cars, blinking hazards, dense fog, one car arriving slowly | `cars`, `fog` (0–1+), `card`, `subcard`, `camera`: `dolly_in` / `crane_up`, optional `models` (list of Kenney model names) |
 | `chain_topdown` | top-down column of cars braking one after another (brake lights ripple back) | `cars`, `card` (appears on the word "chain") |
 | `visibility` | chase cam in thick fog, teal "~50 m" marker, hazard-lit car emerging | `distance_label`, `card`, `subcard` |
 | `stopping_distance` | reaction strip (teal) then braking strip (red) grow as a car stops | `reaction_m`, `braking_m`, `card`, `subcard` (syncs on the words "reaction", "braking", "seventy") |
@@ -67,6 +71,17 @@ Output:
 | `ice_road` | dry lane vs icy lane braking side by side | `card`, `subcard` |
 | `dominoes` | row of dominoes toppling in sequence | `count` (starts on the word "brakes") |
 | `safety_tips` | night fog drive, lights on, "4+ SEC" gap, numbered tips | `tips` (list), `cues` (list of words that trigger each tip) |
+
+**Cars (v1.1, Kenney Car Kit)**: `make_car(name, color, loc, rot_z, cam=..., hazard_mat=True, brake_glow=True, model=None)`
+builds a car from a Kenney GLB (imported once per shot, then linked duplicates). With `model=None` it draws a
+seeded, weighted mix of civilian cars: `sedan`, `suv`, `hatchback-sports`, `suv-luxury`, `van`, `sedan-sports`,
+`taxi`, `delivery` (same mix every time a shot is rebuilt). `color` is ignored (paint = Kenney colours, desaturated).
+Every model is normalised to the old car contract: faces +Y, origin at ground centre, bumpers at ±2.2 m
+(`CAR_LEN` 4.4 m), width `CAR_W` 1.9 m, so bumper/gap maths in builders still works.
+Never use `debris-*` models (non-graphic rule). Emergency vehicles only when a shot asks: `fog_highway` takes an
+optional `models` param, e.g. `"models": ["police", "sedan"]` (lamp positions for unlisted models are estimated,
+so preview a still). Wheels spin automatically in `drive()`; hazards (`hazard_mat=True`) blink with a per-car phase.
+Tunables at the top of the car section: `CAR_W`, `CAR_H_SCALE`, `PAINT_SAT`, `PAINT_VAL`, `CIVILIAN` weights, `LAMPS`.
 
 **Syncing visuals to the voice**: inside a builder, `ctx.word_time("word", default_frac)` returns the
 frame where that word is spoken in this beat (from `captions.json`). If the word is not found, it falls back to
@@ -92,4 +107,4 @@ frame where that word is spoken in this beat (from `captions.json`). If the word
 - `tts.py`: Gemini TTS per beat. It joins the beats with 0.3 s pauses and writes `timings.json` (shot boundaries) and `usage.json`.
 - `captions.py`: alignment, chunking, caption PNGs and the `list.ffconcat` overlay stream.
 - `blender/render_episode.py`: builds and renders one shot in headless Blender (resumable PNG frames).
-- `blender/scene_lib.py`: the materials (shader distance fog, glow billboards), car model, road, camera-locked cards, and builders.
+- `blender/scene_lib.py`: the materials (shader distance fog, glow billboards), Kenney car loader (`make_car`), road, camera-locked cards, and builders.

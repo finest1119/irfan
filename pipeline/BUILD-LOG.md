@@ -66,3 +66,46 @@ Builder: Opus sub-agent · 22 Nov 2026 · Nothing committed or pushed. Nothing p
 - The hook facts come from the spec (Euro Weekly News / BTA / HNGN). I did not fetch them.
 - The explainer figures are from general knowledge, not fetched: 96 m at 70 mph (21 + 75), up to 10× braking distance on ice, "at least four seconds" in fog, and "under 2 s for 50 m at motorway speed" (110 km/h ≈ 30.6 m/s).
 - `episode.json` → `sources` now says to verify these before posting. I removed the Highway Code rule numbers and the BTA/HNGN dates that I had added from memory.
+
+---
+
+# v1.1 Kenney upgrade (22 Nov 2026)
+
+Builder: Opus sub-agent. Nothing committed or pushed. Video #1 was NOT re-rendered (`output/highway pileup.mp4` untouched).
+
+**Why:** the owner approved video #1 but said the cars look "too boxy".
+
+**What changed**
+- `scene_lib.py`: the procedural box car is replaced by **Kenney Car Kit** GLB models (CC0, `assets/kenney-car-kit/`, credited in `assets/CREDITS.md`).
+  - Each model is imported once per shot as a template. The template objects are removed and only their meshes are kept. Every car is a set of linked duplicates sharing those meshes. The cache is cleared in `reset_scene()`.
+  - Mix: a seeded, weighted bag of civilian cars (sedan, suv, hatchback-sports, suv-luxury, van, sedan-sports, taxi, delivery). It uses a private RNG, so the builders' `random.seed(7)` jitter and every v1 car position are unchanged. There are no `debris-*` models. Emergency vehicles appear only through an explicit `models` param.
+  - Car contract kept: the car faces +Y (Kenney models face −Y, so they get a 180° yaw), the origin is at ground centre, and every model is normalised to 4.4 m bumper-to-bumper (incl. the SUV spare wheel, the spoiler and the van door) and 1.9 m wide. The body takes a non-uniform scale. The wheels get their own scale, which is uniform in their rotation plane, so they stay round. `following_gap` ends with a 0.15 m bumper gap and no overlap; `chain_topdown` keeps a 0.2 m gap.
+  - Paint: the Kenney colormap is desaturated (`PAINT_SAT` 0.62, `PAINT_VAL` 0.92) and passed through the same shader distance fog.
+  - Lights: the tail/brake lamps (red), amber indicators and headlights are emissive lenses placed on each model's own lamp faces. The positions in `LAMPS` were measured from the lamp texels. The glow billboards sit behind the rear bumper. `brake_light()` and `headlight_beams()` use the new positions.
+- v1 limitations fixed:
+  - **Wheels spin.** `drive()` keys each road wheel's rotation from distance travelled ÷ wheel radius. The SUV's rear spare is static. A numeric check found that the top of the rim moves forward faster than the bottom, which is the correct rolling direction.
+  - **Hazards blink out of sync.** Each car has its own hazard materials with a phase offset of 0–6 frames and a period of 17–19 frames, seeded from the car name.
+- Collisions are still gentle bumper-to-bumper stops, with no debris or damage.
+
+**Verification (stills only)**
+- New stills are in `output/kenney-test/stills/` (shots 0, 1, 2, 3, 4, 5, 7 and 8). Shot 6 (`dominoes`) has no cars; the car "domino" shot is shot 1 (`chain_topdown`).
+- The before/after pairs against the final v1 frames (`output/highway-pileup/frames/`) are in `output/kenney-test/compare/`.
+- Model and lamp close-ups (all 8 models, rear and front three-quarter views) are in `output/kenney-test/dev/`.
+
+**Render time per frame** (full res, 1 process, 30-frame animation incl. shader compile, same M2 Pro):
+
+| shot | v1 | v1.1 |
+|---|---|---|
+| hook (15 cars), 3 runs each | 0.31 / 0.32 / 0.32 s | 0.35 / 0.32 / 0.32 s |
+| question (12 cars, top-down) | 0.36 s | 0.36 s |
+| gap (2 cars) | 0.34 s | 0.33 s |
+
+There is **no measurable change** (run-to-run noise is about ±0.03 s). Scene build time was v1 1.1 s → v1.1 0.9 s for the hook, 0.6 → 0.4 s for question and 0.1 → 0.1 s for gap, so the one-off GLB import is not measurable either. A full video render should stay at about 11–12 min.
+
+**Limitations**
+- Kenney's own colours are kept, so there are two reds (sedan, sedan-sports) and two yellows (taxi, suv-luxury). The hero car in the chase shots is the first draw from the bag, which is the sedan.
+- At motorway speed the wheels turn about 120° per frame. Without motion blur that strobes (the wagon-wheel effect), so the spin reads best on slow and stopping cars.
+- The lamp positions for models outside `LAMPS` (e.g. police, ambulance) are estimates. Preview a still before using them.
+- `van` (blue) is in the mix as an ordinary civilian van, although it was not on the owner's list. Remove it from `CIVILIAN` if unwanted.
+- To pin a specific car, pass `model="..."` to `make_car`.
+- The cars are slightly stretched lengthwise relative to Kenney's toy proportions, to keep the 4.4 m contract.
