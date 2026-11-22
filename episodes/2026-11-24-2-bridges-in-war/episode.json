@@ -1,0 +1,113 @@
+{
+  "id": "2026-11-24-2-bridges-in-war",
+  "keyword": "bridges in war",
+  "slug": "bridges-in-war",
+  "title": "Why Bridges Are Strategic Targets in War: Kyiv's Dnipro Bridges Hit",
+  "fb_caption": "On 20 November 2026, Kyiv's mayor said Russian missiles hit three bridges over the Dnipro River in the city, the Podilsko-Voskresenskyi, Darnytskyi and Pivdennyi (South) bridges, and traffic was restricted on major crossings. So why do bridges matter so much in war? Rivers are natural barriers, and bridges are the chokepoints that carry supplies, power and water, and time. From Arnhem and Remagen to pontoon bridges, here is how it works. Can a bridge ever be fully protected? Tell us below.",
+  "hashtags": [
+    "#bridges",
+    "#Kyiv",
+    "#Dnipro",
+    "#militaryhistory",
+    "#logistics",
+    "#newsexplained",
+    "#whatjusthappened",
+    "#explained"
+  ],
+  "engagement_comment": "Quick question for history fans: which bridge story do you know best? Reply 1 = Arnhem (A Bridge Too Far), 2 = Remagen, 3 = another one (tell us which!)",
+  "sources": [
+    "The Moscow Times, 20 Nov 2026, Kyiv's mayor on strikes on bridges in Kyiv: https://www.themoscowtimes.com/2026/11/20/3-killed-in-bridge-strikes-on-kyiv-mayor-says-a94324",
+    "Kyiv Post, 20 Nov 2026, Kyiv bridges report: https://www.kyivpost.com/post/90654",
+    "Euronews, 20 Nov 2026, strikes on Kyiv and damage to bridges: https://www.euronews.com/2026/11/20/russian-strikes-on-kyiv-kill-three-and-damage-two-bridges",
+    "Hook facts used (attributed to Kyiv's mayor): Russian missiles hit three bridges over the Dnipro in Kyiv (Podilsko-Voskresenskyi, Darnytskyi, Pivdennyi/South); traffic restricted on major crossings. Note: the Euronews headline says two bridges were damaged; the video keeps the mayor's attribution for 'three bridges'. No casualty figures are used.",
+    "History (general, NOT re-fetched by the builder, verify before posting): Operation Market Garden, September 1944, Allied attempt to seize a chain of bridges in the Netherlands ending at Arnhem, which failed there (popularised as 'A Bridge Too Far'); Ludendorff Bridge at Remagen, captured intact by US troops on 7 March 1945, the first Allied crossing of the Rhine.",
+    "Explainer (general): bridges often carry utility lines (power, water, communications); military engineers use pontoon (floating) bridges as quick temporary crossings."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Orus",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Firm and authoritative, confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Kyiv = KEE-iv, Dnipro = dnee-PRO, Arnhem = ARN-hem, Remagen = RAY-mah-gen, Rhine = RINE.",
+    "pause_between_beats": 0.3
+  },
+  "music": null,
+  "render": {
+    "resolution": [1080, 1920],
+    "fps": 30,
+    "samples": 8,
+    "parallel": 4
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "On November 20th, Kyiv's mayor said Russian missiles hit three bridges over the Dnipro River in the city, and traffic was restricted on major crossings.",
+      "shot": {"builder": "river_city", "params": {
+        "mode": "hook", "card": "KYIV BRIDGES HIT", "subcard": "Kyiv's mayor · 20 Nov 2026",
+        "hit_cue": "hit", "names": ["PODILSKO-VOSKRESENSKYI", "DARNYTSKYI", "PIVDENNYI (SOUTH)"],
+        "chip": "TRAFFIC RESTRICTED", "chip_cue": "traffic"}}
+    },
+    {
+      "id": "question",
+      "text": "So why do bridges matter so much in a war? It comes down to rivers.",
+      "shot": {"builder": "river_barrier", "params": {
+        "card": "WHY BRIDGES?", "card_cue": "why", "chip": "RIVERS = BARRIERS", "chip_cue": "rivers", "mode": "intro"}}
+    },
+    {
+      "id": "barrier",
+      "text": "Rivers are natural barriers. Wide ones like the Dnipro can split cities, regions and whole front lines in two. Bridges are the few places where you can cross.",
+      "shot": {"builder": "river_barrier", "params": {
+        "card": "RIVERS = BARRIERS", "card_cue": "rivers", "chip": "BRIDGES = CHOKEPOINTS", "chip_cue": "bridges",
+        "split_cue": "split", "mode": "bridges"}}
+    },
+    {
+      "id": "supplies",
+      "text": "Here are the three big reasons they matter. One: supplies. Food, fuel, ammunition and troops move by road and rail, and every route over the river funnels through a bridge.",
+      "shot": {"builder": "supply_funnel", "params": {
+        "card": "1 · SUPPLIES", "card_cue": "one",
+        "items": ["FOOD", "FUEL", "SUPPLIES", "PEOPLE"], "item_cues": ["food", "fuel", "ammunition", "troops"],
+        "funnel_cue": "funnels"}}
+    },
+    {
+      "id": "utilities",
+      "text": "Two: everything else. Bridges often carry power cables, water pipes and communication lines. Damage one, and people can feel it far from the river.",
+      "shot": {"builder": "utility_bridge", "params": {
+        "card": "2 · HIDDEN LIFELINES", "card_cue": "two",
+        "chips": ["POWER", "WATER", "COMMUNICATIONS"], "chip_cues": ["power", "water", "communication"],
+        "dim_cue": "damage"}}
+    },
+    {
+      "id": "time",
+      "text": "Three: time. Even a damaged bridge can force long detours. Traffic jams, delays and slower deliveries can matter as much as the damage itself.",
+      "shot": {"builder": "river_city", "params": {
+        "mode": "detour", "card": "3 · TIME", "card_cue": "three", "chip": "LONG DETOURS", "chip_cue": "detours"}}
+    },
+    {
+      "id": "history",
+      "text": "Bridges have mattered in wars for centuries. In 1944, the Allied push to take the bridge at Arnhem fell short, remembered as A Bridge Too Far. In 1945, US troops captured the Remagen bridge over the Rhine intact.",
+      "shot": {"builder": "history_cards", "params": {
+        "card": "BRIDGES IN HISTORY",
+        "cards": [["1944 · ARNHEM", "\"A Bridge Too Far\""], ["1945 · REMAGEN", "Rhine bridge taken intact"]],
+        "cues": ["1944", "1945"]}}
+    },
+    {
+      "id": "repair",
+      "text": "But big bridges are hard to bring down. They're massive steel and concrete, and engineers can patch them, or float in pontoon bridges, surprisingly fast.",
+      "shot": {"builder": "pontoon_bridge", "params": {
+        "card": "HARD TO DROP, QUICK TO PATCH", "card_cue": "but",
+        "chip": "PONTOON BRIDGE", "chip_cue": "pontoon"}}
+    },
+    {
+      "id": "metaphor",
+      "text": "Think of bridges as a city's arteries. Pinch one, and the flow slows far downstream. That's why cities defend their bridges, and plan backup routes in advance.",
+      "shot": {"builder": "arteries", "params": {
+        "card": "A CITY'S ARTERIES", "pinch_cue": "pinch", "backup_cue": "backup",
+        "chip": "BACKUP ROUTES", "chip_cue": "backup"}}
+    },
+    {
+      "id": "outro",
+      "text": "Do you think bridges can ever be fully protected? Tell us in the comments, and send this to someone who loves history. Because that's exactly what's at stake on the Dnipro in Kyiv.",
+      "shot": {"builder": "river_city", "params": {
+        "mode": "outro", "card": "CAN BRIDGES BE\nPROTECTED?", "subcard": "Tell us in the comments", "sub_cue": "tell"}}
+    }
+  ]
+}

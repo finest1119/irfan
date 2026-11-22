@@ -203,3 +203,53 @@ Builder: Opus sub-agent. Nothing committed, pushed or posted. Built at the same 
 - Explainer figures not re-fetched: 1,550 deployed strategic warheads (New START), "more than three quarters" drop from
   the 1980s peak, "US and Russia hold most". Pronunciation of "Xi Jinping"/"Shenzhen" relies on director notes: a human
   should listen to the first 10 s.
+
+---
+
+# Videos #4 "plane crash" and #5 "bridges in war" (Tue 24 Nov slots 1–2), 23 Nov 2026
+
+Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned). Built one after the other: A was fully rendered and checked before B started. Nothing was committed, pushed or posted.
+
+**Code**
+- New: `pipeline/blender/scene_lib_air.py` with 14 builders, registered into `L.BUILDERS`. They are documented in the README.
+  - Aviation (7): `airport_scene`, `flight_profile`, `altitude_margin`, `cockpit_workload`, `crosswind_approach`, `tightrope`, `seatbelt_sign`.
+  - Bridges (7): `river_city`, `river_barrier`, `supply_funnel`, `utility_bridge`, `history_cards`, `pontoon_bridge`, `arteries`.
+  - Helpers: a procedural light plane with a spinning prop, an airliner with animated flaps and gear, a gradient sky dome, a runway with lights and PAPI, a city generator, and movers (dots looping along a path).
+- `render_episode.py`: chained lazy import. If a builder is not found it imports `scene_lib_geo`, and if it is still not found it imports `scene_lib_air`. `scene_lib.py` and `scene_lib_geo.py` were not edited.
+- `README.md`: added a builder table and two gotchas (below).
+
+**A: `output/plane crash.mp4`**
+- 94.40 s, 284 words, voice Fenrir (#3 was Orus).
+- TTS: the `slice` beat began "Here's the surprising part." Gemini then read the director notes aloud on 6 tries in a row. Rewording the opener fixed it.
+- Render: 603 s wall time with 4 Blender processes, then a 240 s re-render of the hook only, to move the plane label out of the caption band.
+- FB copy: 9,434,809 bytes, HEVC hvc1. Voice about −14 LUFS.
+
+**B: `output/bridges in war.mp4`**
+- 88.70 s, 269 words, voice Orus (A used Fenrir).
+- TTS worked first time. Whisper heard "Kyiv's mayor" as "Keves Mayer" (captions use the script text).
+- Render: 523 s wall time.
+- FB copy: 9,487,150 bytes, hvc1.
+
+**Bugs fixed on the way**
+- **Buildings and dots not rendering:** `L.box()` runs `transform_apply()`, which also bakes in the location. Source boxes built at z=−5000 and then copied ended up 5 km underground, so no buildings or dots showed. Sources are now built at the origin and deleted after copying.
+- **Cabin cards hidden:** the cabin interior was smaller than the 2 m depth of the camera-locked cards, so the ceiling hid them. The cabin is now scaled up 3x.
+
+**QC**
+- Frames checked: 11–12 frames each, in `output/<slug>/qc/qc_sheet.png`.
+- Captions are inside the band, and the cards and chips sit in the upper area.
+- Nothing graphic. The plane is only shown on approach, and a hit bridge only dims and gets a red ring, with its traffic stopping.
+- Whisper alignment: A 96–100 % per beat. B 88–100 % per beat; it hears "Kyiv's mayor" as "Keves Mayer" in the hook, but the captions use the script text.
+
+**TTS cost** (rate not re-verified)
+- A: about 1.4k input and 2.2k audio output tokens, plus about 7 failed retries.
+- B: similar, about 2.1k output tokens.
+- Total about $0.05.
+
+**Caveats / re-check before posting**
+- **A, explainer stats:** "Most accidents happen at takeoff and landing" and the "critical eleven minutes" were not re-fetched.
+- **A, crash cause:** no cause is suggested anywhere.
+- **B, number of bridges:** Euronews' headline says *two* bridges were damaged. The video says "three", attributed to Kyiv's mayor, per the brief.
+- **B, history facts:** Arnhem 1944 and Remagen 7 Mar 1945 were not re-fetched.
+- **B, map:** the bridge positions and names on the map are stylised, not to scale.
+- **Pronunciation:** a human should listen to the hooks: "Cirrus SR22" and "NTSB" in A, "Kyiv" and "Dnipro" in B.
+- **Source URLs:** two required source URLs contain casualty words in their slugs ("2-dead", "3-killed"). The descriptions next to them in post.md stay neutral.

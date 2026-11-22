@@ -52,6 +52,8 @@ def main():
     ctx = L.Ctx(scene, frames, fps, beat_words, tm["start"])
     if beat["shot"]["builder"] not in L.BUILDERS:
         import scene_lib_geo  # noqa: F401  (registers geo/explainer builders into L.BUILDERS)
+    if beat["shot"]["builder"] not in L.BUILDERS:
+        import scene_lib_air  # noqa: F401  (registers aviation / bridges builders into L.BUILDERS)
     builder = L.BUILDERS[beat["shot"]["builder"]]
     t0 = time.time()
     builder(ctx, beat["shot"].get("params", {}))

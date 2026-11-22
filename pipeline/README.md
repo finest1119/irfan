@@ -165,3 +165,37 @@ ffmpeg -i "output/<keyword>.mp4" -c:v libx265 -preset slow -b:v 600k -maxrate 90
 ```
 600k video + 80k audio stays under 10,000,000 bytes up to about 115 s; for longer videos lower `-b:v` to
 (9,400,000 × 8 / duration − 80,000) / 1000 kbps. Check the byte size afterwards (91 s → 7.65 MB).
+
+## Aviation + bridges builders (`pipeline/blender/scene_lib_air.py`, added 23 Nov 2026 for "plane crash" and "bridges in war")
+
+Separate module, registered with `L.BUILDERS.update(...)`. `render_episode.py` imports it lazily, only when a
+builder is in neither `scene_lib` nor `scene_lib_geo` (chained import, so a broken file never touches older episodes).
+Non-graphic: aircraft are only shown flying, on approach or parked (never a crash, wreckage or fire); a "hit"
+bridge only dims, gets a red marker ring and its traffic stops (no explosions, weapons, flags or side colours).
+
+| builder | what it shows | params |
+|---|---|---|
+| `airport_scene` | small airport (runway + lights, PAPI, tower, hangars, fields, trees, hills, gradient sky + sun glow) | `mode`: `hook` (chase cam behind a light plane on approach, never touching down; `plane_label` on `label_cue`; `chips` on `chip_cues`) / `outro` (crane-up, plane flies away); `sky`: `golden`/`overcast`/`dusk`; `card`, `subcard`, `sub_cue` |
+| `flight_profile` | altitude-vs-time line of a typical flight with a mini airliner | `mode`: `intro` (line draws, TAKEOFF/LANDING labels on their words) / `zones` (takeoff & landing slices go teal on `zone_cue`, red on `red_cue`); `card`, `card_cue`, `chip` |
+| `altitude_margin` | high plane with a tall teal bar vs low plane over a runway with a short red bar | `card`, `card_cue`, `high_label`, `high_cue`, `low_label`, `low_cue` |
+| `cockpit_workload` | airliner on approach; speed streaks, flaps down, gear down, radio rings on 4 cues; chips + 4-segment WORKLOAD meter | `card`, `card_cue`, `items` (4), `cues` (4) |
+| `crosswind_approach` | airliner crabbed into a crosswind (red arrows), wind-shear down-arrows + dip, other traffic with a warning ring | `card`, `card_cue`, `chips` (3), `chip_cues` (3) |
+| `tightrope` | walker with a balance pole crosses a rope between two towers; middle glows teal, ends red; chips | `card`, `middle_cue`, `on_cue`, `off_cue`, `map_cue`, `labels` (3 chips) |
+| `seatbelt_sign` | cabin aisle (scaled x3 so camera cards are not hidden by the ceiling); FASTEN SEATBELT sign lights on `sign_cue`; chips; big card replaces them on `big_cue` | `card`, `sign_cue`, `chips`, `chip_cues`, `big`, `big_sub`, `big_cue` |
+| `river_city` | low-poly city on two banks of a winding river, five bridges with traffic dots | `mode`: `hook` (3 bridges dim + red rings, traffic stops on `hit_cue`; `names` chips; `chip` on `chip_cue`) / `detour` (closed bridge, amber long detour route) / `outro` (wide crane-up); `card`, `subcard`, `sub_cue` |
+| `river_barrier` | top-down map with a wide winding river | `mode`: `intro` (river edges glow on `chip_cue`) / `bridges` (red dashed barrier on `split_cue`, bridge nodes + converging arrows on `chip_cue`); `card`, `card_cue`, `chip` |
+| `supply_funnel` | coloured supply dots converge through funnel lines onto one bridge, cross, spread out | `card`, `card_cue`, `items` (4), `item_cues` (4), `funnel_cue` |
+| `utility_bridge` | one bridge with power / water / comms lines under the deck lighting up; on `dim_cue` flows stop, red ring, far-bank lights go dark | `card`, `card_cue`, `chips` (3), `chip_cues` (3), `dim_cue` |
+| `history_cards` | two timeline cards (year, place, one neutral line) with an arch-bridge icon, rising on cues | `card`, `cards` ([[title "YEAR · PLACE", sub], ...]), `cues` |
+| `pontoon_bridge` | big concrete bridge behind; pontoon segments float in and lock into a floating bridge, then traffic crosses | `card`, `card_cue`, `chip`, `chip_cue`, `mass_cue` |
+| `arteries` | branching teal vessels with flowing dots; red pinch ring slows the flow; a bypass vessel draws in and the flow recovers | `card`, `pinch_cue`, `backup_cue`, `chip`, `chip_cue` |
+
+Helpers: `make_light_plane(ctx, name, accent, scale)` (nose +Y, spinning prop), `make_airliner(ctx, name, scale, gear)`
+→ `(root, {"flaps": hinges, "gear": groups})`, `_sky()` gradient dome + `_sun_glow()`, `_runway()`, `_slab()` (extruded
+polygon in xy/yz/xz), `_movers()` (dots looping along a polyline, with slow-down/stop), `_bridge()`, `_hit_marker()`.
+Camera-locked cards sit 2 m from the lens: interiors smaller than that (cabins) must be scaled up or the geometry hides the cards.
+TTS note: a beat starting with a short teaser sentence ("Here's the surprising part.") made the model read the
+director notes aloud 4 times in a row; start beats with the content sentence instead.
+Gotcha: `L.box()` / `L.plane()` call `transform_apply()`, which bakes the **location** into the mesh too. A "source"
+box built far away (e.g. z=-5000) and then copied (`obj.copy()` / shared mesh) puts every copy 5 km underground.
+Build sources at the origin and delete them after copying (as `_city()` does).
