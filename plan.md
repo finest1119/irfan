@@ -16,8 +16,8 @@
 6. Post volume: up to 10–15 reels/day at scale.
 7. Edit: captions 2–4 words, centered; voice synced to music (music ~80%); subtle effects, vary per video.
 8. Export filename = target keyword. Title via prompt, tweak manually. Add relevant tags.
-9. Monetization is **invite-only**.
-10. Every post Public + mark as **AI content** (AI label ON in composer). Creator's estimate: ~5,000 followers + 60,000 minutes viewed.
+9. Monetization is **invite-only**. Creator's estimate: ~5,000 followers + 60,000 minutes viewed.
+10. Every post Public + mark as **AI content** (AI label ON in composer).
 
 ## 3. Risks to check
 - [x] Monetization tab in Professional Dashboard: confirm eligibility for Malaysia-based creator. (22 Nov 2026: Malaysia = eligible country for Stars; Content Monetisation invite-only)
