@@ -14,6 +14,7 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 8. Export filename = main keyword.
 9. **Hooks only from major countries: US, UK, Europe, Russia, Japan, China** (audience = US/UK citizens).
 10. Aviation topics are allowed.
+11. Every post: audience **Public** + **AI label ON** (AI voiceover / AI-generated assets), per the reference video.
 
 ## Schedule
 | Day | Slot | Hook (news) | Explainer topic | Main keyword |
