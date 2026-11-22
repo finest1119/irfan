@@ -41,7 +41,7 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 | Sun 29 | 3 | Week recap (US/UK/EU/RU/JP/CN only) | 5 biggest events this week, explained | world news this week |
 
 ## Notes
-- Florida Learjet crash (Nov 1) skipped: same story as reference reel; can be used later with a new angle.
+- Florida Learjet crash (Nov 1) skipped for now (likely the example you mentioned); can be used later with a new angle.
 - War topics (Tue 24 #2, Fri 27 #2–3): Meta may limit monetization. Keep them technical/educational; swap for evergreen if reach drops.
 - If bigger news breaks, replace the weakest slot that day.
 - Sources: Wikipedia Current events Nov 2026, NPR, Democracy Now, WAPT, Aviation Safety Network, Japan Times, SCMP, UKNIP.
