@@ -86,3 +86,28 @@ Start budget: **< $2/month** (TTS only).
 2. Get Gemini API key.
 3. Build Blender pipeline → first video from `calendar.md`.
 4. QC, then batch production.
+
+## 9. Monetization-ready checklist (after page creation)
+**Page setup**
+- [ ] Username: @whatjusthappened (or closest available)
+- [ ] Category: Digital creator; Page type: Creator
+- [ ] Bio (desc #2), contact email, profile + cover photo (own design)
+- [ ] Action button: Follow
+- [ ] Professional Dashboard enabled
+
+**Account safety (required for monetization)**
+- [ ] Two-factor authentication ON (FB account)
+- [ ] Real name + verified email/phone on the owner profile
+- [ ] Only you as admin; no suspicious admins
+
+**Monetization tab (Professional Dashboard → Monetization)**
+- [ ] Check **Monetization status / Account status**: no violations
+- [ ] Join **Content Monetization** (or its waitlist/"Get notified" if invite-only)
+- [ ] Check **Creator Fast Track** eligibility and apply if shown
+- [ ] Turn on **Stars** when available
+- [ ] Set up **payout account** (bank) + **tax form** (W-8BEN, non-US creator)
+- [ ] Screenshot every eligibility screen (country, requirements)
+
+**Policy**
+- [ ] Read Partner Monetization Policies + Content Monetization Policies
+- [ ] Original content only; no reposts, no graphic tragedy visuals
