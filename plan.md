@@ -19,7 +19,7 @@
 9. Monetization is **invite-only**. Creator's estimate: ~5,000 followers + 60,000 minutes viewed.
 
 ## 3. Risks to check
-- [ ] Monetization tab in Professional Dashboard: confirm eligibility for Malaysia-based creator.
+- [x] Monetization tab in Professional Dashboard: confirm eligibility for Malaysia-based creator. (22 Nov 2026: Malaysia = eligible country for Stars; Content Monetisation invite-only)
 - [ ] Meta restricts monetization on tragedy/crime/sensitive content → frame as educational/safety explainer, no graphic visuals.
 
 ## 4. Keywords (researched)
@@ -89,25 +89,26 @@ Start budget: **< $2/month** (TTS only).
 
 ## 9. Monetization-ready checklist (after page creation)
 **Page setup**
-- [ ] Username: @whatjusthappened (or closest available)
-- [ ] Category: Digital creator; Page type: Creator
-- [ ] Bio (desc #2), contact email, profile + cover photo (own design)
-- [ ] Action button: Follow
-- [ ] Professional Dashboard enabled
+- [ ] Username: @whatjusthappened (or closest available) — BLOCKED 22 Nov 2026: "You're currently unable to choose a username" (new-Page restriction). Retry after a few days / first followers.
+- [x] Category: Digital creator; Page type: Creator (Page ID 61597041051729, created 22 Nov 2026)
+- [x] Bio (desc #2), contact email
+- [ ] Profile + cover photo (own design) — PENDING: needs own artwork
+- [x] Action button: Follow (default on Creator Page)
+- [x] Professional Dashboard enabled (Creator Dashboard)
 
 **Account safety (required for monetization)**
-- [ ] Two-factor authentication ON (FB account)
-- [ ] Real name + verified email/phone on the owner profile
-- [ ] Only you as admin; no suspicious admins
+- [x] Two-factor authentication ON (FB account, authenticator app)
+- [x] Real name + verified email/phone on the owner profile (Accounts Centre)
+- [x] Only you as admin; no suspicious admins
 
 **Monetization tab (Professional Dashboard → Monetization)**
-- [ ] Check **Monetization status / Account status**: no violations
-- [ ] Join **Content Monetization** (or its waitlist/"Get notified" if invite-only)
-- [ ] Check **Creator Fast Track** eligibility and apply if shown
-- [ ] Turn on **Stars** when available
-- [ ] Set up **payout account** (bank) + **tax form** (W-8BEN, non-US creator)
-- [ ] Screenshot every eligibility screen (country, requirements)
+- [x] Check **Monetization status / Account status**: no violations (Page has no issues, no restrictions; Monetisation = not eligible yet)
+- [x] Join **Content Monetization** (or its waitlist/"Get notified" if invite-only) — invite-only; "Notify me" clicked 22 Nov 2026
+- [ ] Check **Creator Fast Track** eligibility and apply if shown — NOT SHOWN anywhere in dashboard (likely not offered to this Page/country)
+- [ ] Turn on **Stars** when available — 1/3 criteria (eligible country ✓; need 500 followers + 500 for 30 consecutive days). "Notify me" clicked.
+- [ ] Set up **payout account** (bank) + **tax form** (W-8BEN, non-US creator) — NOT AVAILABLE until a programme is unlocked; Irfan fills in bank/ID details
+- [x] Screenshot every eligibility screen (country, requirements) — saved locally in `screenshots/` (gitignored, repo is public)
 
 **Policy**
-- [ ] Read Partner Monetization Policies + Content Monetization Policies
+- [ ] Read Partner Monetization Policies + Content Monetization Policies — Irfan to read
 - [ ] Original content only; no reposts, no graphic tragedy visuals
