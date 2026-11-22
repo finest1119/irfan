@@ -6,3 +6,4 @@ output/
 *.blend1
 screenshots/
 .venv/
+.DS_Store

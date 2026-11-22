@@ -1,0 +1,154 @@
+{
+  "id": "2026-11-23-1-highway-pileup",
+  "keyword": "highway pileup",
+  "slug": "highway-pileup",
+  "title": "Why Highway Pileups Happen: 86 Vehicles in Fog on Bulgaria's Trakia Motorway",
+  "fb_caption": "On 10 November 2026, dense fog triggered two pile-ups involving 86 vehicles on Bulgaria's Trakia motorway near Yambol. How can so many cars end up in one chain? Here's what usually causes highway pileups, and what you can do in thick fog. Have you ever driven in fog this thick? Tell us below.",
+  "hashtags": [
+    "#highwaypileup",
+    "#roadsafety",
+    "#fogdriving",
+    "#Bulgaria",
+    "#newsexplained",
+    "#whatjusthappened",
+    "#drivingtips",
+    "#explained"
+  ],
+  "sources": [
+    "Euro Weekly News, 10 Nov 2026: dense fog, two pile-ups, 86 vehicles, Trakia motorway near Yambol",
+    "BTA (Bulgarian News Agency)",
+    "HNGN",
+    "Explainer figures (general road-safety guidance, not about this crash; NOT re-fetched by the builder, verify before posting): UK Highway Code typical stopping distance at 70 mph = 96 m (21 m thinking + 75 m braking); braking distances on ice can be up to ten times longer than on dry roads; a 4-second-plus following gap in poor visibility is common safety advice."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Charon",
+    "director_notes": "Style: clear, calm but serious news documentary narrator. Steady, engaging pace, slight urgency. Neutral American/British English.\nPronunciation: Trakia = TRAH-kee-ah, Yambol = YAHM-bol.",
+    "pause_between_beats": 0.3
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 8,
+    "parallel": 4
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "On November 10th, dense fog triggered two pile-ups involving 86 vehicles on Bulgaria's Trakia motorway, near Yambol.",
+      "shot": {
+        "builder": "fog_highway",
+        "params": {
+          "cars": 14,
+          "hazards": true,
+          "fog": 0.9,
+          "card": "86 VEHICLES",
+          "subcard": "Trakia motorway, Bulgaria · 10 Nov 2026",
+          "camera": "dolly_in"
+        }
+      }
+    },
+    {
+      "id": "question",
+      "text": "So how do dozens of cars end up hitting each other, one after another? Usually, it isn't one single mistake. It's a chain.",
+      "shot": {
+        "builder": "chain_topdown",
+        "params": {
+          "cars": 12,
+          "card": "A CHAIN REACTION"
+        }
+      }
+    },
+    {
+      "id": "visibility",
+      "text": "It often starts with visibility. In thick fog, a driver might only see fifty metres ahead. At motorway speed, a car covers that in under two seconds.",
+      "shot": {
+        "builder": "visibility",
+        "params": {
+          "distance_label": "~50 m visible",
+          "card": "VISIBILITY",
+          "subcard": "50 m ≈ under 2 seconds at 110 km/h"
+        }
+      }
+    },
+    {
+      "id": "stopping",
+      "text": "But stopping takes much longer. First comes reaction time, often more than a second before your foot even hits the brake. Then the braking itself. At seventy miles per hour, the typical stopping distance is around ninety-six metres.",
+      "shot": {
+        "builder": "stopping_distance",
+        "params": {
+          "reaction_m": 21,
+          "braking_m": 75,
+          "card": "STOPPING DISTANCE",
+          "subcard": "≈ 96 m at 70 mph (dry road)"
+        }
+      }
+    },
+    {
+      "id": "gap",
+      "text": "Now add drivers following too closely. If the car ahead stops suddenly, the one behind simply has no room left.",
+      "shot": {
+        "builder": "following_gap",
+        "params": {
+          "card": "TOO CLOSE"
+        }
+      }
+    },
+    {
+      "id": "ice",
+      "text": "And on wet or icy roads, it gets worse. On ice, braking distances can be up to ten times longer.",
+      "shot": {
+        "builder": "ice_road",
+        "params": {
+          "card": "UP TO 10× LONGER",
+          "subcard": "braking distance on ice"
+        }
+      }
+    },
+    {
+      "id": "dominoes",
+      "text": "Think of it like a row of dominoes. One car brakes hard. The next stops just in time. The third doesn't. And because every driver behind is also driving blind in the fog, the chain can keep growing.",
+      "shot": {
+        "builder": "dominoes",
+        "params": {
+          "count": 16
+        }
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "So what can you do? In fog, slow down until you can stop within the distance you can see. Leave a much bigger gap, at least four seconds. Use dipped headlights and fog lights, and if you see hazard lights ahead, ease off early.",
+      "shot": {
+        "builder": "safety_tips",
+        "params": {
+          "tips": [
+            "SLOW DOWN",
+            "4+ SECOND GAP",
+            "LIGHTS ON",
+            "EASE OFF EARLY"
+          ]
+        }
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Have you ever driven through fog this thick? Tell us in the comments. Because a single bank of fog can be all it takes. And that's what drivers faced on November 10th.",
+      "shot": {
+        "builder": "fog_highway",
+        "params": {
+          "cars": 6,
+          "hazards": true,
+          "fog": 1.0,
+          "card": "HAVE YOU DRIVEN IN\nFOG THIS THICK?",
+          "subcard": "Tell us in the comments",
+          "camera": "crane_up"
+        }
+      }
+    }
+  ]
+}
