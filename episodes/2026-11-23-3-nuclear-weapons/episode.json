@@ -1,0 +1,110 @@
+{
+  "id": "2026-11-23-3-nuclear-weapons",
+  "keyword": "nuclear weapons",
+  "slug": "nuclear-weapons",
+  "title": "How Nuclear Arms Deals Work: Trump, Xi and Putin Meet in Shenzhen",
+  "fb_caption": "On 19 November 2026, Donald Trump, Xi Jinping and Vladimir Putin met in Shenzhen, China, the first summit ever between all three leaders, with nuclear weapons on the agenda. No new arms-control treaty came out of it. So how do nuclear arms reduction deals actually work? Caps, data exchanges, inspections, and why adding a third country changes the math. Do you think a three-way deal is possible? Tell us below.",
+  "hashtags": [
+    "#nuclearweapons",
+    "#armscontrol",
+    "#NewSTART",
+    "#Shenzhen",
+    "#worldnews",
+    "#newsexplained",
+    "#whatjusthappened",
+    "#explained"
+  ],
+  "engagement_comment": "Quick poll: could the US, China and Russia agree on one nuclear arms deal in the next few years? Reply 1 = yes, 2 = maybe, 3 = no. Tell us why below.",
+  "sources": [
+    "Al Jazeera, 14 Nov and 19 Nov 2026: Trump, Xi and Putin meet in Shenzhen, China, on the sidelines of APEC; first-ever three-way summit; nuclear weapons on the agenda",
+    "NPR, 18 Nov 2026: New START, the last treaty limiting US and Russian strategic nuclear weapons, lapsed in February 2026; the US wants China included in any new deal, China has resisted",
+    "NBC News, Fox News, Atlantic Council: the meeting ended without a new arms-control treaty (reports mention only a general pledge on nuclear risk)",
+    "Explainer (general, NOT re-fetched by the builder, verify before posting): New START limited each side to 1,550 deployed strategic warheads; treaty verification used data exchanges, on-site inspections and national technical means (satellites); global nuclear stockpiles are down by more than three quarters from the mid-1980s peak (Federation of American Scientists estimates, roughly 70,000 then vs about 12,000 now); the US and Russia hold most of the world's nuclear weapons (FAS, SIPRI)."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Orus",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Firm and authoritative, confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Xi Jinping = SHEE jin-PING, Shenzhen = shen-JEN, Putin = POO-tin, New START = new START (one word, like 'start'), 1,550 = fifteen hundred and fifty.",
+    "pause_between_beats": 0.3
+  },
+  "music": null,
+  "render": {
+    "resolution": [1080, 1920],
+    "fps": 30,
+    "samples": 8,
+    "parallel": 4
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "On November 19th, Donald Trump, Xi Jinping and Vladimir Putin met in Shenzhen, China. It was the first summit ever between all three leaders, and nuclear weapons were on the agenda.",
+      "shot": {"builder": "globe_summit", "params": {
+        "card": "FIRST 3-WAY SUMMIT", "subcard": "Shenzhen, China · 19 Nov 2026",
+        "cues": ["trump", "xi", "putin"], "pin_cue": "shenzhen"}}
+    },
+    {
+      "id": "question",
+      "text": "But no new arms deal came out of it. So how do these deals work, and why are they so hard?",
+      "shot": {"builder": "round_table", "params": {
+        "card": "NO NEW TREATY", "card_cue": "deal", "subcard": "How do arms deals work?", "sub_cue": "how",
+        "camera": "orbit"}}
+    },
+    {
+      "id": "lapsed",
+      "text": "First, the backdrop. New START, the last treaty limiting US and Russian strategic nuclear weapons, expired in February. Right now, no treaty caps them.",
+      "shot": {"builder": "treaty_doc", "params": {
+        "title": "NEW START", "stamp": "EXPIRED\nFEB 2026", "stamp_cue": "expired",
+        "card": "THE LAST TREATY", "after": "NO CAP RIGHT NOW", "after_cue": "right"}}
+    },
+    {
+      "id": "caps",
+      "text": "Most deals work in three steps. One: the cap. New START, for example, limited each side to 1,550 deployed strategic warheads.",
+      "shot": {"builder": "cap_bars", "params": {
+        "card": "1 · THE CAP", "card_cue": "one", "cap_label": "CAP: 1,550", "cap_sub": "deployed strategic warheads each",
+        "cap_cue": "limited"}}
+    },
+    {
+      "id": "checks",
+      "text": "Two: the count. Each side regularly shares data on its weapons. Three: the check. Inspectors visit bases, and satellites watch from orbit, so nobody has to take the other side's word for it.",
+      "shot": {"builder": "verify_checks", "params": {
+        "items": ["2 · THE COUNT", "3 · THE CHECK"], "item_cues": ["two", "three"],
+        "icons": ["DATA EXCHANGE", "ON-SITE INSPECTIONS", "SATELLITES"], "icon_cues": ["data", "inspectors", "satellites"]}}
+    },
+    {
+      "id": "third",
+      "text": "So why is it so hard now? Two players can balance each other. Add a third, and the math changes. The US wants China in any new deal. China has so far resisted.",
+      "shot": {"builder": "three_balance", "params": {
+        "card": "TWO CAN BALANCE", "card2": "A THIRD CHANGES THE MATH", "third_cue": "third"}}
+    },
+    {
+      "id": "history",
+      "text": "Still, these deals have worked before. Arms-control treaties helped cut global stockpiles by more than three quarters from their 1980s peak. And the US and Russia still hold most of the world's nuclear weapons.",
+      "shot": {"builder": "stock_bars", "params": {
+        "card": "GLOBAL STOCKPILES", "heights": [100, 88, 62, 44, 30, 22, 17],
+        "first_label": "1980s PEAK", "last_label": "TODAY", "drop_label": "DOWN MORE THAN 3/4", "drop_cue": "three",
+        "split_label": "US + RUSSIA = MOST", "split_cue": "russia", "split_frac": 0.85}}
+    },
+    {
+      "id": "metaphor",
+      "text": "Think of it like three people in one room, all holding weapons. Each will lower theirs only if they can check the other two hands, at the same time.",
+      "shot": {"builder": "three_lower", "params": {
+        "card": "LOWER TOGETHER", "subcard": "...and check each other", "check_cue": "check", "lower_cue": "lower"}}
+    },
+    {
+      "id": "takeaway",
+      "text": "Why does this matter to you? Fewer weapons, and clear ways to check them, usually mean less room for accidents, false alarms and miscalculation.",
+      "shot": {"builder": "risk_gauge", "params": {
+        "card": "WHY IT MATTERS", "gauge_label": "RISK OF MISTAKES",
+        "chips": ["FEWER ACCIDENTS", "FEWER FALSE ALARMS", "LESS MISCALCULATION"], "chip_cues": ["accidents", "false", "miscalculation"],
+        "drop_cue": "fewer"}}
+    },
+    {
+      "id": "outro",
+      "text": "Do you think a three-way nuclear deal is possible? Tell us in the comments, and send this to someone who follows world news. Because that's the exact question three leaders faced in Shenzhen.",
+      "shot": {"builder": "round_table", "params": {
+        "card": "IS A 3-WAY DEAL\nPOSSIBLE?", "subcard": "Tell us in the comments", "sub_cue": "tell",
+        "camera": "crane_up"}}
+    }
+  ]
+}

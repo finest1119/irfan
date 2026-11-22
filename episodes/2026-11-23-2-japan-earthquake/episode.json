@@ -1,0 +1,175 @@
+{
+  "id": "2026-11-23-2-japan-earthquake",
+  "keyword": "Japan earthquake",
+  "slug": "japan-earthquake",
+  "title": "Why Japan Gets So Many Earthquakes: M5.7 Quake Shakes Shizuoka",
+  "fb_caption": "Just after 1 a.m. on 8 November 2026, a magnitude 5.7 earthquake (Japan Meteorological Agency) struck western Shizuoka Prefecture in central Japan, about 40 km deep. No tsunami warning was issued. So why does Japan shake so often? Four tectonic plates, subduction zones and around 2,000 known active faults, plus how Japan prepares and what to do if you ever feel a quake. Did you know Japan shakes this often? Tell us below.",
+  "hashtags": [
+    "#Japanearthquake",
+    "#earthquake",
+    "#Japan",
+    "#Shizuoka",
+    "#science",
+    "#newsexplained",
+    "#whatjusthappened",
+    "#explained"
+  ],
+  "engagement_comment": "Quick poll: have you ever felt an earthquake? Reply 1 = yes, more than once, 2 = once, 3 = never (and hoping to keep it that way!)",
+  "sources": [
+    "The Japan Times, 8 Nov 2026: magnitude 5.7 earthquake, western Shizuoka Prefecture, about 1:04 a.m. local time, about 40 km deep, no tsunami warning, shaking felt in Shizuoka, Aichi, Nagano and Gifu",
+    "Japan Meteorological Agency (JMA) via APA: preliminary magnitude 5.7",
+    "USGS: measured magnitude 5.5 (not used on screen; the video shows the JMA figure)",
+    "Explainer (general, not about this quake): Japan sits where four plates meet (Pacific, Philippine Sea, Eurasian/Amurian, North American/Okhotsk), standard plate-tectonics teaching (USGS, JMA).",
+    "'More than 1 in 10 of the world's M6+ earthquakes': Cabinet Office of Japan, White Paper on Disaster Management: 302 of 1,629 M6.0+ quakes = 18.5% (2004-2013, via nippon.com 'Nearly 20% of large earthquakes happen in Japan'); Ministry of Internal Affairs and Communications white paper: about 13.1% (2008-2018). The video says 'more than 1 in 10', which both support. 'Under 1% of the world's land': nippon.com gives 0.28%.",
+    "'Around 2,000 known active faults': Headquarters for Earthquake Research Promotion (HERP) commonly cited figure; NOT re-fetched by the builder, verify before posting.",
+    "Earthquake Early Warning: JMA alerts can arrive seconds before strong shaking (general knowledge, NOT re-fetched).",
+    "Drop, Cover and Hold On: standard earthquake safety advice (e.g. US Ready.gov / ShakeOut)."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm and knowledgeable, but confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Shizuoka = shee-zoo-OH-kah, Aichi = EYE-chee, Nagano = nah-GAH-no, Gifu = GEE-foo.",
+    "pause_between_beats": 0.3
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 8,
+    "parallel": 4
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Just after 1 a.m. on November 8th, a magnitude 5.7 earthquake struck western Shizuoka Prefecture in central Japan. Shaking was felt in Aichi, Nagano and Gifu. So why does Japan shake so often?",
+      "shot": {
+        "builder": "japan_map",
+        "params": {
+          "mode": "hook",
+          "card": "M5.7 EARTHQUAKE",
+          "subcard": "8 Nov 2026 · Japan Meteorological Agency",
+          "camera": "zoom_in"
+        }
+      }
+    },
+    {
+      "id": "share",
+      "text": "Japan covers well under 1% of the world's land. Yet it gets more than 1 in 10 of the world's magnitude 6 or bigger earthquakes. Here are the three big reasons.",
+      "shot": {
+        "builder": "japan_map",
+        "params": {
+          "mode": "dots",
+          "card": "MORE THAN 1 IN 10",
+          "subcard": "of the world's M6+ earthquakes",
+          "cue": "more",
+          "camera": "wide"
+        }
+      }
+    },
+    {
+      "id": "plates",
+      "text": "One. Location. Japan sits where four tectonic plates meet. The Pacific, the Philippine Sea, the Eurasian, and the North American plates.",
+      "shot": {
+        "builder": "japan_map",
+        "params": {
+          "mode": "plates",
+          "card": "1  FOUR PLATES MEET",
+          "camera": "wide"
+        }
+      }
+    },
+    {
+      "id": "subduction",
+      "text": "Two. Subduction. Off Japan's coast, one plate dives underneath another. But it doesn't slide smoothly. The edges get stuck, and strain builds up, year after year.",
+      "shot": {
+        "builder": "subduction",
+        "params": {
+          "card": "2  SUBDUCTION",
+          "release": false
+        }
+      }
+    },
+    {
+      "id": "ruler",
+      "text": "Think of bending a plastic ruler. It bends, and bends, storing energy, until it suddenly snaps back. That snap is an earthquake, and the energy races out as seismic waves.",
+      "shot": {
+        "builder": "ruler_snap",
+        "params": {
+          "card": "LIKE A BENT RULER",
+          "cue": "snaps"
+        }
+      }
+    },
+    {
+      "id": "faults",
+      "text": "Three. All that pushing cracks the land above, into around 2,000 known active faults. Quakes also vary in depth. Deeper ones, like this one at about 40 kilometres, usually spread shaking wider, but weaker.",
+      "shot": {
+        "builder": "quake_depth",
+        "params": {
+          "card": "3  CRACKED CRUST",
+          "subcard": "~2,000 known active faults",
+          "depth_label": "~40 km",
+          "cue_depth": "depth"
+        }
+      }
+    },
+    {
+      "id": "buildings",
+      "text": "So how does Japan cope? Strict building codes. Many tall buildings sit on rubber base isolators or dampers, so they sway gently instead of shaking hard.",
+      "shot": {
+        "builder": "base_isolation",
+        "params": {
+          "card": "BUILT TO SWAY",
+          "cue": "rubber"
+        }
+      }
+    },
+    {
+      "id": "alert",
+      "text": "And phones get early warning alerts, sometimes seconds before strong shaking arrives. Enough time to take cover.",
+      "shot": {
+        "builder": "phone_alert",
+        "params": {
+          "card": "EARLY WARNING",
+          "cue": "warning"
+        }
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "If you ever feel a quake, remember three words. Drop to the ground. Take cover under a sturdy table. And hold on until the shaking stops.",
+      "shot": {
+        "builder": "drop_cover",
+        "params": {
+          "steps": [
+            "DROP",
+            "COVER",
+            "HOLD ON"
+          ],
+          "cues": [
+            "drop",
+            "cover",
+            "hold"
+          ]
+        }
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Did you know Japan shakes this often? Tell us in the comments, and send this to someone heading to Japan. Because there, the ground never stops moving. Just like in Shizuoka, on November 8th.",
+      "shot": {
+        "builder": "japan_map",
+        "params": {
+          "mode": "outro",
+          "card": "DID YOU KNOW?",
+          "subcard": "Tell us in the comments",
+          "camera": "pull_out"
+        }
+      }
+    }
+  ]
+}

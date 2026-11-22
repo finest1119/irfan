@@ -50,6 +50,8 @@ def main():
     L.setup_render(scene, (int(res[0] * scale), int(res[1] * scale)), fps, frames, samples, out_dir)
     beat_words = [w for w in words if w.get("beat") == beat["id"]]
     ctx = L.Ctx(scene, frames, fps, beat_words, tm["start"])
+    if beat["shot"]["builder"] not in L.BUILDERS:
+        import scene_lib_geo  # noqa: F401  (registers geo/explainer builders into L.BUILDERS)
     builder = L.BUILDERS[beat["shot"]["builder"]]
     t0 = time.time()
     builder(ctx, beat["shot"].get("params", {}))

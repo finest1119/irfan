@@ -1162,6 +1162,857 @@ def b_safety_tips(ctx, p):
                  panel=NAVY if i % 2 == 0 else hexc("0d3b4f"), max_w_frac=0.7)
 
 
+# ================================================================ EARTHQUAKE BUILDERS (video #2, v1.2)
+# Shared helpers for map / cross-section / wave-ring shots. All procedural, no assets.
+import bmesh  # noqa: E402
+
+LAND = hexc("2a8a8c")
+SEA = hexc("0c2347")
+GRID = hexc("17345e")
+SLAB = hexc("2c5d86")
+CRUST = hexc("6b7c8f")
+
+
+def add_mat(name, color, strength=3.0):
+    """Unique additive (Transparent + Emission) material; returns (material, strength socket).
+    Strength 0 = fully invisible, so it can fade rings / pulses. Name must be unique per animated object."""
+    m = bpy.data.materials.new(name)
+    m.surface_render_method = "BLENDED"
+    nt = m.node_tree
+    for n in list(nt.nodes):
+        if n.type != "OUTPUT_MATERIAL":
+            nt.nodes.remove(n)
+    out = nt.nodes.get("Material Output")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = color
+    em.inputs["Strength"].default_value = strength
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    add = nt.nodes.new("ShaderNodeAddShader")
+    nt.links.new(tr.outputs[0], add.inputs[0])
+    nt.links.new(em.outputs[0], add.inputs[1])
+    nt.links.new(add.outputs[0], out.inputs["Surface"])
+    return m, em.inputs["Strength"]
+
+
+def prism(name, pts, z0, z1, material, xz=False):
+    """Extruded polygon (2D points). xz=True: the 2D (x, y) is a vertical cross-section (world x, z),
+    extruded along world y from -z0 to -z1 (object rotated 90 deg about X)."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    vs = [bm.verts.new((x, y, z0)) for x, y in pts]
+    f = bm.faces.new(vs)
+    r = bmesh.ops.extrude_face_region(bm, geom=[f])
+    nv = [g for g in r["geom"] if isinstance(g, bmesh.types.BMVert)]
+    bmesh.ops.translate(bm, verts=nv, vec=(0, 0, z1 - z0))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    bm.free()
+    o = link(bpy.data.objects.new(name, me))
+    if material:
+        o.data.materials.append(material)
+    if xz:
+        o.rotation_euler = (math.radians(90), 0, 0)
+    return o
+
+
+def resample(pts, step=0.25, closed=True):
+    out = []
+    seq = list(pts) + ([pts[0]] if closed else [])
+    for a, b in zip(seq[:-1], seq[1:]):
+        d = math.hypot(b[0] - a[0], b[1] - a[1])
+        n = max(1, int(d / step))
+        for k in range(n):
+            t = k / float(n)
+            out.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
+    if not closed:
+        out.append(seq[-1])
+    return out
+
+
+def ribbon(name, pts, width, z, material):
+    """Flat strip of constant width along a 2D polyline (map lines)."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    left, right = [], []
+    for i, (x, y) in enumerate(pts):
+        a = pts[max(0, i - 1)]
+        b = pts[min(len(pts) - 1, i + 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        l = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / l * width / 2, dx / l * width / 2
+        left.append(bm.verts.new((x + nx, y + ny, z)))
+        right.append(bm.verts.new((x - nx, y - ny, z)))
+    for i in range(len(pts) - 1):
+        bm.faces.new((left[i], right[i], right[i + 1], left[i + 1]))
+    bm.to_mesh(me)
+    bm.free()
+    o = link(bpy.data.objects.new(name, me))
+    o.data.materials.append(material)
+    o.visible_shadow = False
+    return o
+
+
+def ring(name, loc, material, rot=(0, 0, 0), minor=0.02):
+    bpy.ops.mesh.primitive_torus_add(major_radius=1.0, minor_radius=minor, major_segments=64, minor_segments=6,
+                                     location=loc, rotation=[math.radians(a) for a in rot])
+    o = bpy.context.object
+    o.name = name
+    o.data.materials.append(material)
+    o.visible_shadow = False
+    return o
+
+
+def wave_ring(name, loc, color, f0, f1, r1, rot=(0, 0, 0), strength=3.0, minor=0.02, flat=True):
+    """One expanding ring from radius ~0 at f0 to r1 at f1, fading out. flat=True keeps the tube thin
+    (scales only in the ring plane)."""
+    m, s = add_mat(name + "_m", color, strength)
+    o = ring(name, loc, m, rot, minor)
+    zs = 1.0 if flat else None
+    def sc(r):
+        return Vector((r, r, zs if flat else r))
+    kf(o, "scale", 1, Vector((0, 0, 0)), "CONSTANT")
+    kf(o, "scale", max(1, f0 - 1), Vector((0, 0, 0)), "LINEAR")
+    kf(o, "scale", f0, sc(0.03), "LINEAR")
+    kf(o, "scale", f1, sc(r1), "LINEAR")
+    kf(o, "scale", f1 + 1, Vector((0, 0, 0)), "LINEAR")
+    kf_socket(s, f0, strength)
+    kf_socket(s, f0 + int((f1 - f0) * 0.4), strength * 0.8)
+    kf_socket(s, f1, 0.0)
+    return o
+
+
+def pulse_rings(name, loc, color, start, end, period=40, r1=1.0, rot=(0, 0, 0), count=2, strength=3.0, minor=0.02):
+    """Repeating ring pulses (epicentre marker)."""
+    for k in range(count):
+        f = start + k * period // count
+        j = 0
+        while f < end:
+            wave_ring("%s_%d_%d" % (name, k, j), loc, color, f, f + period, r1, rot, strength, minor)
+            f += period
+            j += 1
+
+
+def vis(o, frame, show=True):
+    """Hard show/hide by scale (paired linear keys; CONSTANT on scale also works)."""
+    s = o.scale.copy() if o.scale.length > 0 else Vector((1, 1, 1))
+    a, b = (Vector((0, 0, 0)), s) if show else (s, Vector((0, 0, 0)))
+    kf(o, "scale", 1, a, "CONSTANT")
+    kf(o, "scale", max(1, frame - 1), a, "LINEAR")
+    kf(o, "scale", frame, b, "LINEAR")
+
+
+# ---------------------------------------------------------------- Japan map
+# Very simplified hand-drawn outlines (lon, lat). Stylised low-poly, not a survey map.
+HONSHU = [(141.4, 41.4), (141.5, 40.5), (142.0, 39.5), (141.6, 38.4), (141.0, 38.2), (140.9, 37.5), (140.9, 36.9),
+          (140.6, 36.3), (140.85, 35.7), (140.4, 35.2), (139.9, 34.9), (139.8, 35.3), (139.7, 35.15),
+          (139.15, 35.2), (138.85, 34.6), (138.7, 35.05), (138.45, 34.7), (138.2, 34.6), (137.4, 34.65),
+          (136.9, 34.6), (136.8, 34.3), (136.0, 33.45), (135.4, 33.6), (135.1, 34.3), (135.4, 34.7),
+          (134.7, 34.75), (133.5, 34.45), (132.4, 34.3), (131.8, 34.0), (130.9, 33.95), (131.3, 34.5),
+          (132.2, 35.3), (133.2, 35.6), (134.5, 35.65), (135.4, 35.55), (136.0, 35.8), (136.7, 36.9),
+          (137.3, 37.5), (137.3, 36.85), (138.2, 37.05), (139.0, 37.9), (139.5, 38.5), (139.9, 39.5),
+          (140.0, 40.4), (140.3, 41.2), (140.9, 41.2)]
+HOKKAIDO = [(140.0, 41.5), (140.7, 41.8), (141.2, 42.3), (141.8, 42.55), (143.2, 41.95), (143.7, 42.6),
+            (144.5, 42.95), (145.6, 43.3), (145.3, 44.3), (144.0, 44.1), (143.0, 44.5), (141.9, 45.45),
+            (141.6, 45.2), (141.7, 44.3), (141.4, 43.4), (140.4, 43.3), (140.0, 42.6), (139.8, 42.2)]
+KYUSHU = [(130.9, 33.9), (131.6, 33.6), (131.8, 32.9), (131.5, 31.6), (131.1, 31.0), (130.7, 31.0),
+          (130.2, 31.3), (130.2, 32.1), (130.6, 32.7), (130.1, 32.8), (129.8, 32.8), (129.7, 33.2), (130.4, 33.6)]
+SHIKOKU = [(132.0, 33.35), (132.5, 33.0), (133.0, 32.72), (133.3, 33.3), (133.6, 33.5), (134.18, 33.25),
+           (134.6, 33.8), (134.6, 34.2), (134.0, 34.35), (133.3, 34.25), (132.7, 34.0), (132.4, 33.5)]
+# schematic plate boundaries (trenches / troughs / Japan Sea margin)
+BOUNDS = [
+    [(150, 45), (147.5, 43), (145, 41.3), (144.2, 40), (143.9, 38.5), (143.2, 37), (142.2, 35.5), (141.9, 34.2)],
+    [(141.9, 34.2), (142.2, 32), (142.4, 30), (142.3, 27.5)],
+    [(141.9, 34.2), (140.5, 34.5), (139.4, 35.05)],
+    [(139.4, 35.05), (138.6, 34.9), (138.5, 34.3), (137.5, 33.75), (136, 33.25), (134.5, 32.8), (133, 32.2),
+     (132, 31.5), (131.5, 30.2), (130.5, 28.5), (129.5, 27.5)],
+    [(140.0, 46.5), (139.4, 44), (139.2, 42), (139.0, 40), (138.6, 38.5), (138.1, 37.0), (137.9, 36.0),
+     (138.3, 35.3), (138.6, 34.9)],
+]
+PLATES = [("PACIFIC\nPLATE", (144.4, 32.6), "pacific"), ("PHILIPPINE SEA\nPLATE", (136.4, 31.0), "philippine"),
+          ("EURASIAN\nPLATE", (133.2, 38.6), "eurasian"), ("NORTH\nAMERICAN\nPLATE", (144.4, 41.6), "north")]
+EPICENTRE = (137.85, 35.0)   # western Shizuoka (approximate, stylised)
+
+
+def ll(lon, lat):
+    return ((lon - 137.5) * 0.81, lat - 36.5)
+
+
+def japan_land(z=0.0, h=0.25):
+    land = mat("land", LAND, rough=0.85)
+    for nm, pts in (("honshu", HONSHU), ("hokkaido", HOKKAIDO), ("kyushu", KYUSHU), ("shikoku", SHIKOKU)):
+        prism(nm, [ll(*p) for p in pts], z, z + h, land)
+    rim = flat_mat("coast", hexc("7fe3e0"))
+    for nm, pts in (("honshu", HONSHU), ("hokkaido", HOKKAIDO), ("kyushu", KYUSHU), ("shikoku", SHIKOKU)):
+        pp = [ll(*p) for p in pts]
+        ribbon(nm + "_rim", pp + [pp[0]], 0.05, z + h + 0.005, rim)
+
+
+def map_base(ctx):
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, SEA, 1.0)
+    add_sun(3.0, (35, 0, 25))
+    plane("sea", 200, 200, (0, 0, -0.02), mat("sea", SEA, rough=0.5))
+    g = flat_mat("grid", GRID)
+    for lon in range(124, 154, 2):
+        ribbon("grid", [ll(lon, 20), ll(lon, 52)], 0.03, 0.0, g)
+    for lat in range(20, 52, 2):
+        ribbon("grid", [ll(118, lat), ll(156, lat)], 0.03, 0.0, g)
+    japan_land()
+
+
+def b_japan_map(ctx, p):
+    """Stylised low-poly Japan map. mode: hook (zoom to a pulsing epicentre), dots (many small quake pulses
+    along the plate boundaries), plates (boundaries draw in + plate names on cue words), outro (pull out)."""
+    random.seed(11)
+    map_base(ctx)
+    T = ctx.frames
+    mode = p.get("mode", "hook")
+    ex, ey = ll(*EPICENTRE)
+    cx, cy = ll(137.6, 37.2)
+    cam = ctx.camera((cx, cy - 9, 30), target=(cx, cy + 0.3, 0), lens=35)
+    wide_h = 30.0
+
+    def cam_at(f, x, y, h, interp="BEZIER"):
+        kf(cam, "location", f, Vector((x, y - h * 0.3, h)), interp)
+        kf(ctx.cam_target, "location", f, Vector((x, y + 0.35 * h / 30, 0)), interp)
+
+    red = RED
+    if mode in ("hook", "outro"):
+        dot = cylinder("epi", 0.12, 0.06, (ex, ey, 0.3), material=emissive("epi_dot", red, 6.0, 0.0), verts=20)
+        dot.visible_shadow = False
+        pulse_rings("epi", (ex, ey, 0.3), red, 6, T + 1, period=42, r1=1.4, count=3, strength=4.0, minor=0.03)
+        tk = ll(139.7, 35.7)
+        cylinder("tokyo", 0.07, 0.05, (tk[0], tk[1], 0.28), material=flat_mat("white_flat", WHITE), verts=12)
+        if mode == "hook":
+            cam_at(1, cx, cy - 1.0, 26)
+            cam_at(int(T * 0.45), ex + 0.2, ey + 0.4, 12)
+            cam_at(T, ex + 0.2, ey + 0.6, 10.5)
+            lb = label3d(ctx, "SHIZUOKA", (ex + 0.1, ey - 0.75, 0.5), 0.32, WHITE, appear=ctx.f(1.2))
+            label3d(ctx, "TOKYO", (tk[0] - 0.1, tk[1] - 0.4, 0.5), 0.22, hexc("c9d3df"), appear=ctx.f(2.0))
+            fs = ctx.word_time("shaking", 0.45)
+            for k in range(3):
+                wave_ring("felt%d" % k, (ex, ey, 0.32), AMBER, fs + k * 14, fs + k * 14 + 55, 2.6, strength=2.2,
+                          minor=0.025)
+            # neighbouring prefectures named as they are spoken
+            for word, txt, (lo, la) in (("aichi", "AICHI", (137.15, 35.05)), ("nagano", "NAGANO", (138.1, 36.15)),
+                                        ("gifu", "GIFU", (136.95, 35.75))):
+                q = ll(lo, la)
+                label3d(ctx, txt, (q[0], q[1], 0.5), 0.2, AMBER, appear=ctx.word_time(word, 0.5))
+            if p.get("card"):
+                ctx.card(p["card"], p.get("subcard"), y_frac=0.17, size=0.056, appear=1)
+        else:
+            cam_at(1, ex + 0.2, ey + 0.6, 11)
+            cam_at(int(T * 0.75), cx, cy, wide_h)
+            cam_at(T, cx, cy, wide_h + 2)
+            label3d(ctx, "SHIZUOKA", (ex + 0.1, ey - 0.75, 0.5), 0.32, WHITE, appear=1)
+            if p.get("card"):
+                ctx.card(p["card"], p.get("subcard"), y_frac=0.17, size=0.056, appear=ctx.f(0.3))
+        return
+
+    # dots / plates: wide view with a slow drift
+    if mode == "plates":
+        cx += 0.9
+        wide_h += 3.0
+    cam_at(1, cx, cy - 0.6, wide_h + 1.5, "LINEAR")
+    cam_at(T, cx, cy + 0.2, wide_h - 1.0, "LINEAR")
+    bmat = flat_mat("bound_red", hexc("e0384c"))
+    if mode == "dots":
+        for k, pts in enumerate(BOUNDS):
+            ribbon("bnd%d" % k, [ll(*q) for q in pts], 0.07, 0.02, flat_mat("bound_dim", hexc("5a2a45")))
+        f0 = ctx.f(0.3)
+        f1 = int(T * 0.8)
+        dm = emissive("qdot", hexc("ff5a5a"), 5.0, 0.0)
+        segs = [[ll(*q) for q in pts] for pts in BOUNDS]
+        n = int(p.get("count", 46))
+        for i in range(n):
+            s = random.choice(segs)
+            j = random.randrange(len(s) - 1)
+            t = random.random()
+            x = s[j][0] + (s[j + 1][0] - s[j][0]) * t + random.uniform(-0.9, 0.9)
+            y = s[j][1] + (s[j + 1][1] - s[j][1]) * t + random.uniform(-0.9, 0.9)
+            if not (-7.2 < x < 7.2 and -9 < y < 9.5):
+                continue
+            fa = f0 + int((f1 - f0) * i / n)
+            d = cylinder("qd%d" % i, random.uniform(0.09, 0.17), 0.05, (x, y, 0.32), material=dm, verts=12)
+            d.visible_shadow = False
+            vis(d, fa)
+            wave_ring("qr%d" % i, (x, y, 0.33), RED, fa, fa + 18, 0.8, strength=3.0, minor=0.03)
+        if p.get("card"):
+            ctx.card(p["card"], p.get("subcard"), y_frac=0.17, size=0.056, appear=ctx.word_time(p.get("cue", "more"), 0.4))
+        return
+
+    # plates: boundaries draw in segment by segment, then the names pop on their cue words
+    f_draw = ctx.f(0.5)
+    for k, pts in enumerate(BOUNDS):
+        q = [ll(*a) for a in pts]
+        q = resample(q, 0.35, closed=False)
+        for i in range(len(q) - 1):
+            o = ribbon("b%d_%d" % (k, i), [q[i], q[i + 1]], 0.12, 0.03, bmat)
+            vis(o, f_draw + int(i * 0.8) + k * 3)
+    am = emissive("arrow", WHITE, 2.0, 0.0)
+    for k, (txt, (lo, la), cue) in enumerate(PLATES):
+        q = ll(lo, la)
+        f = ctx.word_time(cue, 0.3 + 0.15 * k)
+        label3d(ctx, txt, (q[0], q[1], 0.6), 0.5, WHITE if k != 0 else hexc("ffd23f"), appear=f)
+    # motion arrows (Pacific moving west-northwest, Philippine Sea north-west), gently sliding
+    for nm, (lo, la), ang in (("pac", (144.3, 35.6), 165), ("phs", (137.0, 31.9), 130)):
+        q = ll(lo, la)
+        piv = link(bpy.data.objects.new("arr_" + nm, None))
+        piv.location = (q[0], q[1], 0.5)
+        piv.rotation_euler = (0, 0, math.radians(ang))
+        shaft = box(nm + "_shaft", (1.0, 0.16, 0.05), (0, 0, 0), am)
+        shaft.parent = piv
+        shaft.location = (-0.3, 0, 0)
+        head = cylinder(nm + "_head", 0.32, 0.05, (0, 0, 0), material=am, verts=3)
+        head.parent = piv
+        head.location = (0.35, 0, 0)
+        for f in range(1, T + 1, 30):
+            off = Vector((math.cos(math.radians(ang)), math.sin(math.radians(ang)), 0)) * 0.35
+            kf(piv, "location", f, Vector((q[0], q[1], 0.5)), "BEZIER")
+            kf(piv, "location", min(T, f + 20), Vector((q[0], q[1], 0.5)) + off, "BEZIER")
+        vis(piv, ctx.word_time("pacific", 0.3))
+    if p.get("card"):
+        ctx.card(p["card"], p.get("subcard"), y_frac=0.15, size=0.05, appear=ctx.f(0.2))
+
+
+# ---------------------------------------------------------------- subduction cross-section
+SLAB_TOP = [(12, -0.6), (0.8, -0.6), (-3.0, -2.4), (-12, -7.1)]
+
+
+def _slab_pt(s):
+    """Point at arc length s along SLAB_TOP (from the right edge), plus the downward-normal angle."""
+    pts = SLAB_TOP
+    for a, b in zip(pts[:-1], pts[1:]):
+        d = math.hypot(b[0] - a[0], b[1] - a[1])
+        if s <= d:
+            t = s / d
+            ang = math.atan2(b[1] - a[1], b[0] - a[0])
+            return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t), ang
+        s -= d
+    a, b = pts[-2], pts[-1]
+    return b, math.atan2(b[1] - a[1], b[0] - a[0])
+
+
+def b_subduction(ctx, p):
+    """Cross-section: an ocean plate dives under a land plate; the contact sticks (red glow), the land
+    plate's edge is dragged down as strain builds (strain meter). release=True: snaps back + waves."""
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, NAVY, 1.0)
+    add_sun(3.2, (40, 0, -25))
+    T = ctx.frames
+    D = 3.0  # half depth of the block
+    mantle = mat("mantle", hexc("3a1f3a"), rough=0.9)
+    prism("mantle", [(-12, -12), (12, -12), (12, -1.8), (1.3, -1.8), (-2.5, -3.6), (-12, -8.3)], -D, D, mantle, xz=True)
+    slab = prism("slab", [(12, -0.6), (0.8, -0.6), (-3.0, -2.4), (-12, -7.1), (-12, -8.3), (-2.5, -3.6),
+                          (1.3, -1.8), (12, -1.8)], -D, D, mat("slab", SLAB, rough=0.7), xz=True)
+    land_pts = resample([(-12, 1.0), (-1.6, 1.0), (0.8, -0.6), (-3.0, -2.4), (-12, -7.1)], 0.3)
+    land = prism("landplate", land_pts, -D, D, mat("landplate", hexc("8a7a62"), rough=0.85), xz=True)
+    prism("landtop", [(-12, 1.0), (-1.6, 1.0), (-1.45, 1.25), (-12, 1.25)], -D, D, mat("grass", hexc("2f7a6a")), xz=True)
+    water = box("water", (11.2, 2 * D, 1.0), (6.4, 0, -0.1), flat_mat("water", hexc("1b6fa0"), alpha=0.55))
+    water.visible_shadow = False
+    # strain: shape key drags the land plate's tip down
+    land.shape_key_add(name="Basis")
+    sk = land.shape_key_add(name="strain")
+    tip = Vector((0.0, -0.4))
+    for i, v in enumerate(land.data.vertices):
+        q = Vector((v.co.x, v.co.y))
+        w = math.exp(-((q - tip).length ** 2) / (2 * 2.2 ** 2))
+        sk.data[i].co = v.co + Vector((-0.25 * w, -0.75 * w, 0))
+    f_stuck = ctx.word_time("stuck", 0.55)
+    f_strain = ctx.word_time("strain", 0.7)
+    sk.value = 0.0
+    sk.keyframe_insert("value", frame=1)
+    sk.keyframe_insert("value", frame=f_stuck)
+    sk.value = 1.0
+    sk.keyframe_insert("value", frame=T)
+    # moving chevrons on the slab front face (conveyor)
+    cm = flat_mat("chev", hexc("bfe6f5"))
+    total = 0.0
+    for a, b in zip(SLAB_TOP[:-1], SLAB_TOP[1:]):
+        total += math.hypot(b[0] - a[0], b[1] - a[1])
+    n = 9
+    speed = 1.6 / ctx.fps
+    for i in range(n):
+        o = cylinder("chev%d" % i, 0.28, 0.04, (0, 0, 0), material=cm, verts=3)
+        o.visible_shadow = False
+        for f in range(1, T + 1, 2):
+            s = (i * total / n + f * speed) % total
+            (x, z), ang = _slab_pt(s)
+            nz = Vector((-math.sin(ang), math.cos(ang)))   # into the slab (below its top surface)
+            kf(o, "location", f, Vector((x + nz.x * 0.6, -D - 0.03, z + nz.y * 0.6)), "LINEAR")
+            kf(o, "rotation_euler", f, Vector((math.radians(90), math.pi + ang, 0)), "LINEAR")
+    # sticking zone glow along the contact
+    gm, gs = add_mat("stick_glow", hexc("ff3b3b"), 0.0)
+    gpts = [_slab_pt(11.2 + 0.1 + k * 0.25)[0] for k in range(17)]
+    g = ribbon("stick_line", gpts, 0.22, 0.0, gm)
+    g.rotation_euler = (math.radians(90), 0, 0)
+    g.location = (0, -D - 0.06, 0)
+    kf_socket(gs, 1, 0.0)
+    kf_socket(gs, f_stuck, 0.0)
+    kf_socket(gs, f_stuck + 8, 4.0)
+    kf_socket(gs, T, 9.0)
+    # labels on the front face
+    lab = lambda t, loc, s, c, f: label3d(ctx, t, loc, s, c, rot=(90, 0, 0), face_cam=False, appear=f)
+    lab("OCEAN PLATE", (2.9, -D - 0.12, -0.15), 0.4, WHITE, ctx.f(0.5))
+    lab("LAND PLATE", (-3.9, -D - 0.05, -0.2), 0.42, WHITE, ctx.f(0.9))
+    lab("MANTLE", (1.5, -D - 0.05, -5.0), 0.36, hexc("c9a0c0"), ctx.f(1.3))
+    lab("STUCK", (-2.6, -D - 0.08, -0.9), 0.55, hexc("ff6b6b"), f_stuck)
+    # strain meter (camera-locked)
+    cam = ctx.camera((1.5, -30, 1.0), target=(-0.5, 0, -2.0), lens=35)
+    kf(cam, "location", 1, Vector((2.5, -31, 1.4)), "BEZIER")
+    kf(cam, "location", T, Vector((0.8, -28, 0.6)), "BEZIER")
+    ctx.text("STRAIN", 0.5, 0.265, 0.022, WHITE, FONT_PATH, appear=f_strain, panel=NAVY, max_w_frac=0.3)
+    pos, hh = ctx._screen(0.5, 0.305)
+    wf = hh * ctx.scene.render.resolution_x / ctx.scene.render.resolution_y
+    bg = plane("meter_bg", wf * 0.6, hh * 0.018, (0, 0, 0), flat_mat("meter_bg", hexc("1d2a44")))
+    bg.parent = cam
+    bg.location = pos + Vector((0, 0, -0.002))
+    bar = plane("meter", 1.0, hh * 0.018, (0, 0, 0), add_mat("meter_m", hexc("ff4040"), 1.6)[0])
+    bar.parent = cam
+    bar.location = pos + Vector((-wf * 0.3, 0, -0.001))
+    me = bar.data
+    for v in me.vertices:          # grow from the left edge
+        v.co.x += 0.5
+    kf(bar, "scale", 1, Vector((0, 1, 1)), "CONSTANT")
+    kf(bar, "scale", f_strain - 1, Vector((0, 1, 1)), "LINEAR")
+    kf(bar, "scale", f_strain, Vector((0.02, 1, 1)), "LINEAR")
+    kf(bar, "scale", T, Vector((wf * 0.6 * 0.92, 1, 1)), "LINEAR")
+    for o in (bg,):
+        vis(o, f_strain)
+    if p.get("card"):
+        ctx.card(p["card"], p.get("subcard"), y_frac=0.17, size=0.054, appear=ctx.f(0.2))
+
+
+# ---------------------------------------------------------------- ruler metaphor
+def b_ruler_snap(ctx, p):
+    """A plastic ruler clamped to a desk bends further and further (turning red), then snaps back and
+    wobbles; seismic rings race out from it."""
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, NAVY, 1.0)
+    add_sun(3.0, (45, 0, 30))
+    T = ctx.frames
+    plane("floor", 200, 200, (0, 0, -6), mat("floor", hexc("0e1b33"), rough=0.6))
+    box("desk", (6, 4, 0.5), (-3.0, 0, -0.25), mat("desk", hexc("31506e"), rough=0.6), bevel=0.04)
+    box("clamp", (1.3, 1.4, 0.45), (-0.9, 0, 0.3), mat("clamp", hexc("1c2b4a"), rough=0.4), bevel=0.05)
+    rm = mat("ruler_m", TEAL, rough=0.3)
+    pr = rm.node_tree.nodes.get("Principled BSDF")
+    N, L, W = 14, 6.5, 0.9
+    seg = L / N
+    box("ruler_base", (2.5, W, 0.06), (-1.25, 0, 0.03), rm)
+    tick = flat_mat("tick", WHITE)
+    pivs = []
+    parent = None
+    for i in range(N):
+        pv = link(bpy.data.objects.new("rp%d" % i, None))
+        if parent:
+            pv.parent = parent
+            pv.location = (seg, 0, 0)
+        else:
+            pv.location = (0, 0, 0.03)
+        b = box("rs%d" % i, (seg * 1.02, W, 0.06), (0, 0, 0), rm)
+        b.parent = pv
+        b.location = (seg / 2, 0, 0)
+        t = box("tk%d" % i, (0.04, 0.3 if i % 2 else 0.18, 0.005), (0, 0, 0), tick)
+        t.parent = pv
+        t.location = (seg / 2, W / 2 - 0.16, 0.035)
+        pivs.append(pv)
+        parent = pv
+    f_snap = ctx.word_time(p.get("cue", "snaps"), 0.45)
+    bend_max = math.radians(55)
+
+    def set_bend(f, ang):
+        for pv in pivs[1:] + pivs[:1]:
+            kf(pv, "rotation_euler", f, Vector((0, ang / N, 0)), "LINEAR")
+
+    for f in range(1, T + 1):
+        if f <= f_snap:
+            a = bend_max * smooth(min(1.0, f / float(max(1, f_snap - 2)))) ** 0.8
+        else:
+            t = (f - f_snap) / float(ctx.fps)
+            a = -bend_max * 0.75 * math.exp(-2.2 * t) * math.cos(2 * math.pi * 3.2 * t + math.pi)
+            a = -a if t == 0 else a
+        if f % 2 == 1 or f > f_snap - 2:
+            set_bend(f, a)
+    # a pressing finger-tip (rounded teal knob) pushes the tip down until the snap, then lifts away
+    kn = cylinder("knob", 0.35, 1.6, (0, 0, 0), material=mat("knob", hexc("c9d3df"), rough=0.5), verts=16)
+    kn.visible_shadow = False
+    tip_len = L - 0.3
+    for f in list(range(1, f_snap + 1, 2)) + [f_snap, f_snap + 6, T]:
+        if f <= f_snap:
+            a = bend_max * smooth(min(1.0, f / float(max(1, f_snap - 2)))) ** 0.8
+            # tip position of a circular arc of length tip_len bent by angle a
+            if a < 1e-4:
+                x, z = tip_len, 0.0
+            else:
+                R = L / a
+                x, z = R * math.sin(a * tip_len / L), -R * (1 - math.cos(a * tip_len / L))
+            kf(kn, "location", f, Vector((x, 0, z + 0.85)), "LINEAR")
+        else:
+            kf(kn, "location", f, Vector((tip_len + 0.6, 0, 3.5)), "BEZIER")
+    # colour: teal -> red as energy is stored, back to teal after the snap
+    kf_socket(pr.inputs["Base Color"], 1, TEAL)
+    kf_socket(pr.inputs["Base Color"], f_snap, RED)
+    kf_socket(pr.inputs["Base Color"], f_snap + 12, TEAL)
+    pr.inputs["Emission Color"].default_value = RED
+    kf_socket(pr.inputs["Emission Strength"], 1, 0.0)
+    kf_socket(pr.inputs["Emission Strength"], f_snap, 1.2)
+    kf_socket(pr.inputs["Emission Strength"], f_snap + 10, 0.0)
+    # seismic rings (vertical, facing the camera) from the ruler tip
+    f_w = ctx.word_time("waves", 0.8)
+    for k in range(5):
+        wave_ring("sw%d" % k, (3.2, 0, 0.0), TEAL if k % 2 else hexc("7fe3e0"), f_snap + 2 + k * 9,
+                  f_snap + 2 + k * 9 + 40, 5.0, rot=(90, 0, 0), strength=3.0, minor=0.03)
+    for k in range(4):
+        wave_ring("sw2_%d" % k, (3.2, 0, 0.0), TEAL, f_w + k * 9, f_w + k * 9 + 40, 5.5, rot=(90, 0, 0),
+                  strength=2.5, minor=0.03)
+    cam = ctx.camera((2.0, -19.0, 4.0), target=(1.8, 0, -1.6), lens=28)
+    kf(cam, "location", 1, Vector((2.6, -19.5, 4.4)), "BEZIER")
+    kf(cam, "location", T, Vector((1.4, -17.5, 3.4)), "BEZIER")
+    lbl_f = int(f_snap * 0.45)
+    ctx.text("STORING ENERGY", 0.5, 0.28, 0.024, WHITE, FONT_PATH, appear=lbl_f, disappear=f_snap,
+             panel=hexc("5a1420"), max_w_frac=0.6)
+    ctx.text("SNAP = EARTHQUAKE", 0.5, 0.28, 0.024, WHITE, FONT_PATH, appear=f_snap + 2, panel=TEAL_DARK,
+             max_w_frac=0.6)
+    if p.get("card"):
+        ctx.card(p["card"], p.get("subcard"), y_frac=0.17, size=0.052, appear=ctx.f(0.2))
+
+
+# ---------------------------------------------------------------- depth / faults cross-section
+def house(name, loc, body_c, roof_c):
+    piv = link(bpy.data.objects.new(name, None))
+    piv.location = loc
+    b = box(name + "_b", (0.7, 0.7, 0.55), (0, 0, 0), body_c)
+    b.parent = piv
+    b.location = (0, 0, 0.275)
+    r = cylinder(name + "_r", 0.55, 0.75, (0, 0, 0), (math.radians(90), 0, 0), roof_c, verts=3)
+    r.parent = piv
+    r.location = (0, 0, 0.72)
+    r.scale = (1.0, 0.55, 1.0)
+    return piv
+
+
+def b_quake_depth(ctx, p):
+    """Crust block in cross-section: fault cracks light up, a deep focus (~40 km label) sends rings out;
+    houses across a wide area sway gently (wider but weaker)."""
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, NAVY, 1.0)
+    add_sun(3.0, (40, 0, -30))
+    T = ctx.frames
+    W2, D, H = 6.5, 2.5, 8.0
+    layers = [(0.0, -1.2, hexc("6e8a6a")), (-1.2, -3.6, hexc("8a7a62")), (-3.6, -H, hexc("6a4e4e"))]
+    for i, (z0, z1, c) in enumerate(layers):
+        box("layer%d" % i, (2 * W2, 2 * D, z0 - z1), (0, 0, (z0 + z1) / 2), mat("layer%d" % i, c, rough=0.9))
+    box("top", (2 * W2, 2 * D, 0.1), (0, 0, 0.05), mat("topsoil", hexc("2f7a6a"), rough=0.9))
+    # faults: dark slanted cracks on the front face that light up red on the word "faults"
+    f_fault = ctx.word_time("faults", 0.35)
+    crack = emissive("crack", hexc("ff4a4a"), 3.0, 0.0)
+    random.seed(5)
+    for i, x in enumerate((-5.3, -4.0, -2.9, 2.9, 4.1, 5.5)):
+        ang = random.uniform(-18, 18)
+        ln = random.uniform(2.0, 4.0)
+        z = -random.uniform(0.4, 2.2) - ln / 2 * 0.6
+        c = box("crack%d" % i, (0.07, 0.02, ln), (x, -D - 0.02, z), crack)
+        c.rotation_euler = (0, math.radians(ang), 0)
+        c.visible_shadow = False
+        vis(c, f_fault + i * 3)
+    # houses on the surface
+    hb, hr = mat("house", hexc("e6ebf1"), rough=0.7), mat("roof", hexc("c23446"), rough=0.7)
+    hs = [house("h%d" % i, (x, random.uniform(-1.2, 1.2), 0.1), hb, hr)
+          for i, x in enumerate((-5.6, -4.0, -2.4, -0.8, 0.8, 2.4, 4.0, 5.6))]
+    # focus and depth line
+    f_dep = ctx.word_time(p.get("cue_depth", "depth"), 0.45)
+    fz = -6.2
+    fo = cylinder("focus", 0.25, 0.1, (0.0, -D - 0.06, fz), (math.radians(90), 0, 0), emissive("focus", RED, 6.0, 0.0),
+                  verts=20)
+    vis(fo, f_dep)
+    dl = flat_mat("depthline", TEAL)
+    for k in range(9):
+        z = -0.4 - k * 0.65
+        d = box("dash%d" % k, (0.06, 0.02, 0.35), (0.0, -D - 0.05, z), dl)
+        vis(d, f_dep + k)
+    lbl = label3d(ctx, p.get("depth_label", "~40 km"), (1.6, -D - 0.1, -3.3), 0.6, WHITE, rot=(90, 0, 0),
+                  face_cam=False, appear=f_dep + 6)
+    # rings from the focus on the front face
+    f_w = f_dep + 10
+    for k in range(6):
+        wave_ring("dw%d" % k, (0.0, -D - 0.07, fz), hexc("ffb347") if k % 2 else hexc("ff7a3d"), f_w + k * 16,
+                  f_w + k * 16 + 70, 8.0, rot=(90, 0, 0), strength=3.0, minor=0.03)
+    # houses sway gently once the first ring reaches the surface (about 6.2 / 11 of the ring time)
+    f_arr = f_w + int(70 * 6.2 / 8.0)
+    for i, h in enumerate(hs):
+        dist = math.hypot(h.location.x, 6.2)
+        fa = f_w + int(70 * dist / 8.0)
+        for f in range(1, T + 1, 2):
+            t = (f - fa) / float(ctx.fps)
+            amp = 0.0 if t < 0 else math.radians(4.0) * math.exp(-0.5 * t) * (1.0 - 0.04 * abs(h.location.x))
+            kf(h, "rotation_euler", f, Vector((0, amp * math.sin(2 * math.pi * 2.0 * max(0, t)), 0)), "LINEAR")
+    cam = ctx.camera((2.5, -26, 2.0), target=(0.0, 0, -2.9), lens=34)
+    kf(cam, "location", 1, Vector((3.5, -27, 2.6)), "BEZIER")
+    kf(cam, "location", T, Vector((1.5, -25, 1.4)), "BEZIER")
+    ctx.text("WIDER, BUT WEAKER", 0.5, 0.40, 0.024, WHITE, FONT_PATH, appear=ctx.word_time("wider", 0.85),
+             panel=TEAL_DARK, max_w_frac=0.6)
+    if p.get("card"):
+        ctx.card(p["card"], p.get("subcard"), y_frac=0.15, size=0.05, appear=ctx.f(0.2))
+
+
+# ---------------------------------------------------------------- base isolation vs rigid
+def b_base_isolation(ctx, p):
+    """Ground shakes side to side. Left: rigid tower moves with it and sways hard at the top. Right: tower on
+    rubber isolators (amber pads) barely moves. Gentle motion only, nothing breaks."""
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, NAVY, 1.0)
+    add_sun(3.0, (45, 0, 35))
+    T = ctx.frames
+    f_shake = ctx.word_time("codes", 0.2)
+    f_iso = ctx.word_time(p.get("cue", "rubber"), 0.5)
+    plane("far", 300, 300, (0, 0, -0.65), mat("far", hexc("0e1b33"), rough=0.9))
+    ground = box("ground", (13, 6, 0.6), (0, 0, -0.3), mat("groundslab", hexc("2f4a5e"), rough=0.8), bevel=0.05)
+    gp = link(bpy.data.objects.new("gpiv", None))
+    ground.parent = gp
+    ground.location = (0, 0, -0.3)
+
+    def g(f):
+        t = (f - f_shake) / float(ctx.fps)
+        if t < 0:
+            return 0.0
+        env = smooth(min(1.0, t / 1.0))
+        return 0.35 * env * math.sin(2 * math.pi * 1.1 * t) + 0.08 * env * math.sin(2 * math.pi * 2.7 * t)
+
+    floors_n, fh = 9, 0.62
+    wall = mat("tower", hexc("c9d3df"), rough=0.6)
+    win = emissive("window", hexc("ffd27a"), 1.1, 0.0)
+    pad_m = emissive("pad", AMBER, 1.4, 0.0)
+    towers = {}
+    for side, x0 in (("rigid", -3.2), ("iso", 3.2)):
+        base_z = 0.0 if side == "rigid" else 0.45
+        fl = []
+        for i in range(floors_n):
+            o = link(bpy.data.objects.new("%s_f%d" % (side, i), None))
+            b = box("%s_b%d" % (side, i), (2.2, 2.2, fh * 0.96), (0, 0, 0), wall)
+            b.parent = o
+            b.location = (0, 0, fh / 2)
+            w = box("%s_w%d" % (side, i), (1.7, 0.05, fh * 0.28), (0, 0, 0), win)
+            w.parent = o
+            w.location = (0, -1.11, fh / 2)
+            o.location = (x0, 0, base_z + i * fh)
+            fl.append(o)
+        towers[side] = (x0, base_z, fl)
+    pads = []
+    for dx in (-0.75, 0.0, 0.75):
+        pd = cylinder("pad", 0.28, 0.45, (3.2 + dx, 0, 0.225), material=pad_m, verts=16)
+        pads.append((pd, 3.2 + dx))
+    iso_slab = box("iso_slab", (2.6, 2.6, 0.1), (3.2, 0, 0.45), mat("slab_iso", hexc("7a8aa0")))
+    for f in range(1, T + 1):
+        gx = g(f)
+        kf(gp, "location", f, Vector((gx, 0, 0)), "LINEAR")
+        x0, bz, fl = towers["rigid"]
+        for i, o in enumerate(fl):
+            # rigid: moves with the ground, the top lags and overshoots (stiff, hard shaking)
+            # rigid: the whole tower follows the ground and the top sways further (smooth shear, no sliding)
+            k = i / float(floors_n - 1)
+            kf(o, "location", f, Vector((x0 + g(f - int(4 * k)) * (1.0 + 0.7 * k), 0, bz + i * fh)), "LINEAR")
+        x0, bz, fl = towers["iso"]
+        slow = 0.12 * g(f - 8)
+        for i, o in enumerate(fl):
+            kf(o, "location", f, Vector((x0 + slow * (1 + 0.04 * i), 0, bz + 0.1 + i * fh)), "LINEAR")
+        kf(iso_slab, "location", f, Vector((x0 + slow, 0, 0.5)), "LINEAR")
+        for pd, px in pads:
+            kf(pd, "location", f, Vector((px + (gx + slow) / 2, 0, 0.225)), "LINEAR")
+            tilt = max(-0.2, min(0.2, math.atan2(slow - gx, 0.45) * 0.5))
+            kf(pd, "rotation_euler", f, Vector((0, tilt, 0)), "LINEAR")
+    label3d(ctx, "RIGID", (-3.2, 0, 6.4), 0.55, hexc("ff6b6b"), appear=f_shake)
+    label3d(ctx, "BASE ISOLATED", (3.2, 0, 6.8), 0.45, TEAL, appear=f_iso)
+    label3d(ctx, "RUBBER PADS", (3.2, -3.15, -0.3), 0.32, AMBER, rot=(90, 0, 0), face_cam=False, appear=f_iso + 6)
+    cam = ctx.camera((0.0, -26, 4.5), target=(0, 0, 2.4), lens=35)
+    kf(cam, "location", 1, Vector((-1.0, -27, 5.0)), "BEZIER")
+    kf(cam, "location", T, Vector((1.0, -25, 4.0)), "BEZIER")
+    if p.get("card"):
+        ctx.card(p["card"], p.get("subcard"), y_frac=0.15, size=0.054, appear=ctx.f(0.2))
+
+
+# ---------------------------------------------------------------- phone early-warning alert
+def b_phone_alert(ctx, p):
+    """A phone over a dark map: a quake ring spreads from a distant epicentre; the phone shows an early
+    warning alert (with a short countdown) before the ring reaches it."""
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, NAVY, 1.0)
+    add_sun(2.5, (40, 0, 20))
+    T = ctx.frames
+    plane("ground", 300, 300, (0, 0, -2.0), mat("mapground", SEA, rough=0.6))
+    gm = flat_mat("grid", GRID)
+    for k in range(-20, 21, 2):
+        ribbon("gx", [(k, -30), (k, 60)], 0.04, -1.99, gm)
+        ribbon("gy", [(-30, k + 20), (30, k + 20)], 0.04, -1.99, gm)
+    epi = (-7.0, 22.0, -1.95)
+    cylinder("epi", 0.4, 0.05, epi, material=emissive("epi_dot", RED, 6.0, 0.0), verts=20)
+    f_al = ctx.word_time(p.get("cue", "warning"), 0.25)
+    f_hit = min(T - 20, f_al + int(2.2 * ctx.fps))
+    dist = math.hypot(epi[0], epi[1])
+    # rings reach the phone (at the origin) at f_hit
+    dur = 60
+    for k in range(5):
+        f0 = f_hit - dur + k * 12 - 10
+        wave_ring("pw%d" % k, epi, hexc("ff7a3d"), f0, f0 + dur, dist * 1.05 + k * 0.2, strength=3.0, minor=0.05)
+    pulse_rings("epi", epi, RED, 1, T + 1, period=40, r1=2.0, count=2, strength=3.0, minor=0.05)
+    # phone
+    ph = link(bpy.data.objects.new("phone", None))
+    ph.location = (0, 0, 0.6)
+    ph.rotation_euler = (math.radians(70), 0, 0)
+    body = box("phone_body", (2.0, 4.1, 0.2), (0, 0, 0), mat("phone", hexc("10141c"), rough=0.3, metal=0.4), bevel=0.15)
+    body.parent = ph
+    scr_idle = plane("screen0", 1.8, 3.8, (0, 0, 0), flat_mat("scr_idle", hexc("142847")))
+    scr_idle.parent = ph
+    scr_idle.location = (0, 0, 0.105)
+    scr = plane("screen1", 1.8, 3.8, (0, 0, 0), emissive("scr_alert", hexc("b3122a"), 1.4, 0.0))
+    scr.parent = ph
+    scr.location = (0, 0, 0.11)
+    vis(scr, f_al)
+
+    def ptxt(body_txt, y, size, col, appear, disappear=None, font=FONT_PATH):
+        cu = bpy.data.curves.new("pt", "FONT")
+        cu.body = body_txt
+        cu.font = ctx.font(font)
+        cu.align_x = "CENTER"
+        cu.align_y = "CENTER"
+        cu.size = size
+        o = link(bpy.data.objects.new("pt", cu))
+        o.data.materials.append(flat_mat("pt_%.3f%.3f%.3f" % col[:3], col))
+        o.parent = ph
+        o.location = (0, y, 0.12)
+        o.visible_shadow = False
+        vis(o, appear)
+        if disappear:
+            kf(o, "scale", disappear - 1, Vector((1, 1, 1)), "LINEAR")
+            kf(o, "scale", disappear, Vector((0, 0, 0)), "LINEAR")
+        return o
+
+    ptxt("12:00", 1.2, 0.42, hexc("c9d3df"), 1, f_al)
+    ptxt("EARTHQUAKE\nEARLY WARNING", 1.25, 0.24, WHITE, f_al)
+    ptxt("Strong shaking\nexpected", 0.35, 0.17, hexc("ffe0e0"), f_al + 4, None, FONT_PATH_SUB)
+    step = max(4, (f_hit - f_al - 6) // 5)
+    for k in range(5):
+        a = f_al + 6 + k * step
+        ptxt(str(5 - k), -0.85, 0.75, hexc("ffd23f"), a, a + step if k < 4 else f_hit)
+    ptxt("TAKE COVER", -0.85, 0.3, WHITE, f_hit)
+    # gentle buzz when the alert arrives, a small sway when the shaking arrives
+    for f in range(1, T + 1):
+        t_al = (f - f_al) / float(ctx.fps)
+        t_hit = (f - f_hit) / float(ctx.fps)
+        buzz = 0.0 if not (0 <= t_al < 0.6) else 0.025 * math.sin(f * 2.4)
+        sway = 0.0 if t_hit < 0 else 0.06 * math.exp(-0.8 * t_hit) * math.sin(2 * math.pi * 1.6 * t_hit)
+        kf(ph, "location", f, Vector((buzz + sway, 0, 0.6)), "LINEAR")
+    cam = ctx.camera((0.0, -15.5, 6.5), target=(0, 2.0, -0.4), lens=35)
+    kf(cam, "location", 1, Vector((0.6, -16.0, 6.8)), "BEZIER")
+    kf(cam, "location", T, Vector((-0.4, -14.5, 6.0)), "BEZIER")
+    ctx.text("SECONDS OF WARNING", 0.5, 0.27, 0.024, WHITE, FONT_PATH, appear=f_al + 8, panel=TEAL_DARK,
+             max_w_frac=0.6)
+    if p.get("card"):
+        ctx.card(p["card"], p.get("subcard"), y_frac=0.15, size=0.054, appear=ctx.f(0.2))
+
+
+# ---------------------------------------------------------------- Drop, Cover, Hold On
+def b_drop_cover(ctx, p):
+    """A simple mannequin next to a table in a gently shaking room: drops, takes cover under the table and
+    holds on to a leg, each step synced to its spoken word, with numbered cards."""
+    fog(0.0, NAVY)
+    setup_world(ctx.scene, NAVY, 1.0)
+    add_sun(2.6, (50, 0, 25))
+    T = ctx.frames
+    steps = p.get("steps", ["DROP", "COVER", "HOLD ON"])
+    cues = p.get("cues", ["drop", "cover", "hold"])
+    fd, fc, fh_ = [ctx.word_time(c, (i + 1) / 4.0) for i, c in enumerate(cues)]
+    room = link(bpy.data.objects.new("room", None))
+    fl = plane("floor", 14, 10, (0, 1, 0), mat("roomfloor", hexc("31506e"), rough=0.8))
+    wl = plane("wall", 14, 6, (0, 4.5, 3), mat("roomwall", hexc("1c2b4a"), rough=0.9), rot=(math.radians(90), 0, 0))
+    pic = box("picture", (1.6, 0.06, 1.1), (2.6, 4.45, 3.4), mat("frame", TEAL_DARK))
+    for o in (fl, wl):
+        o.parent = room
+    tm = mat("table", hexc("b08a5a"), rough=0.6)
+    table = link(bpy.data.objects.new("table", None))
+    top = box("tabletop", (2.8, 1.6, 0.14), (0, 0, 1.95), tm, bevel=0.03)
+    top.parent = table
+    for sx in (-1.25, 1.25):
+        for sy in (-0.65, 0.65):
+            lg = box("leg", (0.12, 0.12, 1.9), (sx, sy, 0.95), tm)
+            lg.parent = table
+    table.location = (0.6, 0.8, 0)
+    # lamp hanging from above (pendulum)
+    lamp = link(bpy.data.objects.new("lamp", None))
+    lamp.location = (-1.5, 1.5, 6.5)
+    cord = box("cord", (0.03, 0.03, 2.2), (0, 0, -1.1), flat_mat("cord", hexc("8b98a8")))
+    cord.parent = lamp
+    shade = cylinder("shade", 0.4, 0.35, (0, 0, -2.3), material=emissive("shade", hexc("ffd27a"), 2.5, 0.0), verts=12)
+    shade.parent = lamp
+    for o in (cord, shade):
+        o.visible_shadow = False
+    # mannequin
+    body_m = mat("mannequin", hexc("e6ebf1"), rough=0.6)
+    man = link(bpy.data.objects.new("man", None))
+    LEG = 1.3
+    legs = box("legs", (0.5, 0.35, 1.0), (0, 0, 0.5), body_m, bevel=0.08)
+    legs.parent = man
+    torso_p = link(bpy.data.objects.new("torso_p", None))
+    torso_p.parent = man
+    torso_p.location = (0, 0, LEG)
+    torso = box("torso", (0.6, 0.38, 0.75), (0, 0, 0.375), body_m, bevel=0.1)
+    torso.parent = torso_p
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.24, location=(0, 0, 1.0), segments=16, ring_count=8)
+    head = bpy.context.object
+    head.data.materials.append(body_m)
+    head.parent = torso_p
+    head.location = (0, 0, 1.0)
+    arm_p = link(bpy.data.objects.new("arm_p", None))
+    arm_p.parent = torso_p
+    arm_p.location = (0.36, 0, 0.68)
+    arm = box("arm", (0.16, 0.16, 0.7), (0, 0, -0.35), body_m, bevel=0.05)
+    arm.parent = arm_p
+    arm2_p = link(bpy.data.objects.new("arm2_p", None))
+    arm2_p.parent = torso_p
+    arm2_p.location = (-0.36, 0, 0.68)
+    arm2 = box("arm2", (0.16, 0.16, 0.7), (0, 0, -0.35), body_m, bevel=0.05)
+    arm2.parent = arm2_p
+    # poses
+    # crouch = kneeling low with the torso upright-ish and the head up (never lying down)
+    stand = dict(loc=(-2.3, 0.4, 0), legs=LEG, tilt=0, arm=0, arm2=0)
+    drop = dict(loc=(-2.3, 0.4, 0), legs=0.45, tilt=18, arm=-25, arm2=-150)
+    cover = dict(loc=(0.35, 0.8, 0), legs=0.45, tilt=18, arm=-25, arm2=-150)
+    hold = dict(loc=(0.35, 0.8, 0), legs=0.45, tilt=18, arm=-115, arm2=-150)
+
+    def pose(f, s, interp="BEZIER"):
+        kf(man, "location", f, Vector(s["loc"]), interp)
+        kf(legs, "scale", f, Vector((1, 1, s["legs"])), interp)
+        kf(legs, "location", f, Vector((0, 0, 0.5 * s["legs"])), interp)
+        kf(torso_p, "location", f, Vector((0, 0, s["legs"])), interp)
+        kf(torso_p, "rotation_euler", f, Vector((math.radians(s["tilt"]), 0, 0)), interp)
+        kf(arm_p, "rotation_euler", f, Vector((0, math.radians(s["arm"]), 0)), interp)
+        kf(arm2_p, "rotation_euler", f, Vector((0, math.radians(s["arm2"]), 0)), interp)
+
+    man.rotation_euler = (0, 0, 0)
+    pose(1, stand)
+    pose(max(2, fd - 2), stand)
+    pose(fd + 10, drop)
+    pose(max(fd + 11, fc - 2), drop)
+    pose(fc + 16, cover)
+    pose(max(fc + 17, fh_ - 2), cover)
+    pose(fh_ + 10, hold)
+    pose(T, hold)
+    # gentle shake of the room, table and lamp
+    for f in range(1, T + 1, 2):
+        t = f / float(ctx.fps)
+        s = 0.04 * math.sin(2 * math.pi * 2.3 * t) + 0.02 * math.sin(2 * math.pi * 3.7 * t)
+        kf(room, "location", f, Vector((s, 0, 0)), "LINEAR")
+        kf(table, "location", f, Vector((0.6 + s * 1.2, 0.8, 0)), "LINEAR")
+        kf(lamp, "rotation_euler", f, Vector((0, math.radians(9) * math.sin(2 * math.pi * 0.6 * t), 0)), "LINEAR")
+        kf(pic, "rotation_euler", f, Vector((0, math.radians(3) * math.sin(2 * math.pi * 1.1 * t), 0)), "LINEAR")
+    cam = ctx.camera((0.6, -12.5, 3.6), target=(-0.5, 0.8, 1.6), lens=30)
+    kf(cam, "location", 1, Vector((1.0, -13.0, 3.8)), "BEZIER")
+    kf(cam, "location", T, Vector((0.2, -11.8, 3.3)), "BEZIER")
+    for i, (txt, f) in enumerate(zip(steps, (fd, fc, fh_))):
+        ctx.text("%d  %s" % (i + 1, txt), 0.5, 0.16 + i * 0.08, 0.034, WHITE, FONT_PATH, appear=f,
+                 panel=NAVY if i % 2 == 0 else hexc("0d3b4f"), max_w_frac=0.6)
+
+
+
 BUILDERS = {
     "fog_highway": b_fog_highway,
     "chain_topdown": b_chain_topdown,
@@ -1171,4 +2022,11 @@ BUILDERS = {
     "ice_road": b_ice_road,
     "dominoes": b_dominoes,
     "safety_tips": b_safety_tips,
+    "japan_map": b_japan_map,
+    "subduction": b_subduction,
+    "ruler_snap": b_ruler_snap,
+    "quake_depth": b_quake_depth,
+    "base_isolation": b_base_isolation,
+    "phone_alert": b_phone_alert,
+    "drop_cover": b_drop_cover,
 }

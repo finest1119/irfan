@@ -79,14 +79,46 @@ def build_prompt(t, text):
     return "### DIRECTOR'S NOTES\n%s\n\n### TRANSCRIPT\n%s" % (t["director_notes"].strip(), text.strip())
 
 
+MIN_INTERVAL = 7.0     # gemini-3.8-flash-tts allows 10 requests/min: pace every call (whisper retries included)
+_LAST_CALL = [0.0]
+
+
+def _is_rate_limit(exc):
+    """A per-minute rate limit (429 RESOURCE_EXHAUSTED that is not a billing/plan problem)."""
+    msg = str(exc).lower()
+    code = getattr(exc, "code", None)
+    is429 = code == 429 or "429" in msg or "resource_exhausted" in msg
+    return is429 and "billing" not in msg and "check your plan" not in msg
+
+
+def _paced_synth(client, m, voice, prompt, beat_id):
+    """synth() with >= MIN_INTERVAL s between calls; on a rate-limit 429, wait and retry the SAME model."""
+    for attempt in range(5):
+        wait = MIN_INTERVAL - (time.time() - _LAST_CALL[0])
+        if wait > 0:
+            time.sleep(wait)
+        _LAST_CALL[0] = time.time()
+        try:
+            return synth(client, m, voice, prompt)
+        except Exception as e:  # noqa
+            if _is_rate_limit(e) and attempt < 4:
+                delay = 30 + 15 * attempt
+                print("  rate limited on %s (%s), waiting %ds" % (beat_id, m, delay))
+                time.sleep(delay)
+                continue
+            raise
+
+
 def synth_with_fallback(client, t, model, prompt, beat_id):
     models = [model] + ([t["fallback_model"]] if t.get("fallback_model") and t["fallback_model"] != model else [])
     last = None
     for m in models:
         try:
-            pcm, usage = synth(client, m, t["voice"], prompt)
+            pcm, usage = _paced_synth(client, m, t["voice"], prompt, beat_id)
             return pcm, usage, m
         except Exception as e:  # noqa
+            if _is_rate_limit(e):
+                raise AuthOrBillingError("TTS still rate limited after retries (%s): %s" % (m, str(e)[:200]))
             if _is_auth_error(e):
                 raise AuthOrBillingError("TTS auth/billing error (%s): %s" % (m, str(e)[:300]))
             print("  TTS error on %s with %s: %s" % (beat_id, m, str(e)[:200]))
@@ -113,6 +145,15 @@ def spoken_matches(wav_path, text):
     heard = " ".join(s.text for s in segs).strip()
     hw, sw = _words(heard), _words(text)
     ok = len(hw) <= len(sw) * 1.25 + 2 and not any(w in hw[:6] for w in ("director", "style", "transcript", "notes"))
+    # director-note words leaking anywhere (seen 22 Nov 2026: the second half of a beat was replaced by
+    # the notes, at about the same length, so the length check alone missed it)
+    leak = {"salesy", "monotone", "intonation", "conversational", "pronunciation", "documentary", "explainer"}
+    leak -= set(sw)
+    if leak & set(hw):
+        ok = False
+    import difflib
+    if difflib.SequenceMatcher(a=sw, b=hw, autojunk=False).ratio() < 0.7:
+        ok = False
     return ok, heard
 
 

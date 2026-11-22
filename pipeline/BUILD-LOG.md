@@ -109,3 +109,97 @@ There is **no measurable change** (run-to-run noise is about ±0.03 s). Scene bu
 - `van` (blue) is in the mix as an ordinary civilian van, although it was not on the owner's list. Remove it from `CIVILIAN` if unwanted.
 - To pin a specific car, pass `model="..."` to `make_car`.
 - The cars are slightly stretched lengthwise relative to Kenney's toy proportions, to keep the 4.4 m contract.
+
+---
+
+# Video #2: Japan earthquake (22 Nov 2026, v1.2)
+
+Builder: Opus sub-agent. Nothing committed or pushed. Nothing posted. Episode 1's outputs were not touched or re-run.
+
+**Episode**: `episodes/2026-11-23-2-japan-earthquake/episode.json` (calendar Mon 23 Nov, slot 2). It has 10 beats and 278 words. The voice is **Sadaltager** with the README director notes plus a Pronunciation line (Shizuoka/Aichi/Nagano/Gifu).
+
+**New builders** (`scene_lib.py`, documented in the README table): `japan_map` (modes hook/dots/plates/outro), `subduction`, `ruler_snap`, `quake_depth`, `base_isolation`, `phone_alert`, `drop_cover`.
+- New helpers: `add_mat`, `prism`, `resample`, `ribbon`, `ring`, `wave_ring`, `pulse_rings`, `vis`, `ll`, `house`.
+- Japan outlines are hand-coded lon/lat polygons, and the plate boundaries are schematic. Boundaries are deliberately NOT drawn in the hook/outro shots near the epicentre, so the video doesn't imply a cause.
+- No new assets.
+
+**Pipeline changes**
+- `tts.py`
+  - Calls are paced 7 s apart (the limit is 10 requests/min).
+  - A rate-limit 429 now waits 30–90 s and retries the same model. A billing 429 still stops with code 2.
+  - The whisper guard is stronger. It now also fails a take if director-note words are heard anywhere, or if the word-sequence match is below 0.7. On the first run the hook's second half was replaced by the director notes ("...lively intonation, never monotone or salesy") at about the same length, and the old length-only check let it through. It was caught by checking captions alignment (45%), and the beat was regenerated with `--only hook --force`.
+- `make_episode.py`
+  - New `fb` step (now in the default steps). It makes an HEVC `hvc1` + mono AAC 80k copy, with the video bitrate computed from the duration to target about 9.3 MB, and re-encodes 15% lower if it comes out at 10,000,000 bytes or more.
+  - `step_post` now writes the `engagement_comment` (optional field, so episode 1 still works), a fuller checklist (fb file, Public, AI label, hashtags, engagement comment) and "Sources".
+  - ⚠️ Running episode 1 with default steps would now also (re)write `highway pileup fb.mp4`.
+
+**Result**
+- `output/Japan earthquake.mp4`: 103.30 s, 1080x1920, H.264 + AAC mono, 27.97 MB. Voice is at -14.4 LUFS.
+- `output/Japan earthquake fb.mp4`: 103.30 s, HEVC `hvc1` 1080x1920, AAC mono, **9,118,529 bytes** (620 kb/s video).
+- `output/Japan earthquake.post.md`: title, caption + hashtags, engagement comment, checklist, sources, script.
+- QC: 11 frames are in `output/japan-earthquake/qc/` (`qc_*.png`, `qc_sheet.png`), covering every beat including 1.0 s. All are non-blank, the captions sit inside the safe band, the cards are in the upper area, and nothing is graphic (gentle sway only; the mannequin kneels upright under the table).
+- Sync: I re-transcribed the final mp4 with whisper. 270 of 278 caption words matched, with a median offset of 0.011 s, p95 0.23 s and max 1.2 s. The max ("If" at 83.08 s) is a re-transcription error: the waveform is silent from 83.1 s, and speech resumes at about 83.2 s.
+
+**Render time**
+- Wall time was 2,023 s (33.7 min) with 4 processes. This is over the ~15 min goal because **another session was rendering in Blender at the same time** (7 Blender processes and a shared GPU).
+- Shots rendered after that contention ended ran at about 0.45 s/frame: plates took 116 s for 257 frames, and alert took 117 s for 205 frames. A clean run should be about 10–12 min.
+- Assemble + fb + post took 130 s.
+
+**API cost**
+- Final beats: 10 TTS calls, 1,558 input tokens and 2,453 audio output tokens, which is about $0.022 at $9/1M (rate not re-verified).
+- About 2 more calls were retries (the plates guard retry and the hook regeneration), roughly another $0.005.
+
+**Facts to re-check before posting**
+- Hook: from the spec (The Japan Times / JMA via APA / USGS), not re-fetched by me.
+- "More than 1 in 10 of the world's M6+ earthquakes" and "under 1% of the world's land" were checked with a web search: Cabinet Office 18.5% (2004–13), MIC 13.1% (2008–18), nippon.com 0.28% land.
+- "Around 2,000 known active faults" (HERP figure) and early-warning "seconds before" are from general knowledge and were NOT re-fetched.
+- "Deeper quakes usually spread shaking wider but weaker" is a general statement.
+
+**Limitations**
+- The Japan map is stylised (simplified coastlines, no small islands), and the plate boundaries are schematic.
+- Caption chunk "JUST AFTER 1 A.M" loses the final period of "a.m.", which is cosmetic.
+- The pronunciation of Shizuoka/Aichi/Gifu relies on the director notes, so **a human should listen to the first 12 s**.
+
+---
+
+# Video #3: "nuclear weapons" (Mon 23 Nov slot 3), 22 Nov 2026
+
+Builder: Opus sub-agent. Nothing committed, pushed or posted. Built at the same time as video #2 (another agent).
+
+**Files**
+- New: `pipeline/blender/scene_lib_geo.py` with 9 builders (`globe_summit`, `round_table`, `treaty_doc`, `cap_bars`,
+  `verify_checks`, `three_balance`, `stock_bars`, `three_lower`, `risk_gauge`). It registers itself with
+  `L.BUILDERS.update(...)`; `scene_lib.py` was not edited.
+- `pipeline/blender/render_episode.py`: +2 lines, a lazy `import scene_lib_geo` only when the shot's builder is not
+  already in `L.BUILDERS` (so a broken geo file can never affect other episodes' shots).
+- New: `episodes/2026-11-23-3-nuclear-weapons/episode.json` (10 beats, 283 words, voice **Orus**; #2 uses Sadaltager, so no repeat).
+- README: new section for the geo builders + the FB HEVC command (appended).
+- `tts.py` was not touched: the 7 s pacing + 429 retry added by video #2's agent was reused (no 429s hit).
+
+**Run**
+- TTS + captions: 116 s (10 beats, one whisper-guard retry on the hook). Voice 90.98 s. Alignment 86–100 % per beat
+  (whisper hears "arms deal" as "arm steel" and drops "are" in "why are they so hard"; captions use the script text).
+- Stills: ~3 preview rounds at 0.5 scale to fix framing (globe view moved to a Pacific-side camera so US, China and
+  Russia are all on the visible face; upright camera-facing labels; chairs facing the table; wider lens for the table;
+  ceiling slab hidden before its cue; stage rim as a ring, not a disc).
+- Render: 2,004 s wall (4 processes). Slow because video #2's render started a few minutes after this one and both ran
+  together (8 Blender processes, load ~130); my wait loop only checks before starting. Alone it should be ~10–11 min.
+- Assemble: voice -14.2 LUFS. Total pipeline 2,052 s.
+
+**Result**
+- `output/nuclear weapons.mp4`: 90.98 s, 1080x1920, H.264 + AAC mono, 20.3 MB.
+- `output/nuclear weapons fb.mp4`: HEVC (hvc1) 600k + AAC 80k mono, faststart, 7,648,620 bytes.
+- `output/nuclear weapons.post.md`: title, caption, hashtags, checklist (Public, AI label ON, hashtags, engagement
+  comment), engagement comment, sources, script. The engagement-comment/checklist lines were added by hand after the
+  `post` step (`step_post` does not know `engagement_comment` yet): do not re-run `--steps post` or they are lost.
+- QC: 12 frames in `output/nuclear-weapons/qc/` (`qc_<sec>.png`, `qc_sheet.png`). Captions readable and in the band,
+  cards in the upper area, nothing blank, no war imagery. Sync: final audio re-transcribed, 272/283 words matched,
+  median offset 0.010 s, p95 0.15 s, max 0.65 s.
+
+**Limitations / to check**
+- The caption band (y≈0.67) sometimes covers the lower labels of a shot (e.g. "1980s PEAK" / "TODAY" in `stock_bars`).
+- Globe has no coastlines on purpose (no map data downloaded); countries are shown by coloured markers + labels.
+- Stockpile bars are relative only (no numbers on screen); heights roughly follow FAS estimates (~70k peak → ~12k now).
+- Explainer figures not re-fetched: 1,550 deployed strategic warheads (New START), "more than three quarters" drop from
+  the 1980s peak, "US and Russia hold most". Pronunciation of "Xi Jinping"/"Shenzhen" relies on director notes: a human
+  should listen to the first 10 s.
