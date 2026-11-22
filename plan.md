@@ -92,7 +92,7 @@ Start budget: **< $2/month** (TTS only).
 - [ ] Username: @whatjusthappened (or closest available) — BLOCKED 22 Nov 2026: "You're currently unable to choose a username" (new-Page restriction). Retry after a few days / first followers.
 - [x] Category: Digital creator; Page type: Creator (Page ID 61597041051729, created 22 Nov 2026)
 - [x] Bio (desc #2), contact email
-- [ ] Profile + cover photo (own design) — PENDING: needs own artwork
+- [x] Profile + cover photo — Logo C + Cover A (Nano Banana Pro, `branding/`), uploaded 22 Nov 2026
 - [x] Action button: Follow (default on Creator Page)
 - [x] Professional Dashboard enabled (Creator Dashboard)
 
