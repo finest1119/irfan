@@ -11,6 +11,19 @@ Output:
 - `output/<keyword>.post.md` (title, FB caption, hashtags, sources, script)
 - `output/<slug>/` working dir: `audio/`, `captions/`, `captions.json`, `frames/`, `segments/`, `logs/`, `stills/`, `qc/`
 
+## Channel voice & script style (decided 22 Nov 2026 — use for EVERY new episode)
+
+- `tts.voice`: **`Fenrir`** (chosen by Irfan). Episode 1 used Charon; do not reuse Charon.
+- `tts.director_notes` (start from this, then add a `Pronunciation:` line for names in the episode):
+  > Male documentary-style news explainer for a US/UK social video. Confident, punchy and fast
+  > (about 170–185 words per minute), conversational but serious. Short sentences, a brief dramatic
+  > pause before key facts, lively intonation, never monotone or salesy.
+- Script style (inspired by the reference reel's *style*, never copying its words or voice):
+  short punchy sentences; hook = verified fact + a curiosity question; a numbered structure
+  ("Here are the three big reasons. One… Two… Three…") where it fits; end with the comment
+  question, a share CTA ("Send this to someone who…"), and a last line that loops to the hook.
+- At ~180 WPM, 200–240 words ≈ 70–80 s; aim for **230–300 words** to stay inside 70–120 s.
+
 ## How to make a new episode (step by step)
 
 1. **Copy the last episode folder**: `episodes/2026-11-23-1-highway-pileup/` to `episodes/<date>-<slot>-<slug>/`.
@@ -18,7 +31,7 @@ Output:
    - `keyword`: the main keyword. This becomes the file name (`output/<keyword>.mp4`).
    - `slug`: same as the keyword but with dashes (used for the working folder).
    - `title`, `fb_caption`, `hashtags`, `sources`: the hook fact must be verified and its sources listed.
-   - `beats`: the voiceover, split into 7–10 beats. Aim for **200–240 words in total** (about 90–105 s).
+   - `beats`: the voiceover, split into 7–10 beats. Aim for **230–300 words in total** (about 75–100 s at Fenrir pace).
      - Beat 1 = the hook: the verified news fact in the first sentence, with no intro.
      - Middle beats = the general explainer ("usually", "could", "often"); never say what caused the real event.
      - A metaphor beat (dominoes, etc.).
