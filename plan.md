@@ -1,7 +1,7 @@
 # Plan: FB Page + YouTube (World News & Disaster Explainers)
 
 ## 1. Concept
-- Niche: world news, events, disasters (US, UK, Europe, Russia, Japan, China).
+- Niche: world news, events, disasters. **Major countries only: US, UK, Europe, Russia, Japan, China.**
 - Audience: US/UK (tier-1 CPM). Voiceover: English.
 - Format: 9:16 reel, >1 min, 3D animated explainer (Blender script).
 - Structure: **Hook** (verified news fact) → **Message** (general "what usually causes this") → **Metaphor/visual** → **Conclusion + loop/CTA**.
@@ -25,6 +25,8 @@
 ## 4. Keywords (researched)
 Primary: news explained, world news, breaking news, what happened, disaster, plane crash, global events.
 Secondary: explained, why it happened, world events, war news, natural disasters, aviation.
+
+## Chosen page name: **What Just Happened**
 
 ## 5. Page names (Prompt 1, tone: Educational)
 1. World News Explained
@@ -80,7 +82,7 @@ Secondary: explained, why it happened, world events, war news, natural disasters
 Start budget: **< $2/month** (TTS only).
 
 ## 8. Next steps
-1. Pick page name + description.
+1. Pick description; create page "What Just Happened".
 2. Get Gemini API key.
 3. Build Blender pipeline → first video from `calendar.md`.
 4. QC, then batch production.

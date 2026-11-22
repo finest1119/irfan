@@ -12,33 +12,36 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 6. End with a question to drive comments; loop last line to the hook.
 7. Original visuals only (Blender), no news footage.
 8. Export filename = main keyword.
+9. **Hooks only from major countries: US, UK, Europe, Russia, Japan, China** (audience = US/UK citizens).
+10. Aviation topics are allowed.
 
 ## Schedule
 | Day | Slot | Hook (news) | Explainer topic | Main keyword |
 |---|---|---|---|---|
-| Mon 23 | 1 | 86-vehicle pileup in Bulgaria | Why highway pileups happen (fog, following distance) | highway pileup |
-| Mon 23 | 2 | M5.7 quake in Shizuoka, Japan | Why Japan gets so many earthquakes | Japan earthquake |
-| Mon 23 | 3 | Trump–Xi–Putin talks in Shenzhen | How nuclear arms reduction deals work | nuclear weapons |
-| Tue 24 | 1 | Possible supercell hits southern Brazil | What a supercell is and how tornadoes form | supercell tornado |
-| Tue 24 | 2 | Strikes on Kyiv bridges | Why bridges are strategic targets in war | bridges in war |
-| Tue 24 | 3 | Factory explosion in Aliağa, Turkey | Why industrial explosions happen | factory explosion |
-| Wed 25 | 1 | Thanksgiving travel rush (US) | Why holiday travel brings more crashes and delays | Thanksgiving travel |
-| Wed 25 | 2 | Train derailment near Giza, Egypt | What makes a train derail | train derailment |
-| Wed 25 | 3 | M6.7 deep quake in Peru, no major damage | Why deep earthquakes do less damage | deep earthquake |
-| Thu 26 | 1 | Thanksgiving = top day for US cooking fires (evergreen) | Why turkey fryers explode | turkey fryer fire |
-| Thu 26 | 2 | Boat capsizing off Senegal | Why overloaded boats capsize | boat capsize |
-| Thu 26 | 3 | Firefighting helicopter crash in Indonesia | Why aerial firefighting is so dangerous | firefighting helicopter |
-| Fri 27 | 1 | Black Friday crowds (evergreen) | How crowd crushes happen and how to survive one | crowd crush |
-| Fri 27 | 2 | Russia–Estonia border tension | Why the Baltic border is Europe's tensest line | Russia Estonia |
-| Fri 27 | 3 | Pentagon warns Ukraine on deep drone strikes | How long-range attack drones work | attack drones |
-| Sat 28 | 1 | COP31 in Turkey | Why extreme weather is getting stronger | extreme weather |
-| Sat 28 | 2 | US winter storm season (evergreen) | What a bomb cyclone is | bomb cyclone |
-| Sat 28 | 3 | Atlantic hurricane season ends Nov 30 | How a hurricane is born | hurricane |
-| Sun 29 | 1 | Turbulence injuries in the news (evergreen) | Why turbulence is getting worse | turbulence |
-| Sun 29 | 2 | First US winter freeze (evergreen) | Why bridges freeze before roads (black ice) | black ice |
-| Sun 29 | 3 | Week recap | 5 disasters this week, explained | world news this week |
+| Mon 23 | 1 | 🇪🇺 86-vehicle pileup, Trakia motorway, Bulgaria | Why highway pileups happen (fog, following distance) | highway pileup |
+| Mon 23 | 2 | 🇯🇵 M5.7 quake in Shizuoka (Nov 8) | Why Japan gets so many earthquakes | Japan earthquake |
+| Mon 23 | 3 | 🇺🇸🇨🇳🇷🇺 Trump–Xi–Putin talks in Shenzhen | How nuclear arms reduction deals work | nuclear weapons |
+| Tue 24 | 1 | 🇺🇸 Plane crash at Hawkins Field, Jackson MS (Nov 21) | Why most plane crashes happen at takeoff or landing | plane crash |
+| Tue 24 | 2 | 🇷🇺 Russian strikes on Kyiv bridges | Why bridges are strategic targets in war | bridges in war |
+| Tue 24 | 3 | 🇨🇳 High-rise fire in northern China (Nov 10) | Why fire spreads so fast in tall buildings | high rise fire |
+| Wed 25 | 1 | 🇺🇸 Thanksgiving travel rush | Why holiday travel brings more crashes and delays | Thanksgiving travel |
+| Wed 25 | 2 | 🇷🇺 An-12 military cargo plane crash, Kemerovo (Nov 17) | Why Soviet-era planes are still flying | Russian plane crash |
+| Wed 25 | 3 | 🇬🇧 Met Office heavy rain warning (Nov 17) | Why the UK floods so often | UK flooding |
+| Thu 26 | 1 | 🇺🇸 Thanksgiving = top day for US cooking fires | Why turkey fryers explode | turkey fryer fire |
+| Thu 26 | 2 | 🇺🇸 Tanker hits riverboat, New Orleans (Nov 13) | How big ships collide on rivers | ship collision |
+| Thu 26 | 3 | 🇨🇳🇯🇵 Typhoon Champi (verify date) | Why typhoons still hit China and Japan late in the year | typhoon |
+| Fri 27 | 1 | 🇺🇸 Black Friday crowds | How crowd crushes happen and how to survive one | crowd crush |
+| Fri 27 | 2 | 🇷🇺🇪🇺 Russia–Estonia border tension | Why the Baltic border is Europe's tensest line | Russia Estonia |
+| Fri 27 | 3 | 🇺🇸 Pentagon warns Ukraine on deep drone strikes | How long-range attack drones work | attack drones |
+| Sat 28 | 1 | 🇺🇸 US winter storm season | What a bomb cyclone is | bomb cyclone |
+| Sat 28 | 2 | 🇺🇸 Atlantic hurricane season ends Nov 30 | How a hurricane is born | hurricane |
+| Sat 28 | 3 | 🇬🇧🇪🇺 2026–27 European windstorm season | How windstorms form and get their names | Europe windstorm |
+| Sun 29 | 1 | 🇺🇸 Turbulence injuries on US flights | Why turbulence is getting worse | turbulence |
+| Sun 29 | 2 | 🇺🇸 First winter freeze | Why bridges freeze before roads (black ice) | black ice |
+| Sun 29 | 3 | Week recap (US/UK/EU/RU/JP/CN only) | 5 biggest events this week, explained | world news this week |
 
 ## Notes
+- Florida Learjet crash (Nov 1) skipped: same story as reference reel; can be used later with a new angle.
 - War topics (Tue 24 #2, Fri 27 #2–3): Meta may limit monetization. Keep them technical/educational; swap for evergreen if reach drops.
 - If bigger news breaks, replace the weakest slot that day.
-- Sources: Wikipedia Current events Nov 2026, NPR, Democracy Now, AA, NST, VolcanoDiscovery.
+- Sources: Wikipedia Current events Nov 2026, NPR, Democracy Now, WAPT, Aviation Safety Network, Japan Times, SCMP, UKNIP.
