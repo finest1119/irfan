@@ -359,3 +359,6 @@ director notes aloud 4 times in a row; start beats with the content sentence ins
 Gotcha: `L.box()` / `L.plane()` call `transform_apply()`, which bakes the **location** into the mesh too. A "source"
 box built far away (e.g. z=-5000) and then copied (`obj.copy()` / shared mesh) puts every copy 5 km underground.
 Build sources at the origin and delete them after copying (as `_city()` does).
+
+## Image generation (Irfan, 24 Nov 2026)
+Always use `tools/gen_image.py` for any generated image (props, textures, thumbnails, logos). It uses the **Codex CLI** first (built-in image_gen, MCP disabled) and only falls back to Google Gemini (Nano Banana Pro) if Codex fails or its quota is depleted. Do not call the Gemini image API directly.
