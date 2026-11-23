@@ -1,0 +1,390 @@
+{
+  "id": "2026-11-25-1-thanksgiving-travel",
+  "keyword": "Thanksgiving travel",
+  "slug": "thanksgiving-travel",
+  "title": "Why Holiday Travel Brings More Crashes and Delays: 81.5 Million Thanksgiving Travelers, Explained",
+  "fb_caption": "AAA expects 81.5 million Americans to travel 50 miles or more this Thanksgiving week (Tue 24 to Mon 30 Nov), about 72.9 million by car and around 6 million by air. That's slightly fewer than last year's record, partly because travel costs more, but roads and airports will still be packed. So why does holiday travel bring more crashes and delays? Phantom traffic jams, tired drivers on unfamiliar roads, and airline schedules with no slack. Plus what you can do about it. Driving or flying this year? Tell us below.",
+  "hashtags": [
+    "#Thanksgiving",
+    "#ThanksgivingTravel",
+    "#holidaytravel",
+    "#roadtrip",
+    "#traffic",
+    "#flightdelays",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll for Thanksgiving week: are you 1 = driving, 2 = flying, or 3 = staying home and avoiding all of it? 🦃",
+  "sources": [
+    "AAA Thanksgiving travel forecast (published ~17 Nov 2026): 81.5 million Americans expected to travel 50+ miles from home, Tue 24 to Mon 30 Nov 2026; about 72.9 million by car; about 6 million domestic air travellers; slightly fewer than last year's record (first dip after three straight record years), partly due to higher costs. AAA newsroom (newsroom.aaa.com).",
+    "Fox Weather, 'AAA: Over 81 million Americans expected to travel...' (foxweather.com), Nov 2026.",
+    "TravelPulse, AAA Thanksgiving 2026 travel forecast coverage (travelpulse.com), Nov 2026.",
+    "Script figures: '81.5 million', 'about 73 million will drive' (72.9 M rounded), 'roughly 6 million will fly'. Everything else is general explanation (phantom / stop-and-go jams, fatigue, airline schedule knock-on delays) with no further statistics. No airline, company or person is named.",
+    "Re-check before posting: AAA figures unchanged; hook is a forecast for the week of 24-30 Nov 2026."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Fenrir",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Energetic, confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: AAA = Triple A.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "pipeline": "v2",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "AAA expects 81.5 million Americans to travel fifty miles or more this Thanksgiving. About 73 million will drive, and roughly 6 million will fly.",
+      "shot": {
+        "builder": "travel_hook",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THANKSGIVING TRAVEL",
+            "sub": "AAA forecast · Tue 24 – Mon 30 Nov",
+            "at": 0.2
+          },
+          {
+            "type": "big",
+            "text": "81.5 MILLION",
+            "sub": "Americans traveling 50+ miles",
+            "cue": "815",
+            "until": "about",
+            "y": 0.43
+          },
+          {
+            "type": "label",
+            "text": "~73 MILLION BY CAR",
+            "anchor": "car",
+            "cue": "73",
+            "dx": 60,
+            "dy": -150
+          },
+          {
+            "type": "label",
+            "text": "~6 MILLION BY AIR",
+            "anchor": "plane",
+            "cue": "6",
+            "dx": -60,
+            "dy": 110,
+            "color": "teal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "That's slightly fewer than last year's record, partly because travel costs more. But the roads and airports will still be packed. So why does holiday travel bring more crashes and delays? Here are the three big reasons.",
+      "shot": {
+        "builder": "taxi_queue_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "JUST BELOW LAST YEAR'S RECORD",
+            "sub": "partly due to higher travel costs",
+            "at": 0.2,
+            "until": "why"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STILL PACKED"
+            ],
+            "cues": [
+              "packed"
+            ],
+            "until": "why"
+          },
+          {
+            "type": "card",
+            "text": "WHY MORE CRASHES & DELAYS?",
+            "cue": "why"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "3 BIG REASONS"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "volume",
+      "text": "One: too many cars, not enough road. Every highway has a limit. Close to it, one driver taps the brakes, the car behind brakes harder, and a wave of red lights rolls backwards. Engineers call it a phantom jam. And in stop-and-go traffic, short gaps and sudden braking make rear-end crashes more likely.",
+      "shot": {
+        "builder": "phantom_jam_v2",
+        "params": {
+          "brake_cue": "taps"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · TOO MANY CARS",
+            "at": 0.15
+          },
+          {
+            "type": "label",
+            "text": "ONE DRIVER BRAKES",
+            "anchor": "first",
+            "cue": "taps",
+            "until": "engineers",
+            "dx": 40,
+            "dy": -130
+          },
+          {
+            "type": "chips",
+            "items": [
+              "A WAVE ROLLS BACKWARDS",
+              "A \"PHANTOM JAM\"",
+              "SHORT GAPS + SUDDEN BRAKING"
+            ],
+            "cues": [
+              "wave",
+              "phantom",
+              "short"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tired",
+      "text": "Two: tired drivers on unfamiliar roads. Many people drive for hours after a full workday, often after dark, on routes they don't know, sometimes in rain or snow. And when you're running late, it's tempting to speed and tailgate.",
+      "shot": {
+        "builder": "long_drive_v2",
+        "params": {
+          "brake_cue": "tailgate"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · TIRED DRIVERS",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "HOURS BEHIND THE WHEEL",
+              "AFTER DARK, NEW ROUTES",
+              "RAIN OR SNOW"
+            ],
+            "cues": [
+              "hours",
+              "dark",
+              "rain"
+            ],
+            "until": "tempting"
+          },
+          {
+            "type": "label",
+            "text": "TAILGATING",
+            "anchor": "lead",
+            "cue": "tailgate",
+            "dx": 60,
+            "dy": -110
+          }
+        ]
+      }
+    },
+    {
+      "id": "airports",
+      "text": "Three: airports have almost no slack. Airlines schedule each plane for several flights a day, back to back. If one flight leaves late, the next flight on that plane is late too, and so are its crew and passengers.",
+      "shot": {
+        "builder": "gates_v2",
+        "params": {
+          "push_cue": "late"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · NO SLACK",
+            "at": 0.15
+          },
+          {
+            "type": "board",
+            "title": "DEPARTURES",
+            "cue": "airlines",
+            "y": 0.43,
+            "rows": [
+              [
+                "07:05",
+                "DENVER",
+                "ON TIME"
+              ],
+              [
+                "08:10",
+                "CHICAGO",
+                "ON TIME"
+              ],
+              [
+                "09:15",
+                "ATLANTA",
+                "ON TIME"
+              ],
+              [
+                "10:20",
+                "DALLAS",
+                "ON TIME"
+              ]
+            ],
+            "flips": [
+              [
+                1,
+                "DELAYED",
+                "late"
+              ],
+              [
+                2,
+                "DELAYED",
+                "next"
+              ],
+              [
+                3,
+                "DELAYED",
+                "crew"
+              ]
+            ]
+          },
+          {
+            "type": "chips",
+            "items": [
+              "BACK-TO-BACK FLIGHTS"
+            ],
+            "cues": [
+              "back"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ripple",
+      "text": "It's a domino effect. A storm or a backup at one busy hub can ripple delays across the country within hours.",
+      "shot": {
+        "builder": "delay_dominoes_v2",
+        "params": {
+          "topple_cue": "storm",
+          "ring_cue": "hub",
+          "path": [
+            [
+              104.0,
+              895.0
+            ],
+            [
+              114.0,
+              950.0
+            ],
+            [
+              118.0,
+              1015.0
+            ],
+            [
+              108.0,
+              1085.0
+            ],
+            [
+              96.0,
+              1150.0
+            ]
+          ]
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "A DOMINO EFFECT",
+            "cue": "domino"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ONE BUSY HUB",
+              "DELAYS NATIONWIDE IN HOURS"
+            ],
+            "cues": [
+              "hub",
+              "country"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "So what can you do? Leave early in the morning, or travel on quieter days. Rest before a long drive and take breaks. Keep a bigger gap, and give yourself extra time at the airport.",
+      "shot": {
+        "builder": "smooth_flow_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHAT YOU CAN DO",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "LEAVE EARLY · QUIETER DAYS",
+              "REST + TAKE BREAKS",
+              "BIGGER GAP, EXTRA TIME"
+            ],
+            "cues": [
+              "leave",
+              "rest",
+              "keep"
+            ]
+          },
+          {
+            "type": "bar",
+            "top": "gap_top",
+            "bottom": "gap_bot",
+            "cue": "bigger",
+            "label": "BIGGER GAP",
+            "color": "teal",
+            "side": "right"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Are you driving or flying this Thanksgiving? Tell us in the comments, and send this to someone who's about to hit the road. Because 81.5 million Americans are about to share the same roads and skies.",
+      "shot": {
+        "builder": "travel_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DRIVING OR FLYING?",
+            "sub": "Tell us in the comments",
+            "sub_cue": "tell",
+            "at": 0.25
+          },
+          {
+            "type": "big",
+            "text": "81.5 MILLION",
+            "sub": "travelers, same roads and skies",
+            "cue": "815",
+            "y": 0.45
+          }
+        ]
+      }
+    }
+  ]
+}

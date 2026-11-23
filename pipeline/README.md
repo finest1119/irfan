@@ -114,6 +114,30 @@ sun, procedural sky fallback), `ph_detail()` (Poly Haven PBR detail on any mater
 | `bubble_v2` | soap bubble tethered to a gold coin stack ("profits") over the plaza fountain; `mode` inflate (grows on `grow_cue`) / pop (red paper plane touches it on `pop_cue`, pops into confetti) | bubble, profit, news | `mode`, `grow_cue`, `profit_cue`, `pop_cue` |
 | `dominoes_v2` | ~70 big lacquered dominoes in a curving row on the plaza; topple one after another from `topple_cue` (step fitted to the beat) | first, last | `topple_cue`, `step` |
 | `market_outro` | crane-up from the index wall over downtown to the river | – | `cam0/1`, `tgt0/1` |
+| `travel_hook` (`scene_lib_v2_travel`) | high aerial along the busy interstate (both directions moving) beside the airport-world suburbs; airliner climbs across the sky | car, plane | `y_range`, `car_y`, `plane_a/b`, `cam0/1`, `tgt0/1` |
+| `taxi_queue_v2` | airliners nose-to-tail on the taxiway creeping to the runway (stop-and-go), one takes off behind | queue | `count`, `to_frame` |
+| `phantom_jam_v2` | dense northbound traffic; one driver brakes on `brake_cue`, a Newell car-following wave of brake lights (+ red light pooling on the road) rolls back towards the camera; southbound flows | first | `brake_cue`, `y0`, `ve`, `tau`, `delta` |
+| `long_drive_v2` | chase cam behind one car on the open interstate, slowly closing on the car ahead (tailgating, no contact); its brake lights flash on `brake_cue` | lead | `brake_cue`, `speed`, `hero` |
+| `gates_v2` | three airliners nose-in at the terminal gates, side view; the middle one is pushed back on `push_cue` | push | `gates`, `push_cue` |
+| `delay_dominoes_v2` | big white dominoes (navy pips) along the taxiway topple from `topple_cue`; amber ground rings on `ring_cue` | first | `topple_cue`, `ring_cue`, `path`, `step` |
+| `smooth_flow_v2` | camera travels with light, well-spaced traffic; anchors for a 2D gap bar | gap_top, gap_bot | `speed`, `y0`, `cam_off`, `tgt_off` |
+| `travel_outro` | crane-up from beside the interstate to a wide view; airliner climbs across | – | `cam0/1`, `tgt0/1` |
+| `cargo_hook` (`scene_lib_v2_winter`) | original generic high-wing four-turboprop transport (no markings) cruising over snowy taiga, side-rear chase cam | plane | `x`, `y0`, `z`, `off0/1` |
+| `cargo_plate` | the transport parked on the snowy apron (half-res plate for history cards) | – | – |
+| `rough_strip_v2` | the transport taxiing on a packed-snow strip, props turning, low tracking cam | wing, engine, gear | `speed`, `y0` |
+| `spares_v2` | spare-parts yard (crates, propellers on stands, engine on a cradle, tyres) with the transport behind | crates, engine | – |
+| `old_fleet_v2` | row of six identical old transports parked in the snow | – | – |
+| `hangar_check_v2` | lit maintenance hangar (own interior set), transport with yellow work platforms, teal inspection rings slide along the fuselage from `scan_cue` | tail, wing | `scan_cue` |
+| `classic_car_v2` | same hangar, a Kenney sedan in front of the transport, camera pulls back | car | `model` |
+| `cargo_outro` | the transport takes off from the snowy runway and climbs; camera cranes up | plane | `y0`, `v0`, `cam_path` |
+
+Travel world (`scene_lib_v2_travel.build_travel_world`): `S.build_world` airport world + six-lane interstate at x = 1720
+(texture `highway.png` from `v2_textures.py`), overpass, sign gantries without text, corridor trees, hills removed and
+`horizon_haze()` (no dark HDRI tree line). Traffic uses `fast_car()` (Kenney parts, shared lamp meshes) and `set_keys()`
+(foreach_set, explicit interpolation; Blender 5.3 ignores L.kf() CONSTANT). Overlay type `board` (departures board,
+statuses flip on cues) was added to `overlay_v2.py` for it. Winter world (`scene_lib_v2_winter.build_winter_world`):
+snow ground, runway with snow banks, hangars, tower, two villages, dense taiga as ~4,300 instanced 50 m forest patches +
+a mottled "far forest" ground, snowy hills; `S.HAZE` is switched to a cold haze for that world.
 
 Market plaza: `scene_lib_v2_market.build_market_world()` = `build_city_world` with `exclude_blocks` (city blocks
 whose centre falls in a rect get no streets/buildings; random draws are kept so the rest of the city is unchanged)

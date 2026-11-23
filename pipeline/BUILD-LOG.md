@@ -388,3 +388,22 @@ Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned).
   at its start attenuated (`.click.bak`). 83.37 s total. Forced beat topple cue "triggers" -> "drop".
 - Render: 2039 s wall (21 jobs, 3 procs) + re-render of beats 1/5/7 865 s after the sheet review (ball in caption
   band, domino camera, takeaway camera showed the wall behind the card). qc_v2 PASS, qc_full auto PASS, 6 sheets reviewed.
+
+# "Thanksgiving travel" + "Russian plane crash" built in v2, 23-24 Nov 2026
+
+Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned). Nothing committed, pushed or posted.
+- New `pipeline/blender/scene_lib_v2_travel.py`: airport world + six-lane interstate (x 1720, `highway.png` added to
+  `v2_textures.py`), overpass, text-free sign gantries, corridor trees; hills removed + `horizon_haze()` (dark HDRI
+  tree line gone). Fast traffic: `fast_car()` (Kenney parts + shared lamp meshes, optional brake glow + red road pool),
+  `set_keys()` (foreach_set, explicit interpolation), Newell car-following wave for the phantom jam. 8 builders.
+- New overlay type `board` (departures board, split-flap status flips on cues) in `overlay_v2.py`.
+- New `pipeline/blender/scene_lib_v2_winter.py`: snowy Siberian-style airfield (instanced 50 m taiga patches + mottled
+  far-forest ground, villages, hangars, snow banks), original high-wing four-turboprop transport (no markings), lit
+  maintenance-hangar set. 8 builders. Both modules registered in `render_episode_v2.load_builders()`.
+- `scene_lib_v2_air.ring_pulses` (WIREFRAME rings) was not used, so not touched.
+- A (Fenrir, 87.97 s): TTS hook read the director notes 3x with a "Pronunciation: 81.5 million" line and a
+  "This Thanksgiving" opener -> notes trimmed to "AAA = Triple A" and hook reordered; generated once by hand.
+  Render 2579 s wall (23 jobs, 3 procs) + re-renders of hook (plane closer), gates (side camera), dominoes, outro.
+- B (Orus, 78.58 s): render 2183 s wall (20 jobs) + outro re-render (camera now tracks the plane; "FLYING SINCE 1957"
+  big panel hid the plane -> chip). qc_full flagged a 0.9 s pause at the end of beat_tradeoff (trailing silence with
+  a blip): beat wav cut at 8.10 s (backup `beat_tradeoff.wav.tail.bak`).

@@ -1,0 +1,331 @@
+{
+  "id": "2026-11-25-2-russian-plane-crash",
+  "keyword": "Russian plane crash",
+  "slug": "russian-plane-crash",
+  "title": "Why Are Soviet-Era Planes Still Flying? The An-12 Crash Near Kemerovo, Explained",
+  "fb_caption": "On the evening of 17 November 2026, a Russian military Antonov An-12 transport plane crashed in an unpopulated area near Kemerovo, Siberia. Russia's Defence Ministry cited a preliminary technical malfunction, and investigators have opened a case. The An-12 first flew in 1957. So why do Cold War designs like it keep flying? Three big reasons: they were built tough, they're cheap to run, and there are few replacements. Plus the trade-off that comes with age. Would you fly on a plane older than your parents? Tell us below.",
+  "hashtags": [
+    "#aviation",
+    "#An12",
+    "#Antonov",
+    "#Russia",
+    "#Siberia",
+    "#cargoplane",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Aviation fans: what's the oldest aircraft type you've ever flown on? Drop it below ✈️",
+  "sources": [
+    "Al Jazeera, 17 Nov 2026: Russian military An-12 transport plane crashed in an unpopulated area near Kemerovo, Siberia, in the evening; Defence Ministry cited a preliminary technical malfunction (aljazeera.com).",
+    "AeroTime (aerotime.aero) and Meduza (meduza.io), Nov 2026: crash near the village of Yagunovo, Kemerovo region; investigators opened a case.",
+    "Antonov An-12 type facts (Wikipedia 'Antonov An-12'; Vintage Aviation News 'First flight of the Antonov An-12'): first flight 16 Dec 1957; 1,248 built 1957-1973 (script says 'more than twelve hundred').",
+    "Sanctions limiting Russian access to new Western aircraft and parts since 2022: widely reported general context (no figures used).",
+    "Not stated anywhere in the video or post: casualty figures or any cause beyond the ministry's preliminary 'technical malfunction'. No crash, wreckage or fire is shown; the aircraft model is an original generic high-wing four-turboprop with no markings."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Orus",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Firm and authoritative, confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: An-12 = A N twelve, Antonov = an-TOH-nov, Kemerovo = KEM-eh-ro-vo.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "pipeline": "v2",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "On the evening of November 17th, a Russian military Antonov An-12 cargo plane crashed in an unpopulated area near Kemerovo, in Siberia. Russia's Defence Ministry pointed to a preliminary technical malfunction.",
+      "shot": {
+        "builder": "cargo_hook",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "RUSSIA: AN-12 CARGO PLANE CRASH",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "ILLUSTRATION",
+            "anchor": "plane",
+            "at": 0.6,
+            "until": "unpopulated",
+            "dx": 70,
+            "dy": -110,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "17 NOV · NEAR KEMEROVO, SIBERIA",
+              "UNPOPULATED AREA",
+              "PRELIMINARY: TECHNICAL FAULT"
+            ],
+            "cues": [
+              "kemerovo",
+              "unpopulated",
+              "preliminary"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "Investigators have opened a case. But the An-12 first flew back in 1957. So why are planes designed in the Cold War still flying today? Here are the three big reasons.",
+      "shot": {
+        "builder": "cargo_plate",
+        "render_scale": 0.5,
+        "samples": 16,
+        "params": {},
+        "overlays": [
+          {
+            "type": "blur",
+            "radius": 9,
+            "dim": 0.25
+          },
+          {
+            "type": "card",
+            "text": "INVESTIGATION OPENED",
+            "at": 0.2,
+            "until": "why"
+          },
+          {
+            "type": "card",
+            "text": "WHY STILL FLYING?",
+            "cue": "why"
+          },
+          {
+            "type": "history",
+            "cards": [
+              [
+                "1957 · FIRST FLIGHT",
+                "The An-12 prototype takes off"
+              ],
+              [
+                "2026 · STILL FLYING",
+                "Nearly 70 years later"
+              ]
+            ],
+            "cues": [
+              "1957",
+              "today"
+            ],
+            "icon": "none"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tough",
+      "text": "One: they were built tough. Soviet cargo planes were designed for short, rough, unpaved airstrips and brutal cold. A high wing keeps the four propellers clear of gravel and snow, and sturdy landing gear handles bumpy ground.",
+      "shot": {
+        "builder": "rough_strip_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · BUILT TOUGH",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ROUGH, UNPAVED STRIPS",
+              "BRUTAL COLD"
+            ],
+            "cues": [
+              "rough",
+              "brutal"
+            ],
+            "until": "high"
+          },
+          {
+            "type": "label",
+            "text": "HIGH WING",
+            "anchor": "wing",
+            "cue": "high",
+            "dx": 60,
+            "dy": -120
+          },
+          {
+            "type": "label",
+            "text": "4 PROPELLERS",
+            "anchor": "engine",
+            "cue": "four",
+            "dx": -80,
+            "dy": -60,
+            "color": "teal"
+          },
+          {
+            "type": "label",
+            "text": "STURDY GEAR",
+            "anchor": "gear",
+            "cue": "sturdy",
+            "dx": 40,
+            "dy": 90,
+            "color": "amber"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cheap",
+      "text": "Two: they're cheap. More than twelve hundred An-12s were built, so there are huge stocks of spare parts and mechanics who know them inside out. And an old plane that's already paid for costs far less than a new one.",
+      "shot": {
+        "builder": "spares_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · CHEAP TO RUN",
+            "at": 0.15
+          },
+          {
+            "type": "label",
+            "text": "SPARE PARTS",
+            "anchor": "crates",
+            "cue": "stocks",
+            "dx": 40,
+            "dy": -110
+          },
+          {
+            "type": "chips",
+            "items": [
+              "1,200+ BUILT",
+              "SKILLED MECHANICS",
+              "ALREADY PAID FOR"
+            ],
+            "cues": [
+              "twelve",
+              "mechanics",
+              "paid"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "replace",
+      "text": "Three: there are few replacements. New cargo planes are expensive and slow to build, and Western sanctions have made it harder for Russia to get new aircraft and foreign parts. So old fleets keep flying.",
+      "shot": {
+        "builder": "old_fleet_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · FEW REPLACEMENTS",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NEW ONES: COSTLY & SLOW",
+              "SANCTIONS LIMIT NEW PARTS",
+              "OLD FLEETS KEEP FLYING"
+            ],
+            "cues": [
+              "expensive",
+              "sanctions",
+              "fleets"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tradeoff",
+      "text": "But there's a trade-off. Old airframes suffer from metal fatigue and corrosion. Keeping them safe takes more inspections, more repairs, and more maintenance hours every year.",
+      "shot": {
+        "builder": "hangar_check_v2",
+        "params": {
+          "scan_cue": "metal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THE TRADE-OFF",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "METAL FATIGUE",
+              "CORROSION",
+              "MORE MAINTENANCE HOURS"
+            ],
+            "cues": [
+              "metal",
+              "corrosion",
+              "maintenance"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "classic",
+      "text": "Think of it like a classic car. You can keep it running for decades, but only if you check it constantly and replace parts before they wear out.",
+      "shot": {
+        "builder": "classic_car_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "LIKE A CLASSIC CAR",
+            "cue": "classic"
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "CHECK IT CONSTANTLY",
+              "REPLACE PARTS IN TIME"
+            ],
+            "cues": [
+              "check",
+              "replace"
+            ],
+            "y": 0.72
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Would you fly on a plane that's older than your parents? Tell us in the comments, and send this to someone who loves aviation. Because a design that first flew in 1957 was still flying over Siberia this November.",
+      "shot": {
+        "builder": "cargo_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WOULD YOU FLY ON IT?",
+            "sub": "Tell us in the comments",
+            "sub_cue": "tell",
+            "at": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FLYING SINCE 1957"
+            ],
+            "cues": [
+              "1957"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

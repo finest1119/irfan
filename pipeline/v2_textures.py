@@ -140,9 +140,26 @@ def make_textures():
 
 
 
+def make_highway():
+    """One interstate carriageway, 16 x 24 m (16 px / m), median side at the left (u = 0): yellow inner edge line
+    at 1.0 m, three 3.7 m lanes with 3 m white dashes every 12 m, white outer edge line at 12.1 m, shoulder."""
+    Q = 16
+    a = _asphalt(16 * Q, 24 * Q, base=(76, 78, 81), seed=21, grain=8)
+    a[:, int(12.2 * Q):] = a[:, int(12.2 * Q):] * 0.93 + np.array((96, 96, 96), np.float32) * 0.07
+    _paint_rect(a, 0.85 * Q, 0, 1.0 * Q, 24 * Q, (232, 196, 70), 0.9)
+    for x in (4.7, 8.4):
+        for yy in (0, 12):
+            _paint_rect(a, (x - 0.075) * Q, yy * Q, (x + 0.075) * Q, (yy + 3) * Q, (232, 233, 230), 0.9)
+    _paint_rect(a, 12.05 * Q, 0, 12.2 * Q, 24 * Q, (232, 233, 230), 0.9)
+    _to_img(a).save(os.path.join(TEX, "highway.png"))
+
+
 def make(out_dir):
     global TEX
     TEX = out_dir
+    if not os.path.exists(os.path.join(out_dir, "highway.png")):
+        os.makedirs(out_dir, exist_ok=True)
+        make_highway()
     if all(os.path.exists(os.path.join(out_dir, f)) for f in (
             "runway_end.png", "runway_end_b.png", "runway_mid.png", "blastpad.png", "taxiway.png", "road.png",
             "parking.png")):

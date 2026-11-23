@@ -19,6 +19,8 @@ the beat, `delay` = extra seconds after the cue, `until` = cue/seconds when the 
   meter   {[label], segments, cues[], [y]}                          segmented meter that fills on cues
   profile {mode: intro|zones, [cue|at], [takeoff_cue], [landing_cue], [zone_cue], [red_cue]}  flight-profile graph
   history {cards: [[title, sub], ...], cues[]}                      timeline cards
+  board   {rows: [[time, place, status], ...], [flips: [[row, status, cue], ...]], [title], [cue|at], [y]}
+          departures board (mid band); statuses flip split-flap style on their cues
   blur    {[radius], [dim]}                                         blur + darken the 3D plate under the overlays
 Layout bands (fractions of the height, asserted): card 0.12-0.20, captions 0.22-0.31, labels/bars/graphs/big
 0.32-0.64, chips/meter 0.64-0.80. Everything stays inside the 12 %-80 % safe area.
@@ -742,8 +744,82 @@ class History(Item):
         return out
 
 
+class Board(Item):
+    """Airport departures board: {title, rows: [[time, place, status], ...], flips: [[row, new_status, cue], ...],
+    [cue|at], [y]}. Status ON TIME in green, anything else in red; a status flips (split-flap squash) on its cue."""
+    band = "mid"
+    anim = 0.4
+
+    def __init__(self, bc, spec):
+        super().__init__(bc, spec)
+        self.flips = [(int(r), st, bc.cue(c, 1.0 + i)) for i, (r, st, c) in enumerate(spec.get("flips", []))]
+        self.y = spec.get("y", 0.44)
+        n = len(spec["rows"])
+        self.ph = 96 + 70 * n
+        assert self.y * H - self.ph / 2 >= (CAP_BAND[1] + 0.012) * H, "board runs into the captions"
+        assert self.y * H + self.ph / 2 <= CHIP_Y * H - 0.02 * H, "board runs into the chips"
+
+    def events(self):
+        fps = self.bc.fps
+        ev = set(range(int(self.t0 * fps), int((self.t0 + self.anim) * fps) + 3))
+        for _, _, t in self.flips:
+            ev.update(range(int(t * fps), int((t + 0.36) * fps) + 3))
+        return ev
+
+    def status(self, i, t):
+        st, k = self.s["rows"][i][2], 1.0
+        for r, ns, tf in self.flips:
+            if r == i and t >= tf:
+                u = (t - tf) / 0.36
+                if u < 0.5:
+                    k = 1 - u * 2           # old status squashes shut
+                else:
+                    st, k = ns, min(1.0, (u - 0.5) * 2)
+        return st, round(k, 2)
+
+    def sprites(self, t, f):
+        a = self.alpha(t)
+        if a <= 0.004:
+            return []
+        rows = self.s["rows"]
+        sts = tuple(self.status(i, t) for i in range(len(rows)))
+        key = (round(a, 2), sts)
+
+        def mk():
+            pw, ph = 940, self.ph
+            x0, y0 = W / 2 - pw / 2, self.y * H - ph / 2
+            ft, fr = font(44, 8), font(42, 8)
+            A_ = int(255 * a)
+
+            def draw(d, ox, oy):
+                d.rounded_rectangle((x0 + ox, y0 + oy, x0 + pw + ox, y0 + ph + oy), 24, fill=(14, 18, 26, int(235 * a)))
+                d.text((x0 + 40 + ox, y0 + 50 + oy), self.s.get("title", "DEPARTURES"), font=ft, fill=AMBER + (A_,),
+                       anchor="lm")
+                d.text((x0 + pw - 40 + ox, y0 + 50 + oy), "STATUS", font=font(30, 2), fill=(170, 176, 188, A_),
+                       anchor="rm")
+                for i, (tm, place, _) in enumerate(rows):
+                    cy = y0 + 96 + 70 * i + 35
+                    d.rounded_rectangle((x0 + 24 + ox, cy - 29 + oy, x0 + pw - 24 + ox, cy + 29 + oy), 10,
+                                        fill=(30, 36, 48, A_))
+                    d.text((x0 + 48 + ox, cy + oy), tm, font=fr, fill=(255, 214, 102, A_), anchor="lm")
+                    d.text((x0 + 210 + ox, cy + oy), place, font=fr, fill=WHITE + (A_,), anchor="lm")
+                    st, k = sts[i]
+                    col = (60, 200, 120) if st.upper() == "ON TIME" else RED
+                    sw = 260
+                    sx1 = x0 + pw - 40
+                    hh = 26 * k
+                    if hh > 1:
+                        d.rounded_rectangle((sx1 - sw + ox, cy - hh + oy, sx1 + ox, cy + hh + oy), 8, fill=col + (A_,))
+                        if k > 0.6:
+                            d.text((sx1 - sw / 2 + ox, cy + 1 + oy), st, font=font(34, 8), fill=WHITE + (A_,),
+                                   anchor="mm")
+            return sprite_from(draw, (x0, y0, x0 + pw, y0 + ph), blur=10, alpha=0.45, glow=12, glow_alpha=0.15)
+        sp = self.cached(key, mk)
+        return [Sprite(sp.img, sp.x, sp.y + round(16 * (1 - ease((t - self.t0) / self.anim))))]
+
+
 ITEM_TYPES = {"card": Card, "chips": Chips, "label": Label, "bar": Bar, "big": Big, "meter": Meter,
-              "profile": Profile, "history": History}
+              "profile": Profile, "history": History, "board": Board}
 
 
 # ================================================================ per-beat compositing
