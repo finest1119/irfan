@@ -37,6 +37,15 @@ Steps (`--steps`, default `tts,captions,textures,render,assemble,fb,post,qc`):
    unexpected spikes required in card, caption and low), 12 frames + `qc/qc_sheet.png` with the 12 %/80 % guides.
    **Open `qc_sheet.png` and look at it**: no void or plain navy backgrounds, nothing graphic, captions readable,
    labels not on top of captions.
+8. **Full-video QC (mandatory, Irfan 23 Nov 2026: "QC is not just flicker — check the WHOLE video")**:
+   `.venv/bin/python pipeline/qc_full.py <episode.json> "output/<keyword>.mp4" output/<slug>/qc`
+   Auto: format/duration/FB size, black & frozen frames, loudness/clipping, clicks, pauses > 0.75 s,
+   spoken words vs script (whisper WER). Then **open EVERY sheet in `qc/full/` (1 frame per second)** and check:
+   empty/plain backgrounds, glitches/dark blobs/z-fighting, text overlapping text or cut off, cards above the 12 % line
+   or below 80 %, labels pointing at the wrong thing, spelling, visuals matching the words, anything graphic or
+   insensitive, objects popping or vanishing. Fix and re-run until auto = PASS and every frame is clean.
+   Known v2 issues to avoid (from the plane crash review): two-line outro card poking above 12 %; "Tell us in the
+   comments" sub-line touching the caption; a dark smudge on the far horizon in the outro wide shot (1:24–1:27).
 
 Preview a shot before the full render (about 1 min each, mostly world building):
 ```
