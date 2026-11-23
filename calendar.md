@@ -27,7 +27,7 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 | Tue 24 | 3 | 🇺🇸🇯🇵 AI selloff: Nasdaq's worst week since 2020 (week to Nov 20), Nikkei −5% (Nov 20) (RESEARCH PICK 2026-11-23, replaces: high rise fire) | Why stock markets suddenly crash | stock market crash |
 | Wed 25 | 1 | 🇺🇸 Thanksgiving travel rush | Why holiday travel brings more crashes and delays | Thanksgiving travel |
 | Wed 25 | 2 | 🇷🇺 An-12 military cargo plane crash, Kemerovo (Nov 17) | Why Soviet-era planes are still flying | Russian plane crash |
-| Wed 25 | 3 | 🇬🇧 Met Office heavy rain warning (Nov 17) | Why the UK floods so often | UK flooding |
+| Wed 25 | 3 | 🇷🇺 Russian corvette Merkury sunk by sea drones in Benghazi, Libya (Nov 22; Ukraine claimed Nov 23) (RESEARCH PICK 2026-11-24, replaces: UK flooding) | How sea drones sink warships | sea drones |
 | Thu 26 | 1 | 🇺🇸 Thanksgiving = top day for US cooking fires | Why turkey fryers explode | turkey fryer fire |
 | Thu 26 | 2 | 🇺🇸 Tanker hits riverboat, New Orleans (Nov 13) | How big ships collide on rivers | ship collision |
 | Thu 26 | 3 | 🇨🇳🇯🇵 Typhoon Champi (verify date) | Why typhoons still hit China and Japan late in the year | typhoon |
@@ -51,3 +51,4 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 | From | Hook (news) | Explainer topic | Main keyword |
 |---|---|---|---|
 | Tue 24 #3 (swapped 2026-11-23) | 🇨🇳 High-rise fire in Taiyuan, Shanxi (Nov 8; not Nov 10) | Why fire spreads so fast in tall buildings | high rise fire |
+| Wed 25 #3 (swapped 2026-11-24) | 🇬🇧 Met Office heavy rain warning (Nov 17); use with the next named UK storm | Why the UK floods so often | UK flooding |
