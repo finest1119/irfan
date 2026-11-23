@@ -28,7 +28,7 @@
     "fallback_model": "gemini-3.1-flash-tts-preview",
     "voice": "Orus",
     "director_notes": "Male documentary-style news explainer for a US/UK social video. Firm and authoritative, confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Kyiv = KEE-iv, Dnipro = dnee-PRO, Arnhem = ARN-hem, Remagen = RAY-mah-gen, Rhine = RINE.",
-    "pause_between_beats": 0.3
+    "pause_between_beats": 0.2
   },
   "music": null,
   "render": {

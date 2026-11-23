@@ -222,6 +222,21 @@ def trim_silence(pcm, thresh=300, keep=0.06):
     return a[i:j].tobytes()
 
 
+def trim_pauses(pcm, thresh=600, lead=0.03, tail=0.08, win=0.01):
+    """Envelope-based trim used when joining beats: drops the TTS model's own leading/trailing
+    breath and room-tone (below `thresh` peak per 10 ms) so beat joins don't leave ~1 s of air.
+    Irfan (23 Nov 2026): pauses between scenes felt too long -> keep joins tight."""
+    import array
+    a = array.array("h", pcm)
+    n, w = len(a), max(1, int(win * RATE))
+    loud = [k for k in range(0, n, w) if max(abs(v) for v in a[k:k + w]) >= thresh]
+    if not loud:
+        return pcm
+    i = max(0, loud[0] - int(lead * RATE))
+    j = min(n, loud[-1] + w + int(tail * RATE))
+    return a[i:j].tobytes()
+
+
 def run(episode_path, workdir, only=None, force=False):
     ep = json.load(open(episode_path))
     t = ep["tts"]
@@ -261,11 +276,11 @@ def run(episode_path, workdir, only=None, force=False):
     if only:
         return
     # join
-    gap = b"\x00\x00" * int(t.get("pause_between_beats", 0.3) * RATE)
+    gap = b"\x00\x00" * int(t.get("pause_between_beats", 0.2) * RATE)
     lead = b"\x00\x00" * int(0.15 * RATE)
     joined, timings, cur = lead, [], len(lead)
     for k, beat in enumerate(ep["beats"]):
-        pcm = read_pcm(os.path.join(adir, "beat_%s.wav" % beat["id"]))
+        pcm = trim_pauses(read_pcm(os.path.join(adir, "beat_%s.wav" % beat["id"])))
         start = cur / (RATE * WIDTH)
         joined += pcm
         cur += len(pcm)
