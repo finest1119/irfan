@@ -109,7 +109,17 @@ sun, procedural sky fallback), `ph_detail()` (Poly Haven PBR detail on any mater
 | `pontoon_v2` | pontoon segments float in and lock into a bridge, then cars cross | pontoon | `float_cue`, `mass_cue` |
 | `arteries_v2` | glowing traffic streams; pinched bridge slows the flow, teal bypass on cue | pinch | `pinch`, `bypass`, `pinch_cue`, `backup_cue` |
 | `city_outro` | crane-up over the river city | – | `cam0`, `cam1` |
+| `market_hook` (`scene_lib_v2_market`) | financial-district plaza in the river city's downtown: giant glowing 3D line climbs in front of the index wall, plunges red on `drop_cue`; wall / side screens' candles flip red (side screens on `left_cue` / `right_cue`); camera pulls back | line_top, line_low | `drop_cue`, `left_cue`, `right_cue`, `cam0/1`, `tgt0/1` |
+| `stairs_elevator_v2` | `mode` drop: glowing price ball hops up a marble staircase and rides a glass elevator straight down on `drop_cue`; `mode` long: long staircase with three short elevator drops, red strips light on `name_cue` | ball | `mode`, `drop_cue`, `name_cue`, `cam0/1` |
+| `bubble_v2` | soap bubble tethered to a gold coin stack ("profits") over the plaza fountain; `mode` inflate (grows on `grow_cue`) / pop (red paper plane touches it on `pop_cue`, pops into confetti) | bubble, profit, news | `mode`, `grow_cue`, `profit_cue`, `pop_cue` |
+| `dominoes_v2` | ~70 big lacquered dominoes in a curving row on the plaza; topple one after another from `topple_cue` (step fitted to the beat) | first, last | `topple_cue`, `step` |
+| `market_outro` | crane-up from the index wall over downtown to the river | – | `cam0/1`, `tgt0/1` |
 
+Market plaza: `scene_lib_v2_market.build_market_world()` = `build_city_world` with `exclude_blocks` (city blocks
+whose centre falls in a rect get no streets/buildings; random draws are kept so the rest of the city is unchanged)
++ paving, index wall, two side screens (emissive candles/grid only, no glyphs), 3D line, fountain, planters, both
+stair sculptures and the domino row. Blender 5.3 ignores the new-keyframe interpolation preference that `L.kf()`
+sets, so CONSTANT keys must be set explicitly (`_set_const()` in the market module) or show/hide keys fade.
 Bridge keys (south -> north): `south` (cable-stayed), `rail` (truss), `paton` (girder), `metro` (low arch),
 `north_arch` (big arch), `far_north` (girder). Names are overlay labels in episode.json, never 3D text.
 New builders: add `def b_x(ctx, p)` to a `scene_lib_v2_*.py` module and register it in `S.V2_BUILDERS`; call

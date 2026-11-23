@@ -370,3 +370,21 @@ Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned).
 - `overlay_v2.py` Card: panel top pinned at 12.6 %; a multi-line title with a `sub` is joined to one line when it fits;
   sub line 30 px under the panel with an assert that it stays clear of the captions.
 - Render 3010 s wall (3 procs) + 3-beat re-render; qc_v2 PASS, qc_full auto PASS, all 6 sheets reviewed.
+
+# "stock market crash" built in v2, 23 Nov 2026
+
+Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned). Nothing committed, pushed or posted.
+- New `pipeline/blender/scene_lib_v2_market.py` (registered in `render_episode_v2.load_builders`): financial plaza
+  carved into the river-city downtown (`build_city_blocks(exclude=...)`, RNG draws kept so the city is otherwise
+  identical), index wall + side screens (emissive candles only), giant 3D line, marble stair sculptures with glass
+  elevators, fountain + gold coin stack, domino row. Builders: market_hook, stairs_elevator_v2 (drop / long),
+  bubble_v2 (inflate / pop -> confetti), dominoes_v2, market_outro (outro switched from city_outro).
+- Blender 5.3 ignores the keyframe interpolation preference used by `L.kf()` -> CONSTANT show/hide keys faded in
+  (candles/lines visible early). Fixed in the market module with explicit `_set_const()`. Other v2 libs that rely
+  on CONSTANT keys (city barrier dashes, hit rings) are probably affected the same way: not touched.
+- Voice (Sadaltager): "Here are the three big reasons." moved from the bubble beat to the end of the question beat
+  (the teaser start made the TTS read the director notes 3x, same words). The forced beat TTS repeated its last
+  sentence 4 times in a row -> trimmed after the first "dominoes" (backup `beat_forced.wav.repeat.bak`); a lip click
+  at its start attenuated (`.click.bak`). 83.37 s total. Forced beat topple cue "triggers" -> "drop".
+- Render: 2039 s wall (21 jobs, 3 procs) + re-render of beats 1/5/7 865 s after the sheet review (ball in caption
+  band, domino camera, takeaway camera showed the wall behind the card). qc_v2 PASS, qc_full auto PASS, 6 sheets reviewed.

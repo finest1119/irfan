@@ -325,9 +325,11 @@ def _gable(bm, cx, cy, z0, w, d, rh, rot, mi):
         bm.faces.new(f).material_index = mi
 
 
-def build_city_blocks(ctx, rng, tree_t, region=(-4200.0, 4200.0)):
+def build_city_blocks(ctx, rng, tree_t, region=(-4200.0, 4200.0), exclude=()):
     """Street grid on both banks (one mesh), buildings on the blocks merged into ONE mesh (10k+ buildings as
-    separate objects took > 30 min to build), a few green squares."""
+    separate objects took > 30 min to build), a few green squares. `exclude` = [(x0, x1, y0, y1), ...]: blocks whose
+    centre falls inside get no street/buildings/trees (open space, e.g. the market plaza); the random draws are
+    still made so the rest of the city is identical with or without it."""
     mats = _city_mats()
     road_m = asphalt_mat("street_v2", hexc("55585d"))
     blk, street = 135.0, 14.0
@@ -347,13 +349,17 @@ def build_city_blocks(ctx, rng, tree_t, region=(-4200.0, 4200.0)):
                     ok = False
             if not ok:
                 continue
-            _fast_box(bm_roads, x + street / 2, cy, 0.0, street, blk, 0.3, 0, 0)
-            _fast_box(bm_roads, cx, y + street / 2, 0.0, blk, street, 0.4, 0, 0)
+            emit = not any(ex[0] <= cx <= ex[1] and ex[2] <= cy <= ex[3] for ex in exclude)
+            if emit:
+                _fast_box(bm_roads, x + street / 2, cy, 0.0, street, blk, 0.3, 0, 0)
+                _fast_box(bm_roads, cx, y + street / 2, 0.0, blk, street, 0.4, 0, 0)
             dist_river = abs(cx - xc(cy)) - RIVER_W / 2
             downtown = math.exp(-(((cx + 700) / 900.0) ** 2 + ((cy - 700) / 1100.0) ** 2))
             if rng.random() < 0.07:     # green square
                 for _ in range(10):
-                    tree_pts.append((rng.uniform(x + 25, x + blk - 12), rng.uniform(y + 25, y + blk - 12)))
+                    tp = (rng.uniform(x + 25, x + blk - 12), rng.uniform(y + 25, y + blk - 12))
+                    if emit:
+                        tree_pts.append(tp)
                 continue
             n = rng.choice((2, 3, 3, 4))
             for k in range(n):
@@ -379,8 +385,11 @@ def build_city_blocks(ctx, rng, tree_t, region=(-4200.0, 4200.0)):
                 qx += rng.uniform(-3, 3)
                 qy += rng.uniform(-3, 3)
                 mi = rng.randrange(8)
+                gable = kind == "low" and rng.random() < 0.5
+                if not emit:
+                    continue
                 _fast_box(bm_b, qx, qy, 0.0, w, d, h, rot, mi)
-                if kind == "low" and rng.random() < 0.5:
+                if gable:
                     _gable(bm_b, qx, qy, h, w + 0.8, d + 0.8, d * 0.22, rot, 9)
                 else:
                     _fast_box(bm_b, qx, qy, h, w + 0.6, d + 0.6, 1.0, rot, 8)
@@ -685,7 +694,7 @@ def build_city_world(ctx, p, rng=None):
     tree_t = build_terrain(ctx, rng)
     _TREES[:] = list(tree_t)
     t1 = _t.time()
-    build_city_blocks(ctx, rng, tree_t)
+    build_city_blocks(ctx, rng, tree_t, exclude=p.get("exclude_blocks", ()))
     print("[v2 city] terrain %.1fs, blocks %.1fs" % (t1 - t0, _t.time() - t1))
     # (far hills removed: under the horizon haze they read as flat floating discs)
     brs = {}

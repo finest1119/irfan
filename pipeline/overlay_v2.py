@@ -719,6 +719,8 @@ class History(Item):
                 d.text((x0 + 50 + fy.getlength(year.strip()) + 30 + ox, y - 30 + oy), place.strip(), font=fp,
                        fill=WHITE + (255,), anchor="lm")
                 d.text((x0 + 50 + ox, y + 46 + oy), sub, font=fs, fill=(225, 230, 240, 255), anchor="lm")
+                if self.s.get("icon", "bridge") != "bridge":  # episodes not about bridges: no icon
+                    return
                 # small arch-bridge icon
                 bx, by = x0 + pw - 120, y + 10
                 d.arc((bx - 70 + ox, by - 50 + oy, bx + 70 + ox, by + 70 + oy), 200, 340, fill=WHITE + (230,), width=6)

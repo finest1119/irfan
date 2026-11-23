@@ -27,6 +27,7 @@ import scene_lib_v2 as S  # noqa: E402
 def load_builders():
     import scene_lib_v2_air  # noqa: F401  (registers into S.V2_BUILDERS)
     import scene_lib_v2_city  # noqa: F401
+    import scene_lib_v2_market  # noqa: F401
     return S.V2_BUILDERS
 
 

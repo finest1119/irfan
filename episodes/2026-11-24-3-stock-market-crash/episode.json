@@ -83,7 +83,7 @@
     },
     {
       "id": "question",
-      "text": "So how can so much money vanish in just a few days? Because markets usually climb by the stairs, but fall by the elevator.",
+      "text": "So how can so much money vanish in just a few days? Because markets usually climb by the stairs, but fall by the elevator. Here are the three big reasons.",
       "shot": {
         "builder": "stairs_elevator_v2",
         "params": {
@@ -113,7 +113,7 @@
     },
     {
       "id": "bubble",
-      "text": "Here are the three big reasons. One: expectations. When everyone gets excited about a new technology, prices can run far ahead of real profits. People call that a bubble.",
+      "text": "One: expectations. When everyone gets excited about a new technology, prices can run far ahead of real profits. People call that a bubble.",
       "shot": {
         "builder": "bubble_v2",
         "params": {
@@ -217,7 +217,7 @@
       "shot": {
         "builder": "dominoes_v2",
         "params": {
-          "topple_cue": "triggers"
+          "topple_cue": "drop"
         },
         "overlays": [
           {
@@ -275,7 +275,8 @@
             "cues": [
               "1987",
               "2020"
-            ]
+            ],
+            "icon": "none"
           }
         ]
       }
@@ -314,7 +315,7 @@
       "id": "outro",
       "text": "Did last week's drop worry you, or did you ignore it? Tell us in the comments, and send this to someone who checks their stocks every hour. Because that's how the Nasdaq lost ten percent in one week.",
       "shot": {
-        "builder": "city_outro",
+        "builder": "market_outro",
         "params": {},
         "overlays": [
           {
