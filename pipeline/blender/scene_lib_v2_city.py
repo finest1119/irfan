@@ -393,8 +393,81 @@ def build_city_blocks(ctx, rng, tree_t, region=(-4200.0, 4200.0)):
     print("[v2 city] %d buildings (one mesh)" % n_b)
 
 
+_TREES = []
+
+
+def far_ground_mat(name="far_ground_city_v2", color=hexc("6f8a55"), haze_mul=6.0):
+    """Plain countryside green with a much stronger distance haze than the city (reaches HAZE by ~15 km)."""
+    m = bpy.data.materials.new(name)
+    N, Lk = m.node_tree.nodes, m.node_tree.links
+    pr = N.get("Principled BSDF")
+    pr.inputs["Roughness"].default_value = 0.95
+    obj = S._coord(N, Lk, "Object")
+    fac, _ = S._noise_var(N, Lk, obj, 0.0015, 0.12)
+    Lk.new(S._mul_col(N, Lk, tuple(color), fac), pr.inputs["Base Color"])
+    L._fog_wrap(m, pr.outputs[0], density_scale=haze_mul)
+    return m
+
+
+def horizon_haze(scene, lo=-0.004, hi=0.045):
+    """Camera rays only: the HDRI below/at the horizon (its own dark tree line) is replaced by the flat haze
+    colour, blending back to the HDRI sky by ~2.5 deg. Same colour/strength as the shader fog emission, so fully
+    hazed far ground meets it seamlessly. Lighting (non-camera rays) is unchanged."""
+    w = scene.world
+    if w is None:
+        return
+    N, Lk = w.node_tree.nodes, w.node_tree.links
+    bg = next((n for n in N if n.type == "BACKGROUND"), None)
+    if bg is None or not bg.inputs["Color"].is_linked:
+        return
+    src = bg.inputs["Color"].links[0].from_socket
+    st = bg.inputs["Strength"].default_value or 1.0
+    tc = N.new("ShaderNodeTexCoord")
+    nv = N.new("ShaderNodeVectorMath")
+    nv.operation = "NORMALIZE"
+    Lk.new(tc.outputs["Generated"], nv.inputs[0])
+    sep = N.new("ShaderNodeSeparateXYZ")
+    Lk.new(nv.outputs[0], sep.inputs[0])
+    mr = N.new("ShaderNodeMapRange")
+    mr.interpolation_type = "SMOOTHSTEP"
+    mr.inputs["From Min"].default_value = lo
+    mr.inputs["From Max"].default_value = hi
+    mr.inputs["To Min"].default_value = 1.0
+    mr.inputs["To Max"].default_value = 0.0
+    Lk.new(sep.outputs["Z"], mr.inputs["Value"])
+    lp = N.new("ShaderNodeLightPath")
+    mul = N.new("ShaderNodeMath")
+    mul.operation = "MULTIPLY"
+    Lk.new(mr.outputs["Result"], mul.inputs[0])
+    Lk.new(lp.outputs["Is Camera Ray"], mul.inputs[1])
+    mix = N.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    Lk.new(mul.outputs[0], mix.inputs["Factor"])
+    Lk.new(src, mix.inputs["A"])
+    hz = tuple(S.HAZE[:3])
+    mix.inputs["B"].default_value = (hz[0] / st, hz[1] / st, hz[2] / st, 1.0)
+    Lk.new(mix.outputs["Result"], bg.inputs["Color"])
+
+
+def clear_trees(points, r=70.0):
+    """Delete tree instances within r (xy) of any point: keeps low camera paths out of tree crowns."""
+    meshes = set(t.name for t in _TREES)
+    gone = 0
+    for o in list(bpy.data.objects):
+        if o.type != "MESH" or o.data is None or o.data.name not in meshes:
+            continue
+        if any((o.location.x - x) ** 2 + (o.location.y - y) ** 2 < r * r for x, y in points):
+            bpy.data.objects.remove(o, do_unlink=True)
+            gone += 1
+    print("[v2 city] cleared %d trees near the camera path" % gone)
+
+
+def _seg_pts(a, b, n=8):
+    return [(a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n) for k in range(n + 1)]
+
+
 def build_hills_far(rng):
-    m = S.pbr("hill_city_v2", hexc("5b7650"), 0.95, var=0.15, var_scale=0.002)
+    m = far_ground_mat("hill_city_v2", hexc("5b7650"), haze_mul=3.0)
     for i in range(26):
         ang = rng.uniform(0, 2 * math.pi)
         dist = rng.uniform(7500, 10000)
@@ -530,7 +603,24 @@ def bridge_traffic(ctx, br, rng, per_lane=6, speed=13.0, stop_f=None, stopped=Fa
     return cars
 
 
-def hit_marker(ctx, br, f_on, name=None, radius=None):
+def _annulus(bm, r, w, seg=96):
+    """Flat ring (faces) of radius r and width w in the xy plane. (An edge-only circle + WIREFRAME modifier gives
+    no geometry at all: that is why the hit rings never showed.)"""
+    inner, outer = [], []
+    for k in range(seg):
+        a = 2 * math.pi * k / seg
+        c, s_ = math.cos(a), math.sin(a)
+        inner.append(bm.verts.new(((r - w / 2) * c, (r - w / 2) * s_, 0.0)))
+        outer.append(bm.verts.new(((r + w / 2) * c, (r + w / 2) * s_, 0.0)))
+    for k in range(seg):
+        j = (k + 1) % seg
+        bm.faces.new((inner[k], outer[k], outer[j], inner[j]))
+    for f in bm.faces:
+        if f.normal.z < 0:
+            f.normal_flip()
+
+
+def hit_marker(ctx, br, f_on, name=None, radius=None, widths=(3.2, 1.6)):
     """Bridge 'hit' = it dims, a red ring pulses on the water around its middle. (No explosion, no smoke.)"""
     name = name or "hit_%s" % br["key"]
     for sock in br["socks"]:
@@ -539,12 +629,11 @@ def hit_marker(ctx, br, f_on, name=None, radius=None):
             L.kf_socket(sock, f_on, 0.0, "LINEAR")
         L.kf_socket(sock, f_on + 12, 0.75, "LINEAR")
     r = radius or 150.0
-    for k, (rr, th) in enumerate(((r, 3.2), (r * 0.82, 1.6))):
+    for k, (rr, th) in enumerate(((r, widths[0]), (r * 0.82, widths[1]))):
         m, sock = L.add_mat("%s_ring%d" % (name, k), hexc("ff2a2a"), 0.0)
         bm = bmesh.new()
-        bmesh.ops.create_circle(bm, cap_ends=False, segments=96, radius=rr)
+        _annulus(bm, rr, th, 96)
         o = S.obj("%s_ring%d" % (name, k), S.mesh_from_bm(name, bm, [m]), (xc(br["y"]), br["y"], WATER_Z + 0.4))
-        o.modifiers.new("w", "WIREFRAME").thickness = th
         o.visible_shadow = False
         L.kf_socket(sock, 1, 0.0, "CONSTANT")
         if f_on > 1:
@@ -585,15 +674,20 @@ def build_city_world(ctx, p, rng=None):
     """Sky + terrain + city + bridges (+ normal traffic on non-listed bridges). Returns {key: bridge info}."""
     rng = rng or random.Random(p.get("seed", 31))
     S.daylight(ctx, p.get("sun_az", -25.0), 40.0, hdri=p.get("hdri", True))
-    L.fog(0.00016, S.HAZE, start=500.0)
-    S.plane_obj("far_ground", 40000, 40000, (0, 0, -4.0), S.ground_mat())
+    # light aerial perspective only (the 0.00016 airport value washed the 2-5 km city views out to white)
+    L.fog(p.get("fog", 0.000045), S.HAZE, start=1200.0)
+    horizon_haze(ctx.scene)
+    # far ground sits BELOW the river bed (it used to sit at z -4, above the water at -7, and buried the river);
+    # it fades to the haze colour by 10-15 km so it meets the hazed horizon of the world without a seam
+    S.plane_obj("far_ground", 40000, 40000, (0, 0, WATER_Z - 4.0), far_ground_mat())
     import time as _t
     t0 = _t.time()
     tree_t = build_terrain(ctx, rng)
+    _TREES[:] = list(tree_t)
     t1 = _t.time()
     build_city_blocks(ctx, rng, tree_t)
     print("[v2 city] terrain %.1fs, blocks %.1fs" % (t1 - t0, _t.time() - t1))
-    build_hills_far(rng)
+    # (far hills removed: under the horizon haze they read as flat floating discs)
     brs = {}
     for key, y, kind in BRIDGES:
         brs[key] = make_bridge(key, y, kind)
@@ -711,7 +805,7 @@ def b_city_hook(ctx, p):
     f_hit = ctx.word_time(p.get("hit_cue", "hit"), 0.45)
     hit = p.get("hit", list(HIT))
     for i, key in enumerate(hit):
-        hit_marker(ctx, brs[key], f_hit + 6 * i)
+        hit_marker(ctx, brs[key], f_hit + 6 * i, widths=tuple(p.get("ring_w", (12.0, 6.0))))
     _flow_traffic(ctx, brs, rng, stop={k: f_hit + 6 * i for i, k in enumerate(hit)})
     embankment_traffic(ctx, rng)
     for key in hit:
@@ -747,9 +841,8 @@ def b_city_wide(ctx, p):
         for i, (key, br) in enumerate(brs.items()):
             m, sock = L.add_mat("brring_%s" % key, hexc("2ee6c8"), 0.0)
             bm = bmesh.new()
-            bmesh.ops.create_circle(bm, cap_ends=False, segments=72, radius=110.0)
+            _annulus(bm, 110.0, 9.0, 72)
             o = S.obj("brring_%s" % key, S.mesh_from_bm("brring", bm, [m]), (xc(br["y"]), br["y"], DECK_Z + 4))
-            o.modifiers.new("w", "WIREFRAME").thickness = 7.0
             o.visible_shadow = False
             L.kf_socket(sock, 1, 0.0, "CONSTANT")
             L.kf_socket(sock, f_br + 3 * i, 0.0, "LINEAR")
@@ -846,10 +939,12 @@ def b_utility_bridge_v2(ctx, p):
         movers(ctx, "pl_%s" % nm, pts, 14, 60.0, glow, size=1.25, start=f_on, slow=(f_dim, 0.0), z_off=0.0)
     hit_marker(ctx, br, f_dim, radius=120.0)
     _anchor_bridge(ctx, "bridge", br, z=DECK_Z - 4)
-    ex = xr(by) + 25.0
-    c0, t0 = p.get("cam0", (ex + 20.0, by - 150.0, 6.0)), (xc(by) + 40.0, by, -1.0)
+    # camera on the promenade edge (not inside the park: the lawn filled the lower half of the frame)
+    c0, t0 = p.get("cam0", (xr(by - 150.0) + 3.0, by - 150.0, 7.0)), (xc(by) + 40.0, by, -2.0)
+    c1 = (xr(by - 115.0) + 3.0, by - 115.0, 5.0)
+    clear_trees(_seg_pts(c0, c1) + _seg_pts(c0, t0), r=45.0)
     _cam(ctx, c0, t0, lens=p.get("lens", 24))
-    A._cam_keys(ctx, [(1, c0, t0), (T, (ex + 10.0, by - 115.0, 4.0), (xc(by) + 10.0, by, 0.0))])
+    A._cam_keys(ctx, [(1, c0, t0), (T, c1, (xc(by) + 10.0, by, -1.0))])
 
 
 def b_detour_v2(ctx, p):
@@ -897,6 +992,7 @@ def b_city_plate(ctx, p):
     br = brs[p.get("bridge", "north_arch")]
     by = br["y"]
     c0 = (xl(by - 420) - 40.0, by - 420.0, 30.0)
+    clear_trees(_seg_pts(c0, (xl(by - 380) - 35.0, by - 380.0)), r=45.0)
     _cam(ctx, c0, (xc(by), by, 25.0), lens=p.get("lens", 26))
     A._cam_keys(ctx, [(1, c0, (xc(by), by, 25.0)), (T, (xl(by - 380) - 35.0, by - 380.0, 34.0), (xc(by) + 60, by, 25.0))])
 
@@ -943,10 +1039,12 @@ def b_pontoon_v2(ctx, p):
     pe = L.link(bpy.data.objects.new("anc_pontoon", None))
     pe.location = (xc(by), by, WATER_Z + 2)
     S.anchor(ctx, "pontoon", pe)
-    c0 = p.get("cam0", (xr(by) + 70.0, by - 330.0, 38.0))
-    t0 = (xc(by) - 20.0, by + 60.0, -2.0)
+    # close enough that the pontoon segments read (from 330 m away they were a thin dark line)
+    c0 = p.get("cam0", (xr(by - 170.0) + 6.0, by - 170.0, 28.0))
+    t0 = (xc(by) - 30.0, by + 30.0, -4.0)
+    clear_trees(_seg_pts(c0, (c0[0] - 10, c0[1] + 40)) + _seg_pts(c0, t0), r=45.0)
     _cam(ctx, c0, t0, lens=p.get("lens", 24))
-    A._cam_keys(ctx, [(1, c0, t0), (T, (c0[0] - 10, c0[1] + 40, c0[2] - 6), (xc(by) - 40.0, by + 20.0, -3.0))])
+    A._cam_keys(ctx, [(1, c0, t0), (T, (c0[0] - 8, c0[1] + 30, c0[2] - 5), (xc(by) - 40.0, by + 10.0, -4.0))])
 
 
 def b_arteries_v2(ctx, p):
@@ -992,9 +1090,10 @@ def b_city_outro(ctx, p):
     _flow_traffic(ctx, brs, rng, per_lane=4)
     embankment_traffic(ctx, rng)
     by = bridge_y("north_arch")
-    c0 = p.get("cam0", (xr(by - 300) + 60.0, by - 300.0, 22.0))
+    c0 = p.get("cam0", (xr(by - 300) + 6.0, by - 300.0, 22.0))
     t0 = (xc(by), by, 30.0)
     c1 = p.get("cam1", (1700.0, -2200.0, 1500.0))
+    clear_trees(_seg_pts(c0, (c0[0] + 200, c0[1] - 300)) + _seg_pts(c0, t0), r=45.0)
     t1 = (0.0, 600.0, 0.0)
     _cam(ctx, c0, t0, lens=p.get("lens", 28))
     A._cam_keys(ctx, [(1, c0, t0), (int(T * 0.35), (c0[0] + 200, c0[1] - 300, 160.0), (xc(by), by, 20.0)), (T, c1, t1)])

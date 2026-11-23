@@ -47,7 +47,27 @@
       "shot": {
         "builder": "city_hook",
         "params": {
-          "hit_cue": "hit"
+          "hit_cue": "hit",
+          "cam0": [
+            -1100.0,
+            -5200.0,
+            1250.0
+          ],
+          "tgt0": [
+            250.0,
+            -700.0,
+            0.0
+          ],
+          "cam1": [
+            -950.0,
+            -4700.0,
+            1120.0
+          ],
+          "tgt1": [
+            250.0,
+            -550.0,
+            0.0
+          ]
         },
         "overlays": [
           {
@@ -90,7 +110,8 @@
             ],
             "cues": [
               "traffic"
-            ]
+            ],
+            "y": 0.74
           }
         ]
       }
@@ -101,7 +122,8 @@
       "shot": {
         "builder": "city_wide",
         "params": {
-          "mode": "wide"
+          "mode": "wide",
+          "sun_az": 60.0
         },
         "overlays": [
           {
@@ -149,7 +171,8 @@
             0.0,
             300.0,
             0.0
-          ]
+          ],
+          "sun_az": 60.0
         },
         "overlays": [
           {

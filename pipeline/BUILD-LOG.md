@@ -353,3 +353,20 @@ cockpit_workload_v2, crosswind_v2, tightrope_v2 (meadow), cabin_v2, airport_outr
 **Not done**: video B render/QC (on hold for Irfan's review of A). B's episode.json already holds the v2 shot plan
 (`episode.v1.json` = old). The 10k city buildings are now merged into one mesh, but this build time is NOT measured yet (first version
 with one object per building took 36 min); no B still has been looked at yet.
+
+# "bridges in war" rendered in v2, 23 Nov 2026
+
+Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned). Nothing committed, pushed or posted.
+- Voice: cached Orus beats re-joined with `trim_pauses` + 0.2 s gaps -> 80.66 s (was 88.7 s). No new TTS calls.
+- City build time measured: 41-100 s per job (merged-mesh city), so no further build work needed.
+- City world fixes (`scene_lib_v2_city.py`): `far_ground` sat at z -4 above the water (-7) and buried the whole river
+  -> moved below the river bed with its own strong haze; fog 0.00016 -> 0.000045 (start 1200); `horizon_haze()` blends
+  the HDRI below ~2.5 deg to the fog colour for camera rays (hid the HDRI's dark tree line); far hills removed (read as
+  floating discs); hit/teal rings were edge-only circles + WIREFRAME = no geometry -> `_annulus()`; `clear_trees()`
+  on low camera paths; utility/pontoon/outro cameras moved to the promenade edge; pontoon camera closer.
+  (`scene_lib_v2_air.py` line ~347 uses the same circle+WIREFRAME pattern: probably invisible too, not touched.)
+- Episode: hook camera reframed (all three hit bridges in frame), hook chip y 0.74, `sun_az` 60 on beats 1-2
+  (sun glint blob on the water).
+- `overlay_v2.py` Card: panel top pinned at 12.6 %; a multi-line title with a `sub` is joined to one line when it fits;
+  sub line 30 px under the panel with an assert that it stays clear of the captions.
+- Render 3010 s wall (3 procs) + 3-beat re-render; qc_v2 PASS, qc_full auto PASS, all 6 sheets reviewed.

@@ -336,19 +336,29 @@ class Card(Item):
         if a <= 0.004:
             return []
         lines = self.s["text"].split("\n")
-        fh = font(50 if max(len(x) for x in lines) <= 26 else 44, 8)
-        rise = round(14 * (1 - ease((t - self.t0) / self.anim)))
         sub = self.s.get("sub")
+        fh = font(50 if max(len(x) for x in lines) <= 26 else 44, 8)
+        if sub and len(lines) > 1:
+            # a two-line card + sub line cannot fit between the 12 % line and the captions (it used to poke above
+            # 12 % and the sub touched the caption): join the lines when the one-line title fits the width
+            one = " ".join(x.strip() for x in lines)
+            for size in (50, 46, 42):
+                if font(size, 8).getlength(one) + 2 * 42 + 12 <= W * 0.92:
+                    lines, fh = [one], font(size, 8)
+                    break
+        rise = round(14 * (1 - ease((t - self.t0) / self.anim)))
         out = []
 
         def mk():
             lh = fh.size * 1.18
             ph = lh * len(lines) + 40
-            cy = CARD_Y * H - 26 + (len(lines) - 1) * lh / 2 * 0.5
+            ph_real = lh * len(lines) + 40 - (lh - fh.size * 1.05)
+            # panel top pinned just under the 12 % line (was centred on CARD_Y and crossed it)
+            cy = (SAFE[0] + 0.006) * H + ph_real / 2
             box = (0, cy - ph / 2 - 10, W, cy + ph / 2 + 10)
             sp = sprite_from(lambda d, ox, oy: _panel_text(d, ox, oy, W / 2, cy, lines, fh), box,
                              blur=8, alpha=0.45, glow=14, glow_alpha=0.18)
-            return sp, cy + ph / 2
+            return sp, cy + ph_real / 2
         sp, bottom = self.cached("panel", mk)
         out.append(Sprite(fade(sp.img, a), sp.x, sp.y + rise))
         if sub:
@@ -360,7 +370,9 @@ class Card(Item):
                 f2 = font(36, 2)
 
                 def mk2():
-                    y = bottom + 34
+                    y = bottom + 30
+                    # two-line captions start at about CAP_BAND[0]: keep the sub line clear of them
+                    assert y + 22 <= CAP_BAND[0] * H - 8, "card sub line runs into the captions"
                     return sprite_from(lambda d, ox, oy: d.text((W / 2 + ox, y + oy), sub, font=f2, fill=WHITE + (245,),
                                                                 anchor="mm"), (0, y - 30, W, y + 30))
                 s2 = self.cached("sub", mk2)
