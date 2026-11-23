@@ -24,7 +24,7 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 | Mon 23 | 3 | 🇺🇸🇨🇳🇷🇺 Trump–Xi–Putin talks in Shenzhen | How nuclear arms reduction deals work | nuclear weapons |
 | Tue 24 | 1 | 🇺🇸 Plane crash at Hawkins Field, Jackson MS (Nov 21) | Why most plane crashes happen at takeoff or landing | plane crash |
 | Tue 24 | 2 | 🇷🇺 Russian strikes on Kyiv bridges | Why bridges are strategic targets in war | bridges in war |
-| Tue 24 | 3 | 🇨🇳 High-rise fire in northern China (Nov 10) | Why fire spreads so fast in tall buildings | high rise fire |
+| Tue 24 | 3 | 🇺🇸🇯🇵 AI selloff: Nasdaq's worst week since 2020 (week to Nov 20), Nikkei −5% (Nov 20) (RESEARCH PICK 2026-11-23, replaces: high rise fire) | Why stock markets suddenly crash | stock market crash |
 | Wed 25 | 1 | 🇺🇸 Thanksgiving travel rush | Why holiday travel brings more crashes and delays | Thanksgiving travel |
 | Wed 25 | 2 | 🇷🇺 An-12 military cargo plane crash, Kemerovo (Nov 17) | Why Soviet-era planes are still flying | Russian plane crash |
 | Wed 25 | 3 | 🇬🇧 Met Office heavy rain warning (Nov 17) | Why the UK floods so often | UK flooding |
@@ -46,3 +46,8 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 - War topics (Tue 24 #2, Fri 27 #2–3): Meta may limit monetization. Keep them technical/educational; swap for evergreen if reach drops.
 - If bigger news breaks, replace the weakest slot that day.
 - Sources: Wikipedia Current events Nov 2026, NPR, Democracy Now, WAPT, Aviation Safety Network, Japan Times, SCMP, UKNIP.
+
+## Backlog
+| From | Hook (news) | Explainer topic | Main keyword |
+|---|---|---|---|
+| Tue 24 #3 (swapped 2026-11-23) | 🇨🇳 High-rise fire in Taiyuan, Shanxi (Nov 8; not Nov 10) | Why fire spreads so fast in tall buildings | high rise fire |
