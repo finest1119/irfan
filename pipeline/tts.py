@@ -62,6 +62,7 @@ def synth(client, model, voice, prompt):
     for part in resp.candidates[0].content.parts:
         if part.inline_data and part.inline_data.data:
             pcm += part.inline_data.data
+    pcm = strip_wav_headers(pcm)
     if not pcm:
         raise RuntimeError("TTS returned no audio")
     um = resp.usage_metadata
@@ -157,6 +158,41 @@ def spoken_matches(wav_path, text):
     return ok, heard
 
 
+def strip_wav_headers(data):
+    """Gemini TTS parts sometimes arrive as complete WAV files (RIFF header + PCM).
+    Concatenating them raw puts the 44+ header bytes into the audio = an audible click
+    at every beat join. Remove every embedded RIFF...data header, keep only PCM."""
+    out, i = bytearray(), 0
+    while True:
+        j = data.find(b"RIFF", i)
+        if j < 0 or data[j + 8:j + 12] != b"WAVE":
+            if j >= 0:  # 'RIFF' bytes that are not a header: keep scanning past them
+                out += data[i:j + 4]
+                i = j + 4
+                continue
+            out += data[i:]
+            break
+        out += data[i:j]
+        k = data.find(b"data", j + 12)
+        if k < 0:
+            break
+        i = k + 8
+    # Gemini also appends a C2PA provenance chunk ("C2PA" + uint32 size + payload) that
+    # ends up after the PCM; played as audio it is a loud burst at the end of every beat.
+    while True:
+        c = out.find(b"C2PA")
+        if c < 0 or c + 8 > len(out):
+            break
+        size = int.from_bytes(out[c + 4:c + 8], "little")
+        end = c + 8 + size + (size & 1)
+        if end > len(out) + 1:  # not a real chunk header; leave the bytes alone
+            break
+        del out[c:min(end, len(out))]
+    if len(out) % 2:
+        out = out[:-1]
+    return bytes(out)
+
+
 def write_wav(path, pcm):
     with wave.open(path, "wb") as w:
         w.setnchannels(CHANNELS)
@@ -167,7 +203,7 @@ def write_wav(path, pcm):
 
 def read_pcm(path):
     with wave.open(path, "rb") as w:
-        return w.readframes(w.getnframes())
+        return strip_wav_headers(w.readframes(w.getnframes()))
 
 
 def trim_silence(pcm, thresh=300, keep=0.06):
