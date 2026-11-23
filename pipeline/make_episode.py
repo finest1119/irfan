@@ -1,8 +1,12 @@
 """Orchestrator: episode.json -> output/<keyword>.mp4 (+ .post.md).
 
 Usage:
-  .venv/bin/python pipeline/make_episode.py episodes/<id>/episode.json [--steps tts,captions,render,assemble,fb,post]
-        [--parallel N] [--only-shot K]
+  .venv/bin/python pipeline/make_episode.py episodes/<id>/episode.json [--steps ...] [--parallel N] [--only-shot K[,K]]
+
+Two pipelines, chosen by episode.json "pipeline" (missing = "v2", the standard since 23 Nov 2026):
+  v2  daytime HDRI worlds (scene_lib_v2*), all text as 2D overlays (overlay_v2.py), steps
+      tts,captions,textures,render,assemble,fb,post,qc ; frames in WORKDIR/frames_v2/, segments_v2/, tracks_v2/
+  v1  ("pipeline": "v1", old episodes only) navy look with 3D text, steps tts,captions,render,assemble,fb,post
 
 Steps (each is resumable / cached):
   tts       Gemini TTS per beat -> WORKDIR/audio/voice.wav + timings.json      (pipeline/tts.py)
@@ -174,6 +178,125 @@ def step_fb(final_path, fb_path, limit=10_000_000, target=9_300_000):
     raise SystemExit("fb copy still over %d bytes" % limit)
 
 
+# ================================================================ v2 pipeline (default since 23 Nov 2026)
+def is_v2(ep):
+    """v2 = daytime HDRI worlds + 2D overlays. Episodes made before 23 Nov 2026 carry "pipeline": "v1"."""
+    return ep.get("pipeline", "v2") == "v2"
+
+
+def step_textures_v2(workdir):
+    import v2_textures
+    v2_textures.make(os.path.join(workdir, "tex_v2"))
+
+
+def _render_job_v2(ep_path, workdir, idx, name, a, b, samples=None):
+    fdir = os.path.join(workdir, "frames_v2", name)
+    have = sum(os.path.exists(os.path.join(fdir, "%04d.jpg" % f)) for f in range(a, b + 1))
+    if have == b - a + 1:
+        return 0.0
+    os.makedirs(os.path.join(workdir, "logs_v2"), exist_ok=True)
+    t0 = time.time()
+    cmd = [BLENDER, "-b", "--factory-startup", "-P", os.path.join(ROOT, "pipeline", "blender", "render_episode_v2.py"),
+           "--", ep_path, workdir, str(idx), "--range", "%d-%d" % (a, b)]
+    if samples:
+        cmd += ["--samples", str(samples)]
+    env = dict(os.environ, PYTHONUNBUFFERED="1")
+    with open(os.path.join(workdir, "logs_v2", "render_%s_%04d.log" % (name, a)), "w") as lf:
+        r = subprocess.run(cmd, stdout=lf, stderr=subprocess.STDOUT, env=env)
+    if r.returncode != 0:
+        raise RuntimeError("Blender failed on %s %d-%d (see logs_v2/render_%s_%04d.log)" % (name, a, b, name, a))
+    dt = time.time() - t0
+    log("%s frames %d-%d rendered in %.0fs" % (name, a, b, dt))
+    return dt
+
+
+def drop_broken_frames(workdir):
+    """Delete truncated / unreadable JPEG frames (e.g. from an interrupted render) so they get re-rendered."""
+    from PIL import Image
+    root = os.path.join(workdir, "frames_v2")
+    bad = 0
+    if not os.path.isdir(root):
+        return 0
+    for d in sorted(os.listdir(root)):
+        for fn in sorted(os.listdir(os.path.join(root, d))):
+            fp = os.path.join(root, d, fn)
+            try:
+                with Image.open(fp) as im:
+                    im.load()
+            except Exception:
+                os.remove(fp)
+                bad += 1
+    if bad:
+        log("removed %d broken frame(s)" % bad)
+    return bad
+
+
+def step_render_v2(ep_path, workdir, parallel, only=None, chunk=150):
+    """One queue of frame-range jobs (each a headless Blender building the shot's world), `parallel` at a time."""
+    ep = json.load(open(ep_path))
+    tim = json.load(open(os.path.join(workdir, "audio", "timings.json")))["beats"]
+    fps = ep.get("render", {}).get("fps", 30)
+    drop_broken_frames(workdir)
+    jobs = []
+    for i, (b, t) in enumerate(zip(ep["beats"], tim)):
+        if only is not None and i not in only:
+            continue
+        n = int(round(t["duration"] * fps))
+        k = max(1, -(-n // chunk))
+        step = -(-n // k)
+        for a in range(1, n + 1, step):
+            jobs.append((i, "%02d_%s" % (i, b["id"]), a, min(n, a + step - 1)))
+    jobs.sort(key=lambda j: -(j[3] - j[2]))
+    t0 = time.time()
+    with ThreadPoolExecutor(max_workers=parallel) as ex:
+        list(ex.map(lambda j: _render_job_v2(ep_path, workdir, *j), jobs))
+    total = time.time() - t0
+    log("v2 render wall time %.0fs (%d jobs)" % (total, len(jobs)))
+    stats_p = os.path.join(workdir, "render_stats_v2.json")
+    st = json.load(open(stats_p)) if os.path.exists(stats_p) else {}
+    st.setdefault("runs", []).append({"wall_seconds": round(total, 1), "parallel": parallel, "jobs": len(jobs),
+                                      "beats": only, "when": time.strftime("%Y-%m-%d %H:%M")})
+    json.dump(st, open(stats_p, "w"), indent=1)
+
+
+def normalise_voice(workdir):
+    voice_raw = os.path.join(workdir, "audio", "voice.wav")
+    voice = os.path.join(workdir, "audio", "voice_norm.wav")
+    gain = -14.0 - measure_lufs(voice_raw)
+    for _ in range(3):
+        run(["ffmpeg", "-y", "-loglevel", "error", "-i", voice_raw, "-af",
+             "aresample=48000,volume=%.2fdB,alimiter=limit=0.82:attack=1:release=60:level=false" % gain,
+             "-c:a", "pcm_s16le", voice])
+        got = measure_lufs(voice)
+        log("voice loudness %.2f LUFS (gain %.2f dB)" % (got, gain))
+        if abs(got + 14.0) <= 0.3:
+            break
+        gain += -14.0 - got
+    return voice
+
+
+def step_assemble_v2(ep_path, workdir, final_path, beats=None):
+    import overlay_v2
+    ep = json.load(open(ep_path))
+    tim = json.load(open(os.path.join(workdir, "audio", "timings.json")))
+    segs = overlay_v2.assemble(ep_path, parallel=4, beats=beats)
+    concat_txt = os.path.join(workdir, "segments_v2", "concat.txt")
+    with open(concat_txt, "w") as f:
+        for s_ in segs:
+            f.write("file '%s'\n" % s_.replace("'", "'\\''"))
+    visuals = os.path.join(workdir, "visuals_v2.mp4")
+    run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concat_txt, "-c", "copy", visuals])
+    voice = normalise_voice(workdir)
+    run(["ffmpeg", "-y", "-loglevel", "error", "-i", visuals, "-i", voice, "-map", "0:v", "-map", "1:a",
+         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-t", "%.3f" % tim["total"],
+         "-movflags", "+faststart", final_path])
+    log("wrote %s" % final_path)
+
+
+def step_qc_v2(ep_path, final_path):
+    run([PY, "-W", "ignore", os.path.join(ROOT, "pipeline", "qc_v2.py"), ep_path, final_path])
+
+
 def step_post(ep_path, post_path):
     ep = json.load(open(ep_path))
     comment = ep.get("engagement_comment")
@@ -211,22 +334,40 @@ def main():
     final_path = os.path.join(out_root, ep["keyword"] + ".mp4")
     post_path = os.path.join(out_root, ep["keyword"] + ".post.md")
     fb_path = os.path.join(out_root, ep["keyword"] + " fb.mp4")
-    steps = opt("--steps", "tts,captions,render,assemble,fb,post").split(",")
+    v2 = is_v2(ep)
+    default_steps = "tts,captions,textures,render,assemble,fb,post,qc" if v2 else "tts,captions,render,assemble,fb,post"
+    steps = opt("--steps", default_steps).split(",")
     parallel = int(opt("--parallel", ep.get("render", {}).get("parallel", 3)))
     only = opt("--only-shot")
     t0 = time.time()
+    log("pipeline %s" % ("v2" if v2 else "v1"))
     if "tts" in steps:
         log("TTS"); step_tts(ep_path, workdir)
     if "captions" in steps:
         log("captions"); step_captions(ep_path, workdir)
+    if v2 and ("textures" in steps or "render" in steps):
+        step_textures_v2(workdir)
     if "render" in steps:
-        log("render (parallel=%d)" % parallel); step_render(ep_path, workdir, parallel, int(only) if only else None)
+        log("render (parallel=%d)" % parallel)
+        if v2:
+            step_render_v2(ep_path, workdir, parallel, [int(x) for x in only.split(",")] if only else None)
+        else:
+            step_render(ep_path, workdir, parallel, int(only) if only else None)
     if "assemble" in steps:
-        log("assemble"); step_assemble(ep_path, workdir, final_path)
+        log("assemble")
+        if v2:
+            step_assemble_v2(ep_path, workdir, final_path)
+        else:
+            step_assemble(ep_path, workdir, final_path)
     if "fb" in steps:
         log("fb copy"); step_fb(final_path, fb_path)
     if "post" in steps:
-        step_post(ep_path, post_path)
+        if os.path.exists(post_path) and "--force-post" not in args:
+            log("kept existing %s (use --force-post to regenerate)" % post_path)
+        else:
+            step_post(ep_path, post_path)
+    if v2 and "qc" in steps:
+        log("qc"); step_qc_v2(ep_path, final_path)
     log("done in %.0fs" % (time.time() - t0))
 
 

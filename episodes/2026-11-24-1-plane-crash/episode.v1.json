@@ -1,0 +1,211 @@
+{
+  "id": "2026-11-24-1-plane-crash",
+  "keyword": "plane crash",
+  "slug": "plane-crash",
+  "title": "Why Most Plane Crashes Happen at Takeoff or Landing: Small Plane Crash at Hawkins Field, Jackson",
+  "fb_caption": "On Saturday, 21 November 2026, a small private plane, a Cirrus SR22, crashed at Hawkins Field in Jackson, Mississippi, about ten minutes after departing a nearby airport. The NTSB is investigating and the cause has not been determined. So why do most plane crashes happen near takeoff or landing, and not at cruise? Height as a safety margin, peak pilot workload, and weather close to the ground, plus why cabin crew ask you to buckle up and listen. Do you listen to the safety briefing? Tell us below.",
+  "hashtags": [
+    "#planecrash",
+    "#aviation",
+    "#aviationsafety",
+    "#NTSB",
+    "#Mississippi",
+    "#newsexplained",
+    "#whatjusthappened",
+    "#explained"
+  ],
+  "engagement_comment": "Honest answer: when the cabin crew does the safety briefing, do you 1 = watch every word, 2 = half listen, 3 = already have headphones in? Tell us below.",
+  "sources": [
+    "WTVA, 21 Nov 2026, 'Aircraft incident reported at Hawkins Field in Jackson': https://www.wtva.com/2026/11/21/aircraft-incident-reported-hawkins-field-jackson/",
+    "SuperTalk Mississippi, 21 Nov 2026, Hawkins Field plane crash report: https://www.supertalk.fm/2-dead-following-plane-crash-at-hawkins-field-in-jackson/",
+    "WAPT (Jackson, MS), Nov 2026 coverage of the Hawkins Field crash: https://www.wapt.com",
+    "Hook facts used: Saturday 21 Nov 2026; small private plane, Cirrus SR22; crashed at Hawkins Field, Jackson, Mississippi; about ten minutes after departing Bruce Campbell Field, Madison (said as 'a nearby airport'); NTSB investigating; cause not determined. No cause is suggested in the video.",
+    "Explainer (general, NOT re-fetched by the builder, verify before posting): industry safety studies (e.g. Boeing Statistical Summary of Commercial Jet Airplane Accidents, IATA/Flight Safety Foundation) consistently find that most accidents happen during takeoff/initial climb and approach/landing, which are a small share of flight time; the 'critical eleven minutes' (three after takeoff, eight before landing) is a widely used cabin-safety term."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Fenrir",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Energetic, confident, punchy and fast (about 170-185 words per minute), conversational but serious and respectful. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Cirrus SR22 = SIR-us, S R twenty-two. NTSB = N T S B (letters). Hawkins = HAW-kins.",
+    "pause_between_beats": 0.3
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 8,
+    "parallel": 4
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "On Saturday, November 21st, a small private plane, a Cirrus SR22, crashed at Hawkins Field in Jackson, Mississippi, about ten minutes after departing a nearby airport. The NTSB is investigating. The cause has not been determined.",
+      "shot": {
+        "builder": "airport_scene",
+        "params": {
+          "mode": "hook",
+          "sky": "golden",
+          "card": "PLANE CRASH · JACKSON, MS",
+          "subcard": "Hawkins Field · Sat 21 Nov 2026",
+          "plane_label": "CIRRUS SR22",
+          "label_cue": "cirrus",
+          "chips": [
+            "NTSB INVESTIGATING",
+            "CAUSE NOT DETERMINED"
+          ],
+          "chip_cues": [
+            "ntsb",
+            "cause"
+          ]
+        }
+      }
+    },
+    {
+      "id": "question",
+      "text": "It raises a bigger question. Why do most plane crashes happen near takeoff or landing, and not in the middle of the flight?",
+      "shot": {
+        "builder": "flight_profile",
+        "params": {
+          "mode": "intro",
+          "card": "WHY TAKEOFF & LANDING?",
+          "card_cue": "why"
+        }
+      }
+    },
+    {
+      "id": "slice",
+      "text": "Takeoff, climb, approach and landing take up only a small slice of a typical flight. Yet industry safety studies consistently find that the majority of accidents happen in exactly those phases.",
+      "shot": {
+        "builder": "flight_profile",
+        "params": {
+          "mode": "zones",
+          "card": "A SMALL SLICE OF TIME",
+          "card_cue": "takeoff",
+          "zone_cue": "takeoff",
+          "red_cue": "majority",
+          "chip": "...BUT MOST ACCIDENTS"
+        }
+      }
+    },
+    {
+      "id": "one",
+      "text": "Here are the three big reasons. One: height is your safety margin. At cruise, pilots can have minutes to sort out a problem. Near the ground, there's very little height, or time, to recover.",
+      "shot": {
+        "builder": "altitude_margin",
+        "params": {
+          "card": "1 · HEIGHT = SAFETY MARGIN",
+          "card_cue": "one",
+          "high_label": "MINUTES TO\nSORT IT OUT",
+          "high_cue": "cruise",
+          "low_label": "LITTLE ROOM\nTO RECOVER",
+          "low_cue": "near"
+        }
+      }
+    },
+    {
+      "id": "two",
+      "text": "Two: workload peaks. In a few busy minutes, the crew changes speed, flaps, landing gear and radio frequencies, while talking to air traffic control.",
+      "shot": {
+        "builder": "cockpit_workload",
+        "params": {
+          "card": "2 · WORKLOAD PEAKS",
+          "card_cue": "two",
+          "items": [
+            "SPEED",
+            "FLAPS",
+            "LANDING GEAR",
+            "RADIO"
+          ],
+          "cues": [
+            "speed",
+            "flaps",
+            "gear",
+            "radio"
+          ]
+        }
+      }
+    },
+    {
+      "id": "three",
+      "text": "Three: the ground is close, and so is the weather. Gusty crosswinds and sudden wind shear matter most near the runway, with other traffic and terrain close by.",
+      "shot": {
+        "builder": "crosswind_approach",
+        "params": {
+          "card": "3 · WEATHER NEAR THE GROUND",
+          "card_cue": "three",
+          "chips": [
+            "CROSSWIND",
+            "WIND SHEAR",
+            "TRAFFIC & TERRAIN"
+          ],
+          "chip_cues": [
+            "crosswinds",
+            "shear",
+            "traffic"
+          ]
+        }
+      }
+    },
+    {
+      "id": "metaphor",
+      "text": "Think of a tightrope walker. The middle of the rope is the easy part. Stepping on, and stepping off, is where most wobbles happen. Flying works the same way.",
+      "shot": {
+        "builder": "tightrope",
+        "params": {
+          "card": "LIKE A TIGHTROPE",
+          "middle_cue": "middle",
+          "on_cue": "stepping",
+          "off_cue": "off",
+          "map_cue": "flying",
+          "labels": [
+            "EASY MIDDLE",
+            "STEPPING ON & OFF = HARDEST",
+            "= TAKEOFF & LANDING"
+          ]
+        }
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "That's why cabin crew ask you to keep your seatbelt on, put devices away and listen to the briefing. Many call it the critical eleven minutes: three after takeoff, eight before landing.",
+      "shot": {
+        "builder": "seatbelt_sign",
+        "params": {
+          "card": "WHY THE CREW ASKS",
+          "sign_cue": "seatbelt",
+          "chips": [
+            "SEATBELT ON",
+            "DEVICES AWAY",
+            "LISTEN TO THE BRIEFING"
+          ],
+          "chip_cues": [
+            "seatbelt",
+            "devices",
+            "listen"
+          ],
+          "big": "+3 MIN / -8 MIN",
+          "big_sub": "the critical eleven minutes",
+          "big_cue": "critical"
+        }
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So, do you listen to the safety briefing, or tune it out? Tell us in the comments, and send this to someone who flies a lot. Because now you know why the first and last minutes matter most, from Jackson, Mississippi, to every airport in the world.",
+      "shot": {
+        "builder": "airport_scene",
+        "params": {
+          "mode": "outro",
+          "sky": "golden",
+          "card": "DO YOU LISTEN TO\nTHE BRIEFING?",
+          "subcard": "Tell us in the comments",
+          "sub_cue": "tell"
+        }
+      }
+    }
+  ],
+  "pipeline": "v1"
+}

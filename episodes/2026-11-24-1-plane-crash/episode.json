@@ -36,175 +36,327 @@
       1920
     ],
     "fps": 30,
-    "samples": 8,
-    "parallel": 4
+    "samples": 24,
+    "parallel": 3
   },
   "beats": [
     {
       "id": "hook",
       "text": "On Saturday, November 21st, a small private plane, a Cirrus SR22, crashed at Hawkins Field in Jackson, Mississippi, about ten minutes after departing a nearby airport. The NTSB is investigating. The cause has not been determined.",
       "shot": {
-        "builder": "airport_scene",
-        "params": {
-          "mode": "hook",
-          "sky": "golden",
-          "card": "PLANE CRASH · JACKSON, MS",
-          "subcard": "Hawkins Field · Sat 21 Nov 2026",
-          "plane_label": "CIRRUS SR22",
-          "label_cue": "cirrus",
-          "chips": [
-            "NTSB INVESTIGATING",
-            "CAUSE NOT DETERMINED"
-          ],
-          "chip_cues": [
-            "ntsb",
-            "cause"
-          ]
-        }
+        "builder": "airport_hook",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "PLANE CRASH · JACKSON, MS",
+            "sub": "Hawkins Field · Sat 21 Nov 2026",
+            "at": 0.25
+          },
+          {
+            "type": "label",
+            "text": "CIRRUS SR22",
+            "anchor": "plane",
+            "cue": "cirrus",
+            "ay": -22
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NTSB INVESTIGATING",
+              "CAUSE NOT DETERMINED"
+            ],
+            "cues": [
+              "ntsb",
+              "cause"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "question",
       "text": "It raises a bigger question. Why do most plane crashes happen near takeoff or landing, and not in the middle of the flight?",
       "shot": {
-        "builder": "flight_profile",
+        "builder": "airport_plate",
+        "render_scale": 0.5,
+        "samples": 16,
         "params": {
-          "mode": "intro",
-          "card": "WHY TAKEOFF & LANDING?",
-          "card_cue": "why"
-        }
+          "view": "climb_a"
+        },
+        "overlays": [
+          {
+            "type": "blur",
+            "radius": 9,
+            "dim": 0.22
+          },
+          {
+            "type": "card",
+            "text": "WHY TAKEOFF & LANDING?",
+            "cue": "why"
+          },
+          {
+            "type": "profile",
+            "mode": "intro",
+            "at": 0.3,
+            "takeoff_cue": "takeoff",
+            "landing_cue": "landing"
+          }
+        ]
       }
     },
     {
       "id": "slice",
       "text": "Takeoff, climb, approach and landing take up only a small slice of a typical flight. Yet industry safety studies consistently find that the majority of accidents happen in exactly those phases.",
       "shot": {
-        "builder": "flight_profile",
+        "builder": "airport_plate",
+        "render_scale": 0.5,
+        "samples": 16,
         "params": {
-          "mode": "zones",
-          "card": "A SMALL SLICE OF TIME",
-          "card_cue": "takeoff",
-          "zone_cue": "takeoff",
-          "red_cue": "majority",
-          "chip": "...BUT MOST ACCIDENTS"
-        }
+          "view": "climb_b"
+        },
+        "overlays": [
+          {
+            "type": "blur",
+            "radius": 9,
+            "dim": 0.22
+          },
+          {
+            "type": "card",
+            "text": "A SMALL SLICE OF TIME",
+            "cue": "takeoff"
+          },
+          {
+            "type": "profile",
+            "mode": "zones",
+            "at": 0.0,
+            "zone_cue": "takeoff",
+            "red_cue": "majority"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "...BUT MOST ACCIDENTS"
+            ],
+            "cues": [
+              "majority"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "one",
       "text": "Here are the three big reasons. One: height is your safety margin. At cruise, pilots can have minutes to sort out a problem. Near the ground, there's very little height, or time, to recover.",
       "shot": {
-        "builder": "altitude_margin",
-        "params": {
-          "card": "1 · HEIGHT = SAFETY MARGIN",
-          "card_cue": "one",
-          "high_label": "MINUTES TO\nSORT IT OUT",
-          "high_cue": "cruise",
-          "low_label": "LITTLE ROOM\nTO RECOVER",
-          "low_cue": "near"
-        }
+        "builder": "altitude_margin_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · HEIGHT = SAFETY MARGIN",
+            "cue": "one"
+          },
+          {
+            "type": "bar",
+            "top": "high",
+            "bottom": "high_g",
+            "color": "teal",
+            "label": "MINUTES TO\nSORT IT OUT",
+            "cue": "cruise",
+            "side": "left"
+          },
+          {
+            "type": "bar",
+            "top": "low",
+            "bottom": "low_g",
+            "color": "red",
+            "label": "LITTLE ROOM\nTO RECOVER",
+            "cue": "near",
+            "side": "right"
+          }
+        ]
       }
     },
     {
       "id": "two",
       "text": "Two: workload peaks. In a few busy minutes, the crew changes speed, flaps, landing gear and radio frequencies, while talking to air traffic control.",
       "shot": {
-        "builder": "cockpit_workload",
+        "builder": "cockpit_workload_v2",
         "params": {
-          "card": "2 · WORKLOAD PEAKS",
-          "card_cue": "two",
-          "items": [
-            "SPEED",
-            "FLAPS",
-            "LANDING GEAR",
-            "RADIO"
-          ],
           "cues": [
             "speed",
             "flaps",
             "gear",
             "radio"
           ]
-        }
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · WORKLOAD PEAKS",
+            "cue": "two"
+          },
+          {
+            "type": "meter",
+            "label": "WORKLOAD",
+            "segments": 4,
+            "cues": [
+              "speed",
+              "flaps",
+              "gear",
+              "radio"
+            ],
+            "y": 0.555
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SPEED",
+              "FLAPS",
+              "LANDING GEAR",
+              "RADIO"
+            ],
+            "cues": [
+              "speed",
+              "flaps",
+              "gear",
+              "radio"
+            ],
+            "style": "check",
+            "y": 0.62
+          }
+        ]
       }
     },
     {
       "id": "three",
       "text": "Three: the ground is close, and so is the weather. Gusty crosswinds and sudden wind shear matter most near the runway, with other traffic and terrain close by.",
       "shot": {
-        "builder": "crosswind_approach",
+        "builder": "crosswind_v2",
         "params": {
-          "card": "3 · WEATHER NEAR THE GROUND",
-          "card_cue": "three",
-          "chips": [
-            "CROSSWIND",
-            "WIND SHEAR",
-            "TRAFFIC & TERRAIN"
-          ],
-          "chip_cues": [
-            "crosswinds",
-            "shear",
-            "traffic"
-          ]
-        }
+          "wind_cue": "crosswinds",
+          "shear_cue": "shear",
+          "traffic_cue": "traffic"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · WEATHER NEAR THE GROUND",
+            "cue": "three"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "CROSSWIND",
+              "WIND SHEAR",
+              "TRAFFIC & TERRAIN"
+            ],
+            "cues": [
+              "crosswinds",
+              "shear",
+              "traffic"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "metaphor",
       "text": "Think of a tightrope walker. The middle of the rope is the easy part. Stepping on, and stepping off, is where most wobbles happen. Flying works the same way.",
       "shot": {
-        "builder": "tightrope",
+        "builder": "tightrope_v2",
         "params": {
-          "card": "LIKE A TIGHTROPE",
           "middle_cue": "middle",
           "on_cue": "stepping",
-          "off_cue": "off",
-          "map_cue": "flying",
-          "labels": [
-            "EASY MIDDLE",
-            "STEPPING ON & OFF = HARDEST",
-            "= TAKEOFF & LANDING"
-          ]
-        }
+          "off_cue": "off"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "LIKE A TIGHTROPE",
+            "at": 0.25
+          },
+          {
+            "type": "label",
+            "text": "EASY MIDDLE",
+            "anchor": "mid",
+            "cue": "middle",
+            "color": "teal",
+            "dx": -170,
+            "dy": -230
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STEPPING ON & OFF = HARDEST",
+              "= TAKEOFF & LANDING"
+            ],
+            "cues": [
+              "stepping",
+              "flying"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "takeaway",
       "text": "That's why cabin crew ask you to keep your seatbelt on, put devices away and listen to the briefing. Many call it the critical eleven minutes: three after takeoff, eight before landing.",
       "shot": {
-        "builder": "seatbelt_sign",
+        "builder": "cabin_v2",
         "params": {
-          "card": "WHY THE CREW ASKS",
-          "sign_cue": "seatbelt",
-          "chips": [
-            "SEATBELT ON",
-            "DEVICES AWAY",
-            "LISTEN TO THE BRIEFING"
-          ],
-          "chip_cues": [
-            "seatbelt",
-            "devices",
-            "listen"
-          ],
-          "big": "+3 MIN / -8 MIN",
-          "big_sub": "the critical eleven minutes",
-          "big_cue": "critical"
-        }
+          "sign_cue": "seatbelt"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY THE CREW ASKS",
+            "at": 0.25,
+            "until": "critical"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SEATBELT ON",
+              "DEVICES AWAY",
+              "LISTEN TO THE BRIEFING"
+            ],
+            "cues": [
+              "seatbelt",
+              "devices",
+              "listen"
+            ],
+            "until": "critical",
+            "style": "check"
+          },
+          {
+            "type": "big",
+            "text": "+3 MIN / -8 MIN",
+            "sub": "the critical eleven minutes",
+            "cue": "critical",
+            "y": 0.5
+          }
+        ]
       }
     },
     {
       "id": "outro",
       "text": "So, do you listen to the safety briefing, or tune it out? Tell us in the comments, and send this to someone who flies a lot. Because now you know why the first and last minutes matter most, from Jackson, Mississippi, to every airport in the world.",
       "shot": {
-        "builder": "airport_scene",
-        "params": {
-          "mode": "outro",
-          "sky": "golden",
-          "card": "DO YOU LISTEN TO\nTHE BRIEFING?",
-          "subcard": "Tell us in the comments",
-          "sub_cue": "tell"
-        }
+        "builder": "airport_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DO YOU LISTEN TO\nTHE BRIEFING?",
+            "sub": "Tell us in the comments",
+            "sub_cue": "tell",
+            "at": 0.25
+          }
+        ]
       }
     }
-  ]
+  ],
+  "pipeline": "v2"
 }

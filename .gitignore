@@ -7,3 +7,6 @@ output/
 screenshots/
 .venv/
 .DS_Store
+
+# Poly Haven / Kenney downloads for the v2 look (large binaries, CC0; keep out of git)
+assets/polyhaven/

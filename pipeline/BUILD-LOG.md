@@ -253,3 +253,103 @@ Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned).
 - **B, map:** the bridge positions and names on the map are stylised, not to scale.
 - **Pronunciation:** a human should listen to the hooks: "Cirrus SR22" and "NTSB" in A, "Kyiv" and "Dnipro" in B.
 - **Source URLs:** two required source URLs contain casualty words in their slugs ("2-dead", "3-killed"). The descriptions next to them in post.md stay neutral.
+
+---
+
+# v2 look-dev test: plane-crash hook shot (0.0–9.6 s), 23 Nov 2026
+
+Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned). This is a test only: no v1 builder, `render_episode.py` or episode output was changed. Nothing was committed, pushed or posted.
+
+**New files**
+- `pipeline/blender/scene_lib_v2.py`
+  - Daytime world:
+    - Sky: Blender's physical sky (multiple scattering) plus procedural noise clouds. If an HDRI is found in `assets/polyhaven/`, it is used instead.
+    - Lighting: an aligned sun lamp (2.5° soft shadows), screen-space raytracing with fast GI/AO, AgX Medium High Contrast, and compositor bloom.
+    - Haze: light shader distance haze.
+  - Set: patchwork fields (Voronoi), mowed airfield grass, runway, blast pad, taxiway, apron (concrete joints), terminal (window-grid facade), tower, 6 hangars, T-hangars, PAPI, approach lights, windsock and a perimeter fence. It also has a parking lot with Kenney cars, 6 parked light aircraft, about 6.2k houses with orange, brown and grey roofs, about 5.8k low-poly trees, roads with markings, moving traffic, a downtown skyline and hills.
+  - Markings: runway, taxiway, road and parking markings are baked into one PIL texture per surface, so there are no decal planes for the markings.
+    - The ground, lawn, roads, taxiway, apron and lot are still stacked planes 2–15 cm apart, with camera `clip_start` 1 m.
+    - No alternating surfaces were seen in 1:1 crops of frames 174–176. If it ever shows, raise `clip_start` to 5–10 m; the camera is never closer than about 20 m to anything.
+  - Aircraft: lofted fuselage (subsurf), NACA-section wings, tail and fin, glass canopy, wheel pants, spinning 3-blade prop with a blur disc, nav lights, strobes and a landing light. The livery (navy cheat line, red pinstripe, fin band, red wingtips) and the panel lines are done in the shader, in aircraft space.
+  - No 3D text. The builder exports per-frame screen positions of the plane (`track.json`) for 2D labels.
+- `pipeline/blender/render_v2_test.py`: Blender entry for the test (frame ranges, stills, track export).
+- `pipeline/v2_test.py`: the orchestrator. It makes the textures, renders 3 processes in parallel, then adds the PIL overlays:
+  - Captions: top centre at 26 %, Avenir Next Bold with a soft shadow and no box. The current word is set in Heavy on a rounded red highlight. Word slots are fixed so text never reflows.
+  - Title card at 13.5 %.
+  - CIRRUS SR22 pill that tracks the plane and appears on "cirrus".
+
+  It then encodes (with the original hook audio), builds `compare.mp4` and `compare.jpg`, and runs the flicker QC.
+- `pipeline/qc_flicker.py`: luminance-change QC per screen region. It reports:
+  - mean, p95 and max frame-to-frame change;
+  - spikes, split into expected (caption, pop events) and unexpected;
+  - region A-B-A reversals;
+  - per-pixel flip-and-return share (the z-fighting signature).
+- `.gitignore`: added `assets/polyhaven/`.
+
+**Render**
+- 288 frames, 1080x1920, 24 TAA samples, 3 Blender processes.
+- Time: 417 s wall (about 3.8 s per frame per process). Each process spends about 40 s building the scene (14k objects). The track export took about 1 min, and overlays plus encode about 1 min. Total is about 8.5 min.
+
+**Assets / licences**
+- No files were downloaded. Downloads need Irfan's own confirmation, which a sub-agent cannot get.
+- Everything is procedural or PIL-generated, plus the existing Kenney Car Kit (CC0).
+- The world loader already picks up a Poly Haven HDRI if one is placed in `assets/polyhaven/` (CC0, gitignored).
+
+**Flicker QC** (`output/v2-test/flicker*.json`, 9.6 s)
+- v1, caption band: no unexpected flicker.
+- v1, 3D card and label band: spikes only during the pop-in animations. During the 1.08 scale overshoot, up to 1.5–3.9 % of the region's pixels flip and return. Outside the pops there was nothing in this range.
+- v1 baseline (raw PNGs of the whole hook, 424 frames, chip band y 560–820): the QC reproduces the flicker. It flags 20 frames (389–421) after the "CAUSE NOT DETERMINED" chip has settled, with up to 11.9 % of the band's pixels flipping and returning. That is the chip flicker Irfan saw (`output/v2-test/flicker_v1_png_full_hook.json`).
+- v2, card band: no unexpected spikes and no reversals.
+- v2, caption band: 39 spikes, all expected (chunk swaps, 0.2 s rise-ins and highlight moves). 0 unexpected, 0 A-B-A. The few flagged pixels at frames 253–259 also show in the raw render without overlays: the city skyline moves into the band.
+- v2, fixed band y 600–820 (mostly 3D background, not the tracked pill): the composited video peaks at 0.58 % of pixels; the raw render without overlays peaks at 0.77 %. The overlays add nothing.
+  - The heat map and 1:1 crops put these on the spinning prop, approach-light bars, fence, road and runway edges (thin lines moving under the camera), and on the terminal's window grid and parked cars about 1 km away (fine distant detail).
+  - The lawn is clean, and no surface alternates.
+
+**To do / not done**
+- Poly Haven HDRI and PBR textures: not downloaded, waiting for Irfan's go-ahead. The file list is in the handback.
+- Kenney City/Suburban kits: not used.
+- If shimmer shows at full speed, raise the TAA samples to 48 or thicken the far-off thin geometry (fence, approach bars).
+
+# v2 becomes the pipeline standard + "plane crash" rebuilt in v2, 23 Nov 2026
+
+Builder: Opus sub-agent (plain Agent tool, so xhigh effort could not be pinned). Nothing committed, pushed or posted.
+Irfan paused the task after video A: **"bridges in war" was NOT rendered** (its v1 mp4 / fb copy / post.md are unchanged).
+
+**Assets** (approved by Irfan): Poly Haven CC0, official API/CDN, MD5-checked, 11 MB total in `assets/polyhaven/`
+(gitignored; README/LICENSE with source URLs; credited in `assets/CREDITS.md`): HDRI `kloofendal_48d_partly_cloudy`
+2K .hdr; 1K diff / nor_gl / rough of `aerial_asphalt_01`, `aerial_grass_rock`, `concrete_floor_02`.
+- HDRI = sky + light (`S.daylight()`); EEVEE extracts its sun (threshold 6) for shadows, Mapping rotation puts the
+  sun at the requested lamp azimuth (HDRI sun measured at phi 144 deg, elev 47.9 deg). Strength 1.0, exposure -0.6.
+- Textures via `S.ph_detail()` on runway/taxiway/road/lot (asphalt), lawn + ground (grass_rock), apron (concrete).
+
+**Pipeline (v2 is the default; old episodes carry `"pipeline": "v1"`)**
+- `make_episode.py`: v2 steps tts,captions,textures,render,assemble,fb,post,qc. Render = one queue of <=150-frame
+  jobs (`render_episode_v2.py`, q95 JPEG frames: disk is tight), broken-frame cleanup, unbuffered logs.
+  `post` keeps an existing post.md (`--force-post`).
+- `overlay_v2.py`: every on-screen text (captions top-centre with red word highlight, card, chips, tracked labels,
+  bars, big panel, meter, flight-profile graph, history cards, plate blur), beats composited in parallel.
+- `qc_v2.py`: probe, flicker split into overlay-only stream / 3D-only stream / final, 12-frame sheet.
+- Builders: `scene_lib_v2_air.py` (airliner + 8 aviation shots), `scene_lib_v2_city.py` (river city + 9 bridge
+  shots; build-tested only, never rendered). README rewritten so new episodes follow v2 by default.
+- v1 episode files: `episode.v1.json` saved next to both Tue 24 episodes; the 23 Nov episodes got `"pipeline": "v1"`.
+
+**Video A** `output/plane crash.mp4`: 94.39 s, 1080x1920, 30 fps, AAC, voice -14 LUFS; same voice.wav/captions.
+FB copy `output/plane crash fb.mp4` 9,380,347 bytes (HEVC 688 kb/s). post.md unchanged. v1 backed up in
+`output/v1-archive/`. Shots: airport_hook, airport_plate x2 (graph overlay on blurred plate), altitude_margin_v2,
+cockpit_workload_v2, crosswind_v2, tightrope_v2 (meadow), cabin_v2, airport_outro (take-off + crane-up).
+- Wall time: render 08:33:29 -> 09:35:04 (3690 s, 23 jobs, 2 Blender processes; 3 processes swapped on 16 GB RAM
+  and were stopped at 08:32; ~30 min of it was slowed by a B build test running alongside). Beat 3 re-render 303 s
+  (09:41-09:46). Overlay+assembly ~1.5 min, FB copy ~2 min, QC ~2 min. Final pass 11:28 -> 11:37.
+- QC fixes: 1-frame blank caption on direct chunk swaps (fade from 0) -> no fade on follow-on chunks; QC event frames
+  used round(start*fps) instead of cumulative frame counts -> fixed; tracked labels smoothed +-3 frames and faded at
+  frame edges (a label popped off at the edge); tightrope "stepping" label -> chip (it jiggled with the walker);
+  altitude shot re-framed (planes were off-screen / too low) and bar labels were cropped -> fixed; card moved to 15 %.
+- Final flicker: overlay-only stream 0 unexpected spikes / 0 A-B-A in all four bands. Final-only A-B-A while a label
+  moves: 28 frames in the mid band (hook prop behind the CIRRUS label, tightrope walker wobble near "EASY MIDDLE"),
+  checked 1:1: no blink. Raw region A-B-A on the final is high everywhere because of camera motion (3D-only stream
+  has more), and px-flicker comes from fast cloud motion in the outro crane and the speed streaks (same in 3D-only).
+- Disk: frames_v2 914 MB (JPEG); 19 GB free after A.
+
+**Not done**: video B render/QC (on hold for Irfan's review of A). B's episode.json already holds the v2 shot plan
+(`episode.v1.json` = old). The 10k city buildings are now merged into one mesh, but this build time is NOT measured yet (first version
+with one object per building took 36 min); no B still has been looked at yet.

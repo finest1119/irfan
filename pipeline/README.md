@@ -1,7 +1,11 @@
 # Explainer video pipeline (Blender + Gemini TTS)
 
-One `episode.json` in, one finished 9:16 reel out. Everything is procedural (no footage) except the cars, which are
-Kenney Car Kit GLB models (CC0, `assets/kenney-car-kit/`, credited in `assets/CREDITS.md`).
+One `episode.json` in, one finished 9:16 reel out.
+
+> **Since 23 Nov 2026 every new episode uses the v2 look (Irfan's ruling: never below v2 quality).**
+> v2 = bright daytime worlds lit by a Poly Haven HDRI, Poly Haven PBR textures, smooth models, and **all text drawn
+> as 2D overlays after rendering** (no 3D text in Blender). Read "v2 pipeline" below before building an episode.
+> Old navy-look episodes carry `"pipeline": "v1"` in their `episode.json` and still render with the v1 code.
 
 ```
 .venv/bin/python pipeline/make_episode.py episodes/<id>/episode.json
@@ -10,8 +14,111 @@ Kenney Car Kit GLB models (CC0, `assets/kenney-car-kit/`, credited in `assets/CR
 Output:
 - `output/<keyword>.mp4` (1080x1920, 30 fps, captions burned in, voice at about -14 LUFS)
 - `output/<keyword> fb.mp4` (Facebook upload copy: HEVC `hvc1` + mono AAC, always under 10,000,000 bytes)
-- `output/<keyword>.post.md` (title, FB caption, hashtags, engagement comment, posting checklist, sources, script)
-- `output/<slug>/` working dir: `audio/`, `captions/`, `captions.json`, `frames/`, `segments/`, `logs/`, `stills/`, `qc/`
+- `output/<keyword>.post.md` (title, FB caption, hashtags, engagement comment, posting checklist, sources, script;
+  an existing one is kept — pass `--force-post` to regenerate it)
+- `output/<slug>/` working dir. v2: `audio/`, `captions.json`, `tex_v2/`, `frames_v2/NN_<beat>/####.jpg`,
+  `tracks_v2/` (anchor positions for labels), `segments_v2/`, `logs_v2/`, `stills_v2/`, `qc/` (qc_sheet.png, qc_v2.json)
+
+## v2 pipeline (DEFAULT for every new episode)
+
+Steps (`--steps`, default `tts,captions,textures,render,assemble,fb,post,qc`):
+1. `tts`, `captions`: as before (Gemini TTS per beat, faster-whisper timings -> `captions.json`). To rebuild only the
+   visuals of an episode keep the voice: `--steps textures,render,assemble,fb,post,qc`.
+2. `textures`: PIL runway / taxiway / road / parking textures with the markings baked in (`pipeline/v2_textures.py`).
+3. `render`: `pipeline/blender/render_episode_v2.py`, one queue of frame-range jobs (<= 150 frames each), `parallel`
+   (3) Blender processes at a time; each job builds the beat's whole world (about 45 s) and renders q95 JPEG frames.
+   Resumable: existing frames are skipped. The builder's anchors (3D points labels follow) go to `tracks_v2/`.
+   About 1.2-4 s per frame per process at 24 samples; a 90 s episode takes about 60-80 min. **Never run two
+   episodes' renders at the same time** (RAM: 16 GB).
+4. `assemble`: `pipeline/overlay_v2.py` composites captions + the beat's `overlays` on every frame with PIL
+   (beats in parallel) -> `segments_v2/`, concatenated, voice loudness-normalised and muxed.
+5. `fb`: HEVC upload copy < 10 MB. 6. `post`: keeps an existing `.post.md`.
+7. `qc`: `pipeline/qc_v2.py` -> ffprobe, flicker per band (card / caption / mid / low; 0 A-B-A reversals and 0
+   unexpected spikes required in card, caption and low), 12 frames + `qc/qc_sheet.png` with the 12 %/80 % guides.
+   **Open `qc_sheet.png` and look at it**: no void or plain navy backgrounds, nothing graphic, captions readable,
+   labels not on top of captions.
+
+Preview a shot before the full render (about 1 min each, mostly world building):
+```
+/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup -P pipeline/blender/render_episode_v2.py -- \
+    "$PWD/episodes/<id>/episode.json" "$PWD/output/<slug>" <SHOT_INDEX> --still 40,200 --scale 0.5 --samples 12
+.venv/bin/python pipeline/overlay_v2.py episodes/<id>/episode.json --beat <SHOT_INDEX> --preview 1.3,6.6 --out /tmp/prev
+```
+(the overlay preview uses `stills_v2/` when frames are not rendered yet; anchored labels need rendered tracks).
+Re-render one beat: delete `output/<slug>/frames_v2/NN_<beat>/` and its `tracks_v2/NN_<beat>_*.json`, then
+`--steps render,assemble,fb,qc --only-shot NN`. Change only overlays/text layout: just `--steps assemble,fb,qc`.
+
+### v2 rules (all builders, all episodes)
+- **No 3D text.** Titles, chips, labels, numbers, years, captions = `shot.overlays` (2D). 3D graphics (rings, route
+  ribbons, glowing streams, bars) are fine.
+- **Never a void.** Outdoor shots call `S.daylight(ctx, ...)` (HDRI sky + sun) and build a full world (ground,
+  buildings, trees, hills). Interiors get their own lit set (see `cabin_v2`). Never the plain navy v1 background.
+- Keep the top 22-31 % (caption band) over sky or calm background; aim the camera so fine detail (fences, distant
+  windows) is not behind the captions.
+- Non-graphic: aircraft only fly / take off / approach / sit parked; a "hit" bridge only dims + red ring + traffic
+  stops; no wreckage, fire, explosions, injured people, weapons, flags or side colours.
+- Persistent worlds: every beat of an episode builds the same world (`S.build_world` airport,
+  `scene_lib_v2_city.build_city_world` river city) so the video feels like one place.
+
+### `shot` block (v2)
+```json
+"shot": {"builder": "airport_hook", "params": {...},
+         "render_scale": 0.5, "samples": 16,           // optional: half-res plates that the overlay blurs
+         "overlays": [ {"type": "card", "text": "TITLE", "sub": "sub line", "at": 0.25},
+                       {"type": "label", "text": "CIRRUS SR22", "anchor": "plane", "cue": "cirrus"},
+                       {"type": "chips", "items": ["A", "B"], "cues": ["worda", "wordb"]} ]}
+```
+Overlay types (`pipeline/overlay_v2.py` docstring has every key): `card` (title at 13.5 %, optional `sub`,
+`sub_cue`), `chips` (pills from 65.5 % down, `style` dot/check, `y`), `label` (pill + leader line following a builder
+anchor, `dx`/`dy`/`delay`/`color`), `bar` (measuring bar between two anchors), `big` (big number panel), `meter`
+(segmented meter), `profile` (flight-profile graph), `history` (timeline cards), `blur` (blur + dim the plate).
+Timing: `cue` = word (prefix) spoken in this beat, `at` = seconds into the beat, `until` = when it fades out.
+Layout bands are asserted in code: card 12-20 %, captions 22-31 %, labels/graphs 32-64 %, chips 64-80 %.
+Captions: top centre (26 %), white Avenir Next Bold with soft shadow, current word Heavy on a red highlight.
+
+### v2 builders
+Shared look library `pipeline/blender/scene_lib_v2.py`: `daylight()` (HDRI `assets/polyhaven/hdri/` + extracted
+sun, procedural sky fallback), `ph_detail()` (Poly Haven PBR detail on any material), `pbr()`, `image_mat()`,
+`facade_mat()`, `build_world()` (airport, suburbs, city, hills, traffic), `make_plane_v2()`, `anchor()`.
+
+| builder (module) | what it shows | anchors | params |
+|---|---|---|---|
+| `airport_hook` (`scene_lib_v2_air`) | light aircraft on a stable approach, camera pulls back to reveal the airport | plane | `speed`, `y1`, `sun_az` |
+| `airport_plate` | airliner climbing out of the airport (half-res plate for graphs) | plane | `view`: climb_a / climb_b |
+| `altitude_margin_v2` | side-on long-lens: high airliner vs one on short final (bars drawn by overlay) | high, high_g, low, low_g | `high_z`, `dist`, `lens` |
+| `cockpit_workload_v2` | airliner on approach from below: speed streaks, flaps, gear, radio rings on 4 cues | plane | `cues` |
+| `crosswind_v2` | crabbed short final, wind streaks, dip on shear cue, light aircraft on the taxiway with amber rings | plane, traffic | `wind_cue`, `shear_cue`, `traffic_cue` |
+| `tightrope_v2` | walker on a rope between platforms in a sunny meadow; rope middle teal / ends red | mid, end, walker | `middle_cue`, `on_cue` |
+| `cabin_v2` | bright airliner cabin, seatbelt pictograms light up | – | `sign_cue` |
+| `airport_outro` | airliner take-off and climb, camera cranes up over the field | plane | `cam_path`, `lens` |
+| `city_hook` (`scene_lib_v2_city`) | river city aerial; listed bridges dim + red rings, traffic stops on `hit_cue` | br_<key> | `hit_cue`, `hit` (bridge keys) |
+| `city_wide` | high view of the city split by the river; `mode` barrier: red dashed river line + teal bridge rings | – | `mode`, `split_cue`, `bridges_cue`, `cam0/1`, `tgt0/1` |
+| `supply_funnel_v2` | vans/trucks converge on one bridge along amber route lines | bridge | `bridge`, `start_cue`, `funnel_cue` |
+| `utility_bridge_v2` | low riverside view, power/water/comms lines with pulses under a deck; stop + dim on cue | bridge | `bridge`, `cues`, `dim_cue` |
+| `detour_v2` | closed bridge + amber detour route via the next bridge | closed | `closed`, `alt`, `detour_cue` |
+| `city_plate` | arch bridge from the promenade (half-res plate for history cards) | – | `bridge` |
+| `pontoon_v2` | pontoon segments float in and lock into a bridge, then cars cross | pontoon | `float_cue`, `mass_cue` |
+| `arteries_v2` | glowing traffic streams; pinched bridge slows the flow, teal bypass on cue | pinch | `pinch`, `bypass`, `pinch_cue`, `backup_cue` |
+| `city_outro` | crane-up over the river city | – | `cam0`, `cam1` |
+
+Bridge keys (south -> north): `south` (cable-stayed), `rail` (truss), `paton` (girder), `metro` (low arch),
+`north_arch` (big arch), `far_north` (girder). Names are overlay labels in episode.json, never 3D text.
+New builders: add `def b_x(ctx, p)` to a `scene_lib_v2_*.py` module and register it in `S.V2_BUILDERS`; call
+`S.daylight()` + a world builder, `ctx.camera()` (via `_cam`), and `S.anchor()` for anything a label should follow.
+Preview stills at `--scale 0.5` and the overlay preview before any full render.
+
+### Assets (v2)
+`assets/polyhaven/` (CC0, gitignored; source URLs + sizes in its README): HDRI `kloofendal_48d_partly_cloudy` (2K),
+`aerial_asphalt_01`, `aerial_grass_rock`, `concrete_floor_02` (1K diffuse / normal-GL / rough). If the folder is
+missing, `daylight()` falls back to the procedural sky and materials to procedural noise (looks flatter: re-download).
+
+### Files (v2)
+- `make_episode.py`: orchestrator (branches on `episode.json` `"pipeline"`). `tts.py`, `captions.py`: shared with v1.
+- `v2_textures.py`: PIL marking textures. `overlay_v2.py`: all 2D text + segment encode. `qc_v2.py` (+ `qc_flicker.py`): QC.
+- `blender/render_episode_v2.py`: one beat / frame range in headless Blender. `blender/scene_lib_v2.py`: look library
+  + airport world. `blender/scene_lib_v2_air.py`: airliner + aviation builders. `blender/scene_lib_v2_city.py`:
+  river city + bridge builders.
+- `v2_test.py`, `blender/render_v2_test.py`: the approved look test (23 Nov 2026), kept for reference.
 
 ## Channel voice & script style (decided 22 Nov 2026 — use for EVERY new episode)
 
@@ -31,7 +138,8 @@ Output:
 
 ## How to make a new episode (step by step)
 
-1. **Copy the last episode folder**: `episodes/2026-11-23-1-highway-pileup/` to `episodes/<date>-<slot>-<slug>/`.
+1. **Copy the latest v2 episode folder** (e.g. `episodes/2026-11-24-1-plane-crash/`, `"pipeline": "v2"`) to
+   `episodes/<date>-<slot>-<slug>/`. Never copy a `"pipeline": "v1"` episode or an `episode.v1.json`.
 2. **Edit `episode.json`**:
    - `keyword`: the main keyword. This becomes the file name (`output/<keyword>.mp4`).
    - `slug`: same as the keyword but with dashes (used for the working folder).
@@ -45,16 +153,19 @@ Output:
      - A metaphor beat (dominoes, etc.).
      - A takeaway beat (practical safety advice).
      - The last beat = a question for the comments, and a last line that loops back to the hook.
-   - Each beat has a `shot`: `{"builder": <name>, "params": {...}}`. Available builders are listed below.
-   - Leave `tts`, `render`, and `music: null` as they are, unless you have a reason to change them.
-3. **Run it**: `.venv/bin/python pipeline/make_episode.py episodes/<id>/episode.json`. It takes about 12–13 min: about 11 min of render with 4 parallel Blender processes, plus about 1 min of assembly.
+   - Each beat has a `shot`: `{"builder": <v2 builder>, "params": {...}, "overlays": [...]}` (see "v2 pipeline"
+     above). All on-screen text goes in `overlays`; new topics usually need a new v2 builder in a `scene_lib_v2_*.py`.
+   - Leave `tts`, `render` (`samples` 24, `parallel` 3), `pipeline: "v2"` and `music: null` as they are.
+3. **Run it**: `.venv/bin/python pipeline/make_episode.py episodes/<id>/episode.json`. v2 takes about 60–90 min
+   (render with 3 Blender processes) plus about 3 min of overlays/assembly/QC; run it in the background.
    - To run steps one by one, use `--steps tts`, `--steps captions`, `--steps render`, `--steps assemble,fb,post`.
    - The default steps are `tts,captions,render,assemble,fb,post`. `fb` re-encodes the final mp4 to HEVC with a
      bitrate computed from the duration (target about 9.3 MB) and re-encodes lower if it is still >= 10 MB.
    - **Check `audio/timings.json` total (70–120 s) right after `--steps tts,captions`, before any rendering.**
    - To re-do one beat's voice, delete `output/<slug>/audio/beat_<id>.wav`, then run `--steps tts,captions`.
-   - To re-render one shot, delete `output/<slug>/frames/NN_<beat>/`, then run `--steps render,assemble`.
-     If you change the voice/timings, delete **all** of `frames/`, because the shot lengths change.
+   - To re-render one shot (v2), delete `output/<slug>/frames_v2/NN_<beat>/` + `tracks_v2/NN_<beat>_*`, then run
+     `--steps render,assemble,fb,qc --only-shot NN`. If you change the voice/timings, delete **all** of `frames_v2/`
+     and `tracks_v2/`, because the shot lengths change.
 4. **Preview shots before the full render**. This is cheap, at about 1 s per still:
    ```
    /Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup -P pipeline/blender/render_episode.py -- \
@@ -65,6 +176,12 @@ Output:
    - `ffprobe` should show a duration of 70–120 s, 1080x1920, and an audio stream.
    - Grab about 6 frames (`ffmpeg -ss T -i out.mp4 -frames:v 1 qc/T.png`) and look at them.
    - Check that the captions match the speech (`captions.json` → `alignment` shows what whisper heard).
+
+---
+
+# v1 pipeline (old episodes, `"pipeline": "v1"` only — do not use for new episodes)
+
+Everything below describes the v1 look (navy fog, 3D text cards). Keep it for re-rendering old episodes.
 
 ## Builders (`pipeline/blender/scene_lib.py` → `BUILDERS`)
 

@@ -32,82 +32,355 @@
   },
   "music": null,
   "render": {
-    "resolution": [1080, 1920],
+    "resolution": [
+      1080,
+      1920
+    ],
     "fps": 30,
-    "samples": 8,
-    "parallel": 4
+    "samples": 24,
+    "parallel": 3
   },
   "beats": [
     {
       "id": "hook",
       "text": "On November 20th, Kyiv's mayor said Russian missiles hit three bridges over the Dnipro River in the city, and traffic was restricted on major crossings.",
-      "shot": {"builder": "river_city", "params": {
-        "mode": "hook", "card": "KYIV BRIDGES HIT", "subcard": "Kyiv's mayor · 20 Nov 2026",
-        "hit_cue": "hit", "names": ["PODILSKO-VOSKRESENSKYI", "DARNYTSKYI", "PIVDENNYI (SOUTH)"],
-        "chip": "TRAFFIC RESTRICTED", "chip_cue": "traffic"}}
+      "shot": {
+        "builder": "city_hook",
+        "params": {
+          "hit_cue": "hit"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "KYIV BRIDGES HIT",
+            "sub": "Kyiv's mayor · 20 Nov 2026",
+            "at": 0.25
+          },
+          {
+            "type": "label",
+            "text": "PODILSKO-VOSKRESENSKYI",
+            "anchor": "br_north_arch",
+            "cue": "hit",
+            "delay": 0.0,
+            "dx": 40,
+            "dy": -90
+          },
+          {
+            "type": "label",
+            "text": "DARNYTSKYI",
+            "anchor": "br_rail",
+            "cue": "hit",
+            "delay": 0.25,
+            "dx": 80,
+            "dy": -80
+          },
+          {
+            "type": "label",
+            "text": "PIVDENNYI (SOUTH)",
+            "anchor": "br_south",
+            "cue": "hit",
+            "delay": 0.5,
+            "dx": 60,
+            "dy": -70
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TRAFFIC RESTRICTED"
+            ],
+            "cues": [
+              "traffic"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "question",
       "text": "So why do bridges matter so much in a war? It comes down to rivers.",
-      "shot": {"builder": "river_barrier", "params": {
-        "card": "WHY BRIDGES?", "card_cue": "why", "chip": "RIVERS = BARRIERS", "chip_cue": "rivers", "mode": "intro"}}
+      "shot": {
+        "builder": "city_wide",
+        "params": {
+          "mode": "wide"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY BRIDGES?",
+            "cue": "why"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "RIVERS = BARRIERS"
+            ],
+            "cues": [
+              "rivers"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "barrier",
       "text": "Rivers are natural barriers. Wide ones like the Dnipro can split cities, regions and whole front lines in two. Bridges are the few places where you can cross.",
-      "shot": {"builder": "river_barrier", "params": {
-        "card": "RIVERS = BARRIERS", "card_cue": "rivers", "chip": "BRIDGES = CHOKEPOINTS", "chip_cue": "bridges",
-        "split_cue": "split", "mode": "bridges"}}
+      "shot": {
+        "builder": "city_wide",
+        "params": {
+          "mode": "barrier",
+          "split_cue": "split",
+          "bridges_cue": "bridges",
+          "cam0": [
+            -1300.0,
+            -3300.0,
+            2300.0
+          ],
+          "tgt0": [
+            0.0,
+            400.0,
+            0.0
+          ],
+          "cam1": [
+            -700.0,
+            -2600.0,
+            3000.0
+          ],
+          "tgt1": [
+            0.0,
+            300.0,
+            0.0
+          ]
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "RIVERS = BARRIERS",
+            "cue": "rivers"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "BRIDGES = CHOKEPOINTS"
+            ],
+            "cues": [
+              "bridges"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "supplies",
       "text": "Here are the three big reasons they matter. One: supplies. Food, fuel, ammunition and troops move by road and rail, and every route over the river funnels through a bridge.",
-      "shot": {"builder": "supply_funnel", "params": {
-        "card": "1 · SUPPLIES", "card_cue": "one",
-        "items": ["FOOD", "FUEL", "SUPPLIES", "PEOPLE"], "item_cues": ["food", "fuel", "ammunition", "troops"],
-        "funnel_cue": "funnels"}}
+      "shot": {
+        "builder": "supply_funnel_v2",
+        "params": {
+          "bridge": "paton",
+          "start_cue": "supplies",
+          "funnel_cue": "funnels"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · SUPPLIES",
+            "cue": "one"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FOOD",
+              "FUEL",
+              "SUPPLIES",
+              "PEOPLE"
+            ],
+            "cues": [
+              "food",
+              "fuel",
+              "ammunition",
+              "troops"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
     },
     {
       "id": "utilities",
       "text": "Two: everything else. Bridges often carry power cables, water pipes and communication lines. Damage one, and people can feel it far from the river.",
-      "shot": {"builder": "utility_bridge", "params": {
-        "card": "2 · HIDDEN LIFELINES", "card_cue": "two",
-        "chips": ["POWER", "WATER", "COMMUNICATIONS"], "chip_cues": ["power", "water", "communication"],
-        "dim_cue": "damage"}}
+      "shot": {
+        "builder": "utility_bridge_v2",
+        "params": {
+          "bridge": "metro",
+          "dim_cue": "damage",
+          "cues": [
+            "power",
+            "water",
+            "communication"
+          ]
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · HIDDEN LIFELINES",
+            "cue": "two"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "POWER",
+              "WATER",
+              "COMMUNICATIONS"
+            ],
+            "cues": [
+              "power",
+              "water",
+              "communication"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "time",
       "text": "Three: time. Even a damaged bridge can force long detours. Traffic jams, delays and slower deliveries can matter as much as the damage itself.",
-      "shot": {"builder": "river_city", "params": {
-        "mode": "detour", "card": "3 · TIME", "card_cue": "three", "chip": "LONG DETOURS", "chip_cue": "detours"}}
+      "shot": {
+        "builder": "detour_v2",
+        "params": {
+          "closed": "rail",
+          "alt": "paton",
+          "detour_cue": "detours"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · TIME",
+            "cue": "three"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "LONG DETOURS"
+            ],
+            "cues": [
+              "detours"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "history",
       "text": "Bridges have mattered in wars for centuries. In 1944, the Allied push to take the bridge at Arnhem fell short, remembered as A Bridge Too Far. In 1945, US troops captured the Remagen bridge over the Rhine intact.",
-      "shot": {"builder": "history_cards", "params": {
-        "card": "BRIDGES IN HISTORY",
-        "cards": [["1944 · ARNHEM", "\"A Bridge Too Far\""], ["1945 · REMAGEN", "Rhine bridge taken intact"]],
-        "cues": ["1944", "1945"]}}
+      "shot": {
+        "builder": "city_plate",
+        "render_scale": 0.5,
+        "samples": 16,
+        "params": {
+          "bridge": "north_arch"
+        },
+        "overlays": [
+          {
+            "type": "blur",
+            "radius": 9,
+            "dim": 0.25
+          },
+          {
+            "type": "card",
+            "text": "BRIDGES IN HISTORY",
+            "at": 0.25
+          },
+          {
+            "type": "history",
+            "cards": [
+              [
+                "1944 · ARNHEM",
+                "\"A Bridge Too Far\""
+              ],
+              [
+                "1945 · REMAGEN",
+                "Rhine bridge taken intact"
+              ]
+            ],
+            "cues": [
+              "1944",
+              "1945"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "repair",
       "text": "But big bridges are hard to bring down. They're massive steel and concrete, and engineers can patch them, or float in pontoon bridges, surprisingly fast.",
-      "shot": {"builder": "pontoon_bridge", "params": {
-        "card": "HARD TO DROP, QUICK TO PATCH", "card_cue": "but",
-        "chip": "PONTOON BRIDGE", "chip_cue": "pontoon"}}
+      "shot": {
+        "builder": "pontoon_v2",
+        "params": {
+          "mass_cue": "pontoon"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "HARD TO DROP, QUICK TO PATCH",
+            "cue": "but"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "PONTOON BRIDGE"
+            ],
+            "cues": [
+              "pontoon"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "metaphor",
       "text": "Think of bridges as a city's arteries. Pinch one, and the flow slows far downstream. That's why cities defend their bridges, and plan backup routes in advance.",
-      "shot": {"builder": "arteries", "params": {
-        "card": "A CITY'S ARTERIES", "pinch_cue": "pinch", "backup_cue": "backup",
-        "chip": "BACKUP ROUTES", "chip_cue": "backup"}}
+      "shot": {
+        "builder": "arteries_v2",
+        "params": {
+          "pinch_cue": "pinch",
+          "backup_cue": "backup",
+          "pinch": "paton",
+          "bypass": "metro"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "A CITY'S ARTERIES",
+            "at": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "BACKUP ROUTES"
+            ],
+            "cues": [
+              "backup"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "outro",
       "text": "Do you think bridges can ever be fully protected? Tell us in the comments, and send this to someone who loves history. Because that's exactly what's at stake on the Dnipro in Kyiv.",
-      "shot": {"builder": "river_city", "params": {
-        "mode": "outro", "card": "CAN BRIDGES BE\nPROTECTED?", "subcard": "Tell us in the comments", "sub_cue": "tell"}}
+      "shot": {
+        "builder": "city_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "CAN BRIDGES BE\nPROTECTED?",
+            "sub": "Tell us in the comments",
+            "sub_cue": "tell",
+            "at": 0.25
+          }
+        ]
+      }
     }
-  ]
+  ],
+  "pipeline": "v2"
 }
