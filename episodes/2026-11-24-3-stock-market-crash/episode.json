@@ -1,0 +1,331 @@
+{
+  "id": "2026-11-24-3-stock-market-crash",
+  "keyword": "stock market crash",
+  "slug": "stock-market-crash",
+  "title": "Why Do Stock Markets Suddenly Crash? The Nasdaq's Worst Week Since 2020, Explained",
+  "fb_caption": "In the week to 20 November 2026, the Nasdaq fell about 10%, its worst week since 2020, as a selloff in AI and chip stocks spread from Wall Street to Tokyo. So why do markets climb slowly but fall so fast? Here are the three big reasons: bubbles, fear and forced selling, plus what history says. Educational only, not financial advice. Did last week's drop worry you? Tell us below.",
+  "hashtags": [
+    "#stockmarket",
+    "#Nasdaq",
+    "#WallStreet",
+    "#AIstocks",
+    "#investing",
+    "#newsexplained",
+    "#whatjusthappened",
+    "#explained"
+  ],
+  "engagement_comment": "Honest question: when the market drops 10% in a week, what do you do? Reply 1 = hold and ignore it, 2 = buy more, 3 = check my app every hour 😅",
+  "sources": [
+    "NPR, 21 Nov 2026, 'The AI boom had a really bad week': https://npr.org/2026/11/21/nx-s1-6048729/ai-stock-markets-anthropic-nvidia",
+    "Bloomberg Markets Wrap via swissinfo, 20 Nov 2026, 'Nasdaq 100 has worst week since 2020 on AI drama': https://www.swissinfo.ch/eng/nasdaq-100-has-worst-week-since-2020-on-ai-drama:-markets-wrap/92410554",
+    "Reuters via Streamline Feed, 'AI selloff drags Nasdaq to worst week since 2020' (Nasdaq Composite about -10% on the week): https://streamlinefeed.co.ke/news/ai-selloff-drags-nasdaq-to-worst-week-since-2020",
+    "NBC News, 'AI stocks lost more than $820 billion this week': https://www.nbcnews.com/business/markets/stock-market-update-ai-losses-rcna242592",
+    "24/7 Wall St, 20 Nov 2026, Nikkei 225 -5.1% on Fri 20 Nov in AI chip selloff: https://247wallst.com/investing/2026/11/20/taiwan-stock-market-falls-6-2-to-cap-its-worst-week-since-1991-as-kospi-closes-down-5-2-and-nikkei-225-drops-5-1-in-ai-chip-selloff/",
+    "Hook figures used: 'worst week since 2020' and 'about ten percent in five days' (Composite -10.02%, Nasdaq 100 about -10.4%: wording kept approximate). No company or person is named.",
+    "History (general knowledge, verify before posting): Black Monday 19 Oct 1987, Dow -22.6% and S&P 500 -20.5% in one day; 2020 COVID crash, S&P 500 about -34% from 19 Feb to 23 Mar 2020, record high again by Aug 2020. 'Correction' = a decline of 10% or more from a recent peak (standard market definition).",
+    "Re-check before posting: Monday 23 Nov session close; hook stays true as a dated past fact either way."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm, knowledgeable and confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Nasdaq = NAZ-dak, 1987 = nineteen eighty-seven, 2020 = twenty twenty.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "pipeline": "v2",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Last week, the Nasdaq had its worst week since 2020. It fell about ten percent in five days, as a selloff in AI and chip stocks spread from Wall Street all the way to Tokyo.",
+      "shot": {
+        "builder": "market_hook",
+        "params": {
+          "drop_cue": "fell"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "NASDAQ: WORST WEEK SINCE 2020",
+            "sub": "Week to 20 Nov 2026",
+            "at": 0.25
+          },
+          {
+            "type": "big",
+            "text": "ABOUT −10%",
+            "sub": "in five trading days",
+            "cue": "ten",
+            "y": 0.46
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WALL STREET",
+              "TOKYO"
+            ],
+            "cues": [
+              "wall",
+              "tokyo"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "So how can so much money vanish in just a few days? Because markets usually climb by the stairs, but fall by the elevator.",
+      "shot": {
+        "builder": "stairs_elevator_v2",
+        "params": {
+          "mode": "drop",
+          "stairs_cue": "stairs",
+          "drop_cue": "elevator"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY SO FAST?",
+            "cue": "so"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "UP BY THE STAIRS",
+              "DOWN BY THE ELEVATOR"
+            ],
+            "cues": [
+              "stairs",
+              "elevator"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bubble",
+      "text": "Here are the three big reasons. One: expectations. When everyone gets excited about a new technology, prices can run far ahead of real profits. People call that a bubble.",
+      "shot": {
+        "builder": "bubble_v2",
+        "params": {
+          "mode": "inflate",
+          "grow_cue": "excited",
+          "profit_cue": "profits"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · EXPECTATIONS",
+            "cue": "one"
+          },
+          {
+            "type": "label",
+            "text": "PRICE",
+            "anchor": "bubble",
+            "cue": "prices",
+            "dx": 60,
+            "dy": -60
+          },
+          {
+            "type": "label",
+            "text": "PROFITS",
+            "anchor": "profit",
+            "cue": "profits",
+            "dx": -60,
+            "dy": -50,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "A BUBBLE"
+            ],
+            "cues": [
+              "bubble"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pop",
+      "text": "And a bubble doesn't need a big shock to pop. Sometimes one piece of bad news makes investors stop and ask: is this really worth the price?",
+      "shot": {
+        "builder": "bubble_v2",
+        "params": {
+          "mode": "pop",
+          "pop_cue": "news"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHAT POPS IT?",
+            "at": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ONE PIECE OF BAD NEWS"
+            ],
+            "cues": [
+              "news"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fear",
+      "text": "Two: fear spreads. When prices start falling, many investors sell simply because everyone else is selling. Nobody wants to be the last one out the door.",
+      "shot": {
+        "builder": "supply_funnel_v2",
+        "params": {
+          "bridge": "paton",
+          "start_cue": "prices",
+          "funnel_cue": "everyone"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · FEAR SPREADS",
+            "cue": "two"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "EVERYONE HEADS FOR THE EXIT"
+            ],
+            "cues": [
+              "nobody"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "forced",
+      "text": "Three: forced selling. Some investors buy stocks with borrowed money. When prices drop, lenders can demand cash back, and automatic sell orders kick in. Selling triggers more selling, like dominoes.",
+      "shot": {
+        "builder": "dominoes_v2",
+        "params": {
+          "topple_cue": "triggers"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · FORCED SELLING",
+            "cue": "three"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "BORROWED MONEY",
+              "AUTOMATIC SELL ORDERS"
+            ],
+            "cues": [
+              "borrowed",
+              "automatic"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "history",
+      "text": "It's happened before. In 1987, US stocks fell more than twenty percent in a single day. In 2020, they crashed in a few weeks, then recovered within months.",
+      "shot": {
+        "builder": "city_plate",
+        "render_scale": 0.5,
+        "samples": 16,
+        "params": {
+          "bridge": "north_arch"
+        },
+        "overlays": [
+          {
+            "type": "blur",
+            "radius": 9,
+            "dim": 0.25
+          },
+          {
+            "type": "card",
+            "text": "IT'S HAPPENED BEFORE",
+            "at": 0.25
+          },
+          {
+            "type": "history",
+            "cards": [
+              [
+                "1987 · BLACK MONDAY",
+                "US stocks fell 20%+ in one day"
+              ],
+              [
+                "2020 · PANDEMIC CRASH",
+                "Fell in weeks, recovered in months"
+              ]
+            ],
+            "cues": [
+              "1987",
+              "2020"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Drops of ten percent or more even have a name: a correction. They're scary, but they've happened many times before. This isn't financial advice, just how markets work.",
+      "shot": {
+        "builder": "stairs_elevator_v2",
+        "params": {
+          "mode": "long",
+          "name_cue": "correction"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "A \"CORRECTION\"",
+            "cue": "correction",
+            "sub": "a drop of 10% or more"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SCARY, BUT NOT RARE",
+              "NOT FINANCIAL ADVICE"
+            ],
+            "cues": [
+              "scary",
+              "financial"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Did last week's drop worry you, or did you ignore it? Tell us in the comments, and send this to someone who checks their stocks every hour. Because that's how the Nasdaq lost ten percent in one week.",
+      "shot": {
+        "builder": "city_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DID THE DROP\nWORRY YOU?",
+            "sub": "Tell us in the comments",
+            "sub_cue": "tell",
+            "at": 0.25
+          }
+        ]
+      }
+    }
+  ]
+}
