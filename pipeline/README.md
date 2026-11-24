@@ -399,4 +399,5 @@ Always use `tools/gen_image.py` for any generated image (props, textures, thumbn
 | Research + hook fact-check (2+ reputable sources; drop or attribute anything not clearly supported) + script + caption/hashtags/engagement comment | **Fable** |
 | Build: episode.json shots, builders, TTS, render, assembly, technical QC fixes | **Opus** |
 | Final QC before posting: re-check facts on the day, review EVERY `qc/full` sheet, approve or send fixes back | **Fable** |
+Exact models (Irfan, 24 Nov 2026): **Fable = Fable 5.2** (`model: 'fable'`), **Opus = Opus 5.5** (`model: 'opus'`), sub-agent **effort = medium** (pass `effort: 'medium'` on every sub-agent call).
 Reason: Fable is markedly better at factual accuracy/judgement; Opus handles the long tool-heavy build and keeps the weekly Fable quota (≈5 % per full Fable video) for the high-value steps.
