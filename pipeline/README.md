@@ -392,3 +392,11 @@ Build sources at the origin and delete them after copying (as `_city()` does).
 
 ## Image generation (Irfan, 24 Nov 2026)
 Always use `tools/gen_image.py` for any generated image (props, textures, thumbnails, logos). It uses the **Codex CLI** first (built-in image_gen, MCP disabled) and only falls back to Google Gemini (Nano Banana Pro) if Codex fails or its quota is depleted. Do not call the Gemini image API directly.
+
+## Model split per video (Irfan, 24 Nov 2026 — mandatory)
+| Step | Sub-agent model |
+|---|---|
+| Research + hook fact-check (2+ reputable sources; drop or attribute anything not clearly supported) + script + caption/hashtags/engagement comment | **Fable** |
+| Build: episode.json shots, builders, TTS, render, assembly, technical QC fixes | **Opus** |
+| Final QC before posting: re-check facts on the day, review EVERY `qc/full` sheet, approve or send fixes back | **Fable** |
+Reason: Fable is markedly better at factual accuracy/judgement; Opus handles the long tool-heavy build and keeps the weekly Fable quota (≈5 % per full Fable video) for the high-value steps.
