@@ -943,16 +943,17 @@ def b_harbour_hook(ctx, p):
 
 def b_harbour_wide(ctx, p):
     """High wide view over the port from the sea: the corvette lies rolled over by the pier (red ring); the
-    merchant ship at anchor off the port gets a red ring on `merchant_cue`. Anchors: ship, merchant."""
+    merchant ship at anchor off the port gets a red ring on `merchant_cue` (off with `merchant_ring: false`). Anchors: ship, merchant."""
     T = ctx.frames
     w = build_harbour_world(ctx, p)
     ship = w["corvette"]
     sx, sy = SHIP_HOME
     _roll(ship, [(1, -88, 3.2), (T, -92, 3.4)], math.pi)
     red_ring("ring_ship", (sx + 2.0, sy), 1, r=40.0, w=3.0, frames=T)
-    f_m = ctx.word_time(p.get("merchant_cue", "merchant"), 0.3)
-    mx, my = MERCHANT
-    red_ring("ring_mer", (mx, my), f_m, r=95.0, w=5.0, frames=T)
+    if p.get("merchant_ring", True):
+        f_m = ctx.word_time(p.get("merchant_cue", "merchant"), 0.3)
+        mx, my = MERCHANT
+        red_ring("ring_mer", (mx, my), f_m, r=95.0, w=5.0, frames=T)
     S.anchor(ctx, "ship", ship, (0, 0, 4.0))
     S.anchor(ctx, "merchant", w["merchant"], (0, 0, 22.0))
     c0 = p.get("cam0", (2250.0, -2750.0, 330.0))

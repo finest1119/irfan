@@ -30,7 +30,7 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 | Wed 25 | 3 | 🇷🇺 Russian corvette Merkury sunk by sea drones in Benghazi, Libya (Nov 22; Ukraine claimed Nov 23) (RESEARCH PICK 2026-11-24, replaces: UK flooding) | How sea drones sink warships | sea drones |
 | Thu 26 | 1 | 🇺🇸 Thanksgiving = top day for US cooking fires | Why turkey fryers explode | turkey fryer fire |
 | Thu 26 | 2 | 🇺🇸 Tanker hits riverboat, New Orleans (Nov 13) | How big ships collide on rivers | ship collision |
-| Thu 26 | 3 | 🇨🇳🇯🇵 Typhoon Champi (verify date) | Why typhoons still hit China and Japan late in the year | typhoon |
+| Thu 26 | 3 | 🇨🇳 High-rise fire in Taiyuan, Shanxi (Nov 8) (RESEARCH PICK 2026-11-24, replaces Typhoon Champi — Champi was an October storm, hook stale) | Why fire spreads so fast in tall buildings | high rise fire |
 | Fri 27 | 1 | 🇺🇸 Black Friday crowds | How crowd crushes happen and how to survive one | crowd crush |
 | Fri 27 | 2 | 🇷🇺🇪🇺 Russia–Estonia border tension | Why the Baltic border is Europe's tensest line | Russia Estonia |
 | Fri 27 | 3 | 🇺🇸 Pentagon warns Ukraine on deep drone strikes | How long-range attack drones work | attack drones |
@@ -50,5 +50,5 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 ## Backlog
 | From | Hook (news) | Explainer topic | Main keyword |
 |---|---|---|---|
-| Tue 24 #3 (swapped 2026-11-23) | 🇨🇳 High-rise fire in Taiyuan, Shanxi (Nov 8; not Nov 10) | Why fire spreads so fast in tall buildings | high rise fire |
+| Thu 26 #3 (swapped 2026-11-24) | 🇨🇳🇯🇵 Typhoon Champi (October storm; hook stale, use with the next late-season typhoon) | Why typhoons still hit China and Japan late in the year | typhoon |
 | Wed 25 #3 (swapped 2026-11-24) | 🇬🇧 Met Office heavy rain warning (Nov 17); use with the next named UK storm | Why the UK floods so often | UK flooding |

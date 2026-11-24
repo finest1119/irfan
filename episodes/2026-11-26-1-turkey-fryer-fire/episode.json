@@ -1,0 +1,369 @@
+{
+  "id": "2026-11-26-1-turkey-fryer-fire",
+  "keyword": "turkey fryer fire",
+  "slug": "turkey-fryer-fire",
+  "title": "Why Do Turkey Fryers Explode? Thanksgiving Is the Peak Day for US Home Cooking Fires",
+  "fb_caption": "Thanksgiving is the peak day of the year for home cooking fires in the US, according to the National Fire Protection Association, and the NFPA discourages turkey fryers that use cooking oil. So why do they go wrong so fast? Three big reasons: too much oil that spills onto the burner, ice and water that flash into steam, and oil that keeps heating with no temperature control. If you do fry: thaw the bird completely, test the oil level with water first, fry outside on level ground, and never leave it alone. Has anyone in your family ever deep-fried a turkey? Tell us below.",
+  "hashtags": [
+    "#turkeyfryer",
+    "#Thanksgiving",
+    "#firesafety",
+    "#cooking",
+    "#science",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll: how is your turkey cooked this year? 1 = oven, 2 = deep fryer, 3 = air fryer or smoker, 4 = no turkey at all. Reply with a number!",
+  "sources": [
+    "Carrier Management, 16 Nov 2026 (NFPA figures; Thanksgiving Day is the peak day for US home cooking fires, Christmas Day and Christmas Eve 2nd and 3rd; NFPA 'discourages the use of turkey fryers that use cooking oil'): https://www.carriermanagement.com/news/2026/11/16/294165.htm",
+    "NFPA community post, 25 Nov 2025 (Thanksgiving has by far the most cooking fire incidents of any day): https://community.nfpa.org/news/11450304",
+    "News9 (Oklahoma City), NFPA Thanksgiving reminder (seen in search results; direct fetch HTTP 403): https://www.news9.com/oklahoma-city-news/nfpa-thanksgiving-fire-prevention-safety",
+    "Illinois State Fire Marshal (fryers tip over easily; overfilled pot spills when the turkey goes in; test the oil level with water first; partially frozen bird makes hot oil splatter; fryers can overheat and start a fire; level surface outdoors; thaw completely): https://sfm.illinois.gov/currentfocus/turkey-fryer-safety.html",
+    "US Consumer Product Safety Commission (turkey completely thawed and dried; search summary only): https://www.cpsc.gov/node/19912",
+    "Lafayette, Indiana fire department (never use a fryer in a garage or on a wooden deck; many units have no thermostat control; overfill and partly frozen turkeys cause spill-over): https://lafayette.in.gov/730/Turkey-Fryer-Safety",
+    "Not used: the 80% NFPA figure (single outlet), spike percentages, oil temperatures, steam expansion ratios. 'Water flashes into steam and shoves the oil out' is basic physics. Visuals are abstract (glow, particles, colour shifts): no realistic flames, no people in danger.",
+    "Posting-day re-check: confirm the NFPA 'peak day' statement is unchanged; check https://www.nfpa.org by hand (NFPA position on oil fryers was read in one 2026 outlet only)."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Fenrir",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Energetic, confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Thanksgiving is the peak day of the year for home cooking fires in America. That's from the National Fire Protection Association. And it discourages one cooking method: the oil turkey fryer.",
+      "shot": {
+        "builder": "yard_hook",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THANKSGIVING",
+            "sub": "Peak day for US home cooking fires",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "OIL TURKEY FRYER",
+            "anchor": "fryer",
+            "cue": "oil",
+            "dx": 70,
+            "dy": -130
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SOURCE: NFPA",
+              "DISCOURAGES OIL TURKEY FRYERS"
+            ],
+            "cues": [
+              "national",
+              "discourages"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "So why do turkey fryers go wrong so fast? Here are the three big reasons.",
+      "shot": {
+        "builder": "yard_orbit",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY DO TURKEY\nFRYERS EXPLODE?",
+            "at": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "one_overfill",
+      "text": "One: too much oil. A turkey is big. Lower it into a full pot and the oil level rises. It can spill over the rim, straight down onto the open burner underneath. Even a small spill can turn into a large fire.",
+      "shot": {
+        "builder": "fryer_cut",
+        "params": {
+          "mode": "overfill",
+          "lower_cue": "lower",
+          "spill_cue": "spill",
+          "big_cue": "large"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · TOO MUCH OIL",
+            "cue": "one"
+          },
+          {
+            "type": "label",
+            "text": "OIL LEVEL RISES",
+            "anchor": "oil",
+            "cue": "rises",
+            "until": "spill",
+            "dx": -80,
+            "dy": -140,
+            "color": "amber"
+          },
+          {
+            "type": "label",
+            "text": "OPEN BURNER",
+            "anchor": "burner",
+            "cue": "burner",
+            "dx": 80,
+            "dy": -60
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SPILLS OVER THE RIM",
+              "A SMALL SPILL, A LARGE FIRE"
+            ],
+            "cues": [
+              "spill",
+              "even"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "two_ice",
+      "text": "Two: ice and water. A turkey that is still partly frozen is carrying water. When water hits hot oil, it flashes into steam. Steam takes up far more room, so it shoves the oil up and out of the pot.",
+      "shot": {
+        "builder": "fryer_cut",
+        "params": {
+          "mode": "ice",
+          "ice_cue": "frozen",
+          "steam_cue": "flashes",
+          "out_cue": "shoves"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · ICE AND WATER",
+            "cue": "two"
+          },
+          {
+            "type": "label",
+            "text": "ICE INSIDE",
+            "anchor": "ice",
+            "cue": "frozen",
+            "until": "flashes",
+            "dx": -90,
+            "dy": -150,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WATER FLASHES INTO STEAM",
+              "STEAM SHOVES THE OIL OUT"
+            ],
+            "cues": [
+              "flashes",
+              "shoves"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "three_heat",
+      "text": "Three: runaway heat. Some fryers have no temperature control. Leave the burner on and the oil keeps getting hotter, until it can catch fire.",
+      "shot": {
+        "builder": "fryer_cut",
+        "params": {
+          "mode": "heat",
+          "heat_cue": "leave",
+          "hot_cue": "hotter"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · RUNAWAY HEAT",
+            "cue": "three"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NO TEMPERATURE CONTROL",
+              "OIL KEEPS GETTING HOTTER",
+              "IT CAN CATCH FIRE"
+            ],
+            "cues": [
+              "temperature",
+              "hotter",
+              "catch"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "metaphor",
+      "text": "Think of a bathtub filled to the brim. Step in, and the water has to go somewhere. Now picture that water as hot oil, with a flame under the tub.",
+      "shot": {
+        "builder": "bathtub_v2",
+        "params": {
+          "step_cue": "step",
+          "oil_cue": "picture",
+          "flame_cue": "flame"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "LIKE A FULL BATHTUB",
+            "at": 0.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "THE WATER HAS TO GO SOMEWHERE",
+              "NOW MAKE IT HOT OIL"
+            ],
+            "cues": [
+              "somewhere",
+              "picture"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "location",
+      "text": "Where you fry matters too. Fire departments warn against using a fryer in a garage or on a wooden deck, where spilled oil can spread a fire to the house.",
+      "shot": {
+        "builder": "yard_top",
+        "params": {
+          "garage_cue": "garage",
+          "deck_cue": "deck",
+          "ok_cue": "spilled"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHERE YOU FRY MATTERS",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "GARAGE",
+            "anchor": "garage",
+            "cue": "garage",
+            "dx": 70,
+            "dy": -110
+          },
+          {
+            "type": "label",
+            "text": "WOODEN DECK",
+            "anchor": "deck",
+            "cue": "deck",
+            "dx": -70,
+            "dy": 110
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SPILLED OIL CAN SPREAD TO THE HOUSE"
+            ],
+            "cues": [
+              "spilled"
+            ],
+            "y": 0.765
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: thaw the bird completely and pat it dry. Test the oil level with water first. Fry outside, on level ground, away from anything that burns. Never leave it alone. Or choose an oil-free fryer.",
+      "shot": {
+        "builder": "yard_safe",
+        "params": {
+          "thaw_cue": "thaw",
+          "test_cue": "test",
+          "fry_cue": "outside",
+          "watch_cue": "never",
+          "free_cue": "choose"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TAKEAWAY",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "y": 0.565,
+            "items": [
+              "THAW IT COMPLETELY, PAT IT DRY",
+              "TEST THE OIL LEVEL WITH WATER",
+              "OUTSIDE, ON LEVEL GROUND",
+              "NEVER LEAVE IT ALONE",
+              "OR GO OIL-FREE"
+            ],
+            "cues": [
+              "thaw",
+              "test",
+              "outside",
+              "never",
+              "choose"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Has anyone in your family ever deep-fried a turkey? Tell us how it went in the comments, and send this to whoever is cooking this year. Because Thanksgiving is the peak day for home cooking fires.",
+      "shot": {
+        "builder": "yard_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DEEP-FRIED A TURKEY?",
+            "at": 0.2,
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS",
+              "SEND THIS TO THE COOK"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ]
+          },
+          {
+            "type": "card",
+            "text": "THANKSGIVING",
+            "sub": "Peak day for home cooking fires",
+            "cue": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

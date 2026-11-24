@@ -17,3 +17,4 @@ rows (in order). Rule: always have the next set built and scheduled one day ahea
 | Wed 25 #3 | (UK flooding / research pick) | to build 24 Nov 07:47 | 25 Nov 08:00 | — |
 | Thu 26 #1–3 | turkey fryer fire, ship collision, typhoon (subject to research) | to build 24 Nov | 25 Nov 21:00, 26 Nov 01:30, 26 Nov 08:00 | — |
 | (extra) Sat 28 #2 pulled forward | hurricane (Fable 5.2 test) | posted via Graph API | 24 Nov 11:45 | reel/946803861698880 |
+| Wed 25 #3 | sea drones (replaces UK flooding) | scheduled via Graph API (video 1458065626482491) | 25 Nov 08:00 | — |

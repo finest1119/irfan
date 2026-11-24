@@ -36,6 +36,16 @@ def load_builders():
     except Exception:
         import traceback
         traceback.print_exc()
+    for mod in ("scene_lib_v2_yard", "scene_lib_v2_river", "scene_lib_v2_tower"):
+        try:   # 26 Nov 2026 episodes; guarded so a bug there never breaks other episodes
+            __import__(mod)
+        except ModuleNotFoundError as ex:
+            if ex.name != mod:
+                import traceback
+                traceback.print_exc()
+        except Exception:
+            import traceback
+            traceback.print_exc()
     return S.V2_BUILDERS
 
 

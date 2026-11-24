@@ -1,0 +1,327 @@
+{
+  "id": "2026-11-25-3-sea-drones",
+  "keyword": "sea drones",
+  "slug": "sea-drones",
+  "title": "How Do Sea Drones Sink Warships? Russian Corvette Merkury Sunk in Benghazi, Explained",
+  "fb_caption": "In the early hours of Sunday 22 November 2026, sea drones struck the Russian navy corvette Merkury in the port of Benghazi, Libya. The ship capsized and sank, and Ukraine says it carried out the attack. So how can small, cheap boats sink a warship? Three big reasons: they're small, low and fast, they're cheap enough to send in groups, and they hit at the waterline, where flooding can make a ship lose stability and roll over. Could cheap sea drones change naval warfare for good? Tell us below.",
+  "hashtags": [
+    "#seadrones",
+    "#navy",
+    "#warships",
+    "#Benghazi",
+    "#Libya",
+    "#technology",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll: which defence do you think works best against sea drones? 1 = booms and barriers, 2 = quick-firing guns, 3 = night cameras. Reply with a number!",
+  "sources": [
+    "CNBC, 23 Nov 2026: https://www.cnbc.com/2026/11/23/ukraine-russia-warship-libya.html (attack at Benghazi's port in the early hours of Sunday 22 Nov; Ukraine's president said Ukraine carried out the sea-drone attack on the Russian corvette Merkury; satellite imagery shows the ship capsized and mostly underwater; Russia's Defence Ministry had not commented as of 24 Nov).",
+    "ABC News: https://abcnews.com/International/ukrainian-naval-drones-sank-russias-merkury-warship-libya/story?id=138369738 (Ukrainian naval drones sank the Merkury in Libya; the ship capsized and sank).",
+    "CBS News: https://www.cbsnews.com/news/russian-warship-struck-suspected-ukrainian-sea-drones-benghazi-naval-base-libya-officials/ (first report, Sunday 22 Nov, Benghazi naval base, before Ukraine's claim; gives no time of day).",
+    "RFE/RL: https://www.rferl.org/a/benghazi-libya-russian-ship-sunk-drone-ukraine/33903623.html (Merkury sunk in Benghazi).",
+    "Hook facts used: date/time (early hours, Sun 22 Nov 2026), place (port of Benghazi, Libya), ship (Russian navy corvette Merkury), outcome (capsized and sank), attribution ('Ukraine says'). Deliberately NOT used (reported, but attributed and/or inconsistent between sources): drones intercepted (counts differ widely between CBS and RFE/RL), the cargo ship MV Angara also being hit and a helicopter destroyed (per Ukraine's president), drone counts (sources differ: seven vs about six), number of hits, injuries.",
+    "Explainer (general, evergreen, 'can/could' language, not a claim about how the Merkury sank): sea drones (uncrewed surface vessels) are small, low-profile and fast, so they are hard to detect by radar and lookouts, especially at night; they are far cheaper than warships (warships commonly cost hundreds of millions of dollars, figure used only in that general form) and can be sent in groups; a charge at or below the waterline lets water flood in, and enough flooding, especially off-centre (free surface effect), costs a ship its stability so it lists and capsizes. Defences: floating booms/barriers at harbour entrances, quick-firing guns, thermal/night cameras.",
+    "Visuals: generic, original 3D models (grey corvette with no flags, numbers or weapons; small dark drone boat). The harbour is a generic illustration, not Benghazi. The hit is shown only as a white water splash; nobody is shown."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm, knowledgeable and clear, but confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Merkury = MER-koo-ree, Benghazi = ben-GAH-zee, Libya = LIB-ee-uh, corvette = kor-VET.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "In the early hours of Sunday, November 22nd, sea drones struck the Russian navy corvette Merkury in the port of Benghazi, Libya. The ship capsized and sank. Ukraine says it carried out the attack.",
+      "shot": {
+        "builder": "harbour_hook",
+        "params": {
+          "hit_cue": "struck",
+          "list_cue": "capsized"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WARSHIP SUNK IN LIBYA",
+            "sub": "Benghazi port · 22 Nov 2026",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "ILLUSTRATION",
+            "anchor": "ship",
+            "at": 0.8,
+            "until": "capsized",
+            "dx": 60,
+            "dy": -120,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "RUSSIAN CORVETTE MERKURY",
+              "CAPSIZED AND SANK",
+              "UKRAINE SAYS IT WAS BEHIND IT"
+            ],
+            "cues": [
+              "merkury",
+              "capsized",
+              "ukraine"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "So how can small, cheap boats sink a warship? Here are the three big reasons.",
+      "shot": {
+        "builder": "harbour_wide",
+        "params": {
+          "merchant_ring": false,
+          "cam0": [2199.0, -2673.0, 315.0],
+          "tgt0": [624.0, -624.0, 0.0]
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "HOW DO SEA DRONES\nSINK WARSHIPS?",
+            "at": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "low",
+      "text": "One: they're small, low and fast. A sea drone sits almost flush with the water, so radar and lookouts can struggle to spot it, especially at night. By the time it's seen, it may be seconds away.",
+      "shot": {
+        "builder": "drone_low_v2",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · SMALL, LOW, FAST",
+            "cue": "one"
+          },
+          {
+            "type": "label",
+            "text": "SEA DRONE",
+            "anchor": "drone",
+            "cue": "sea",
+            "dx": 60,
+            "dy": -120
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ALMOST FLUSH WITH THE WATER",
+              "HARD TO SPOT ON RADAR",
+              "WORSE AT NIGHT"
+            ],
+            "cues": [
+              "flush",
+              "radar",
+              "night"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "swarm",
+      "text": "Two: they're cheap. A warship can cost hundreds of millions of dollars. A sea drone costs a tiny fraction of that. So attackers can send several at once, and the ship's guns may not stop them all.",
+      "shot": {
+        "builder": "swarm_v2",
+        "params": {
+          "swarm_cue": "several",
+          "guns_cue": "guns"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · CHEAP SWARMS",
+            "cue": "two"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WARSHIP: HUNDREDS OF MILLIONS",
+              "SEA DRONE: A TINY FRACTION",
+              "SEVERAL AT ONCE"
+            ],
+            "cues": [
+              "warship",
+              "drone",
+              "several"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterline",
+      "text": "Three: they hit at the waterline. An explosive charge at or just below the waterline can open a hole that lets the sea pour straight in.",
+      "shot": {
+        "builder": "waterline_v2",
+        "params": {
+          "line_cue": "water",
+          "hit_cue": "hole"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · AT THE WATERLINE",
+            "cue": "three"
+          },
+          {
+            "type": "label",
+            "text": "WATERLINE",
+            "anchor": "waterline",
+            "cue": "water",
+            "dx": -60,
+            "dy": -130,
+            "color": "red"
+          }
+        ]
+      }
+    },
+    {
+      "id": "flood",
+      "text": "Water rushes into the compartments, and the ship sits lower and lower in the sea.",
+      "shot": {
+        "builder": "cutaway_v2",
+        "params": {
+          "mode": "flood",
+          "flood_cue": "water"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WATER FLOODS IN",
+            "at": 0.1
+          },
+          {
+            "type": "label",
+            "text": "FLOODING",
+            "anchor": "flood",
+            "cue": "compartments",
+            "dx": -70,
+            "dy": -150
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SITS LOWER IN THE SEA"
+            ],
+            "cues": [
+              "lower"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "roll",
+      "text": "Think of a canoe. A little water inside, and it still floats. But enough water sloshing to one side, and it loses stability, leans, and rolls over.",
+      "shot": {
+        "builder": "cutaway_v2",
+        "params": {
+          "mode": "roll",
+          "slosh_cue": "sloshing",
+          "lean_cue": "leans",
+          "roll_cue": "rolls"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "LIKE A CANOE",
+            "at": 0.1
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WATER SHIFTS TO ONE SIDE",
+              "STABILITY LOST",
+              "IT ROLLS OVER"
+            ],
+            "cues": [
+              "sloshing",
+              "stability",
+              "rolls"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "defend",
+      "text": "So how do navies defend against them? Floating booms and barriers across harbour entrances, quick-firing guns, and night cameras that spot heat on the water.",
+      "shot": {
+        "builder": "defend_v2",
+        "params": {
+          "boom_cue": "booms",
+          "cam_cue": "cameras"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "HOW NAVIES DEFEND",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "BOOMS & BARRIERS",
+              "QUICK-FIRING GUNS",
+              "NIGHT CAMERAS"
+            ],
+            "cues": [
+              "booms",
+              "quick",
+              "night"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Could cheap sea drones change naval warfare for good? Tell us in the comments, and send this to someone who follows the news. Because this week, that question reached the port of Benghazi.",
+      "shot": {
+        "builder": "harbour_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "A NAVAL GAME CHANGER?",
+            "at": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS"
+            ],
+            "cues": [
+              "tell"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}
