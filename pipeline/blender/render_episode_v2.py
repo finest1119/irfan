@@ -30,6 +30,12 @@ def load_builders():
     import scene_lib_v2_market  # noqa: F401
     import scene_lib_v2_travel  # noqa: F401
     import scene_lib_v2_winter  # noqa: F401
+    import scene_lib_v2_sea  # noqa: F401
+    try:
+        import scene_lib_v2_storm  # noqa: F401  (hurricane; guarded so a bug there never breaks other episodes)
+    except Exception:
+        import traceback
+        traceback.print_exc()
     return S.V2_BUILDERS
 
 

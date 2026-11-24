@@ -1,0 +1,398 @@
+{
+  "id": "2026-11-24-9-hurricane",
+  "keyword": "hurricane",
+  "slug": "hurricane",
+  "title": "How Is a Hurricane Born? The 2026 Atlantic Season Has Had Just One So Far",
+  "fb_caption": "The 2026 Atlantic hurricane season officially ends on 30 November. So far it has produced ten named storms but only one hurricane, Isaias. So how is a hurricane born? Three big ingredients: warm ocean water (about 80°F / 26.5°C or more), spin from the Earth's rotation, and calm winds high up so the storm's tower can stand upright. Forecasters say a strong El Niño kept wind shear high this year. A quiet season is no guarantee, though: it only takes one storm. Have you ever been through a hurricane? Tell us below.",
+  "hashtags": [
+    "#hurricane",
+    "#hurricaneseason",
+    "#weather",
+    "#science",
+    "#ElNino",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll: which hurricane ingredient surprised you most? 1 = warm water, 2 = the Earth's spin, 3 = calm winds high up. Reply with a number!",
+  "sources": [
+    "Yale Climate Connections (Eye on the Storm), published 19 Nov, updated Sat 21 Nov 2026: https://yaleclimateconnections.org/2026/11/kyle-could-form-off-florida-as-extensive-prolonged-coastal-flood-threat-grows/ (season so far: 10 named storms, one hurricane, Isaias; NHC odds that the East Coast coastal low becomes 'Kyle' had dropped to 10% by midday 21 Nov). Counts verified as of 21 Nov 2026; nhc.noaa.gov blocked automated access (HTTP 403), so re-check there before posting: if an 11th storm (Kyle) has been named, the 'ten named storms' line is out of date.",
+    "Nature World News, 4 Nov 2026 (citing FOX Weather, NOAA CPC, NHC and Colorado State University's Phil Klotzbach): https://www.natureworldnews.com/articles/73725/20261104/atlantic-has-produced-just-one-hurricane-2026-el-nino-wind-shear-holds-four-weeks-left.htm (10 named storms, 1 hurricane, Isaias; strong El Niño raised wind shear).",
+    "The Watchers, 15 Nov 2026 (citing the NHC 2026 North Atlantic Tropical Weather Summary as of 15 Nov): https://watchers.news/epicenter/10-named-storms-one-hurricane-for-the-first-time-since-1925-why-has-the-atlantic-been-so-quiet-in-2026/ (10 named storms, 1 hurricane: Isaias).",
+    "CBS Austin, 6 Nov 2026: https://cbsaustin.com/news/local/story/is-hurricane-season-2026-over (one hurricane, Isaias; season ends 30 Nov; El Niño and hostile wind shear).",
+    "FOX10 / Gray, 4 Nov 2026: https://www.fox10tv.com/2026/11/04/2026-atlantic-hurricane-season-among-least-active-when-measured-by-ace/ (10 named storms; strong El Niño increases wind shear).",
+    "FOX Weather (Bryan Norcross), 8 Nov 2026: https://www.foxweather.com/weather-news/bryan-norcross-hurricane-analysis-november-8-2026 (season ends 30 Nov; development unlikely for the rest of the month).",
+    "Hook facts used: season officially ends 30 November; 'so far' ten named storms; only one hurricane, Isaias. Deliberately NOT used: record claims, Isaias dates, wind speeds, landfall, damage or casualties (sources differ on details). Re-check the counts with the NHC on posting day.",
+    "Explainer (general, evergreen; NOAA / NHC / NOAA AOML hurricane FAQ): sea-surface temperature of about 26.5 °C (80 °F) or more; warm moist air rises, water vapour condenses and releases latent heat; Coriolis effect from the Earth's rotation gives the spin (counter-clockwise in the northern hemisphere; almost none at the equator, so tropical cyclones rarely form within about 5° of it); low vertical wind shear is needed; eye = sinking air, eyewall = strongest winds; Atlantic season 1 June - 30 November, peak mid-August to late October. El Niño / wind shear for 2026 is attributed to forecasters, not stated as fact.",
+    "Visuals: original stylised 3D illustration (cloud spiral, cutaways, globe with simplified continents, generic port town). No real storm footage, no damage, nobody shown."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Orus",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Isaias = ees-ah-EE-ahs, El Niño = el NEEN-yoh, Celsius = SEL-see-us.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "The 2026 Atlantic hurricane season officially ends on November 30th. So far it has produced ten named storms, but only one hurricane: Isaias.",
+      "shot": {
+        "builder": "storm_hook",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ONE HURRICANE IN 2026",
+            "sub": "Atlantic season ends 30 November",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "ILLUSTRATION",
+            "anchor": "storm",
+            "at": 0.7,
+            "until": "far",
+            "dx": 120,
+            "dy": -170,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "10 NAMED STORMS SO FAR",
+              "ONLY 1 HURRICANE: ISAIAS"
+            ],
+            "cues": [
+              "ten",
+              "only"
+            ],
+            "y": 0.7
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "So how is a hurricane born, and why so few this year? Here are the three big ingredients.",
+      "shot": {
+        "builder": "ocean_calm",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "HOW IS A HURRICANE\nBORN?",
+            "at": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "warm",
+      "text": "One: the ocean has to be warm, about 80 degrees Fahrenheit, 26 and a half Celsius, or more. That warm water is the fuel.",
+      "shot": {
+        "builder": "warm_cut",
+        "params": {
+          "mode": "warm"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · WARM WATER",
+            "cue": "one",
+            "sub": "Warm water is the fuel",
+            "sub_cue": "fuel"
+          },
+          {
+            "type": "label",
+            "text": "80 °F / 26.5 °C OR MORE",
+            "anchor": "warm",
+            "cue": "80",
+            "dx": 90,
+            "dy": -330,
+            "color": "amber"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rise",
+      "text": "Warm, moist air rises off the sea. As it cools, the vapor condenses into cloud, and that releases heat. The heat makes the air rise even faster, pulling in more moist air below. It works like a heat engine.",
+      "shot": {
+        "builder": "warm_cut",
+        "params": {
+          "mode": "rise"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THE HEAT ENGINE",
+            "at": 0.15
+          },
+          {
+            "type": "label",
+            "text": "WARM, MOIST AIR",
+            "anchor": "air",
+            "cue": "moist",
+            "until": "heat",
+            "dx": -170,
+            "dy": -90,
+            "color": "amber"
+          },
+          {
+            "type": "label",
+            "text": "HEAT RELEASED",
+            "anchor": "heat",
+            "cue": "releases",
+            "dx": 150,
+            "dy": -110,
+            "color": "red"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "VAPOR CONDENSES INTO CLOUD",
+              "PULLS IN MORE MOIST AIR"
+            ],
+            "cues": [
+              "condenses",
+              "pulling"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "spin",
+      "text": "Two: the storm needs spin. The Earth's rotation bends the incoming winds, so the whole system starts to turn, counterclockwise north of the equator. Right at the equator there's almost no spin, so hurricanes almost never form there.",
+      "shot": {
+        "builder": "globe_spin",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · SPIN",
+            "cue": "two"
+          },
+          {
+            "type": "label",
+            "text": "COUNTERCLOCKWISE",
+            "anchor": "storm",
+            "cue": "counterclockwise",
+            "dx": 150,
+            "dy": -150
+          },
+          {
+            "type": "label",
+            "text": "EQUATOR",
+            "anchor": "equator",
+            "cue": "equator",
+            "dx": 120,
+            "dy": 70,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "EARTH'S ROTATION BENDS THE WINDS",
+              "ALMOST NO SPIN AT THE EQUATOR"
+            ],
+            "cues": [
+              "rotation",
+              "almost"
+            ],
+            "y": 0.715
+          }
+        ]
+      }
+    },
+    {
+      "id": "shear",
+      "text": "Three: the winds high up have to be calm. If they change sharply with height, called wind shear, they tip the storm's tower over and it falls apart. This year, forecasters say a strong El Niño kept that shear high.",
+      "shot": {
+        "builder": "warm_cut",
+        "params": {
+          "mode": "shear"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · CALM WINDS UP HIGH",
+            "cue": "three"
+          },
+          {
+            "type": "label",
+            "text": "WIND SHEAR",
+            "anchor": "shear",
+            "cue": "shear",
+            "dx": -40,
+            "dy": -110,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SHEAR TIPS THE TOWER OVER",
+              "FORECASTERS: EL NIÑO KEPT SHEAR HIGH"
+            ],
+            "cues": [
+              "tip",
+              "el"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eye",
+      "text": "When all three line up, the storm organizes. Air sinks in the middle and clears a calm eye. Around it stands the eyewall, a ring of towering clouds with the strongest winds.",
+      "shot": {
+        "builder": "eye_section",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THE EYE AND THE EYEWALL",
+            "at": 0.15
+          },
+          {
+            "type": "label",
+            "text": "EYE",
+            "anchor": "eye",
+            "cue": "eye",
+            "dx": 0,
+            "dy": -150,
+            "color": "teal"
+          },
+          {
+            "type": "label",
+            "text": "EYEWALL",
+            "anchor": "eyewall",
+            "cue": "eyewall",
+            "dx": 120,
+            "dy": -130,
+            "color": "red"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "AIR SINKS: A CALM, CLEAR EYE",
+              "EYEWALL: STRONGEST WINDS"
+            ],
+            "cues": [
+              "sinks",
+              "strongest"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "season",
+      "text": "That's why the season peaks from August to October, when the ocean is warmest. By late November the water cools, the shear picks up, and the engine shuts down.",
+      "shot": {
+        "builder": "storm_hook",
+        "params": {
+          "mode": "fade",
+          "fade_cue": "cools",
+          "rot0": 50,
+          "cam0": [
+            150,
+            -2380,
+            2540
+          ],
+          "cam1": [
+            280,
+            -2520,
+            2680
+          ]
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY THE SEASON ENDS",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "PEAK: AUGUST TO OCTOBER",
+              "LATE NOVEMBER: WATER COOLS",
+              "SHEAR PICKS UP"
+            ],
+            "cues": [
+              "august",
+              "november",
+              "shear"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: a quiet season is no guarantee. It only takes one storm. So if you live near the coast, know your evacuation zone before next June.",
+      "shot": {
+        "builder": "coast_calm",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THE TAKEAWAY",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "A QUIET SEASON IS NO GUARANTEE",
+              "IT ONLY TAKES ONE STORM",
+              "KNOW YOUR EVACUATION ZONE"
+            ],
+            "cues": [
+              "quiet",
+              "only",
+              "evacuation"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Have you ever been through a hurricane? Tell us in the comments, and send this to someone who lives near the coast. Because this season is ending with just one.",
+      "shot": {
+        "builder": "harbour_outro",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "EVER BEEN THROUGH ONE?",
+            "at": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS"
+            ],
+            "cues": [
+              "tell"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

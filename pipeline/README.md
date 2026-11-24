@@ -130,6 +130,20 @@ sun, procedural sky fallback), `ph_detail()` (Poly Haven PBR detail on any mater
 | `hangar_check_v2` | lit maintenance hangar (own interior set), transport with yellow work platforms, teal inspection rings slide along the fuselage from `scan_cue` | tail, wing | `scan_cue` |
 | `classic_car_v2` | same hangar, a Kenney sedan in front of the transport, camera pulls back | car | `model` |
 | `cargo_outro` | the transport takes off from the snowy runway and climbs; camera cranes up | plane | `y0`, `v0`, `cam_path` |
+| `harbour_hook` (`scene_lib_v2_sea`) | generic grey corvette moored at the naval pier; low sea drones race in with wakes, white splashes on `hit_cue`, ship lists and rolls over from `list_cue`; camera pulls back | ship | `hit_cue`, `list_cue`, `cam0/1`, `tgt0/1` |
+| `harbour_wide` | view from the sea over the port: corvette rolled over by the pier (red ring), merchant ship at anchor gets a red ring on `merchant_cue` | ship, merchant | `merchant_cue`, `cam0/1`, `tgt0/1` |
+| `drone_low_v2` | low tracking shot beside a sea drone skimming towards the port | drone | `speed`, `heading`, `start`, `off0/1` |
+| `swarm_v2` | aerial: corvette under way, six drones fan in from the far side (amber rings on `swarm_cue`), two stopped by splashes on `guns_cue` | ship | `swarm_cue`, `guns_cue`, `ship`, `r0`, `cam_off0/1` |
+| `waterline_v2` | low view of the hull from the water: red waterline strip draws on `line_cue`, drone runs in, splash + red ring on `hit_cue` | waterline | `line_cue`, `hit_cue`, `cam0/1` |
+| `cutaway_v2` | corvette cut across its length with the sea cut too (teal section): `mode` flood (hole + inflow arrows, water rises, ship sits lower) / roll (water sloshes, leans, rolls over) | flood | `mode`, `flood_cue`, `lower_cue`, `slosh_cue`, `lean_cue`, `roll_cue` |
+| `defend_v2` | breakwater head + lighthouse: yellow floating boom rises across the entrance on `boom_cue`, patrol boat, teal camera scan sector on `cam_cue`, drone stopped at the boom | – | `boom_cue`, `cam_cue`, `cam0/1` |
+| `harbour_outro` | crane-up from the basin to a wide view of port, city and sea | – | `cam0/1`, `tgt0/1` |
+| `storm_hook` (`scene_lib_v2_storm`) | tropical ocean from high above, white cloud spiral (real icosphere puffs) turning counter-clockwise; `mode` fade: rings shrink away from `fade_cue` | storm | `mode`, `fade_cue`, `rot0`, `spin_deg`, `cam0/1`, `tgt0/1` |
+| `ocean_calm` | low glide over the calm tropical sea towards palm islands | – | `islands`, `cam0/1`, `tgt0` |
+| `warm_cut` | sea cut open (warm orange surface layer): `mode` warm (heat arrows) / rise (moist-air arrows, cloud tower grows, red heat arrows, inflow arrows) / shear (upper winds tip the tower over and tear its top off) | warm, air, heat, inflow, shear, tower | `mode`, `warm_cue`, `rise_cue`, `cloud_cue`, `heat_cue`, `fast_cue`, `pull_cue`, `shear_cue`, `tip_cue`, `apart_cue` |
+| `globe_spin` | big globe (numpy-drawn simplified continents) over the sea turning west to east, amber spin band, small Atlantic spiral turning counter-clockwise | storm, equator, band | `lon0/1`, `tilt`, `storm_lon/lat`, `turn_cue` |
+| `eye_section` | storm cut in half: clear eye, eyewall, inflow / rising / sinking arrows | eye, eyewall, wall_l | `sink_cue` |
+| `coast_calm` | calm port town of the harbour world (no warship), slow glide | – | `cam0/1`, `tgt0/1` |
 
 Travel world (`scene_lib_v2_travel.build_travel_world`): `S.build_world` airport world + six-lane interstate at x = 1720
 (texture `highway.png` from `v2_textures.py`), overpass, sign gantries without text, corridor trees, hills removed and
@@ -138,6 +152,22 @@ Travel world (`scene_lib_v2_travel.build_travel_world`): `S.build_world` airport
 statuses flip on cues) was added to `overlay_v2.py` for it. Winter world (`scene_lib_v2_winter.build_winter_world`):
 snow ground, runway with snow banks, hangars, tower, two villages, dense taiga as ~4,300 instanced 50 m forest patches +
 a mottled "far forest" ground, snowy hills; `S.HAZE` is switched to a cold haze for that world.
+
+Harbour world (`scene_lib_v2_sea.build_harbour_world`, "sea drones" 25 Nov 2026): sea z = 0 to the south (own
+`sea_mat`), land north of y = 0 at `QUAY_Z` 2.5, rubble breakwaters with lighthouses, naval finger pier (corvette at
+`SHIP_HOME`, bow south), container terminal with gantry cranes, warehouses, coast road with traffic and palms, a
+sand-coloured flat-roofed city (one mesh), merchant ship at anchor, tugs; no far hills (dark smudges) and
+`horizon_haze(hi=0.09)`. Models are original and generic (corvette without flags, numbers or weapons). Wakes are
+foam strips a few cm above the water: keep the camera `clip_start` >= 1 m (20 m for high aerials) or they z-fight.
+`cutaway_v2` cuts the sea plane at `CUT_Y` and draws a teal section face; the flood water is one clipped polygon
+per 2 frames (world-level surface via `water_poly`), swapped with CONSTANT scale keys.
+
+Storm world (`scene_lib_v2_storm.build_ocean`, "hurricane" 24 Nov 2026): tropical sea (own `ocean_mat`, less mirror-like
+so it stays blue at grazing angles), optional cut at y = 0 with a self-lit warm-layer section, palm islands. Clouds are
+icosphere clusters (`puffs`, `make_spiral`, `tower_mat` with a blue-grey rim so towers read against the HDRI clouds).
+Looping arrows use `loop_move` (scale in/out at both ends, so the jump back is never seen). `horizon_haze(lo=0.02, hi=0.2)`
+hides a building on the HDRI horizon that shows in north-facing sea shots. If the TTS leaves a pause > 0.75 s inside a beat,
+cut the silence out of `audio/beat_<id>.wav` and re-run `--steps tts,captions` (only that beat's frame count changes).
 
 Market plaza: `scene_lib_v2_market.build_market_world()` = `build_city_world` with `exclude_blocks` (city blocks
 whose centre falls in a rect get no streets/buildings; random draws are kept so the rest of the city is unchanged)
