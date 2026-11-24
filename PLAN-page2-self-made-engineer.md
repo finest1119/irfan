@@ -16,6 +16,17 @@ Runs on Windows laptop #1 (RTX 3050), same Claude account (Max $100), separate C
 - Engagement hooks: end each reel by teasing the next build, ask viewers what he should build next, and use
   viewer suggestions as future episodes ("You asked for it").
 
+### One-shot editing (Irfan, 24 Nov 2026 — for Page 2 and later new Pages; WJH keeps its cut-based style)
+- No cuts: the whole reel is ONE continuous camera move through the property. Between beats the camera
+  "whips" fast (whoosh) from one spot to the next and settles, like the reference reels.
+- Implementation: the episode is rendered as a single Blender shot in the persistent world; the camera has one
+  keyframed path with slow "hold" segments (during narration) and 0.3–0.5 s fast eased travel segments with
+  motion blur between them. Builds animate in place when the camera arrives (parts pop/assemble).
+- Pipeline change needed: `render_episode_v2` gets a "oneshot" mode (one scene, per-beat camera waypoints from
+  voice timings) instead of one scene per beat; overlays/captions unchanged (2D). QC adds a check that there are
+  no hard cuts (frame-difference spikes only allowed inside whip segments).
+- Because everything is in one scene, the world must stay light enough for 4 GB VRAM (instancing, LOD).
+
 ### How continuity is implemented
 - `page2/world_state.json`: the property map + list of completed builds (id, position, episode, short description,
   dependencies). The world builder loads it and places every finished build in the scene (animated: turbine spins,
