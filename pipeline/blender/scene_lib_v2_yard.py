@@ -717,10 +717,10 @@ def b_fryer_cut(ctx, p):
             x, y = rng.uniform(-0.12, 0.12), rng.uniform(-0.1, 0.1)
             f0 = f_st + 2 * k
             set_keys(o, "location", [1, f0, f0 + 30, f0 + 70],
-                     [(x * 0.4, y * 0.4, top - 0.1), (x * 0.4, y * 0.4, top - 0.1), (x, y, top + 0.14),
-                      (x * 1.6, y * 1.4 + 0.1, top + 0.27)], "BEZIER")
+                     [(x * 0.4, y * 0.4, top - 0.1), (x * 0.4, y * 0.4, top - 0.1), (x, y, top + 0.06),
+                      (x * 1.6, y * 1.4 + 0.1, top + 0.13)], "BEZIER")
             set_keys(o, "scale", [1, f0, f0 + 25, f0 + 70, f0 + 100],
-                     [(0, 0, 0), (0.2, 0.2, 0.2), (0.95, 0.95, 0.95), (1.1, 1.1, 1.1), (0, 0, 0)], "BEZIER")
+                     [(0, 0, 0), (0.2, 0.2, 0.2), (0.8, 0.8, 0.8), (0.9, 0.9, 0.9), (0, 0, 0)], "BEZIER")
         # golden droplets: bursts up and out of the pot (ballistic)
         dm, _, _ = oil_mat("fry_drop", "f5b52c", 0.6)
         g = 9.81 / (ctx.fps * ctx.fps)
@@ -757,7 +757,7 @@ def b_fryer_cut(ctx, p):
         # big friendly dial thermometer on a stem, left of the pot, facing the camera
         dial = L.link(bpy.data.objects.new("dial", None))
         dial.parent = root
-        dial.location = (-0.42, 0.12, 1.02)
+        dial.location = (-0.42, 0.12, 0.84)
         dial.scale = (0.72, 0.72, 0.72)
         face = S.pbr("dial_face", hexc("f7f7f4"), 0.4, var=0)
         rim = S.pbr("dial_rim", hexc("c43b32"), 0.35, 0.3, var=0)
@@ -802,9 +802,14 @@ def b_fryer_cut(ctx, p):
                  [ny(205.0), ny(190.0), ny(110.0), ny(10.0), ny(-20.0)], "BEZIER")
         _anc(ctx, "dial", (0.0, -0.03, 0.25), parent=dial)
         _anc(ctx, "oil", (0.0, -POT_R * 0.55, POT_Z + POT_H * 0.62), parent=root)
-    c0 = (fx + p.get("cx", -0.12), fy - 2.05, 1.22)
-    t0 = (fx - (0.18 if mode == "heat" else 0.0), fy, 0.74)
-    c1 = (fx + p.get("cx", -0.12) + 0.1, fy - 1.85, 1.16)
+    if mode == "heat":
+        c0 = (fx + p.get("cx", -0.12), fy - 2.05, 1.22)
+        t0 = (fx - 0.18, fy, 0.74)
+        c1 = (fx + p.get("cx", -0.12) + 0.1, fy - 1.85, 1.16)
+    else:   # turkey hangs above the rim: frame higher so it stays below the caption band
+        c0 = (fx + p.get("cx", -0.12), fy - 2.45, 1.45)
+        t0 = (fx, fy, 0.9)
+        c1 = (fx + p.get("cx", -0.12) + 0.1, fy - 2.25, 1.4)
     _keys(ctx, p, c0, t0, c1, t0, 30)
 
 
@@ -986,7 +991,7 @@ def b_yard_top(ctx, p):
     _anc(ctx, "garage", (gx, gy + 1.0, gz + 0.4))
     _anc(ctx, "deck", (dx, dy - 1.0, dz + 0.3))
     _anc(ctx, "lawn", (FRYER[0], FRYER[1] - 2.6, 0.1))
-    _keys(ctx, p, (5.0, -12.0, 36.0), (5.0, 6.0, 0.0), (5.0, -10.8, 33.0), (5.0, 6.0, 0.0), 20, 0.5)
+    _keys(ctx, p, (5.8, -3.0, 40.0), (5.8, 11.0, 0.0), (5.8, -2.2, 37.5), (5.8, 11.0, 0.0), 15, 0.5)
 
 
 # ---------------------------------------------------------------- takeaway

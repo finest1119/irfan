@@ -54,7 +54,6 @@
           {
             "type": "card",
             "text": "THANKSGIVING",
-            "sub": "Peak day for US home cooking fires",
             "at": 0.2
           },
           {
@@ -67,12 +66,13 @@
           },
           {
             "type": "chips",
+            "y": 0.72,
             "items": [
-              "SOURCE: NFPA",
-              "DISCOURAGES OIL TURKEY FRYERS"
+              "PEAK DAY FOR HOME COOKING FIRES",
+              "NFPA DISCOURAGES OIL FRYERS"
             ],
             "cues": [
-              "national",
+              "peak",
               "discourages"
             ]
           }
@@ -113,16 +113,6 @@
           },
           {
             "type": "label",
-            "text": "OIL LEVEL RISES",
-            "anchor": "oil",
-            "cue": "rises",
-            "until": "spill",
-            "dx": -80,
-            "dy": -140,
-            "color": "amber"
-          },
-          {
-            "type": "label",
             "text": "OPEN BURNER",
             "anchor": "burner",
             "cue": "burner",
@@ -132,10 +122,12 @@
           {
             "type": "chips",
             "items": [
+              "THE OIL LEVEL RISES",
               "SPILLS OVER THE RIM",
               "A SMALL SPILL, A LARGE FIRE"
             ],
             "cues": [
+              "rises",
               "spill",
               "even"
             ]
@@ -165,9 +157,9 @@
             "text": "ICE INSIDE",
             "anchor": "ice",
             "cue": "frozen",
-            "until": "flashes",
-            "dx": -90,
-            "dy": -150,
+            "until": "when",
+            "dx": -150,
+            "dy": -120,
             "color": "teal"
           },
           {
@@ -277,16 +269,6 @@
             "cue": "deck",
             "dx": -70,
             "dy": 110
-          },
-          {
-            "type": "chips",
-            "items": [
-              "SPILLED OIL CAN SPREAD TO THE HOUSE"
-            ],
-            "cues": [
-              "spilled"
-            ],
-            "y": 0.765
           }
         ]
       }
@@ -357,8 +339,7 @@
           },
           {
             "type": "card",
-            "text": "THANKSGIVING",
-            "sub": "Peak day for home cooking fires",
+            "text": "THANKSGIVING: PEAK DAY",
             "cue": "because"
           }
         ]

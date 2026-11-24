@@ -1,0 +1,76 @@
+import json
+T = {
+ "hook": "On Friday, November thirteenth, a tanker struck a docked riverboat on the Mississippi River in New Orleans. The riverboat capsized at the dock. Officials said everyone on board was accounted for.",
+ "question": "Investigators say the tanker's steering failed about two minutes earlier, and they are still working out why. So how do big ships end up hitting things on rivers? Here are the three big reasons.",
+ "one_momentum": "One: momentum. A big ship can weigh tens of thousands of tons, and it has no brakes. Even with the engine thrown into reverse, it can travel many times its own length before it stops.",
+ "two_river": "Two: the river itself. The channel is narrow, it bends, and the current never stops pushing. Some river bends are so tight that ships have to take turns going through.",
+ "three_failure": "Three: no room for failure. A rudder only works when water flows past it, and steering needs power. Lose either one at sea and there is space to drift. On a river, the bank, a bridge or a dock can be seconds away.",
+ "metaphor": "It is like steering a loaded truck down an icy alley lined with parked cars.",
+ "protections": "So how is the risk kept low? Local river pilots guide the big ships. A Coast Guard traffic service watches the river around the clock, a bit like air traffic control. And tugs can be called in to help.",
+ "takeaway": "Takeaway: on a river cruise or a ferry, treat the safety briefing like the one on a plane. Know where the life jackets are, and know your nearest way out.",
+ "outro": "Have you ever watched a giant ship squeeze past on a river? Tell us where in the comments, and send this to someone who loves cruises. Because in New Orleans, investigators say it all happened in about two minutes.",
+}
+print(sum(len(t.split()) for t in T.values()), "words")
+shots = {
+ "hook": {"builder": "river_hook", "params": {"ty": [370.0, 420.0], "toff": -50.0, "lens": 19, "cam0": [40.0, -170.0, 42.0], "tgt0": [36.0, 300.0, -16.0], "cam1": [44.0, -125.0, 38.0], "tgt1": [38.0, 305.0, -16.0]}, "overlays": [
+   {"type": "card", "text": "NEW ORLEANS · 13 NOV 2026", "at": 0.2},
+   {"type": "label", "text": "TANKER", "anchor": "tanker", "cue": "tanker", "dx": -60, "dy": -120, "color": "amber"},
+   {"type": "label", "text": "DOCKED RIVERBOAT", "anchor": "riverboat", "cue": "docked", "dx": -40, "dy": 110, "color": "teal"},
+   {"type": "chips", "y": 0.61, "items": ["ILLUSTRATION", "THE RIVERBOAT CAPSIZED AT THE DOCK", "EVERYONE ACCOUNTED FOR, OFFICIALS SAID"], "cues": ["friday", "capsized", "officials"]}]},
+ "question": {"builder": "river_map", "params": {}, "overlays": [
+   {"type": "card", "text": "INVESTIGATORS: STEERING FAILED", "at": 0.2, "until": "how"},
+   {"type": "big", "text": "ABOUT 2 MINUTES", "sub": "NTSB, preliminary", "cue": "two", "until": "how", "y": 0.6},
+   {"type": "card", "text": "HOW DO SHIPS COLLIDE\nON RIVERS?", "cue": "how"}]},
+ "one_momentum": {"builder": "momentum_v2", "params": {"reverse_cue": "reverse", "length_cue": "travel", "cam0": [-110.0, -300.0, 110.0], "tgt0": [0.0, 60.0, 0.0], "cam1": [-45.0, -270.0, 175.0], "tgt1": [0.0, 330.0, 0.0]}, "overlays": [
+   {"type": "card", "text": "1 · MOMENTUM", "cue": "one"},
+   {"type": "chips", "items": ["TENS OF THOUSANDS OF TONS", "NO BRAKES", "MANY SHIP LENGTHS TO STOP"], "cues": ["tens", "brakes", "many"]}]},
+ "two_river": {"builder": "bend_v2", "params": {"turn_cue": "turns"}, "overlays": [
+   {"type": "card", "text": "2 · THE RIVER ITSELF", "cue": "two"},
+   {"type": "label", "text": "ILLUSTRATION", "anchor": "bend", "at": 0.6, "dx": 0, "dy": -60, "color": "teal"},
+   {"type": "chips", "y": 0.62, "items": ["NARROW CHANNEL", "IT BENDS", "THE CURRENT NEVER STOPS", "SHIPS TAKE TURNS"], "cues": ["narrow", "bends", "current", "turns"]}]},
+ "three_failure": {"builder": "rudder_v2", "params": {"lose_cue": "lose", "power_cue": "power"}, "overlays": [
+   {"type": "card", "text": "3 · NO ROOM FOR FAILURE", "cue": "three"},
+   {"type": "label", "text": "RUDDER", "anchor": "rudder", "cue": "rudder", "dx": 70, "dy": -120},
+   {"type": "chips", "items": ["RUDDER NEEDS FLOWING WATER", "STEERING NEEDS POWER", "ON A RIVER: SECONDS AWAY"], "cues": ["flows", "power", "seconds"]}]},
+ "metaphor": {"builder": "ice_alley_v2", "params": {}, "overlays": [
+   {"type": "card", "text": "LIKE A TRUCK ON ICE", "at": 0.15},
+   {"type": "chips", "items": ["PARKED CARS ON BOTH SIDES"], "cues": ["icy"]}]},
+ "protections": {"builder": "river_help_v2", "params": {"pilot_cue": "pilots", "watch_cue": "watches", "tug_cue": "tugs", "tug_side": 1}, "overlays": [
+   {"type": "card", "text": "HOW THE RISK IS KEPT LOW", "at": 0.15},
+   {"type": "label", "text": "PILOT BOAT", "anchor": "pilot", "cue": "pilots", "dx": 70, "dy": -110, "color": "amber"},
+   {"type": "label", "text": "TUG", "anchor": "tug", "cue": "tugs", "dx": -60, "dy": -110},
+   {"type": "chips", "style": "check", "items": ["LOCAL RIVER PILOTS", "TRAFFIC WATCH AROUND THE CLOCK", "TUGS ON CALL"], "cues": ["pilots", "watches", "tugs"]}]},
+ "takeaway": {"builder": "ferry_deck_v2", "params": {"jacket_cue": "life", "exit_cue": "nearest"}, "overlays": [
+   {"type": "card", "text": "TAKEAWAY", "at": 0.15},
+   {"type": "label", "text": "LIFE JACKETS", "anchor": "jackets", "cue": "life", "dx": -80, "dy": -120, "color": "amber"},
+   {"type": "label", "text": "EXIT", "anchor": "exit", "cue": "nearest", "dx": -60, "dy": -110, "color": "teal"},
+   {"type": "chips", "style": "check", "items": ["TREAT IT LIKE A PLANE BRIEFING", "KNOW WHERE THE LIFE JACKETS ARE", "KNOW YOUR NEAREST WAY OUT"], "cues": ["briefing", "life", "nearest"]}]},
+ "outro": {"builder": "river_outro", "params": {}, "overlays": [
+   {"type": "card", "text": "SEEN A GIANT SHIP PASS?", "at": 0.2, "until": "because"},
+   {"type": "chips", "items": ["TELL US IN THE COMMENTS", "SEND THIS TO A CRUISE FAN"], "cues": ["tell", "send"]},
+   {"type": "card", "text": "ABOUT 2 MINUTES (NTSB)", "cue": "because"}]},
+}
+ep = {
+ "id": "2026-11-26-2-ship-collision", "keyword": "ship collision", "slug": "ship-collision",
+ "title": "How Do Big Ships Collide on Rivers? A Tanker Struck a Docked Riverboat in New Orleans",
+ "fb_caption": "On Friday 13 November, a tanker struck a docked riverboat on the Mississippi River in New Orleans. The riverboat capsized at the dock, and officials said everyone on board was accounted for. Investigators say the tanker's steering failed about two minutes before impact, and the cause is still being investigated. So how do big ships end up hitting things on rivers? Three big reasons: huge momentum with no brakes, a narrow bending channel with a current that never stops, and almost no room when steering or power fails. Have you ever watched a giant ship squeeze past on a river? Tell us where below.",
+ "hashtags": ["#shipcollision", "#NewOrleans", "#MississippiRiver", "#ships", "#maritime", "#howitworks", "#newsexplained", "#whatjusthappened"],
+ "engagement_comment": "Quick poll: which surprised you most? 1 = ships have no brakes, 2 = the river current never stops, 3 = a rudder needs moving water to work. Reply with a number!",
+ "sources": [
+  "gCaptain, 13 Nov 2026 (tanker struck the docked riverboat on the Mississippi in New Orleans; riverboat capsized): https://gcaptain.com/tanker-strikes-docked-paddlewheeler-on-mississippi-river-causing-it-to-capsize/",
+  "The Maritime Executive, 13 Nov 2026 (mayor: all personnel accounted for): https://maritime-executive.com/article/tanker-hits-riverboat-on-new-orleans-waterfront-injuring-passengers",
+  "WorkBoat, 14 Nov 2026 (riverboat capsized; mayor: all passengers and crew safe and accounted for): https://www.workboat.com/riverboat-capsizes-in-new-orleans-after-tanker-collision",
+  "The Maritime Executive, 15 Nov 2026 (NTSB: steering casualty, rudder stayed to starboard, cause not determined): https://maritime-executive.com/article/ntsb-tanker-that-hit-new-orleans-riverboat-suffered-a-steering-failure",
+  "WVUE FOX 8 via WAFB, 15 Nov 2026 (NTSB preliminary data: steering casualty about two minutes before impact; all people on board rescued; preliminary report due in about 30 days): https://www.wafb.com/2026/11/15/tanker-steering-failure-preceded-cruise-ship-collision-ntsb-says/",
+  "Safety4Sea, 16 Nov 2026 (NTSB investigates steering malfunction): https://safety4sea.com/ntsb-investigates-steering-malfunction-behind-new-orleans-collision/",
+  "Explainer (general): IMO guidance that a ship should stop from full speed within 15 ship lengths (German Flag State Q&A, Marine Insight; search summaries); US Coast Guard Vessel Traffic Service Lower Mississippi River (24-hour service); river pilots (WorkBoat 14 Nov; Professional Mariner). 'A rudder needs water flowing past it' is basic ship physics.",
+  "Not used: vessel and company names, flags, headcounts, injury numbers, clock times, the word 'allision', the Port's lawsuit. Visuals: original generic models; the two vessels are always shown apart (no impact, nothing capsized, nobody shown). The river-bend shot is a labelled illustration, not the incident location. The bend line citing the Coast Guard was replaced by the script's safer alternative.",
+  "Posting-day re-check: active NTSB investigation (preliminary report expected around mid-December); keep 'investigators say' and confirm no cause has been announced."],
+ "tts": {"model": "gemini-3.8-flash-tts", "fallback_model": "gemini-3.1-flash-tts-preview", "voice": "Sadaltager",
+   "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm, knowledgeable and clear, but confident, punchy and fast (about 170-185 words per minute), conversational but serious and strictly neutral. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: New Orleans = noo OR-linz.",
+   "pause_between_beats": 0.2, "trim_pauses": True},
+ "music": None,
+ "render": {"resolution": [1080, 1920], "fps": 30, "samples": 24, "parallel": 3},
+ "beats": [{"id": k, "text": T[k], "shot": shots[k]} for k in T],
+ "pipeline": "v2"}
+json.dump(ep, open("/Users/irfan/Documents/Facebook & Youtube Monetisation/irfan/episodes/2026-11-26-2-ship-collision/episode.json", "w"), indent=2, ensure_ascii=False)

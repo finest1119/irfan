@@ -9,7 +9,7 @@ Automatic checks (report -> <outdir>/qc_full.json + qc_full.md):
     long pauses (> 0.75 s silence inside the narration), leading/trailing silence
   - spoken words vs script (faster-whisper on the final audio): missing/extra words, word error rate
 Visual review material (a human/agent MUST look at every sheet):
-  - <outdir>/full/sheet_XX.jpg: one frame per second of the WHOLE video, 15 frames per sheet, timestamps burned in,
+  - <outdir>/full/sheet_XX.jpg: one frame every STEP seconds (default 2 s; Irfan 24 Nov: save tokens) of the WHOLE video, 15 frames per sheet, timestamps burned in,
     with 12 %/80 % safe-area guides. Check every frame: void/plain backgrounds, glitches, clipped or overlapping
     text, labels on wrong objects, wrong spelling, anything graphic/insensitive, visuals not matching the words.
 """
@@ -146,14 +146,15 @@ def main(ep_path, mp4, outdir=None):
     except Exception as e:  # noqa
         issues.append("whisper check failed: %s" % e)
 
-    # --- full-video contact sheets: 1 frame per second
+    # --- full-video contact sheets: 1 frame every STEP s (env QC_STEP, default 2)
+    STEP = float(os.environ.get("QC_STEP", "2"))
     n = int(dur)
     fdir = os.path.join(outdir, "full")
     for f in os.listdir(fdir):
         os.remove(os.path.join(fdir, f))
     # (this ffmpeg build has no drawtext -> label/tile with PIL)
     from PIL import Image, ImageDraw, ImageFont
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-vf", "fps=1,scale=360:640", "-q:v", "3",
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-vf", "fps=1/%g,scale=360:640" % STEP, "-q:v", "3",
                     os.path.join(fdir, "f_%04d.jpg")], check=True)
     frames = sorted(f for f in os.listdir(fdir) if f.startswith("f_"))
     try:
@@ -170,7 +171,7 @@ def main(ep_path, mp4, outdir=None):
             d = ImageDraw.Draw(im)
             for g in (0.12, 0.80):
                 d.line([(0, int(H * g)), (W, int(H * g))], fill=(255, 220, 0), width=2)
-            t = s + k + 0.5
+            t = (s + k) * STEP + STEP / 2
             d.rectangle([0, 0, 92, 34], fill=(0, 0, 0))
             d.text((6, 4), "%d:%02d" % (t // 60, t % 60), font=font, fill=(255, 220, 0))
             sheet.paste(im, (pad + (k % cols) * (W + pad), pad + (k // cols) * (H + pad)))
@@ -186,7 +187,7 @@ def main(ep_path, mp4, outdir=None):
     md = ["# Full QC: %s" % os.path.basename(mp4), "", "Auto checks: %s" % ("PASS" if not issues else "ISSUES"), ""]
     md += ["- " + i for i in issues] or ["- none"]
     md += ["", "Info: " + json.dumps(info), "",
-           "MANUAL (required): open every sheet in qc/full/ (%d sheets, 1 frame/s) and check each frame." % len(sheets)]
+           "MANUAL (required): open every sheet in qc/full/ (%d sheets, 1 frame/%gs) and check each frame." % (len(sheets), STEP)]
     open(os.path.join(outdir, "qc_full.md"), "w").write("\n".join(md))
     print("\n".join(md))
     return rep

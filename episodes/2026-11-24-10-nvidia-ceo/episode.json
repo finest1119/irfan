@@ -1,0 +1,319 @@
+{
+  "id": "2026-11-24-10-nvidia-ceo",
+  "keyword": "Nvidia CEO",
+  "slug": "nvidia-ceo",
+  "title": "Jensen Huang Is Back as Nvidia CEO. Why Can One Job Move a Stock 31%?",
+  "fb_caption": "Nvidia said on Monday, November 23 that its board voted to reinstate Jensen Huang as chief executive, eleven days after he resigned. The shares closed up more than 31% that day, adding nearly $1 trillion in market value, according to Reuters and CNBC. Nvidia also said an investigation by independent directors will continue. So why can one job move a giant company's value so much? Three big reasons: share prices are bets on the future, markets dislike uncertainty, and a board vote settles who is in charge. This is an explainer, not financial advice. Should one person matter this much to a company?",
+  "hashtags": [
+    "#Nvidia",
+    "#JensenHuang",
+    "#stockmarket",
+    "#AI",
+    "#business",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll: how much should one CEO matter to a company's value? 1 = a lot, 2 = somewhat, 3 = hardly at all. Reply with a number!",
+  "sources": [
+    "Nvidia press release, 23 Nov 2026, filed with the SEC as an 8-K exhibit (read directly): board voted unanimously to reinstate Huang as President, CEO and director, effective immediately; Kress continues as CFO; independent-director investigation continues. https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000090/nov23pressrelease.htm",
+    "Nvidia press release, 12 Nov 2026 (read directly): Huang resigned effective immediately; Colette Kress interim CEO; no reason stated. https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition",
+    "Reuters, dateline 23 Nov 2026, via Yahoo Finance syndication (read directly): reinstatement; resignation on 12 Nov; closed up 31.5%; nearly $1 trillion added; investigation unfinished. https://sg.finance.yahoo.com/news/nvidia-reinstates-jensen-huang-ceo-135916841.html",
+    "CNBC, 23 Nov 2026, updated 4:08 PM EST (read directly): reinstatement, unanimous vote; shares closed up 31%. https://www.cnbc.com/2026/11/23/nvidia-jensen-huang-ceo.html",
+    "CNBC markets piece, 23 Nov 2026 (read directly): +31.48%; nearly $1 trillion in market cap; resigned 12 Nov. https://www.cnbc.com/2026/11/23/anthropic-nvidia-shares.html",
+    "Explainer beats (expectations, uncertainty, the board's role) are general corporate-governance and market basics, worded with \"usually / often / can\"; they do not claim to explain this specific price move.",
+    "Not used (deliberately): reasons for the resignation, political angle, intraday high, size of the earlier fall. Posting-day re-check: Huang still CEO, investigation status, how the shares moved after 23 Nov."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Nvidia = \"en-VID-ee-uh\"; Jensen Huang = \"JEN-sen HWAHNG\"; Reuters = \"ROY-terz\".",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Nvidia says its board has voted to bring Jensen Huang back as chief executive, eleven days after he resigned. On Monday, November 23, the shares closed up more than 31 percent, according to Reuters and CNBC.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "JENSEN HUANG BACK AS CEO",
+            "sub": "NVIDIA BOARD VOTE · MON 23 NOV",
+            "at": 0.3
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ELEVEN DAYS AFTER HE RESIGNED",
+              "SHARES CLOSED UP MORE THAN 31%",
+              "SOURCE: REUTERS, CNBC"
+            ],
+            "cues": [
+              "eleven",
+              "shares",
+              "according"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "So why can one job move a giant company's value that much? Here are the three big reasons.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY DOES ONE JOB\nMOVE A STOCK?",
+            "at": 0.45
+          },
+          {
+            "type": "chips",
+            "items": [
+              "THREE BIG REASONS"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "one_expectations",
+      "text": "One: a share price is a bet on the future. Investors are usually not paying for last year's profits. They are paying for what they expect next. Change the person steering, and those expectations can change overnight.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "1 · EXPECTATIONS",
+            "cue": "one",
+            "delay": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "A SHARE PRICE IS A BET ON THE FUTURE",
+              "PAYING FOR WHAT THEY EXPECT NEXT",
+              "CHANGE THE PERSON STEERING"
+            ],
+            "cues": [
+              "share",
+              "paying",
+              "change"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "two_uncertainty",
+      "text": "Two: markets dislike uncertainty. An empty top job leaves open questions. Who decides? Does the strategy change? Often, investors demand a lower price until they get answers.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "2 · UNCERTAINTY",
+            "cue": "two",
+            "delay": 0.25
+          },
+          {
+            "type": "label",
+            "text": "EMPTY TOP JOB",
+            "anchor": "chair",
+            "cue": "empty",
+            "dx": 90,
+            "dy": -120,
+            "until": 9.3
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WHO DECIDES?",
+              "DOES THE STRATEGY CHANGE?",
+              "OFTEN: A LOWER PRICE UNTIL ANSWERS"
+            ],
+            "cues": [
+              "who",
+              "does",
+              "often"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "three_board",
+      "text": "Three: the board. Shareholders elect directors, and the directors hire and can remove the chief executive. So a board vote is usually the moment a leadership question gets a clear answer.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "3 · THE BOARD",
+            "cue": "three",
+            "delay": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SHAREHOLDERS ELECT DIRECTORS",
+              "DIRECTORS HIRE, CAN REMOVE THE CEO",
+              "A BOARD VOTE = A CLEAR ANSWER"
+            ],
+            "cues": [
+              "shareholders",
+              "hire",
+              "vote"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "metaphor",
+      "text": "Think of a huge ship in the middle of the ocean. Same engine. Same crew. Same cargo. But passengers feel very different when nobody knows who the captain is.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THINK OF A HUGE SHIP",
+            "at": 0.45
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SAME ENGINE, SAME CREW, SAME CARGO",
+              "NOBODY KNOWS WHO THE CAPTAIN IS"
+            ],
+            "cues": [
+              "same",
+              "nobody"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "scale",
+      "text": "And size multiplies everything. Reuters reported the jump added nearly one trillion dollars in market value in a single day. It is not the end of the story. Nvidia said an investigation by independent directors will continue.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "SIZE MULTIPLIES EVERYTHING",
+            "at": 0.45
+          },
+          {
+            "type": "big",
+            "text": "NEARLY $1 TRILLION",
+            "sub": "MARKET VALUE ADDED IN ONE DAY (REUTERS)",
+            "cue": "nearly",
+            "until": "it",
+            "y": 0.385
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NOT THE END OF THE STORY",
+              "INVESTIGATION CONTINUES (NVIDIA)"
+            ],
+            "cues": [
+              "not",
+              "investigation"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: a share price is not just a score for products sold. It is a measure of confidence, and leadership is a big part of that. And confidence can swing both ways.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TAKEAWAY",
+            "at": 0.45
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "NOT JUST A SCORE FOR PRODUCTS SOLD",
+              "PRICE = EXPECTATIONS + CONFIDENCE",
+              "CONFIDENCE CAN SWING BOTH WAYS"
+            ],
+            "cues": [
+              "not",
+              "measure",
+              "swing"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Should one person matter this much to a company? Tell us in the comments, and send this to someone who follows the markets. Because Nvidia says Jensen Huang is back as chief executive.",
+      "shot": {
+        "builder": "campus_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "SHOULD ONE PERSON\nMATTER THIS MUCH?",
+            "at": 0.45,
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS",
+              "SEND IT TO A MARKETS FOLLOWER"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ]
+          },
+          {
+            "type": "card",
+            "text": "JENSEN HUANG BACK AS CEO",
+            "sub": "NVIDIA BOARD VOTE · MON 23 NOV",
+            "cue": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

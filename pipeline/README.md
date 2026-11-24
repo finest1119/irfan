@@ -40,10 +40,18 @@ Steps (`--steps`, default `tts,captions,textures,render,assemble,fb,post,qc`):
 8. **Full-video QC (mandatory, Irfan 23 Nov 2026: "QC is not just flicker — check the WHOLE video")**:
    `.venv/bin/python pipeline/qc_full.py <episode.json> "output/<keyword>.mp4" output/<slug>/qc`
    Auto: format/duration/FB size, black & frozen frames, loudness/clipping, clicks, pauses > 0.75 s,
-   spoken words vs script (whisper WER). Then **open EVERY sheet in `qc/full/` (1 frame per second)** and check:
+   spoken words vs script (whisper WER). Then **open EVERY sheet in `qc/full/` (1 frame every 2 s by default; `QC_STEP=1` for 1 frame/s)** and check:
    empty/plain backgrounds, glitches/dark blobs/z-fighting, text overlapping text or cut off, cards above the 12 % line
    or below 80 %, labels pointing at the wrong thing, spelling, visuals matching the words, anything graphic or
    insensitive, objects popping or vanishing. Fix and re-run until auto = PASS and every frame is clean.
+   **QC tiers (Irfan, 24 Nov 2026 — save tokens; repair only what matters):**
+   - **MUST FIX before posting:** wrong/unverified/fabricated facts or narration (e.g. an invented TTS line);
+     spelling or wrong numbers in on-screen text; black/broken/frozen frames or visible flicker; audio glitches
+     (clipping, cut-off words, stray voice/noise); pauses > ~1.2 s or dead air; text unreadable or overlapping the
+     captions; policy risk (graphic content, investment advice, defamation); caption/hashtag/AI-label problems.
+   - **SKIP (log one line, no repair):** minor visual artifacts under ~1 s; whisper mishearings when the audio is
+     fine; pauses 0.75–1.2 s; small cosmetic imperfections and optional upgrades. Never spend a re-render or another
+     QC cycle on a skip item. (qc_full's 0.75 s pause flag is informational up to 1.2 s.)
    Known v2 issues to avoid (from the plane crash review): two-line outro card poking above 12 %; "Tell us in the
    comments" sub-line touching the caption; a dark smudge on the far horizon in the outro wide shot (1:24–1:27).
 
@@ -204,9 +212,24 @@ missing, `daylight()` falls back to the procedural sky and materials to procedur
   > (about 170–185 words per minute), conversational but serious. Short sentences, a brief dramatic
   > pause before key facts, lively intonation, never monotone or salesy.
 - Script style (inspired by the reference reel's *style*, never copying its words or voice):
-  short punchy sentences; hook = verified fact + a curiosity question; a numbered structure
-  ("Here are the three big reasons. One… Two… Three…") where it fits; end with the comment
-  question, a share CTA ("Send this to someone who…"), and a last line that loops to the hook.
+  short punchy sentences; hook = verified fact + a curiosity question; the body uses ONE of the
+  6 rotating narration styles below (no more "three big reasons, One… Two… Three…"); end with the
+  comment question, a share CTA ("Send this to someone who…"), and a last line that loops to the hook.
+- **Narration styles (Irfan, 24 Nov 2026, from the Fri 27 Nov set on):** the numbered "reason 1, 2, 3" list is
+  retired. Every WJH script uses one of these 6 styles; Fable picks the one that fits the story best:
+  1. **Domino**: a cause-and-effect chain, each step triggers the next ("It started with one loose bolt…").
+  2. **Question ladder**: each answer opens the next "but why…?" question.
+  3. **Start at the end, rewind**: open on the (non-graphic) aftermath, then go back ("12 minutes earlier…").
+  4. **Minute by minute**: a real-time timeline with an on-screen clock as a 2D overlay (3:02 AM, 3:05 AM…).
+     Only use real times that are verified with 2+ sources; otherwise label it as a typical/illustrative timeline.
+  5. **Myth vs reality**: "Most people think X. It doesn't usually work that way." Myths must be real common beliefs;
+     never claim to know the cause of the real event.
+  6. **"If you were there"**: second person ("You're on the 30th floor. You have 4 minutes."), a general
+     hypothetical scenario that ends in practical safety advice; never put the viewer inside the real victims' event.
+  Rotation: no style repeats within one day's set of 3; cycle through all 6 before any is reused (check the
+  "Style" column in `posting-log.md`). Write the chosen style at the top of `script.md` and in `episode.json`
+  as `"narration_style"`. All other rules stay: verified hook with 2+ sources, explainer hedging ("usually",
+  "could"), no casualty numbers, nothing graphic, neutral, 2D overlays, voice rotation, pauses ≤ 0.75 s, QC.
 - At ~180 WPM, 200–240 words ≈ 70–80 s; aim for **230–300 words** to stay inside 70–120 s.
 
 ## How to make a new episode (step by step)
@@ -222,8 +245,9 @@ missing, `daylight()` falls back to the procedural sky and materials to procedur
      about the video that the Page posts under the reel. No links, not spammy. It is copied into `post.md`.
    - `beats`: the voiceover, split into 7–10 beats. Aim for **230–300 words in total** (about 75–100 s at Fenrir pace).
      - Beat 1 = the hook: the verified news fact in the first sentence, with no intro.
-     - Middle beats = the general explainer ("usually", "could", "often"); never say what caused the real event.
-     - A metaphor beat (dominoes, etc.).
+     - Middle beats = the general explainer ("usually", "could", "often") told in the episode's narration style
+       (see "Narration styles"); never say what caused the real event.
+     - A metaphor beat where it fits the style (optional).
      - A takeaway beat (practical safety advice).
      - The last beat = a question for the comments, and a last line that loops back to the hook.
    - Each beat has a `shot`: `{"builder": <v2 builder>, "params": {...}, "overlays": [...]}` (see "v2 pipeline"
@@ -406,5 +430,13 @@ Reason: Fable is markedly better at factual accuracy/judgement; Opus handles the
 - **All Pages:** prefer **one-shot editing** — no hard cuts; one continuous camera through one world, fast smooth
   "whip" moves (motion blur, eased) between spots. Reference reels: reel/1661364992040054, reel/2441291916610073.
 - **New Pages (Self-Made Engineer and later): one-shot is mandatory.**
-- **What Just Happened:** use one-shot whenever the topic allows (shared world, whip transitions); hard cuts are
-  still allowed when a topic truly needs different places/worlds (e.g. map → city → cabin).
+- **What Just Happened (Irfan, 24 Nov 2026 — from the Fri 27 Nov set): one-shot is now the WJH standard.** One
+  continuous camera through one world per video. Proven WJH path (no fork of Page 2's renderer): ONE episode builder
+  that builds the whole world and drives the camera and props on a single timeline across every beat, rendered by the
+  v2 renderer — see `pipeline/blender/scene_lib_v2_campus.py` (Nvidia CEO bonus, 24 Nov), and verify numerically that
+  the camera doesn't jump at any beat boundary. Camera rules: hold ≤ ~9 s, drift ≤ 25 % of the subject distance,
+  orbit ≤ ~18°, fast eased whips with motion blur between spots, a backout ending on the frame-1 view (loop).
+  Pair with the narration style: rewind ↔ backout, minute by minute ↔ continuous push through the scene,
+  domino ↔ travel from cause to effect. When Page 2's shared one-shot renderer (`pipeline/oneshot/`, owned by
+  Page 2) is ready, WJH moves to it; send WJH needs to Page 2 as change requests, never fork it. Hard cuts only as a
+  documented fallback if a one-shot world can't be made render-ready in time for a slot.

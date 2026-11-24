@@ -264,8 +264,11 @@ def run(episode_path, workdir, only=None, force=False):
             if ok:
                 break
             print("  beat %s: transcript mismatch, retrying (heard: %s...)" % (beat["id"], heard[:80]))
-        else:
+            # never leave a rejected take cached: if the retry dies (e.g. quota 429) the next run would reuse it
             os.remove(out)
+        else:
+            if os.path.exists(out):
+                os.remove(out)
             raise RuntimeError("TTS for beat %s kept speaking extra text" % beat["id"])
         usage["model"] = model_used
         usage["seconds"] = round(len(pcm) / (RATE * WIDTH), 3)
