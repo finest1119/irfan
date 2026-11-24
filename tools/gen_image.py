@@ -40,7 +40,9 @@ def codex(out, prompt, aspect):
              "or any MCP/app connector. Aspect ratio %s. Create this image: %s\n\nSave the generated image as %s in "
              "the current directory (PNG). Reply only with the saved file path." % (aspect, prompt, name))
     try:
-        r = subprocess.run(["codex", "exec", "--skip-git-repo-check", "-s", "workspace-write",
+        # Windows: npm installs codex as codex.cmd, which CreateProcess only finds via its full path
+        exe = shutil.which("codex") if os.name == "nt" else "codex"
+        r = subprocess.run([exe, "exec", "--skip-git-repo-check", "-s", "workspace-write",
                             "-c", "mcp_servers={}", instr], cwd=work, capture_output=True, text=True, timeout=600)
     except subprocess.TimeoutExpired:
         return False, "codex timed out"

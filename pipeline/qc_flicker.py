@@ -28,13 +28,17 @@ import subprocess
 import numpy as np
 from PIL import Image
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+
 
 def frames_from_video(path, start=None, dur=None):
-    probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
+    probe = subprocess.run([PC.ffprobe_exe(), "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
                             "-of", "csv=p=0", path], capture_output=True, text=True, check=True).stdout.strip().split(",")
     probe = [x for x in probe if x.strip()]
     w, h = int(probe[0]), int(probe[1])
-    cmd = ["ffmpeg", "-v", "error"]
+    cmd = [PC.ffmpeg_exe(), "-v", "error"]
     if start is not None:
         cmd += ["-ss", str(start)]
     cmd += ["-i", path]
@@ -147,7 +151,7 @@ def main():
         h = Image.open(first).height
     else:
         frames = frames_from_video(a.src, a.start, a.dur)
-        h = int(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=height",
+        h = int(subprocess.run([PC.ffprobe_exe(), "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=height",
                                 "-of", "csv=p=0", a.src], capture_output=True, text=True).stdout.strip().strip(",").split(",")[0])
     res = analyse(frames, regions, events, a.thr, h / float(a.ref_height))
     res["src"] = a.src

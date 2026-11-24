@@ -10,3 +10,10 @@ screenshots/
 
 # Poly Haven / Kenney downloads for the v2 look (large binaries, CC0; keep out of git)
 assets/polyhaven/
+
+# per-machine path overrides for pipeline/platform_cfg.py (Blender/ffmpeg/fonts; never secrets)
+config_local.json
+
+# CC0 3D assets for the Page 2 world (Poly Haven models/textures, Kenney kits); re-fetch with tools/fetch_cc0.py
+assets/cc0/*
+!assets/cc0/manifest.json

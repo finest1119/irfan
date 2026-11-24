@@ -12,7 +12,9 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-DIN = "/System/Library/Fonts/Supplemental/DIN Condensed Bold.ttf"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+DIN = PC.font_path("NUMBER_FONT")[0]
 TEX = None
 
 

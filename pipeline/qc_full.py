@@ -21,19 +21,22 @@ import sys
 
 import numpy as np
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+
 
 def sh(cmd):
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
 def probe(path):
-    r = sh(["ffprobe", "-v", "error", "-show_entries", "format=duration:stream=codec_type,width,height,r_frame_rate",
+    r = sh([PC.ffprobe_exe(), "-v", "error", "-show_entries", "format=duration:stream=codec_type,width,height,r_frame_rate",
             "-of", "json", path])
     return json.loads(r.stdout)
 
 
 def ff_filter(path, af=None, vf=None):
-    cmd = ["ffmpeg", "-hide_banner", "-nostats", "-i", path]
+    cmd = [PC.ffmpeg_exe(), "-hide_banner", "-nostats", "-i", path]
     if vf:
         cmd += ["-vf", vf, "-an"]
     if af:
@@ -43,7 +46,7 @@ def ff_filter(path, af=None, vf=None):
 
 
 def audio_pcm(path, sr=24000):
-    r = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"],
+    r = subprocess.run([PC.ffmpeg_exe(), "-v", "error", "-i", path, "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"],
                        capture_output=True)
     return np.frombuffer(r.stdout, dtype=np.int16).astype(np.float32), sr
 
@@ -135,7 +138,7 @@ def main(ep_path, mp4, outdir=None):
     try:
         from faster_whisper import WhisperModel
         wav = os.path.join(outdir, "final_audio.wav")
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-ac", "1", "-ar", "16000", wav], check=True)
+        subprocess.run([PC.ffmpeg_exe(), "-v", "error", "-y", "-i", mp4, "-ac", "1", "-ar", "16000", wav], check=True)
         segs, _ = WhisperModel("base.en", device="cpu", compute_type="int8").transcribe(wav)
         heard = " ".join(s.text for s in segs)
         script = " ".join(b["text"] for b in ep["beats"])
@@ -154,11 +157,11 @@ def main(ep_path, mp4, outdir=None):
         os.remove(os.path.join(fdir, f))
     # (this ffmpeg build has no drawtext -> label/tile with PIL)
     from PIL import Image, ImageDraw, ImageFont
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-vf", "fps=1/%g,scale=360:640" % STEP, "-q:v", "3",
+    subprocess.run([PC.ffmpeg_exe(), "-v", "error", "-y", "-i", mp4, "-vf", "fps=1/%g,scale=360:640" % STEP, "-q:v", "3",
                     os.path.join(fdir, "f_%04d.jpg")], check=True)
     frames = sorted(f for f in os.listdir(fdir) if f.startswith("f_"))
     try:
-        font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 26)
+        font = ImageFont.truetype(PC.font_path("SUB_FONT")[0], 26)
     except Exception:  # noqa
         font = ImageFont.load_default()
     per, cols, W, H, pad = 15, 5, 360, 640, 6

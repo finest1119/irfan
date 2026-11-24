@@ -14,3 +14,21 @@
   `concrete_floor_02` (Rob Tuytel) — https://polyhaven.com
 - Licence: CC0 1.0 (public domain) — https://polyhaven.com/license. Files and source URLs: `assets/polyhaven/README.md`
   (folder is gitignored; re-download from the URLs there).
+
+## Montserrat (Page 2 / Windows overlay font, 24 Nov 2026)
+- Files: `assets/fonts/Montserrat-Bold.ttf`, `assets/fonts/Montserrat-ExtraBold.ttf` (static TTFs) + `assets/fonts/OFL.txt`.
+- Authors: The Montserrat Project Authors (Julieta Ulanovsky et al.) — https://github.com/JulietaUla/Montserrat
+  (static TTFs from `fonts/ttf/` at commit `cc8daf2e7085006b9c112542fc82b58afc13521d`, the upstream commit pinned by
+  Google Fonts' `ofl/montserrat/METADATA.pb`; Google Fonts' own repo only ships the variable font). `OFL.txt` from
+  https://github.com/google/fonts/tree/main/ofl/montserrat.
+- Licence: SIL Open Font License 1.1 — bundling/redistribution allowed with the licence text.
+- Used for: overlay captions/cards/labels when `OVERLAY_FONT_SET=montserrat` (default on Windows; the Mac/WJH keeps
+  Avenir Next) — see `pipeline/platform_cfg.py`.
+
+## Asset manifest
+- `assets/manifest.json` lists every gitignored asset (the Poly Haven files above) with URL, size, md5, sha256;
+  `python tools/fetch_assets.py` re-downloads missing/changed ones (Windows laptop setup).
+
+## CC0 upgrade for Self-Made Engineer (25 Nov 2026) — `assets/cc0/` (gitignored; list + checksums in `assets/cc0/manifest.json`, re-download with `tools/fetch_cc0.py`)
+- Poly Haven (CC0, polyhaven.com): island_tree_02, pine_sapling_small, shrub_02/03/04, grass_bermuda_01, grass_medium_02, rock_moss_set_01, rock_07 (1k models); white_planks_clean, grey_roof_01, gravel_road, river_small_rocks, grooved_concrete_driveway, excavated_soil_wall (2k textures).
+- Kenney (CC0, kenney.nl): Furniture Kit, Survival Kit, Car Kit.

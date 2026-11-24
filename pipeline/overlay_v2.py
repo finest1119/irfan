@@ -29,14 +29,18 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from multiprocessing import Pool
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 W, H = 1080, 1920
-AVENIR = "/System/Library/Fonts/Avenir Next.ttc"   # index 0 Bold, 8 Heavy, 2 Demi Bold
+AVENIR = "/System/Library/Fonts/Avenir Next.ttc"   # index 0 Bold, 8 Heavy, 2 Demi Bold (Mac default; see platform_cfg)
 CARD_Y = 0.150
 CAP_Y = 0.262
 CHIP_Y = 0.655
@@ -52,11 +56,51 @@ COLORS = {"red": RED, "teal": TEAL, "amber": AMBER, "navy": NAVY, "white": WHITE
 
 _FONTS = {}
 
+# Per-episode look (Page 3+): episode.json may carry an optional "style" block
+#   {"font_set": "avenir"|"montserrat", "highlight_color": "#RRGGBB", "twist_card": {"bg": "#RRGGBB", "fg": "#RRGGBB"}}
+# Every key is opt-in; with no "style" block (all WJH episodes) the output is byte-identical to before.
+STYLE = {"font_set": None, "highlight": RED, "twist_bg": None, "twist_fg": None}
+
+
+def _hex(c):
+    c = c.lstrip("#")
+    if len(c) != 6:
+        raise ValueError("style colour must be #RRGGBB, got %r" % c)
+    return tuple(int(c[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def apply_style(ep):
+    """Set STYLE from ep["style"] (missing keys -> WJH defaults / platform_cfg). Call once per loaded episode."""
+    st = ep.get("style") or {}
+    fs = st.get("font_set")
+    if fs is not None and fs.lower() not in PC.FONT_SETS:
+        raise SystemExit("style.font_set must be one of %s, got %r" % (sorted(PC.FONT_SETS), fs))
+    tw = st.get("twist_card") or {}
+    new = {"font_set": fs.lower() if fs else None,
+           "highlight": _hex(st["highlight_color"]) if st.get("highlight_color") else RED,
+           "twist_bg": _hex(tw["bg"]) if tw.get("bg") else None,
+           "twist_fg": _hex(tw["fg"]) if tw.get("fg") else None}
+    if new["font_set"] != STYLE["font_set"]:
+        _FONTS.clear()
+    STYLE.update(new)
+    return ep
+
+
+def load_ep(ep_path):
+    return apply_style(json.load(open(ep_path)))
+
 
 def font(size, idx=0):
     k = (size, idx)
     if k not in _FONTS:
-        _FONTS[k] = ImageFont.truetype(AVENIR, size, index=idx)
+        if STYLE["font_set"]:      # episode style wins over platform_cfg
+            role = PC._AVENIR_IDX.get(idx, "BOLD")
+            path, ix = PC._split_spec(PC.FONT_SETS[STYLE["font_set"]][role])
+            if idx not in PC._AVENIR_IDX and path.lower().endswith(".ttc"):
+                ix = idx
+        else:
+            path, ix = PC.overlay_font(idx)   # Mac default: (AVENIR, idx); Windows: Montserrat
+        _FONTS[k] = ImageFont.truetype(path, size, index=ix)
     return _FONTS[k]
 
 
@@ -255,7 +299,7 @@ class Captions:
                 x, y, wd = slots[act]
                 px, py = size * 0.20, size * 0.10
                 d.rounded_rectangle((x - px + ox, y - size * 0.62 - py + oy, x + wd + px + ox, y + size * 0.50 + py + oy),
-                                    int(size * 0.22), fill=RED + (int(225 * e),))
+                                    int(size * 0.22), fill=STYLE["highlight"] + (int(225 * e),))
             for i, wt in enumerate(words):
                 x, y, wd = slots[i]
                 f = self.f_b if i == act else self.f_n
@@ -316,7 +360,7 @@ class Item:
         return []
 
 
-def _panel_text(d, ox, oy, cx, cy, lines, f, pad_x=42, pad_y=20, fill=NAVY, a=1.0, accent=RED, lh=None):
+def _panel_text(d, ox, oy, cx, cy, lines, f, pad_x=42, pad_y=20, fill=NAVY, a=1.0, accent=RED, lh=None, fg=WHITE):
     lh = lh or f.size * 1.18
     tw = max(f.getlength(s) for s in lines)
     pw, ph = tw + 2 * pad_x, lh * len(lines) + 2 * pad_y - (lh - f.size * 1.05)
@@ -326,7 +370,7 @@ def _panel_text(d, ox, oy, cx, cy, lines, f, pad_x=42, pad_y=20, fill=NAVY, a=1.
         d.rounded_rectangle((x0 + ox, y0 + oy, x0 + 12 + ox, y0 + ph + oy), 6, fill=accent + (int(255 * a),))
     for i, s in enumerate(lines):
         yy = y0 + pad_y + f.size * 0.55 + i * lh
-        d.text((cx + 6 + ox, yy + oy), s, font=f, fill=(255, 255, 255, int(255 * a)), anchor="mm")
+        d.text((cx + 6 + ox, yy + oy), s, font=f, fill=fg + (int(255 * a),), anchor="mm")
     return (x0, y0, x0 + pw, y0 + ph)
 
 
@@ -358,7 +402,10 @@ class Card(Item):
             # panel top pinned just under the 12 % line (was centred on CARD_Y and crossed it)
             cy = (SAFE[0] + 0.006) * H + ph_real / 2
             box = (0, cy - ph / 2 - 10, W, cy + ph / 2 + 10)
-            sp = sprite_from(lambda d, ox, oy: _panel_text(d, ox, oy, W / 2, cy, lines, fh), box,
+            tw = {}
+            if self.s.get("style") == "twist" and STYLE["twist_bg"]:   # opt-in twist card colours
+                tw = {"fill": STYLE["twist_bg"], "fg": STYLE["twist_fg"] or WHITE, "accent": None}
+            sp = sprite_from(lambda d, ox, oy: _panel_text(d, ox, oy, W / 2, cy, lines, fh, **tw), box,
                              blur=8, alpha=0.45, glow=14, glow_alpha=0.18)
             return sp, cy + ph_real / 2
         sp, bottom = self.cached("panel", mk)
@@ -868,7 +915,7 @@ def paste(img, sp):
 
 
 def _ctx(ep_path, idx):
-    ep = json.load(open(ep_path))
+    ep = load_ep(ep_path)
     workdir = os.path.join(ROOT, "output", ep["slug"])
     tim = json.load(open(os.path.join(workdir, "audio", "timings.json")))
     caps = json.load(open(os.path.join(workdir, "captions.json")))
@@ -889,7 +936,7 @@ def render_beat(args):
     os.makedirs(sdir, exist_ok=True)
     out = os.path.join(sdir, name + ".mp4")
     t0 = time.time()
-    p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+    p = subprocess.Popen([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                           "-s", "%dx%d" % (W, H), "-r", str(fps), "-i", "-", "-frames:v", str(bc.nframes),
                           "-c:v", "libx264", "-preset", "medium", "-crf", "16", "-pix_fmt", "yuv420p",
                           "-profile:v", "high", "-g", str(fps * 2), out], stdin=subprocess.PIPE)
@@ -929,7 +976,7 @@ def render_stream_beat(args):
     caps = Captions(caps_d, tim["total"])
     items, blur = build_items(bc)
     out = os.path.join(workdir, "qc", "stream_%s_%s.mp4" % (kind, name))
-    p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+    p = subprocess.Popen([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                           "-s", "%dx%d" % (W, H), "-r", str(fps), "-i", "-", "-frames:v", str(bc.nframes),
                           "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p", out],
                          stdin=subprocess.PIPE)
@@ -953,7 +1000,7 @@ class _NoCaps:
 
 
 def qc_streams(ep_path, parallel=4):
-    ep = json.load(open(ep_path))
+    ep = load_ep(ep_path)
     workdir = os.path.join(ROOT, "output", ep["slug"])
     os.makedirs(os.path.join(workdir, "qc"), exist_ok=True)
     res = {}
@@ -965,7 +1012,7 @@ def qc_streams(ep_path, parallel=4):
             for q in parts:
                 fh.write("file '%s'\n" % q.replace("'", "'\\''"))
         out = os.path.join(workdir, "qc", "stream_%s.mp4" % kind)
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", out],
+        subprocess.run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", out],
                        check=True)
         for q in parts:
             os.remove(q)
@@ -975,7 +1022,7 @@ def qc_streams(ep_path, parallel=4):
 
 
 def assemble(ep_path, parallel=4, beats=None):
-    ep = json.load(open(ep_path))
+    ep = load_ep(ep_path)
     workdir = os.path.join(ROOT, "output", ep["slug"])
     idxs = beats if beats is not None else list(range(len(ep["beats"])))
     with Pool(parallel) as pool:
@@ -1023,7 +1070,7 @@ if __name__ == "__main__":
     if "--preview" in a:
         i = int(a[a.index("--beat") + 1])
         ts = [float(x) for x in a[a.index("--preview") + 1].split(",")]
-        print(preview(epp, i, ts, a[a.index("--out") + 1] if "--out" in a else "/tmp"))
+        print(preview(epp, i, ts, a[a.index("--out") + 1] if "--out" in a else ("/tmp" if os.name != "nt" else tempfile.gettempdir())))
     else:
         bs = [int(x) for x in a[a.index("--beats") + 1].split(",")] if "--beats" in a else None
         print(assemble(epp, beats=bs))

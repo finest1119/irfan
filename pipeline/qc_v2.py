@@ -20,12 +20,15 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFont
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 BANDS = {"card": (180, 400), "caption": (400, 620), "mid": (620, 1240), "low": (1240, 1540)}
 
 
 def probe(path):
-    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+    r = subprocess.run([PC.ffprobe_exe(), "-v", "error", "-show_entries",
                         "format=duration:stream=codec_type,codec_name,width,height,r_frame_rate",
                         "-of", "json", path], capture_output=True, text=True, check=True)
     d = json.loads(r.stdout)
@@ -98,12 +101,13 @@ def main():
     tiles = []
     for t in times:
         fp = os.path.join(qdir, "t_%05.1f.png" % t)
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", final, "-frames:v", "1", fp], check=True)
+        subprocess.run([PC.ffmpeg_exe(), "-v", "error", "-y", "-ss", str(t), "-i", final, "-frames:v", "1", fp], check=True)
         tiles.append((t, fp))
     tw, th = 270, 480
     sheet = Image.new("RGB", (6 * (tw + 6) + 6, 2 * (th + 40) + 6), (18, 20, 26))
     d = ImageDraw.Draw(sheet)
-    fnt = ImageFont.truetype("/System/Library/Fonts/Avenir Next.ttc", 24, index=8)
+    _fp, _fi = PC.overlay_font(8)   # Mac: Avenir Next Heavy
+    fnt = ImageFont.truetype(_fp, 24, index=_fi)
     for k, (t, fp) in enumerate(tiles):
         im = Image.open(fp).convert("RGB").resize((tw, th), Image.LANCZOS)
         x, y = 6 + (k % 6) * (tw + 6), 6 + (k // 6) * (th + 40)

@@ -5,7 +5,8 @@ Usage:
   .venv/bin/python tools/fb_schedule_reel.py ... now          # publish immediately instead of scheduling
   .venv/bin/python tools/fb_schedule_reel.py --label <video_id>  # (re)apply the AI label once the post exists
 
-Time is Malaysia time (UTC+8). Caption = "## Facebook caption" section of post.md (caption + hashtags).
+Time is Malaysia time (UTC+8) unless SCHEDULE_TZ is set (e.g. America/New_York for the Self-Made
+Engineer laptop; Windows needs `pip install tzdata`), see pipeline/platform_cfg.py. Caption = "## Facebook caption" section of post.md (caption + hashtags).
 AI label: Graph API v27 Page *post* object accepts boolean `is_ai_generated` (edit after the post exists).
 We also pass it on the finish call in case the Reels endpoint honours it at creation. Never prints the token.
 State is written to output/api-posts.json (video_id, post_id, schedule, label status).
@@ -22,13 +23,16 @@ import urllib.request
 
 from dotenv import dotenv_values
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pipeline"))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 env = dotenv_values(os.path.join(ROOT, ".env"))
 TOKEN, PAGE = env["FB_PAGE_TOKEN"], env["FB_PAGE_ID"]
 V = "v27.0"
 G = "https://graph.facebook.com/%s/" % V
 STATE = os.path.join(ROOT, "output", "api-posts.json")
-MYT = dt.timezone(dt.timedelta(hours=8))
+MYT = PC.schedule_tz()   # default: fixed UTC+8 (unchanged); SCHEDULE_TZ=<IANA zone> uses zoneinfo
 
 
 def call(method, path, **q):

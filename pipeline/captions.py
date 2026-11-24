@@ -23,7 +23,9 @@ warnings.filterwarnings("ignore")
 W, H = 1080, 1920
 SAFE_TOP, SAFE_BOTTOM = int(0.12 * H), int(0.80 * H)   # 230 .. 1536 px
 CAPTION_CENTER_Y = 1290
-FONT = "/System/Library/Fonts/Supplemental/Arial Black.ttf"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+FONT = PC.font_path("CAPTION_FONT")[0]
 FONT_SIZE = 82
 STROKE = 9
 MAX_TEXT_W = 940

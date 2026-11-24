@@ -26,9 +26,12 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-PY = os.path.join(ROOT, ".venv", "bin", "python")
-BLENDER = "/Applications/Blender.app/Contents/MacOS/Blender"
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+PY = PC.venv_python()      # .venv/bin/python (Mac) or .venv\Scripts\python.exe (Windows)
+BLENDER = PC.blender_exe()
+if os.name == "nt":  # child Pythons (tts/captions/overlay/qc) read UTF-8 episode/JSON files
+    os.environ.setdefault("PYTHONUTF8", "1")
 
 
 def log(msg):
@@ -94,7 +97,7 @@ def step_render(ep_path, workdir, parallel, only=None):
 
 
 def measure_lufs(path):
-    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-af", "ebur128=framelog=quiet", "-f", "null", "-"],
+    r = subprocess.run([PC.ffmpeg_exe(), "-hide_banner", "-i", path, "-af", "ebur128=framelog=quiet", "-f", "null", "-"],
                        capture_output=True, text=True)
     lines = [l for l in r.stderr.splitlines() if l.strip().startswith("I:")]
     return float(lines[-1].split()[1])
@@ -111,7 +114,7 @@ def step_assemble(ep_path, workdir, final_path):
         name = "%02d_%s" % (i, b["id"])
         out = os.path.join(sdir, name + ".mp4")
         nframes = int(round(t["duration"] * fps))
-        run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps),
+        run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-framerate", str(fps),
              "-i", os.path.join(workdir, "frames", name, "%04d.png"),
              "-frames:v", str(nframes), "-c:v", "libx264", "-preset", "medium", "-crf", "16",
              "-pix_fmt", "yuv420p", out])
@@ -121,7 +124,7 @@ def step_assemble(ep_path, workdir, final_path):
         for s in seg_list:
             f.write("file '%s'\n" % s.replace("'", "'\\''"))
     visuals = os.path.join(workdir, "visuals.mp4")
-    run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concat_txt,
+    run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concat_txt,
          "-c", "copy", visuals])
     # voice loudness normalise to about -14 LUFS. The TTS output has inter-sample peaks above
     # 0 dBTP, so plain linear loudnorm cannot reach -14; use gain + true-peak-ish limiter instead,
@@ -130,7 +133,7 @@ def step_assemble(ep_path, workdir, final_path):
     voice = os.path.join(workdir, "audio", "voice_norm.wav")
     gain = -14.0 - measure_lufs(voice_raw)
     for _ in range(3):
-        run(["ffmpeg", "-y", "-loglevel", "error", "-i", voice_raw, "-af",
+        run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", voice_raw, "-af",
              "aresample=48000,volume=%.2fdB,alimiter=limit=0.82:attack=1:release=60:level=false" % gain,
              "-c:a", "pcm_s16le", voice])
         got = measure_lufs(voice)
@@ -142,7 +145,7 @@ def step_assemble(ep_path, workdir, final_path):
     music = ep.get("music")
     cap_list = os.path.join(workdir, "captions", "list.ffconcat")
     total = tim["total"]
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", visuals,
+    cmd = [PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", visuals,
            "-f", "concat", "-safe", "0", "-i", cap_list,
            "-i", voice]
     filt = "[1:v]format=rgba[cap];[0:v][cap]overlay=0:0:eof_action=pass:format=auto,format=yuv420p[v];[2:a]%s[a]" % af
@@ -161,12 +164,12 @@ def step_assemble(ep_path, workdir, final_path):
 def step_fb(final_path, fb_path, limit=10_000_000, target=9_300_000):
     """Facebook upload copy: HEVC (hvc1) + mono AAC, sized under `limit` bytes. The video bitrate is
     computed from the duration; if the file still comes out too big it is re-encoded 15% lower."""
-    dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+    dur = float(subprocess.run([PC.ffprobe_exe(), "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
                                 final_path], capture_output=True, text=True).stdout.strip())
     a_kbps = 80
     v_kbps = int((target * 8 / dur) / 1000 - a_kbps - 20)   # ~20 kb/s container overhead
     for _ in range(4):
-        run(["ffmpeg", "-y", "-loglevel", "error", "-i", final_path, "-c:v", "libx265", "-preset", "slow",
+        run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", final_path, "-c:v", "libx265", "-preset", "slow",
              "-b:v", "%dk" % v_kbps, "-maxrate", "%dk" % (2 * v_kbps), "-bufsize", "%dk" % (4 * v_kbps),
              "-x265-params", "log-level=error", "-tag:v", "hvc1", "-pix_fmt", "yuv420p",
              "-c:a", "aac", "-b:a", "%dk" % a_kbps, "-ac", "1", "-movflags", "+faststart", fb_path])
@@ -264,7 +267,7 @@ def normalise_voice(workdir):
     voice = os.path.join(workdir, "audio", "voice_norm.wav")
     gain = -14.0 - measure_lufs(voice_raw)
     for _ in range(3):
-        run(["ffmpeg", "-y", "-loglevel", "error", "-i", voice_raw, "-af",
+        run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", voice_raw, "-af",
              "aresample=48000,volume=%.2fdB,alimiter=limit=0.82:attack=1:release=60:level=false" % gain,
              "-c:a", "pcm_s16le", voice])
         got = measure_lufs(voice)
@@ -285,9 +288,9 @@ def step_assemble_v2(ep_path, workdir, final_path, beats=None):
         for s_ in segs:
             f.write("file '%s'\n" % s_.replace("'", "'\\''"))
     visuals = os.path.join(workdir, "visuals_v2.mp4")
-    run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concat_txt, "-c", "copy", visuals])
+    run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", concat_txt, "-c", "copy", visuals])
     voice = normalise_voice(workdir)
-    run(["ffmpeg", "-y", "-loglevel", "error", "-i", visuals, "-i", voice, "-map", "0:v", "-map", "1:a",
+    run([PC.ffmpeg_exe(), "-y", "-loglevel", "error", "-i", visuals, "-i", voice, "-map", "0:v", "-map", "1:a",
          "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-t", "%.3f" % tim["total"],
          "-movflags", "+faststart", final_path])
     log("wrote %s" % final_path)

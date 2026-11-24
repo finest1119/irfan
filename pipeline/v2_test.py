@@ -19,19 +19,22 @@ import time
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import platform_cfg as PC  # cross-platform paths; macOS defaults = the old hard-coded values
+
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 OUT = os.path.join(ROOT, "output", "v2-test")
 TEX = os.path.join(OUT, "tex")
 CAPS = os.path.join(ROOT, "output", "plane-crash", "captions.json")
 V1 = os.path.join(ROOT, "output", "plane crash.mp4")
-BLENDER = "/Applications/Blender.app/Contents/MacOS/Blender"
+BLENDER = PC.blender_exe()
 T0, T1 = 0.0, 9.6            # the hook beat up to "...departing a nearby airport." (next word at 10.07 s)
 FPS = 30
 NFR = int(round((T1 - T0) * FPS))
 W, H = 1080, 1920
 
 AVENIR = "/System/Library/Fonts/Avenir Next.ttc"   # index 0 Bold, 8 Heavy, 2 Demi Bold
-DIN = "/System/Library/Fonts/Supplemental/DIN Condensed Bold.ttf"
+DIN = PC.font_path("NUMBER_FONT")[0]
 CARD = ("PLANE CRASH · JACKSON, MS", "Hawkins Field · Sat 21 Nov 2026")
 PLANE_LABEL, LABEL_CUE = "CIRRUS SR22", "cirrus"
 
@@ -209,7 +212,8 @@ def render(parallel=3, samples="24"):
 
 # ================================================================ 2D overlays
 def _font(size, idx=0):
-    return ImageFont.truetype(AVENIR, size, index=idx)
+    path, ix = PC.overlay_font(idx)
+    return ImageFont.truetype(path, size, index=ix)
 
 
 def _rounded(draw, box, r, fill):
@@ -396,12 +400,12 @@ def overlay():
 def encode():
     aud = os.path.join(OUT, "tmp", "hook_audio.wav")
     os.makedirs(os.path.dirname(aud), exist_ok=True)
-    sh(["ffmpeg", "-v", "error", "-y", "-ss", str(T0), "-t", str(T1 - T0), "-i", V1, "-vn", "-ac", "2", "-ar", "48000",
+    sh([PC.ffmpeg_exe(), "-v", "error", "-y", "-ss", str(T0), "-t", str(T1 - T0), "-i", V1, "-vn", "-ac", "2", "-ar", "48000",
         "-af", "afade=t=out:st=%.2f:d=0.25" % (T1 - T0 - 0.25), aud])
-    sh(["ffmpeg", "-v", "error", "-y", "-framerate", str(FPS), "-i", os.path.join(OUT, "comp", "%04d.png"), "-i", aud,
+    sh([PC.ffmpeg_exe(), "-v", "error", "-y", "-framerate", str(FPS), "-i", os.path.join(OUT, "comp", "%04d.png"), "-i", aud,
         "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k",
         "-shortest", "-movflags", "+faststart", os.path.join(OUT, "v2_shot.mp4")])
-    sh(["ffmpeg", "-v", "error", "-y", "-ss", str(T0), "-t", str(T1 - T0), "-i", V1, "-c:v", "libx264", "-crf", "17",
+    sh([PC.ffmpeg_exe(), "-v", "error", "-y", "-ss", str(T0), "-t", str(T1 - T0), "-i", V1, "-c:v", "libx264", "-crf", "17",
         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", os.path.join(OUT, "v1_shot.mp4")])
 
 
@@ -421,7 +425,7 @@ def compare():
     _tag("v2 (look test)", os.path.join(tmp, "tag_v2.png"))
     fc = ("[0:v]scale=1080:1920,setsar=1[a];[1:v]scale=1080:1920,setsar=1[b];[a][b]hstack=inputs=2[s];"
           "[s][2:v]overlay=30:H-110[s2];[s2][3:v]overlay=1110:H-110[v]")
-    sh(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(OUT, "v1_shot.mp4"), "-i", os.path.join(OUT, "v2_shot.mp4"),
+    sh([PC.ffmpeg_exe(), "-v", "error", "-y", "-i", os.path.join(OUT, "v1_shot.mp4"), "-i", os.path.join(OUT, "v2_shot.mp4"),
         "-i", os.path.join(tmp, "tag_v1.png"), "-i", os.path.join(tmp, "tag_v2.png"), "-filter_complex", fc,
         "-map", "[v]", "-map", "1:a", "-c:v", "libx264", "-crf", "19", "-preset", "medium", "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "160k", "-shortest", os.path.join(OUT, "compare.mp4")])
@@ -432,7 +436,7 @@ def compare():
         row = []
         for t in times:
             p = os.path.join(tmp, "cmp_%s_%.1f.png" % (name[:2], t))
-            sh(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", os.path.join(OUT, name), "-frames:v", "1", p])
+            sh([PC.ffmpeg_exe(), "-v", "error", "-y", "-ss", str(t), "-i", os.path.join(OUT, name), "-frames:v", "1", p])
             row.append(Image.open(p).convert("RGB").resize((540, 960), Image.LANCZOS))
         tiles.append(row)
     sheet = Image.new("RGB", (540 * 3 + 40, 960 * 2 + 150), (18, 20, 26))
