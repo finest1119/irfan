@@ -1,0 +1,192 @@
+{
+ "version": 1,
+ "units": "Blender metres, Z up, character faces -Y in rest pose (Blender front view), 30 fps clips",
+ "source": "page2/PROPOSAL-v1.md sections 1.2, 1.4, 1.5, 4.2, 7.3",
+ "default_outfit": "workshop",
+
+ "bolts": {
+  "name": "Walt \"Bolts\" Mercer",
+  "age": 48,
+  "role": "host; never speaks (third-person narrator), reacts with body language",
+  "proportions": {
+   "height_m": 1.778, "height_ft": "5'10\"",
+   "weight_lb": 205,
+   "head_height_m": 0.237, "heads_tall": 7.5,
+   "shoulder_width_m": 0.50, "chest_circ_in": 44, "waist_circ_in": 40, "inseam_in": 31,
+   "build": "stocky: broad shoulders, thick neck, slight belly (belly sits ~3 cm forward of chest line in profile), strong forearms (+15 % vs average), big hands",
+   "style": "simple-realistic (modern animated-explainer quality): realistic proportions, slightly simplified surface detail, NOT cartoon/chibi"
+  },
+  "face": {
+   "skin": "#D9A383", "cheek_sunburn": "#D97A6A", "forehead_tan_line": "#C99273",
+   "jaw": "square", "eyes": {"iris": "#5B7A8C", "shape": "friendly, crow's-feet wrinkles at the corners"},
+   "eyebrows": {"color": "#4A4038", "thickness": "thick"},
+   "beard": {"style": "short salt-and-pepper, ~1 cm, full jaw + moustache", "base": "#6E6A66", "light_strands": "#D8D4CF", "dark_strands": "#3A3632", "mesh": "shell + ~150 hair cards"}
+  },
+  "hair": {"style": "short, a bit messy at the back; mostly under headgear", "base": "#6B5D52", "gray": "#9A928A", "mesh": "low shell + ~120 hair cards; hidden-under-cap variant (scalp shell only)"},
+  "signatures": {
+   "_rule": "all four stay visible in EVERY outfit and every camera angle that frames his head/torso; recognisable at 1 inch thumbnail",
+   "safety_glasses": {"desc": "round safety glasses pushed UP onto the forehead (never over the eyes)", "frame": "#2B2B2B", "lens": "#DDEBF2 @ 30 % alpha, glossy", "attach_bone": "head", "tris": 800,
+                      "placement": "rests on the forehead just above the eyebrows; with any headgear it sits BELOW the brim/cuff, on the skin"},
+   "red_bandana": {"desc": "bandana tied around the neck, knot at the front-left, small triangle hanging", "color": "#E63946", "pattern": "faint off-white paisley #F4EDE4 at 15 % (solid red read from distance)", "attach_bone": "neck", "tris": 900, "cloth": "baked shape + 2 jiggle bones (no cloth sim)"},
+   "carpenters_pencil": {"desc": "flat carpenter's pencil behind the RIGHT ear", "color": "#F2A900", "tip": "#2A2A2A", "attach_bone": "head", "tris": 100},
+   "tape_measure": {"desc": "yellow tape measure (feet/inches) clipped on the belt at the LEFT front hip", "case": "#F5C518", "trim": "#1A1A1A", "clip": "#B8BCC0", "attach_bone": "pelvis", "tris": 300,
+                    "note": "with coveralls/overalls it clips on the coverall belt or chest pocket edge at the same left-front spot"}
+  },
+  "budgets": {
+   "max_tris_total_visible": 30000,
+   "split": {"body_hands": 9000, "head_face": 6000, "hair_beard_cards": 4000, "signatures": 2100, "active_outfit_incl_props": 8900},
+   "textures": "core = ONE 2K set (base color, normal, ORM packed) atlas for body/head/signatures; each outfit = its own 1K set; HDRI/scene budget per BUILD-SPEC",
+   "outfit_swap": "outfit meshes are separate objects parented to the same armature, switched with keyframed hide_render/hide_viewport (switch only inside a whip)"
+  },
+  "rig": {
+   "type": "Rigify-style humanoid, ~65 deform bones",
+   "face": "jaw, brows (2), eyelids (4), eye aim, cheek squash — no lip-sync needed",
+   "extra_bones": ["bandana_tail_1", "bandana_tail_2", "prop_R (right hand grip)", "prop_L (left hand grip)", "hat_root", "tape_clip"],
+   "shape_keys": ["smile", "squint", "brow_up", "brow_furrow", "belly_breath"]
+  },
+  "clips": {
+   "walk":          {"frames": 32, "loop": true,  "desc": "steady stocky walk, slight sway, arms relaxed"},
+   "wrench":        {"frames": 48, "loop": true,  "props": ["wrench"], "desc": "two-hand ratchet/wrench turns at chest height"},
+   "hammer":        {"frames": 36, "loop": true,  "props": ["hammer"], "desc": "3 hammer strikes, left hand steadies"},
+   "point":         {"frames": 40, "loop": false, "desc": "points at the build with the right arm, looks back at camera"},
+   "inspect":       {"frames": 60, "loop": false, "desc": "leans in, squints, tilts head (often pulls glasses down for a second then pushes them back up)"},
+   "thumbs_up":     {"frames": 36, "loop": false, "desc": "IT WORKS beat: grin + right thumbs-up toward camera"},
+   "hands_on_hips": {"frames": 48, "loop": false, "desc": "reveal pose: hands on hips, chest out, nods"},
+   "scratch_beard": {"frames": 54, "loop": false, "desc": "SNAG beat: scratches beard with the left hand, looks at the problem"},
+   "winch_crank":   {"frames": 40, "loop": true,  "props": ["winch_handle"], "desc": "cranks a hand winch (Build #1 tower raise; reusable)"},
+   "idle":          {"frames": 90, "loop": true,  "desc": "breathing, weight shift, occasional glance"}
+  },
+  "outfits": {
+   "_keys": "meshes = separate outfit objects; hidden = core-body parts hidden under the outfit; colors = hex; props = hand/belt props; signatures_visible must include all four",
+   "workshop": {
+    "use": "default — general builds, reveals, episode intros",
+    "meshes": ["henley_rolled", "work_pants", "tool_belt", "work_boots", "ball_cap"],
+    "colors": {"henley": "#8E9196", "work_pants": "#0B1F3A", "tool_belt": "#7A4A2A", "boots": "#6B4226", "ball_cap": "#0B1F3A"},
+    "props": ["hammer (belt loop)", "tape_measure"],
+    "headgear": "navy ball cap, forward",
+    "signature_notes": "glasses on forehead below the cap brim",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "scientist": {
+    "use": "chemistry/biology builds (biogas, tests, measurements)",
+    "meshes": ["henley_rolled", "lab_coat_open", "work_pants", "work_boots", "nitrile_gloves"],
+    "colors": {"lab_coat": "#F5F6F7", "henley": "#8E9196", "work_pants": "#0B1F3A", "gloves": "#4F7FD1", "boots": "#6B4226", "pen": "#D62828"},
+    "props": ["clipboard (L hand)", "red pen in coat breast pocket"],
+    "headgear": "none (hair visible)",
+    "signature_notes": "tape measure on the pants belt, visible through the open coat",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "electrician": {
+    "use": "wiring, batteries, turbine electrics",
+    "meshes": ["coveralls_reflective", "work_boots", "insulated_gloves", "hard_hat"],
+    "colors": {"coveralls": "#0B1F3A", "reflective_strip": "#C9D1D6", "gloves": "#F2C230", "hard_hat": "#F4F4F2", "multimeter": "#E0A100"},
+    "props": ["multimeter (belt)", "fall_arrest_harness (Build #1 only, borrowed from roofer)"],
+    "headgear": "white hard hat",
+    "signature_notes": "glasses on forehead below the hard-hat brim; tape measure clipped to the coverall belt left front",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "welder": {
+    "use": "metal work, towers, heater barrels",
+    "meshes": ["henley_rolled", "work_pants", "leather_apron", "leather_sleeves", "work_boots", "welding_gauntlets", "welding_helmet_up"],
+    "colors": {"apron": "#7B4B2A", "sleeves": "#7B4B2A", "gauntlets": "#A0703F", "helmet": "#2C2F33", "helmet_lens": "#1D3B2A", "work_pants": "#0B1F3A"},
+    "props": ["welding_torch", "angle_grinder (static prop)"],
+    "headgear": "auto-darkening helmet flipped UP on its headband",
+    "signature_notes": "glasses still on forehead under the flipped helmet; tape measure peeks out at the apron's left edge",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "plumber": {
+    "use": "pipes, pumps, water",
+    "meshes": ["henley_rolled", "bib_overalls", "knee_pads", "work_boots", "ball_cap_backwards"],
+    "colors": {"overalls": "#2E5C8A", "henley": "#8E9196", "knee_pads": "#2B2B2B", "ball_cap": "#0B1F3A", "boots": "#6B4226"},
+    "props": ["pipe_wrench (#C1272D handle)"],
+    "headgear": "navy ball cap backwards",
+    "signature_notes": "glasses on forehead fully visible (no brim); tape measure clipped on the overall side-button area left",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "farmer": {
+    "use": "garden, greenhouse, animals",
+    "meshes": ["flannel_shirt", "work_pants", "rubber_boots", "work_gloves", "straw_hat"],
+    "colors": {"flannel": "#B22E35 / #0B1F3A plaid", "work_pants": "#0B1F3A", "rubber_boots": "#3E4A3A", "gloves": "#C8A46E", "straw_hat": "#D9BC7A", "hat_band": "#5A3A22"},
+    "props": ["garden_trowel", "seed_tray"],
+    "headgear": "straw cowboy-style hat (no logo)",
+    "signature_notes": "glasses on forehead under the hat brim — tilt the hat slightly back so they read",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "mechanic": {
+    "use": "gears, cables, carts, engines",
+    "meshes": ["coveralls_gray", "work_boots"],
+    "colors": {"coveralls": "#7C8288", "grease_marks": "#2A2622", "shop_rag": "#D62828", "boots": "#3B3B3B"},
+    "props": ["ratchet (R hand)", "red shop rag in back pocket"],
+    "headgear": "none",
+    "signature_notes": "two reds (bandana + rag) — keep the rag small and at the back",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "digger": {
+    "use": "trenches, excavation, concrete",
+    "meshes": ["henley_rolled", "jeans_dusty", "hivis_vest", "work_boots", "hard_hat", "earmuffs_neck"],
+    "colors": {"vest": "#FF6A13", "vest_strips": "#D8DCDF", "hard_hat": "#F2C230", "jeans": "#4A6378", "dust": "#B9A88C", "earmuffs": "#E63946 cups / #2B2B2B band"},
+    "props": ["shovel", "pickaxe (static)"],
+    "headgear": "yellow hard hat",
+    "signature_notes": "earmuffs sit around the BACK of the neck with cups at the sides — bandana knot stays visible at the front; tape measure on the jeans belt",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "roofer": {
+    "use": "anything on a roof / tower",
+    "meshes": ["henley_rolled", "work_pants", "fall_arrest_harness", "lanyard", "knee_pads", "work_boots", "hard_hat_chinstrap"],
+    "colors": {"harness": "#F2C230 webbing / #2B2B2B buckles", "lanyard": "#E07A1F", "hard_hat": "#F4F4F2", "work_pants": "#0B1F3A", "knee_pads": "#2B2B2B"},
+    "props": ["roofing_nailer (static)"],
+    "headgear": "white hard hat with chin strap",
+    "signature_notes": "harness chest strap sits below the bandana; chin strap runs behind the beard",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "winter": {
+    "use": "cold-weather episodes (9-10)",
+    "meshes": ["canvas_jacket", "work_pants", "work_boots", "insulated_gloves", "beanie"],
+    "colors": {"jacket": "#B08D57", "jacket_collar": "#5A3A22 corduroy", "beanie": "#E63946", "gloves": "#3B3B3B", "work_pants": "#0B1F3A"},
+    "props": [],
+    "headgear": "red beanie, cuff rolled ABOVE the ears",
+    "signature_notes": "glasses rest on the forehead just under the beanie cuff; pencil behind the right ear stays visible; bandana shows at the open collar; tape measure clipped on the jacket's left pocket edge",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   },
+   "travel": {
+    "use": "trip locations (away episodes) — added per Irfan's multi-location spec",
+    "meshes": ["henley_rolled", "field_jacket", "work_pants", "work_boots", "backpack", "ball_cap"],
+    "colors": {"field_jacket": "#55603F", "henley": "#8E9196", "work_pants": "#0B1F3A", "backpack": "#3A3F44 with #E63946 zipper pulls", "ball_cap": "#0B1F3A", "boots": "#6B4226"},
+    "props": ["backpack (straps over both shoulders)", "travel mug (optional)"],
+    "headgear": "navy ball cap",
+    "signature_notes": "jacket open so the bandana and the belt tape measure stay visible; glasses on forehead below the brim",
+    "signatures_visible": ["safety_glasses", "red_bandana", "carpenters_pencil", "tape_measure"]
+   }
+  }
+ },
+
+ "torque_goose": {
+  "name": "Torque",
+  "species_look": "white domestic farm goose (Embden-type), plump, upright, alert",
+  "height_m": 0.85, "length_m": 0.9, "wingspan_m": 1.6,
+  "colors": {"plumage": "#F7F5F0", "wing_tips_shadow": "#D9D6CF", "bill": "#F28C28", "bill_nail": "#E8C9A0", "legs_feet": "#F2994A", "eyes": "#4A6FA5", "eye_ring": "#F28C28"},
+  "style": "same simple-realistic style as Bolts; expressive head/neck, no clothing or accessories",
+  "budgets": {"max_tris": 5000, "texture": "one 1K set (base color, normal, ORM); feathers = normal map + a few wing-tip cards"},
+  "rig": {"bones": "~30: spine 3, neck 5, head, jaw (bill open), wings 3x2, legs 4x2, tail", "shape_keys": ["blink", "feather_puff"]},
+  "clips": {
+   "waddle": {"frames": 24, "loop": true,  "desc": "side-to-side waddle with head bob"},
+   "peck":   {"frames": 30, "loop": false, "desc": "dips and pecks at the ground / steals a washer"},
+   "honk":   {"frames": 30, "loop": false, "desc": "neck stretched forward, bill open twice (SFX honk)"},
+   "flap":   {"frames": 36, "loop": false, "desc": "rises on toes, flaps wings 3x"},
+   "sit":    {"frames": 40, "loop": false, "desc": "settles down, tucks feet; holds as a loop end pose (Build #9 warm bench)"},
+   "chase":  {"frames": 18, "loop": true,  "desc": "fast run, neck low, wings half open (chases the peeking neighbor)"}
+  },
+  "rules": ["never in danger, never hurt", "1-2 short gags per reel"]
+ },
+
+ "vehicles": {
+  "red_pickup": {
+   "desc": "old full-size regular-cab pickup, 1990s boxy styling, 8 ft bed — GENERIC: no badge, no grille logo, no tailgate lettering, no license-plate text",
+   "dims_m": {"length": 5.4, "width": 2.0, "height": 1.85, "wheelbase": 3.3},
+   "colors": {"body": "#B3261E", "faded_hood_roof": "#A3302A", "bumpers": "#C8CCD0", "grille": "#2B2B2B horizontal bars", "tires": "#1E1E1E", "glass": "#7FA3B5 tint"},
+   "budgets": {"hero_tris": 12000, "lod1_tris": 3000, "lod2_tris": 600, "texture": "1K (2K only if a reel features it close-up)"},
+   "anims": ["wheel_spin", "door_L_open", "tailgate_open"],
+   "default_location": "mercer_hollow zone red_pickup (driveway)"
+  }
+ }
+}

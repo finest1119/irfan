@@ -1,0 +1,12 @@
+# Page 2: keep code/specs/scripts in git; keep renders, audio, big images and private notes local
+episodes/*/work/
+episodes/_p3/
+voice-test*/audio/
+voice-test-sadaltager/
+port-wip/
+screenshots/
+PAGE-SETUP-REPORT.md
+branding/*.png
+!branding/profile-logo-final.png
+!branding/cover-final-1640x624.png
+*.blend1

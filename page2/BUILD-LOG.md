@@ -1,0 +1,368 @@
+# BUILD-LOG: Mercer Hollow world + one-shot render (24 Nov 2026, Opus build)
+
+**Status (updated session 2, see bottom): code written + shared world interface; pure-Python parts tested. Blender has NOT been run yet**, because the WJH render
+holds the Mac until the "BLENDER CLEAR" message. Every bpy module compiles, and a name scan found no undefined
+names, but none of them has been run inside Blender. Expect a first-run fix pass; see "First Blender run" below.
+Nothing was written outside `page2/`. There are no commits.
+
+## What was built
+| File | What it does |
+|---|---|
+| `scripts/gen_world_state.py` (edited) → `world_state.json` (regenerated) | **Slope fix (Decisions 3+4).** The meadow climbs at 13.5° on average, max **18.2°**, with an eased profile. A flat 20 m shoulder holds the **ridge pad at z 20.21 = exactly 65 ft above the ram pump** (waterfall bottom). The crest is at 70 ft above the house floor. Also added: a plunge pool under the waterfall, a smooth pond bowl, and a gentler west bank and street edge. The ridge moved east, so the **pad is now at (116, 70)** instead of (96, 52), and the **lot's east line moved from x=104 to x=126** (4.48 acres by polygon area, ~472 × 520 ft). `ram_tank_alt_site` was removed because the pad itself is now at 65 ft. The generator is import-safe: it writes only as a script, and `height()` is memoised. Backups: `scripts/*.before-slope-fix.*`. **Needs Fable/Irfan OK (lot width 400 → ~472 ft).** |
+| `blender/mh_paths.py` | pathlib paths, world_state/location loading, `placed_builds()` (status approved\|scheduled\|posted, per location/interior), analytic `height()` with a fallback to the height grid. bpy-free. |
+| `blender/camera_plan.py` | The one-shot camera plan. bpy-free. Per-beat camera keys `travel` / `snap` / `section` / `none`, with holds `drift` / `orbit` / `crane` / `push` / `pull` (plus `look_to` re-aim). Cues are a sentence index from `captions.json` or a word. Targets are episode spots, world camera_spots, zone anchors, `{anchor, dist, az, el}`, or section views. Holds are boosted automatically so the camera never moves less than 0.6 px/frame. Terrain/roof clearance pass. Preset, section, cast and lights swaps sit at the middle of a move. Per-frame `camera_speed` (px, dx, dy). |
+| `blender/mh_blender.py` | bpy helpers: keys on Blender 5 layered actions (`set_keys`, CONSTANT `key_const`, `vis_keys`), shared node groups `MH_Weather` / `MH_Fog` / `MH_Section` (one keyed value drives every material), PH-textured materials, Geometry Nodes `scatter_gn` (true instancing), mesh helpers. |
+| `blender/world_mercer.py` | Mercer Hollow. The terrain mesh is 1–1.5 m near the lot and 6–12 m out to 500 m, fading to the flat far ground. Its vertex mask covers lawn, meadow, dirt and woods, with slope dirt, snow/frost, and a section-cut transparency mask. Water: creek ribbon with flow, 2 m waterfall sheet + foam, plunge pool, pond with reeds, footbridge, rocks. Street: road, cul-de-sac, curbs, sidewalks, driveway, front walk, 4 neighbour houses (2 shared models, siding from the object colour), 6 utility poles + wires (one sagging span) + service drop. House: lap siding, gable roof, windows, navy door, porch + keyed porch light, a real kitchen-window opening with a lit backdrop nook, attached garage with roll-up door and NEMA outlet. Yard: privacy fence (GN posts), split-rail meadow fence, deck + grill, hero oak + tire swing, picnic table, 6 raised beds + plants, goose house + wire run, hose reel, A/C, propane tank, gravel path, mailbox with red flag. Workshop barn (board-and-batten, corrugated roof, roll-up door) + lean-to battery shed with a rack and inverter. Red pickup (~1.2k tris, no badges). Trees: 3 species × 2 LODs, GN-instanced (woods, creek banks, street, a 2.2k-tree far ring). Grass clumps within 25 m of every camera arrival point. Far: 22 low-poly hills, water tower (no lettering), low-poly town block. **Presets `day` / `dusk` / `frost` / `snow`** are keyed in one scene (HDRI tint/strength, exposure, low warm sun for dusk, fog colour, frost/snow). Lights `porch` / `house` / `kitchen`. Cut-away sections: soil-layer wall, caps, floor, half-embedded cable. **`BUILDS = {id: fn(ctx, entry, mode)}`** has a `wind_turbine` stub (lies flat → 4 s tilt-up → spin-up → faster in snag2 → furl in hack2 → eases to a stop; ghost tower in beat 2; dynamic anchors) and a `_stub` placeholder crate for builds without a builder. Anchors cover every camera_spot (`spot_<id>`), every zone, and the extra points. |
+| `blender/characters.py` | **Bolts**: a 24-bone rig, every piece weighted 100 % to one bone. Head with square jaw, nose, ears, eyes (blue-gray iris), thick brows, a **short full salt-and-pepper beard shell + moustache**, and a hair shell. Signatures are separate objects: **round safety glasses on the forehead below the brim, red bandana (knot front-left + tail), yellow-orange pencil behind the RIGHT ear, tape measure at the LEFT front hip**. Outfits **workshop** (gray henley rolled, navy pants, tool belt + hammer, boots, navy cap) and **electrician** (navy coveralls + reflective strips, yellow gloves, multimeter, white hard hat) + the **harness** extra. The swap is a CONSTANT visibility key; Mask modifiers hide the forearms/hands under the electrician outfit. Clips (analytic → baked keys; `--clip-actions` also saves named Actions): idle, walk, point, thumbs_up, winch_crank/crank, hands_on_hips, scratch_beard. **Torque**: a goose with an 11-bone rig and clips waddle (with path root motion), idle, honk. Placement, outfit and clip changes come from the plan's cast events (mid-move). Rough triangle counts: Bolts ≈ 6–9k with all outfits (budget 30k), Torque ≈ 1.5k (budget 5k). |
+| `blender/interiors.py` | `build_room(ctx, loc, room)`: garage, basement, kitchen, attic and living_room as their own light scenes. Walls have real door/window holes with emissive daylight backdrop cards, a few props per room, ceiling area lights, and anchors per room spot. Use: episode `"interior": "<room>"`. |
+| `blender/render_oneshot.py` | One scene, one camera baked per frame from the plan (job frames ± 2 only). Cycles + OptiX/CUDA/Metal, adaptive sampling, denoise, **persistent data ON**, 2K texture cap. EEVEE option. Motion blur `--mblur 2d` (default, the overlay blurs from camera_speed) or `3d` (keyed on in snap windows). Writes global frames, per-beat tracks in **the `tracks_v2` format overlay_v2 already reads** (`NN_<beat>_A-B.json`, beat-local frames), and a stats + VRAM estimate per job. `--parts` filter. Every world part is wrapped in try/except, so a run still reports what worked. |
+| `tools/oneshot.py` | Driver (venv): `plan` / `still` / `render` / `link`. Splits jobs at ≤150 frames that never cross a beat. **Resumable** (a finished job is skipped; Blender skips existing frames). **One Blender process at a time**, and it waits while any other Blender is running (`pgrep -ix blender` / `tasklist`). Blender comes from `pipeline/platform_cfg.py`. `link` hard-links global frames into `frames_v2/NN_<beat>/####.jpg` for overlay_v2. |
+| `tools/qc_oneshot.py` | FAILs on: a frame-difference spike outside the planned travel/snap/section windows (±2 frames) and outside `oneshot.hidden_joins`; a static camera longer than 1 s (plan px/frame and pixel diff); a preset/section/cast/lights swap on a hold. Reads frames or an mp4. |
+| `tools/synth_timings.py` | Synthetic `timings.json` + `captions.json` at 175 WPM (marked `synthetic`), for tests before TTS. It refuses to overwrite real timings. |
+| `tools/make_build01_episode.py` → `episodes/build-01/episode.json` | Build #1 draft: 11 beats, **VO verbatim (265 words, asserted)**, 20 camera moves, presets dusk → day → dusk, cast, lights, the cable section, anchors, and overlays mapped to the existing v2 types. |
+| `tools/test_oneshot.py` | Pure-Python tests: **ALL PASS**. Covers terrain slope/pad/flatness, cues, the Build #1 plan (window order, durations, swaps inside moves, never static, above terrain, outside buildings, no teleport), QC on synthetic frames (cut, freeze, spike inside a move, whitelist), and spot resolution. |
+
+## Decision needed: lot width vs slope
+Decision 2 keeps the lot at 400 × 520 ft. Decisions 3 and 4 ask for slopes ≤ ~18° and a pad 65 ft above the pump.
+Both can't hold with the pad fully on a 400 ft lot. **I chose:** east line x=126 (~472 ft), with the pad on the lot.
+**Alternative:** keep x=104 (400 ft) and let the pad at x 109–123 sit just past the line (a ridge-top easement). That
+changes one constant (`LOT_EAST`) in the generator; terrain and pad stay the same.
+
+## Deviations / stale references to fix (not edited: they are planning files)
+- The ridge numbers changed: pad (96, 52, 24.38) → **(116, 70, 20.21)**, crest +80 ft → **+70 ft**, and `ram_tank_alt_site` was removed. Still-stale text: `BUILD-SPEC-character-world.md` §5–6, `PROPOSAL-v1.md` 2.1/2.2 ("+80 ft"), `scripts/build-01-wind-turbine.md` (label "WINDY RIDGE +80 FT"; the episode draft says **+70 FT**), and `scripts/build-02-micro-hydro.md` if it uses the pad coordinates.
+- The battery shed is built against the workshop's south wall (y −38.25…−34.55), ~2 m north of its world_state zone centre (−38.4), so it actually touches the wall.
+- Build #1 beat 2: the red pickup teleports to the ridge pad for the tailgate shot (hidden inside the travel move) and goes back to the driveway in beat 9.
+- Motion blur: the driver defaults to `--mblur 3d` (Cycles blur keyed on in snap windows) because overlay_v2 has no 2D blur yet. Use 3d for the 20 s test. Switch to `2d` once the overlay reads `camera_speed.json`.
+- The pixel thresholds in `qc_oneshot.py` (`SPIKE_ABS` 40, `SPIKE_REL` 3×, `STATIC_EPS` 0.2) are not calibrated. **Tune them on the first 20 s test.**
+
+## How to run (repo root; Windows: `.venv\Scripts\python`)
+```
+.venv/bin/python page2/tools/test_oneshot.py                                        # pure-Python tests
+.venv/bin/python page2/tools/synth_timings.py page2/episodes/build-01/episode.json page2/episodes/build-01/work
+.venv/bin/python page2/tools/oneshot.py plan  page2/episodes/build-01/episode.json page2/episodes/build-01/work
+```
+**Still preview** (≈1–3 min: world build + 2 frames at 0.35 scale):
+```
+.venv/bin/python page2/tools/oneshot.py still page2/episodes/build-01/episode.json page2/episodes/build-01/work \
+    --frames 60,700 --scale 0.35 --samples 8          # -> work/stills_oneshot/f0060.png, f0700.png
+#   quick part test first:  --parts terrain,house,street,far   (then add yard,workshop,props,trees,grass,water,sections,builds,characters)
+```
+Good still frames for the plan: 60 = street drift (dusk), 300 = porch snap, 420 = ridge crane, 700 = turbine head,
+940 = cable cut-away, 1100 = tower flat, 1600 = rotor, 2090 = battery shed, 2500 = kitchen window, 2900 = continuity wide.
+**20 s test** (600 frames = 5 jobs, resumable), then QC:
+```
+.venv/bin/python page2/tools/oneshot.py render page2/episodes/build-01/episode.json page2/episodes/build-01/work --range 1-600 --scale 0.35 --samples 16
+.venv/bin/python page2/tools/qc_oneshot.py page2/episodes/build-01/work
+.venv/bin/python page2/tools/oneshot.py link   page2/episodes/build-01/episode.json page2/episodes/build-01/work   # for overlay_v2
+```
+
+## First Blender run (after "BLENDER CLEAR"): what to check first
+1. `--parts terrain,far` still: terrain shape, ridge shoulder, haze, HDRI tint. Then add parts one at a time and read `[mh] PART x FAILED` lines in `work/oneshot/logs/still.log`.
+2. API points written without a test run (most likely to need a fix): GN scatter (`FunctionNodeEulerToRotation`, `As Instance`, and whether instances of a `hide_render` template render); `me.polygons.foreach_set("use_smooth")`; animating `modifier.show_render` and `render.use_motion_blur`; `mode_set` for the armature in background mode; `surface_render_method`; the Principled socket names `Transmission Weight` / `Emission Color`.
+3. Look: dusk tint/exposure and fog colour (these values are guesses), terrain colour vs the v2 reference, and the scale of the siding/board bands.
+
+## What's missing (first pass)
+- Bolts: an 11-outfit library (only workshop + electrician + harness are built), a Rigify-level rig (24 bones, not ~65), face bones/shape keys, hair cards (shells for now), texture atlases (flat PBR colours; no 2K core set or 1K outfit sets yet), `wrench`/`hammer`/`inspect` clips, hand props on `prop_R`/`prop_L`. Turntable check of the signatures in every outfit is still to do.
+- Torque: `peck`, `flap`, `sit`, `chase` clips; wing-tip feather cards.
+- World: build LOD1/LOD2 swaps (trees use a static distance LOD); per-waypoint LOD swapping; neighbour-peek character (beat 9 gag); survey stakes, wind arrows, the battery-box drop and trench-fill animations; wet asphalt / storm sky for beats 1 and 6; second neighbour fence line (y=23); hills are meshes, not baked cards.
+- Overlay: `camera_speed.json` → 2D directional blur + whoosh placement in overlay_v2 (not edited: it lives in `pipeline/`); new chip/HUD/stat-card types.
+- Interiors: only blocked-out rooms; no whip-through-door join (QC whitelist `oneshot.hidden_joins` is ready).
+- Timings are synthetic (104 s at 175 WPM incl. pauses). Real TTS will retime every cue automatically.
+
+## VRAM estimates (RTX 3050 4 GB, budget ≤ 3 GB): estimates only, measure with `nvidia-smi` on the first real run
+| Part | Estimate |
+|---|---|
+| HDRI 2K (float) | ~35 MB |
+| Poly Haven 1K sets (grass-rock, asphalt, concrete × diff/nor/rough) | ~40 MB |
+| Terrain (~67k tris + mask) | ~15 MB |
+| House, garage, porch, kitchen nook, workshop, shed, yard props, street, poles, neighbours (~60–90k tris) | ~20 MB |
+| Trees: 6 templates (≤3k tris each) × ~3,000 GN instances | ~30 MB (instanced BVH) |
+| Grass clumps (~5k instances × 9 tris), reeds, rocks, posts | ~10 MB |
+| Bolts (all outfits ~9k tris) + Torque (~1.5k) + pickup + wind turbine stub | ~5 MB |
+| Section cut-away meshes | ~2 MB |
+| Cycles render buffers at 1080×1920 + OptiX denoiser | ~300–600 MB |
+| CUDA/OptiX context + kernels | ~400–700 MB |
+| **Total** | **≈ 0.9–1.5 GB**, well inside 3 GB. Interiors ≈ 0.6–0.9 GB. |
+Each job also writes `work/oneshot/stats_A-B.json` with an estimate of image and geometry MB from the real scene.
+
+---
+
+# Session 2 (24 Nov 2026, Opus): shared world interface + Page 3 adapter. Still NO Blender run.
+
+**Task 1 check.** `render_oneshot.py` and `characters.py` were complete, not truncated. Both compile, and an AST
+cross-check plus pyflakes find no undefined names in any page2 module. `make_build01_episode.py` was re-run, and
+`episode.json` came out byte-identical. **The VO matches the script's `VO:` lines exactly (11/11 beats, 265 words).**
+
+## New / changed files
+| File | Change |
+|---|---|
+| `blender/worlds.py` (new, bpy-free) | **World registry.** `WORLDS = {world_id: (module, build_fn)}` (Blender side, lazy import) + `PLAN_ANCHORS = {world_id: (module, fn)}` (bpy-free, for `plan`). Self-registration without editing page2: `page2/blender/` or `page3/blender/` `<world_id>.py` (`build(ctx, state)`) + `<world_id>_plan.py` (`plan_anchors(state)` → `{"anchors": {id: [x,y,z]}, "cams": {id: {"pos", "lens"}}}`). Cache `WORKDIR/oneshot/anchors_<world>.json` is written by every Blender build. It is only a fallback after a first successful build, so a new world still needs `_plan.py`. `plan_inputs()` is the single entry point used by both the driver and `render_oneshot.load_plan`. An unregistered world raises `WorldNotRegistered`, which lists the missing files and entries. A camera `to` or stop that no anchor defines raises a ValueError that names it. |
+| `blender/camera_plan.py` | Move kinds **`crane`** (sine, via point above the start), **`portal`** (easeInQuad dive to 92 % of the way to the look surface → hidden cut → easeOutQuad emerge along the target's look direction; `portal` event at the join, `[j-1, j+1]` added to `hidden_joins`, the join frame's `camera_speed` px is clamped and flagged `"join": true`, no clearance lift on portal frames) and **`backout`** (Catmull-Rom through every earlier arrival view in reverse, ending on the **exact frame-1 framing**, then the opening hold resumes). Blur windows: snap, portal, backout. **Adapter `expand_oneshot()`** for the compact block (see below). **The Spark:** `plan["spark"]` gives per-frame `[x, y, z, radius]` (leads the camera by 0.3 s, 55 % of the way to the look point, idle wobble, r = 0.0125·d·36/lens) and colour events (mid-move, 0.5 s blend; `off` = 0.3 s fade). `loc["anchors"]` is now read by `SpotResolver`. **The build-01 camera array is byte-identical to before** (md5 of `cam` checked). |
+| `blender/world_mercer.py` | `build_world(ctx, state)` registry entry: wraps `build()`, adds every plan-time anchor as an `ANC_<id>` empty plus a `CAM_<id>` empty per camera spot, and returns `{id: ANC_ empty}`. The World handle goes to `state["world"]`. |
+| `blender/mh_blender.py` | `anchor_empty` now names empties **`ANC_<id>`** (`prefix=CAM_PREFIX` for `CAM_<id>`). A re-defined id reuses and moves the empty (no `.001` copies). `normalize_anchors(ctx)` turns every (object, offset) anchor into a child `ANC_<id>` empty. Old ids stay as aliases: `spot_<id>`, zone names, episode anchors, `bolts`, `torque`. Track JSON keys are unchanged. |
+| `blender/characters.py` | `anc_bolts` / `anc_torque` → `ANC_bolts` / `ANC_torque`. |
+| `blender/render_oneshot.py` | Builds the world through the registry (`build_fn(ctx, state)`). Calls an optional module `apply_events(state, plan, lo, hi)` for non-Page-2 worlds. Characters are built only for Page 2 worlds. Adds the Spark orb (`ED_Spark`: emission, location/scale keyed from the track, colour blend keys). Writes `oneshot/anchors_<world>.json`. Accepts a non-dict episode `anchors` (Page 3 uses a string there). |
+| `tools/oneshot.py` | `make_plan` resolves the world **first** (clear failure), then the adapter, timings and plan. Prints the world and the anchor source. `camera_speed.json` gains `hidden_joins`. |
+| `tools/qc_oneshot.py` | A `portal` event on a hold = SWAP_ON_HOLD. |
+| `tools/test_oneshot.py` | New tests `test_registry`, `test_adapter`, `test_portal`. They use a test-only fake world with WORLDS-SPEC coordinates for the six stops. **ALL PASS.** |
+
+## Compact `oneshot` block → camera keys (Page 3)
+Trigger: the `oneshot` block has `world` + `stops` + `moves` (Mercer's config-only `oneshot` is untouched), and a
+beat that already has `shot.camera` keeps it. Each beat gets ONE key `{move, to: stop, dur: move_durations_s[move],
+cue: 0.0 (float = beat start), lead: lead_s (0.4)}`.
+- Beat 1 drift/orbit/crane is the opening hold (`move: none`). Any other first move is replaced by drift, with a note.
+- drift/orbit later on the **same** stop only changes the hold. On a new stop it becomes a travel with that hold.
+- section: `section: <stop>`, so the world gets a `section` event with the stop id (S2 lid). backout: `to` = first stop.
+- Orbit direction alternates from beat to beat.
+
+Page 3 sample, plan with the fake world (test only): windows section, section, travel, crane, travel, backout.
+2,912 frames (97.1 s synthetic) = the sum of `round(duration·30)`, and beat f0 = overlay_v2 `g0 + 1`. Never static. QC plan checks
+pass. Backout ends exactly on frame 1's view. **Note:** the sample's 2.5 s backout runs through ~1.5 km of stops
+(suburb → tower → plant → slice → wall → faucet), up to ~230 m/frame in the middle. It is legal per WORLDS-SPEC
+("compressed"), but Page 3 may want `move_durations_s.backout` = 4.0 or fewer waypoints.
+
+## Verified now (pure Python)
+```
+.venv/bin/python page2/tools/test_oneshot.py                     # ALL PASS (incl. registry/adapter/portal)
+.venv/bin/python page2/tools/synth_timings.py page2/episodes/build-01/episode.json page2/episodes/build-01/work
+.venv/bin/python page2/tools/oneshot.py plan  page2/episodes/build-01/episode.json page2/episodes/build-01/work
+.venv/bin/python page2/tools/qc_oneshot.py page2/episodes/build-01/work           # PASS (plan checks; no frames yet)
+# Page 3 sample: workdir OUTSIDE page3/ (read-only there); fails clearly until hometown_usa is registered
+.venv/bin/python page2/tools/synth_timings.py page3/episodes/2026-11-24-c5-water-tower-sample/episode.json page2/episodes/_p3-sample/work
+.venv/bin/python page2/tools/oneshot.py plan  page3/episodes/2026-11-24-c5-water-tower-sample/episode.json page2/episodes/_p3-sample/work
+```
+build-01: 3,125 frames (104.2 s, synthetic), 20 moves, 15 events, 28 jobs (≤150 frames, none crosses a beat,
+contiguous 1…3125). The beat f0 values match overlay_v2's `g0`, and tracks/frames_v2 names use `%02d_<beat>`
+(0-based), as overlay_v2 does.
+
+## Audit fixes (same session)
+- **Back-to-back `section` moves:** the first section's "off" event landed on the same frame as the second section's "on", which closed the second cut. Now no "off" event is emitted when the next move opens another section. Tested on the Page 3 sample (wall → main). The build-01 events are unchanged (cable on at f934, off at f1000).
+- **`render_oneshot`** registers every anchor that `build_fn` returns, so a world that only returns `ANC_` empties still gets `tracks_v2`.
+- **`mercer_plan_anchors`** resolves every camera/episode spot through `SpotResolver`, including section views such as `cable_slice`. All 19 build-01 `to` ids now have ANC + CAM, and a test asserts it.
+
+## Open points
+- **camera_speed px is very large in fast moves** (up to ~9k px on build-01 snap frame 1705, and 300–1,100 on
+  travels). The metric uses near-depth grid points. overlay_v2 must cap the blur (WORLDS-SPEC: 60 px) when it reads
+  this file. Not changed here because the build-01 plan had to stay identical.
+- `world_mercer` warnings from pyflakes are cosmetic (unused `Vector`, unused local `pz`).
+- I did not run `oneshot.py still --dry-run`, because the driver resolves Blender through `pipeline/platform_cfg.py`,
+  which reads `.env`.
+
+## First Blender run (after "BLENDER CLEAR"): one process, stills only
+```
+pgrep -ix blender || echo "no blender running"
+.venv/bin/python page2/tools/oneshot.py still page2/episodes/build-01/episode.json page2/episodes/build-01/work \
+    --frames 60 --scale 0.35 --samples 8 --parts terrain,far --no-wait          # then add parts one at a time
+.venv/bin/python page2/tools/oneshot.py still page2/episodes/build-01/episode.json page2/episodes/build-01/work \
+    --frames 60,700 --scale 0.35 --samples 8 --no-wait
+```
+New API points written without a run: `bmesh.ops.create_uvsphere` (Spark, Page 3 only), keyframing an Emission
+socket colour through `set_keys`, `normalize_anchors` parenting to bone-parented empties.
+
+---
+
+# Session 3 (24 Nov 2026, Opus): renderer fixes for Page 3 (hometown_usa now auto-registers). Still NO Blender.
+
+| # | Change |
+|---|---|
+| 1 | `worlds.registered_worlds()` returns WORLDS plus file-convention worlds; `hometown_usa` now appears there. The test checks that `mercer_hollow` is in the set, so extra worlds don't break it. The unregistered-world test uses `_no_such_world`. `worlds._import` sets `sys.dont_write_bytecode` so no `__pycache__` is written into `page3/`. A test spy checks that **`plan_anchors` gets the same expanded episode object that `build_plan` uses**. |
+| 2 | **Holds scale with subject distance** d = \|look − pos\| at the hold start. Defaults (fraction of d per second): drift and crane 1.5 %, push/pull 2 %, orbit 1.5°/s (was 0.6 m/s and 4°/s). The new `"rel"` key sets the rate directly. A legacy `"speed"` in m/s is clamped to 10 % of d/s. Push stops at 60 % of d (was a fixed 1.5 m, which froze macro pushes). The `boosted()` min-motion check samples the first 6 s and now includes `look_to`. Build-01 holds therefore changed slightly; all build-01 tests still pass. |
+| 3–4 | **Backout** = ONE eased arc (easeInOutCubic, via `_auto_via` lift when it is longer than 25 m), straight to the opening framing. It is timed to end `BACKOUT_SETTLE_S` = 0.4 s (12 frames) before the last frame. The settle frames are the opening hold running forward, so **the last frame is identical to frame 1** (loop). It keeps its full duration and is only shortened (with a warning) if the previous move leaves no room. |
+| 5 | snap or portal to the stop the camera is already at = **snap push-in**: 40 % closer, lens ×1.12. A same-stop portal adds a note. An open section on that stop stays open. |
+| 6 | Positions in `plan.json` are stored to 1e-6 m (lens 1e-4). The Spark track is also 1e-6 m. |
+| 7 | `render_oneshot`: the camera, its target and `ED_Spark` are children of `WORLD_ROOT` (created at the origin when the world has none), so a rebase moves them with the world. The anchor cache stores WORLD_ROOT-local positions. |
+| 8 | New `tools/oneshot_blur.py WORKDIR` → `oneshot/blur_2d.json`: per-frame blur only inside move windows, clamped at 60 px, nothing below 8 px. Portal `join` frames are skipped. `radial` for snap/portal, `directional` otherwise. Each entry has global + beat-local frames. Whoosh cues give `t`, beat-local `t_beat`/`lf`, duration and gain. Not yet wired into overlay_v2. |
+
+## Results (synthetic timings; workdirs `page2/episodes/_p3/<id>/`, nothing written to page3/)
+- `test_oneshot.py`: **ALL PASS**. New checks: push-in, blur spec, last frame = frame 1, direct backout, hold rate ≤ 5 %·d/s, 1e-6 precision.
+- build-01: plan + qc PASS. 3,125 frames, 20 moves, 28 jobs; 536 blurred frames.
+- **All 11 Page 3 episodes: plan exit 0 and qc PASS.**
+  - Backout: 120 frames on every episode, settle 12 frames, last frame == frame 1 on all.
+  - Backout path: 1–2,240 m. ed-09 dropped from 7,279 m to 2,240 m, peak 57 m/frame (was 265).
+  - Look drift is ≤ 1 %/s of d. The worst cumulative drift is 0.37·d, over a 37 s combined twist+why hold (ed-05, ed-09).
+  - ed-06's self-portal is now a push-in.
+```
+export PYTHONDONTWRITEBYTECODE=1
+for e in page3/episodes/*/episode.json; do id=$(basename $(dirname $e)); wd=page2/episodes/_p3/$id
+  .venv/bin/python page2/tools/synth_timings.py $e $wd && .venv/bin/python page2/tools/oneshot.py plan $e $wd \
+  && .venv/bin/python page2/tools/qc_oneshot.py $wd && .venv/bin/python page2/tools/oneshot_blur.py $wd; done
+```
+**For Page 3** (their files are not edited):
+- `plan_all.py` compares the backout window's END with cam[1]. That is now wrong by design. It should compare `cam[frames]` with `cam[1]`.
+- Its "settle < 15 frames" warning will fire on every episode, because the settle is now 0.4 s.
+- `tune_holds()` can be dropped. Its absolute speeds (1 %·d) are inside the new clamp, so keeping it changes nothing.
+- Long holds may want a bounded (ease/ping-pong) drift later.
+
+---
+
+# Session 4 (24 Nov 2026, Opus): hold caps + hold-length rule (both Pages). Still NO Blender.
+
+**Hold caps** (`camera_plan.cap_hold`, applied to every hold key with its real length = until the next key):
+- Total travel ≤ **25 % of the subject distance** d per hold key, for drift, crane and push/pull. Adapter and default holds move at 1.5 %/s; Mercer's explicit speeds keep their own rate, but the 25 % total cap still applies.
+- Orbit ≤ **18°** total, and the orbit's rise is also capped.
+- Drift on a subject closer than **0.5 m** becomes a slow orbit, under the same cap.
+- The **0.6 px/frame minimum still wins** after the caps (`boosted`). Each such hold is reported in `plan["holds"]` (`min_motion_wins`) and as a WARN line.
+  - On build-01 that is hack1.0 (crane with `look_to`, 1.25·d) and works.2 (0.26·d).
+  - On Page 3's 11 episodes `plan_all.py` reports 0 hold flags; worst hold travel is 0.31·d (orbits within 18°).
+
+**Hold-length rule** (chief): a hold is the stretch between move windows.
+- `camera_plan.check_holds()` → **FAIL over 10 s, warn over 9 s.**
+  - `oneshot.py plan` writes its outputs, then exits 1 on a failure; `--allow-long-holds` overrides.
+  - `qc_oneshot` reports `HOLD_TOO_LONG` and prints the longest hold.
+- **Native `shot.camera` keys win** over the compact block for that beat (tested).
+- Native snap/portal to the stop the camera is already at → push-in.
+
+**Sub-stops** `<stop>__detail` / `<stop>__alt`:
+- A view or anchor the world registers wins. Otherwise it is derived:
+  - `__detail` = 40 % closer on the same look point.
+  - `__alt` = the same anchor from 35° around, at the same distance and height.
+- Anchors resolve to the stop's anchor. `mercer_plan_anchors` adds ANC/CAM entries for the variants it uses, and `render_oneshot` creates `ANC_<stop>__x` empties as children of the stop's anchor.
+
+**`tools/hold_split.py`** (used by `make_build01_episode.py`, ready for future generators):
+- Plans with synthetic timings and adds sub-stop keys (snap `__detail` / travel `__alt`, never a no-op), until every hold is ≤ 7 s planned.
+- Keys go at sentence starts, or a word cue when no sentence start fits; an open section stays open.
+- **build-01 now has 24 moves; longest hold 6.8 s (snag1, f1219–1421)**; VO unchanged (265 words, verbatim).
+
+Results: `test_oneshot.py` ALL PASS (new: native-keys-win, variants, hold rule, hold caps).
+- **build-01:** plan + QC PASS.
+- **`page3/tools/plan_all.py`:** 11/11 OK; max hold per episode 6.9–8.9 s.
+- **Page 3 (their files):** `plan_all` still warns "snap/portal to the stop already at" for ed-06 f420 and ed-08 f736. ed-06 f420 is a portal from `kitchen_microwave__alt` back to its base view; it is a real move, but there is no enlarged interior behind it.
+
+---
+
+# Session 5 (24 Nov 2026): FIRST BLENDER STILLS (after "BLENDER CLEAR")
+Blender 5.3.0, Cycles on METAL (Mac), `--scale 0.35` (378×672), 8 samples. Blender is resolved through the
+`BLENDER_EXE` env var, so `platform_cfg` never falls back to `.env`:
+```
+export BLENDER_EXE=/Applications/Blender.app/Contents/MacOS/Blender PYTHONDONTWRITEBYTECODE=1
+pgrep -ix blender || .venv/bin/python page2/tools/oneshot.py still page2/episodes/build-01/episode.json \
+    page2/episodes/build-01/work --frames 60,300,450,700,940,1150,1300 --scale 0.35 --samples 8 --no-wait
+```
+**Timing / memory:**
+- First run (terrain,far): 177 s, almost all of it the one-time **Metal kernel compile**.
+- After that, a full world build takes ~0.9 s, and each still takes **1.1–5.5 s** (≈2 s typical).
+- A 7-still run takes ~14 s. **Peak RAM (max RSS) is 1.6–1.8 GB.**
+- No part failed and there was no traceback. Every run used one Blender process.
+- Contact sheet: `episodes/build-01/work/stills_contact.jpg` (14 frames: hook dusk 60, porch/Bolts 300, mission 450, flat turbine head 700, cable cut 940, tower low 1150, tilt-up 1300/1360, Torque 1450, rotor 1600, battery bank 2150, kitchen window 2550, fence peek dusk 2800, continuity 3050).
+
+**Checked:**
+- Bolts: short salt-and-pepper beard, round glasses on the forehead under the hard-hat brim, red bandana, electrician coveralls + harness, gloves, boots.
+- Torque reads well.
+- Sky/HDRI, clouds, the haze on the far hills and the dusk tint all work; there are no void backgrounds.
+
+**Fixed after the first stills:**
+1. **Tree canopies over the ridge shots** (f700/f1150/f1450 had dark canopies across the top). Ridge clearing 16 → 32 m, and no tree within 9 m of any episode camera spot.
+2. **`turbine_head` looked at empty grass.** The head lies at the tip of the FLAT tower until the hack1 tilt, so the spot now looks at `tower_tip_flat`.
+3. **hold hack1.0** (crane + `look_to`, where minimum motion beat the cap at 1.25·d, and the camera stared at the sky). It is now a 1.2 s travel to a new `tilt_side` spot: 30 m side-on, with the flat tip and the raised +50 ft tip both in frame. It holds with a slow 1.5°/s orbit, the whole tilt-up plays in view, and the hold is within the caps. The winch close-up was dropped, because it would have left a 0.4 s hold.
+4. **Torque walked out of the `torque_ground` shot.** His path is reversed and shortened (2.2 m), so he walks into it.
+5. **Battery shed was black.** It now has a warm area light (220 W, 2.2 m).
+6. **The battery rack was empty.** It now holds 10 battery boxes with red/black terminals.
+
+build-01 longest hold is now **5.9 s** (hack1 tilt view). The only min-motion override left is works.2 (a 142 m push, 0.26·d).
+
+**Still open (minor):**
+- f700: on the flat tower, one rotor blade dips into the grass. It needs a support stand, or the rotor parked with one blade up.
+- f940: the cable cut-away is hard to read mid-move.
+- The kitchen-window nook is plain cream.
+- The concrete slab edges show stretched texture streaks.
+- The porch pose (`hands_on_hips`) holds the arms far out.
+- Dusk at f60 looks like overcast day rather than warm dusk.
+
+## Session 5b: renderer fixes from Page 3 (plan + tests only, no Blender)
+- **Backout out of a portal set.** `build_plan` tracks portal sets by position.
+  - A portal sets the context, keeping the outermost entry if portals are nested.
+  - A move near the set's entry view stays inside.
+  - A portal back near the outside view, or a travel away from the set, clears the context.
+  - A backout that starts inside a set first takes a fill-frame **reverse portal** (≤ 0.5 s, `exit_portal` frames). It gets a `portal` event `exit:<stop>` and a join whitelisted in `hidden_joins`, then ONE direct eased arc.
+  - Tested: the arc passes no other stop, its path is within 1.35× of the straight line, and the last frame equals frame 1.
+  - `plan_all` results:
+    - ed-06's current plan already portals back out at f1276, so its backout is a direct 3 m arc from the kitchen; the 300 m climb no longer occurs.
+    - ed-04 exits its scanner set through a reverse portal.
+    - Every backout path is within 1 % of its straight line.
+- **Same-stop push-in.** It applies to snap AND portal whenever the target has the same base stop as the current one, including `__detail` / `__alt` aliases. ed-08 f736 is now a push-in (2.03 → 1.22 m). The window carries `push_in: true`. Page 3's `plan_all` still prints its "already at" warning for f736 because it matches stop names; it should skip windows with `push_in`.
+- **Found in the stills: the cable cut-away opened too late.** The section event now fires 2 frames before the camera dips below the terrain, still inside the move. The section-off event is placed on the NEXT move, not the section move itself.
+- Results: test_oneshot **ALL PASS**; build-01 plan + QC PASS (longest hold 5.9 s); `page3/tools/plan_all.py` 11/11 OK.
+
+---
+
+# Session 6 (= the "Session 5" CC0 upgrade brief, 24 Nov 2026, Opus): CC0 assets + v2 look pass
+**Deviation first: Bolts is NOT built on the Quaternius male.** Universal Base Characters / Animation Library only
+download through an itch.io pay-what-you-want buy widget (skipped per the brief). The Ultimate Animated Character
+Pack (fallback), Farm Animal Pack and Cars Pack Google Drive folders list anonymously, but every file returns
+"Google Drive - Quota exceeded" (retried later, same). The Drive IDs for a manual download are in
+`assets/cc0/manifest.json` → `skipped`. Bolts was therefore rebuilt procedurally, with smooth skinning (see below).
+
+## Downloaded (CC0 only, `assets/cc0/`, gitignored except `manifest.json`; `python tools/fetch_cc0.py`)
+- **Poly Haven** (api.polyhaven.com → dl.polyhaven.org), 133.8 MB:
+  - 1k glTF: island_tree_02, pine_sapling_small, shrub_02/03/04, grass_bermuda_01, grass_medium_02, rock_moss_set_01, rock_07.
+  - 2k diff/nor_gl/arm textures: white_planks_clean, grey_roof_01, gravel_road, river_small_rocks, grooved_concrete_driveway, + **excavated_soil_wall** (added for the cut-away).
+- **Kenney** (kenney.nl, the site's free "Continue without donating" signed link), 11.9 MB zips, extracted: furniture-kit, survival-kit, car-kit.
+- No light Poly Haven pine exists (pine_tree_01 is 17.4M polys and 949 MB), so pine_sapling_small is used.
+- Total download: 145.7 MB. On disk: 237 MB, including the extracted zips and the 60 MB library .blend.
+
+## New / changed files
+| File | What |
+|---|---|
+| `tools/fetch_cc0.py` | stdlib urllib + pathlib. Skips present files whose sha256 matches. Handles Kenney signed links and safe zip extraction. `--check` / `--only` / `--record`. |
+| `assets/cc0/manifest.json` | 75 entries: name, source page, url, licence, md5, sha256, size, path. Also `skipped` with reasons. |
+| `page2/blender/cc0_lib.py` | **Build once** (`Blender -b --factory-startup -P page2/blender/cc0_lib.py -- build`, 47 s) → `assets/cc0/lib/mercer_cc0_lib.blend` (60 MB, **0 absolute image paths**). The build: thins leaf cards per island (numpy label propagation), decimates branches only, bakes scale, rebuilds the alpha that Poly Haven's JPG glTF cards lost (leaves/grass: alpha from the black background), and imports 24 Kenney props. Runtime: `get()` appends, `_haze_wrap` (fog × alpha, so leaf cards stay see-through), `ph_mat()` gives 2K box-projected PBR (`walls_horizontal` puts boards along the walls), `swap_material()`, `vram_estimate()`. |
+| `page2/blender/mercer_cc0.py` | Hooks used by `world_mercer.py`: tree templates, hero oak, grass, creek rocks + river-pebble bed, shrubs, PBR surfaces, Kenney kitchen + battery-shed props, cut-away restyle, dusk sky, new pickup. Every hook falls back to the old procedural piece if the library is missing. |
+| `page2/blender/world_mercer.py` | Small hooks only (see above). Dusk preset: sun 4.5 at 4° elevation, colour (1, .46, .2), warmer fog, `sky: 1`. One `_cc0_finish()` pass. Camera, plan, anchors and events are unchanged (`test_oneshot.py` ALL PASS). |
+| `page2/blender/characters_s6.py` | **New Bolts + Torque** (below). |
+| `page2/blender/characters.py` | `build_bolts` / `build_torque` / `torque_pose` delegate to s6 (`USE_S6`, with an automatic v1 fallback). The arm targets for point / thumbs_up / hands_on_hips / scratch_beard are solved from hand positions; **hands_on_hips is fixed** (elbows out, wrists on the hips). |
+| `page2/blender/render_oneshot.py` | `--save-blend` now also runs `make_paths_relative`, so the .blend opens on Windows. |
+
+## Look changes
+- **Bolts:**
+  - Loft meshes with a subsurf modifier. Smooth inverse-distance weights; the shoulders blend into the upper arms.
+  - Stocky torso with a belly about 4 cm proud.
+  - Shaped head: square jaw, brow, sockets, cheekbones. Lidded eyes, blue-gray iris, nose, ears, lips.
+  - Fine salt-and-pepper beard and hair shells on the same topology as the head.
+  - Five-finger hands and shaped boots with soles.
+  - Signatures: round glasses on the forehead below the brim, red bandana with a knot and tail, a flat pencil behind the RIGHT ear, the tape measure at the LEFT hip.
+  - Outfits: **workshop** (henley with rolled cuffs and placket, pants, belt, pouch, hammer, cap) and **electrician** (coveralls with reflective bands, zip, gloves, hard hat, multimeter) + the harness.
+  - Same 24 bones, clip names and anchors.
+  - Render tris visible (body + signatures + one outfit, subsurf 1, loft segments ×0.7): **workshop 27.2k**, electrician + harness 32.2k before the mask hides the forearms/hands (≈29k effective). Budget 30k.
+- **Torque:**
+  - Modelled white Embden-type goose: plump teardrop body, long S-neck (3 neck bones), orange bill with a knob and a nail, a lower mandible on the jaw bone, blue eyes, folded wings with layered feather tips, orange legs and webbed 3-toe feet.
+  - Clips: waddle, idle, honk, and the new **peck** (also in `--clip-actions`). **5.4k render tris** (segments ×0.45; budget 5k).
+- **World:**
+  - Poly Haven broadleaf LOD0 (542k tris) / LOD1 (171k) and pines replace the balloon trees; there are 2,670 GN instances.
+  - Hero oak plus the swing limb.
+  - About 25k real grass clumps within 16 m of the camera points (grass only; broadleaf plants blocked close-ups).
+  - 207 moss rocks and a pebble bed along the creek; 13 foundation and fence shrubs.
+  - Horizontal white plank siding, grey roof, grooved driveway, gravel path.
+  - Kenney kitchen (cabinets, sink, stove, fridge, uppers, coffee maker, toaster, plant, radio, stool) and shed props (barrel, bucket, crates, box, shovel).
+  - New pickup: extruded profiles, boolean wheel wells, bevels, arch flares, windows, lamps, chrome bumpers, tyres with rims. About 1.5k base tris. Kenney `truck.glb` was rejected (toy proportions).
+  - Cut-away: sharp wavy soil bands (turf, topsoil, clay, gravel, sandy clay) overlaid with excavated_soil_wall, an orange 12 cm conduit, and yellow warning tape 30 cm above it.
+  - Dusk: a physical sky mixed in (keyed with the preset), a low warm sun, long shadows.
+
+## VRAM (PROPOSAL 7.3, RTX 3050 4 GB, budget ≤ 3 GB): estimates from the stats JSON
+- CC0 templates: 0.96M unique tris, ≈ 116 MB BVH. All instancing.
+- Unique mesh total: 1.05M tris, ≈ 160 MB.
+- Images: **≈ 454 MB** (render_oneshot estimate) after de-duplicating library images and scaling non-hero sets (driveway, gravel, river bed) to 1K in memory. Only the house siding/roof stay 2K (hero), as 7.3 asks.
+- Plus about 0.3–0.6 GB of buffers and denoiser, and 0.4–0.7 GB of context.
+- **Total ≈ 1.4–2.0 GB**, inside 3 GB. Measure with `nvidia-smi` on the Windows run.
+
+## Stills (Mac M2 Pro, Metal, 0.35 scale, 8 samples)
+- World build: 4.9 s. **Each still takes 3.4–6.0 s.** The 14-frame run takes 70 s, in one Blender process.
+- Outputs:
+  - `episodes/build-01/work/stills_contact_v2.jpg`
+  - `episodes/build-01/work/before_after.jpg` (f60/300/700/1150/1450/2550; old on top, new below)
+  - The old stills are kept in `episodes/build-01/work/stills_v1/`.
+
+## Open issues
+- Bolts is procedural, not Quaternius; the clips are still analytic (no mocap).
+  - The face reads as a stylised-realistic explainer face at mid distance; close-ups would want a sculpted head or hair cards.
+  - The thumbs_up hand is open (there are no finger bones).
+- Torque: clean in studio views, but at f1450 (low sun, walking) faint dark curves still show on the breast/side where the wing pads meet the body. At 5.4k tris the silhouette is slightly faceted close up.
+- Kitchen window: the Kenney props read but look soft through the glass, and their colormap textures are low-res.
+- Dusk (f60, f2800) is warmer, with long shadows, but the sky is still more "golden hour" than deep dusk. The porch light depends on the episode's lights events.
+- The woods are a single broadleaf species (island_tree_02 has a twisted, olive-like habit) plus young pines; a second CC0 broadleaf would help variety.
+- `assets/CREDITS.md` is not updated (outside the allowed write scope). Add a Poly Haven/Kenney session-6 line there.
+- Porch light: the episode keys `porch: false` from f1 to f2655, so the dusk hook/porch shots (f60, f300) have no porch light. This is episode-driven; I did not override it.
+- The dusk sky's sun direction (`sun_rotation` 180°) was not matched to the sun lamp; check for the glow on the wrong side in a wide dusk shot.
+- Swapping the roof to grey_roof_01 drops the old roof snow mix, and the CC0 trees/grass ignore frost/snow. Build-01 has no snow; winter episodes will.
+- Creek rocks, the pebble bed and the shed props appear in none of the 14 frames, so they are visually unverified.
+- `--save-blend` now runs `make_paths_relative`, but it was not exercised this session.
+- A CC0 pickup exists (Kenney `truck.glb`). It was rejected from its preview thumbnail (toy proportions), not from a test render.

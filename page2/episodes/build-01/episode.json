@@ -1,0 +1,1284 @@
+{
+ "id": "build-01",
+ "page": "self-made-engineer",
+ "draft": true,
+ "keyword": "backyard wind turbine",
+ "slug": "build-01-wind-turbine",
+ "title": "Storm knocked out the power. So he built a wind turbine taller than his house",
+ "pipeline": "oneshot",
+ "outfit": "electrician",
+ "outfit_extras": [
+  "fall_arrest_harness"
+ ],
+ "builds_in_episode": [
+  {
+   "id": "wind_turbine",
+   "mode": "assemble"
+  }
+ ],
+ "tts": {
+  "voice": "Fenrir",
+  "pause_between_beats": 0.3,
+  "director_notes": "Male host narrator, natural American accent, excitable and warm, ~175 WPM, third person."
+ },
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 32,
+  "engine": "cycles"
+ },
+ "oneshot": {
+  "min_hold_s": 0.25,
+  "hidden_joins": [],
+  "whoosh_db": -20
+ },
+ "spots": {
+  "horizon": {
+   "pos": [
+    -110.0,
+    -25.0,
+    40.0
+   ],
+   "look_at": [
+    -420.0,
+    -260.0,
+    30.0
+   ],
+   "lens": 35
+  },
+  "street_low": {
+   "pos": [
+    -80.0,
+    -6.2,
+    1.8
+   ],
+   "look_at": [
+    -30.0,
+    -4.0,
+    2.6
+   ],
+   "lens": 28
+  },
+  "street_poles": {
+   "pos": [
+    -60.0,
+    -5.0,
+    2.2
+   ],
+   "look_at": [
+    -45.0,
+    8.0,
+    7.5
+   ],
+   "lens": 28
+  },
+  "porch_bolts": {
+   "pos": [
+    -5.8,
+    -2.2,
+    1.75
+   ],
+   "look_at": [
+    -1.0,
+    0.8,
+    1.55
+   ],
+   "lens": 35
+  },
+  "ridge_crane": {
+   "pos": [
+    101.0,
+    53.0,
+    22.0
+   ],
+   "look_at": [
+    116.0,
+    70.0,
+    26.21
+   ],
+   "lens": 24
+  },
+  "tailgate_plan": {
+   "pos": [
+    118.0,
+    52.5,
+    22.11
+   ],
+   "look_at": [
+    121.0,
+    57.0,
+    21.21
+   ],
+   "lens": 35
+  },
+  "turbine_head": {
+   "pos": [
+    112.0,
+    51.76,
+    22.41
+   ],
+   "look_at": [
+    116.0,
+    54.76,
+    21.01
+   ],
+   "lens": 35
+  },
+  "tilt_side": {
+   "pos": [
+    146.0,
+    64.0,
+    24.21
+   ],
+   "look_at": [
+    116.0,
+    68.0,
+    28.21
+   ],
+   "lens": 24
+  },
+  "cable_slice": {
+   "section": "cable",
+   "t": 0.3,
+   "back": 6.0,
+   "dz": -0.2,
+   "ahead": 5.0,
+   "lens": 24
+  },
+  "battery_bank": {
+   "pos": [
+    28.0,
+    -45.5,
+    1.8
+   ],
+   "look_at": [
+    28.0,
+    -38.6,
+    1.0
+   ],
+   "lens": 28
+  },
+  "tower_low": {
+   "pos": [
+    114.6,
+    52.26,
+    20.91
+   ],
+   "look_at": [
+    116.0,
+    70.0,
+    20.810000000000002
+   ],
+   "lens": 28
+  },
+  "winch": {
+   "pos": [
+    113.5,
+    71.5,
+    21.41
+   ],
+   "look_at": [
+    116.0,
+    72.5,
+    20.61
+   ],
+   "lens": 35
+  },
+  "torque_ground": {
+   "pos": [
+    110.5,
+    64.5,
+    20.66
+   ],
+   "look_at": [
+    112.0,
+    66.0,
+    20.560000000000002
+   ],
+   "lens": 35
+  },
+  "rotor": {
+   "pos": [
+    106.0,
+    62.0,
+    34.21
+   ],
+   "look_at": [
+    116.0,
+    70.0,
+    35.45
+   ],
+   "lens": 32
+  },
+  "tail_hinge": {
+   "pos": [
+    119.0,
+    73.0,
+    36.75
+   ],
+   "look_at": [
+    116.6,
+    70.5,
+    35.550000000000004
+   ],
+   "lens": 35
+  },
+  "battery_close": {
+   "pos": [
+    27.0,
+    -42.2,
+    1.5
+   ],
+   "look_at": [
+    28.0,
+    -38.8,
+    1.0
+   ],
+   "lens": 40
+  },
+  "ridge_far": {
+   "pos": [
+    40.0,
+    -48.0,
+    6.0
+   ],
+   "look_at": [
+    116.0,
+    70.0,
+    32.21
+   ],
+   "lens": 40
+  },
+  "kitchen_window": {
+   "pos": [
+    7.0,
+    10.5,
+    2.0
+   ],
+   "look_at": [
+    7.0,
+    4.5,
+    1.5
+   ],
+   "lens": 35
+  },
+  "fence_peek": {
+   "pos": [
+    18.0,
+    15.0,
+    1.7
+   ],
+   "look_at": [
+    18.0,
+    22.5,
+    1.9
+   ],
+   "lens": 30
+  },
+  "continuity_wide": {
+   "pos": [
+    -40.0,
+    -80.0,
+    55.0
+   ],
+   "look_at": [
+    60.0,
+    10.0,
+    8.0
+   ],
+   "lens": 22
+  }
+ },
+ "sections": {
+  "cable": {
+   "a": [
+    100.0,
+    58.0
+   ],
+   "b": [
+    68.0,
+    19.0
+   ],
+   "side": 1,
+   "depth": 2.0,
+   "width": 10.0,
+   "cable_depth": 0.6,
+   "desc": "buried cable from the ridge pad down the meadow (Build #1); soil layers + cable in the wall"
+  }
+ },
+ "anchors": {
+  "street": [
+   -45.0,
+   0.0,
+   0.2
+  ],
+  "house_base": [
+   9.9,
+   -6.8,
+   0.0
+  ],
+  "house_top": [
+   9.9,
+   -6.8,
+   8.53
+  ],
+  "tower_base": [
+   116.0,
+   70.0,
+   20.21
+  ],
+  "tower_top_ghost": [
+   116.0,
+   70.0,
+   35.45
+  ],
+  "tower_tip_flat": [
+   116.0,
+   54.76,
+   20.51
+  ],
+  "tower_tip_up": [
+   116.0,
+   70.0,
+   35.45
+  ],
+  "hinge": [
+   116.0,
+   70.0,
+   20.51
+  ],
+  "gin_pole": [
+   116.0,
+   71.0,
+   22.71
+  ],
+  "guy_anchor": [
+   125.0,
+   70.0,
+   20.21
+  ],
+  "rotor_hub": [
+   115.4,
+   70.0,
+   35.45
+  ],
+  "generator": [
+   116.0,
+   70.0,
+   35.45
+  ],
+  "tail": [
+   117.5,
+   70.0,
+   35.650000000000006
+  ],
+  "cable_mid": [
+   81.0,
+   35.0,
+   8.73
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Storm rolls through, and boom, the whole street goes dark. Again. Last year the average American home sat without power for about eleven hours. Bolts was done waiting.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "dusk",
+    "camera": [
+     {
+      "cue": 0,
+      "lead": 0.4,
+      "move": "travel",
+      "dur": 1.0,
+      "from": "horizon",
+      "to": "street_low",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        1,
+        0,
+        0
+       ],
+       "speed": 1.4
+      }
+     },
+     {
+      "cue": 2,
+      "move": "travel",
+      "dur": 1.2,
+      "to": "street_poles",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        1,
+        0.15,
+        0
+       ],
+       "speed": 1.0
+      }
+     },
+     {
+      "cue": 3,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "porch_bolts",
+      "hold": {
+       "type": "push",
+       "speed": 0.3
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "BOLTS · BUILD #1"
+      ],
+      "at": 0.2,
+      "until": 3.0
+     },
+     {
+      "type": "card",
+      "text": "TODAY: ELECTRICIAN BOLTS",
+      "at": 0.3,
+      "until": 2.3
+     },
+     {
+      "type": "big",
+      "text": "DARK.",
+      "cue": "dark",
+      "until": "again"
+     },
+     {
+      "type": "big",
+      "text": "AGAIN.",
+      "cue": "again",
+      "until": "last"
+     },
+     {
+      "type": "label",
+      "text": "POWER OUT",
+      "anchor": "street",
+      "cue": "street",
+      "until": "bolts"
+     },
+     {
+      "type": "big",
+      "text": "≈ 11 HOURS",
+      "sub": "without power per customer, 2024 (EIA)",
+      "cue": "eleven",
+      "until": "bolts"
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       -1.0,
+       0.8,
+       0.45
+      ],
+      "yaw": 180,
+      "clip": "hands_on_hips"
+     },
+     "torque": {
+      "at": [
+       -19.5,
+       -14.5,
+       0.0
+      ],
+      "yaw": 90,
+      "clip": "waddle",
+      "path": [
+       [
+        -19.5,
+        -14.5
+       ],
+       [
+        -19.5,
+        -9.0
+       ]
+      ]
+     },
+     "pickup": {
+      "at": [
+       -7.5,
+       -10.35,
+       0.0
+      ],
+      "yaw": 0
+     }
+    },
+    "lights": {
+     "porch": false,
+     "house": false,
+     "kitchen": true
+    }
+   }
+  },
+  {
+   "id": "mission",
+   "text": "So he's building a wind turbine taller than his house. Fifty feet of steel, up on the windy ridge out back. And yes, he pulled the permit first.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 2.0,
+      "to": "ridge_crane",
+      "via": [
+       [
+        3.0,
+        -1.0,
+        15.0
+       ],
+       [
+        30.0,
+        6.0,
+        15.0
+       ],
+       [
+        75.0,
+        35.0,
+        24.0
+       ]
+      ],
+      "hold": {
+       "type": "crane",
+       "speed": 1.0,
+       "follow": 0.7
+      }
+     },
+     {
+      "cue": 2,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "tailgate_plan",
+      "hold": {
+       "type": "push",
+       "speed": 0.35
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "MISSION"
+      ],
+      "at": 0.1
+     },
+     {
+      "type": "bar",
+      "top": "house_top",
+      "bottom": "house_base",
+      "label": "HOUSE ≈ 28 FT",
+      "cue": "taller",
+      "side": "left"
+     },
+     {
+      "type": "bar",
+      "top": "tower_top_ghost",
+      "bottom": "tower_base",
+      "label": "TOWER 50 FT",
+      "cue": "fifty",
+      "color": "red"
+     },
+     {
+      "type": "label",
+      "text": "WINDY RIDGE +70 FT",
+      "anchor": "ridge_pad",
+      "cue": "windy"
+     },
+     {
+      "type": "big",
+      "text": "PERMIT ✔",
+      "cue": "permit"
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       121.0,
+       56.3,
+       20.21
+      ],
+      "yaw": 90,
+      "clip": "point"
+     },
+     "torque": {
+      "at": [
+       112.0,
+       66.0,
+       20.21
+      ],
+      "yaw": 30,
+      "clip": "idle"
+     },
+     "pickup": {
+      "at": [
+       121.0,
+       60.0,
+       20.21
+      ],
+      "yaw": 90
+     }
+    }
+   }
+  },
+  {
+   "id": "how",
+   "text": "Here's the deal. Wind pushes three blades, the blades spin a generator, and a tail keeps the whole thing pointed into the breeze. Power runs down a buried cable to a battery bank in the shed.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "turbine_head",
+      "hold": {
+       "type": "orbit",
+       "deg_s": 9.0
+      }
+     },
+     {
+      "cue": "and",
+      "move": "snap",
+      "dur": 0.3,
+      "to": "turbine_head__detail",
+      "hold": {
+       "type": "drift"
+      },
+      "_auto": "hold_split"
+     },
+     {
+      "cue": 2,
+      "lead": 0.3,
+      "move": "section",
+      "dur": 1.5,
+      "to": "cable_slice",
+      "section": "cable",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        -0.634,
+        -0.773,
+        -0.3
+       ],
+       "speed": 2.0
+      }
+     },
+     {
+      "cue": "battery",
+      "lead": 0.5,
+      "move": "travel",
+      "dur": 1.2,
+      "to": "battery_bank",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        1,
+        0,
+        0
+       ],
+       "speed": 0.5
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "label",
+      "text": "3 BLADES",
+      "anchor": "rotor_hub",
+      "cue": "three"
+     },
+     {
+      "type": "label",
+      "text": "GENERATOR",
+      "anchor": "generator",
+      "cue": "generator",
+      "dx": 140
+     },
+     {
+      "type": "label",
+      "text": "TAIL VANE",
+      "anchor": "tail",
+      "cue": "tail",
+      "dx": -140
+     },
+     {
+      "type": "label",
+      "text": "BURIED CABLE",
+      "anchor": "cable_mid",
+      "cue": "buried"
+     },
+     {
+      "type": "meter",
+      "label": "BATTERY 12 %",
+      "segments": 8,
+      "cues": [
+       "battery"
+      ],
+      "y": 0.7
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       113.0,
+       69.0,
+       20.21
+      ],
+      "yaw": 20,
+      "clip": "point"
+     }
+    }
+   }
+  },
+  {
+   "id": "snag1",
+   "text": "First snag: a fifty-foot tower doesn't stand itself up. And nobody's climbing that.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 1.5,
+      "to": "tower_low",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        0,
+        1,
+        0
+       ],
+       "speed": 1.5
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "SNAG"
+      ],
+      "at": 0.1
+     },
+     {
+      "type": "bar",
+      "top": "tower_tip_flat",
+      "bottom": "tower_base",
+      "label": "50 FT",
+      "cue": "fifty"
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       117.5,
+       55.76,
+       20.21
+      ],
+      "yaw": 180,
+      "clip": "scratch_beard"
+     }
+    }
+   }
+  },
+  {
+   "id": "hack1",
+   "text": "The hack? A tilt-up tower. Build it flat on the ground, then crank it upright with a hand winch. Torque supervises. Torque also steals a washer.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 1.2,
+      "to": "tilt_side",
+      "hold": {
+       "type": "orbit",
+       "deg_s": 1.5
+      }
+     },
+     {
+      "cue": "torque",
+      "lead": 0.3,
+      "move": "snap",
+      "dur": 0.2,
+      "to": "torque_ground",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        -0.7,
+        -0.7,
+        0
+       ],
+       "speed": 0.5
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "HACK"
+      ],
+      "at": 0.1
+     },
+     {
+      "type": "label",
+      "text": "HINGE",
+      "anchor": "hinge",
+      "cue": "tilt"
+     },
+     {
+      "type": "label",
+      "text": "GIN POLE",
+      "anchor": "gin_pole",
+      "cue": "build",
+      "dx": 150
+     },
+     {
+      "type": "label",
+      "text": "GUY WIRES",
+      "anchor": "guy_anchor",
+      "cue": "crank",
+      "dx": -150
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       115.5,
+       74.2,
+       20.21
+      ],
+      "yaw": 270,
+      "clip": "winch_crank"
+     },
+     "torque": {
+      "at": [
+       110.0,
+       65.0,
+       20.21
+      ],
+      "yaw": 30,
+      "clip": "waddle",
+      "path": [
+       [
+        110.0,
+        65.0
+       ],
+       [
+        112.0,
+        66.0
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "snag2",
+   "text": "Second snag: the next storm. Wind that strong can spin a small turbine to pieces.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 1.5,
+      "to": "rotor",
+      "hold": {
+       "type": "orbit",
+       "deg_s": 10.0
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "SNAG"
+      ],
+      "at": 0.1
+     },
+     {
+      "type": "big",
+      "text": "TOO FAST",
+      "cue": "spin"
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       114.0,
+       68.0,
+       20.21
+      ],
+      "yaw": 45,
+      "clip": "idle"
+     },
+     "torque": {
+      "at": [
+       38.0,
+       9.2,
+       -0.43
+      ],
+      "yaw": 270,
+      "clip": "idle"
+     }
+    }
+   }
+  },
+  {
+   "id": "hack2",
+   "text": "So the tail does something sneaky. When the wind gets wild, it folds, and the blades swing sideways, out of the blast. It's called furling. The turbine basically ducks.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "tail_hinge",
+      "hold": {
+       "type": "orbit",
+       "deg_s": 7.0,
+       "rise": 1.0
+      }
+     },
+     {
+      "cue": 1,
+      "move": "travel",
+      "dur": 1.0,
+      "to": "tail_hinge__alt",
+      "hold": {
+       "type": "drift"
+      },
+      "_auto": "hold_split"
+     },
+     {
+      "cue": 2,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "tail_hinge__detail",
+      "hold": {
+       "type": "drift"
+      },
+      "_auto": "hold_split"
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "HACK"
+      ],
+      "at": 0.1
+     },
+     {
+      "type": "label",
+      "text": "FURLING",
+      "anchor": "tail",
+      "cue": "furling"
+     }
+    ]
+   }
+  },
+  {
+   "id": "works",
+   "text": "And it works. Honest numbers: it's rated one and a half kilowatts, but that's the peak. Small turbines average a small slice of that. On a good windy site, figure around five kilowatt-hours a day. That won't run the whole house, but the fridge, the lights, and the phones? Covered.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "day",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 1.5,
+      "to": "battery_bank",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        1,
+        0,
+        0
+       ],
+       "speed": 0.5
+      }
+     },
+     {
+      "cue": 1,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "battery_close",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        1,
+        0,
+        0
+       ],
+       "speed": 0.3
+      }
+     },
+     {
+      "cue": 2,
+      "move": "travel",
+      "dur": 1.5,
+      "to": "ridge_far",
+      "hold": {
+       "type": "push",
+       "speed": 1.0
+      }
+     },
+     {
+      "cue": 4,
+      "move": "travel",
+      "dur": 1.5,
+      "to": "kitchen_window",
+      "hold": {
+       "type": "push",
+       "speed": 0.35
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "IT WORKS"
+      ],
+      "at": 0.1
+     },
+     {
+      "type": "big",
+      "text": "1.5 kW PEAK",
+      "cue": "rated",
+      "until": "small"
+     },
+     {
+      "type": "big",
+      "text": "≈ 5 kWh / DAY",
+      "sub": "good windy site",
+      "cue": "five"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "FRIDGE",
+       "LIGHTS",
+       "PHONES"
+      ],
+      "cues": [
+       "fridge",
+       "lights",
+       "phones"
+      ],
+      "style": "check"
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       29.5,
+       -43.0,
+       0.0
+      ],
+      "yaw": 160,
+      "clip": "thumbs_up"
+     },
+     "torque": {
+      "at": [
+       28.6,
+       -43.4,
+       0.0
+      ],
+      "yaw": 120,
+      "clip": "idle"
+     }
+    }
+   }
+  },
+  {
+   "id": "callback",
+   "text": "So the next time the street goes dark, one porch light stays on. The neighbor has questions.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "dusk",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 2.0,
+      "to": "street_wide",
+      "hold": {
+       "type": "push",
+       "speed": 1.2
+      }
+     },
+     {
+      "cue": 1,
+      "move": "snap",
+      "dur": 0.3,
+      "to": "fence_peek",
+      "hold": {
+       "type": "drift",
+       "dir": [
+        1,
+        0,
+        0
+       ],
+       "speed": 0.3
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "label",
+      "text": "BOLTS' HOUSE",
+      "anchor": "porch",
+      "cue": "porch"
+     },
+     {
+      "type": "big",
+      "text": "ONE LIGHT.",
+      "cue": "one"
+     }
+    ],
+    "cast": {
+     "bolts": {
+      "at": [
+       -1.0,
+       0.8,
+       0.45
+      ],
+      "yaw": 180,
+      "clip": "idle"
+     },
+     "torque": {
+      "at": [
+       18.0,
+       20.8,
+       0.0
+      ],
+      "yaw": 90,
+      "clip": "honk"
+     },
+     "pickup": {
+      "at": [
+       -7.5,
+       -10.35,
+       0.0
+      ],
+      "yaw": 0
+     }
+    },
+    "lights": {
+     "porch": true,
+     "house": false,
+     "kitchen": true
+    }
+   }
+  },
+  {
+   "id": "teaser",
+   "text": "But what happens when the wind stops? Tomorrow, he looks at the creek.",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "dusk",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "travel",
+      "dur": 1.5,
+      "to": "continuity_wide",
+      "hold": {
+       "type": "orbit",
+       "deg_s": 2.0
+      }
+     },
+     {
+      "cue": 1,
+      "move": "none",
+      "hold": {
+       "type": "orbit",
+       "deg_s": 2.0,
+       "look_to": "waterfall",
+       "look_s": 3.0
+      }
+     },
+     {
+      "cue": "creek",
+      "move": "snap",
+      "dur": 0.3,
+      "to": "continuity_wide__detail",
+      "hold": {
+       "type": "drift"
+      },
+      "_auto": "hold_split"
+     }
+    ],
+    "overlays": [
+     {
+      "type": "card",
+      "text": "NEXT: BUILD #2",
+      "cue": "tomorrow"
+     },
+     {
+      "type": "label",
+      "text": "?",
+      "anchor": "waterfall",
+      "cue": "creek"
+     }
+    ]
+   }
+  },
+  {
+   "id": "question",
+   "text": "Would your HOA let you put this in your yard?",
+   "shot": {
+    "location": "mercer_hollow",
+    "preset": "dusk",
+    "camera": [
+     {
+      "cue": 0,
+      "move": "none",
+      "hold": {
+       "type": "crane",
+       "speed": 0.9,
+       "follow": 0.4
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "type": "card",
+      "text": "Would your HOA let you put this in YOUR yard?",
+      "at": 0.2
+     }
+    ]
+   }
+  }
+ ],
+ "_notes": [
+  "DRAFT by the world builder (24 Nov 2026). VO = the script's VO lines verbatim (265 words).",
+  "Beat 8: the camera stays OUTSIDE the kitchen window (BUILD-SPEC 1: no interiors in the exterior scene); the window shows a lit low-poly kitchen backdrop box. Beat 9 starts outside, so no hidden join is needed.",
+  "Beat 2: the red pickup is moved to the ridge pad for the tailgate shot (swap hidden in the beat-2 travel) and back to the driveway in beat 9.",
+  "Overlay types 'stat card', HUD gauges, wind arrows, angle readout and the crossed-out ladder are not in overlay_v2 yet; approximated with big/meter/label/bar."
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Fenrir",
+  "pause_between_beats": 0.2,
+  "trim_pauses": true,
+  "director_notes": "Male American narrator (natural General American accent) for a fun US backyard-engineering social video. Warm, excited, storytelling energy with a wink of dad humor; fast and punchy (about 175 words per minute), short dramatic pause before the big reveal, lively intonation, never monotone, never salesy, never shouting."
+ },
+ "beats": [
+  {
+   "id": "01",
+   "text": "Storm rolls through, and boom, the whole street goes dark. Again. Last year the average American home sat without power for about eleven hours. Bolts was done waiting."
+  },
+  {
+   "id": "02",
+   "text": "So he's building a wind turbine taller than his house. Fifty feet of steel, up on the windy ridge out back. And yes, he pulled the permit first."
+  },
+  {
+   "id": "03",
+   "text": "Here's the deal. Wind pushes three blades, the blades spin a generator, and a tail keeps the whole thing pointed into the breeze. Power runs down a buried cable to a battery bank in the shed."
+  }
+ ]
+}

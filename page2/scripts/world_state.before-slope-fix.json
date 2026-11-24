@@ -1,0 +1,1949 @@
+{
+ "world": "mercer_hollow",
+ "version": 2,
+ "season": "late_summer",
+ "units": "Blender metres; Z up; +Y north (upstream); +X east (ridge); yaw = deg CCW from +X that the FRONT faces",
+ "origin": "house front-door threshold, ground level",
+ "generated_by": "page2/scripts/gen_world_state.py (edit there, re-run; builds[] is hand/loader maintained)",
+ "locations": {
+  "mercer_hollow": {
+   "name": "Mercer Hollow",
+   "kind": "home",
+   "lot": {
+    "size_ft": [
+     400,
+     520
+    ],
+    "size_m": [
+     121.9,
+     158.5
+    ],
+    "acres": 4.77,
+    "note": "pie-shaped cul-de-sac lot: narrow street frontage (x=-18, y -20..23), widens behind the house to y -75..83, east line x=104",
+    "outline": [
+     [
+      -18,
+      -20
+     ],
+     [
+      -18,
+      23
+     ],
+     [
+      34,
+      23
+     ],
+     [
+      34,
+      83.5
+     ],
+     [
+      104,
+      83.5
+     ],
+     [
+      104,
+      -75
+     ],
+     [
+      10,
+      -75
+     ],
+     [
+      10,
+      -20
+     ]
+    ]
+   },
+   "terrain": {
+    "ground_z_house_pad": 0.0,
+    "ridge_crest_z": 24.38,
+    "ridge_crest_x": 90.0,
+    "creek": {
+     "fall_m": 7.92,
+     "fall_ft": 26,
+     "run_m": 61,
+     "run_ft": 200,
+     "top": [
+      70.0,
+      5.42
+     ],
+     "bottom": [
+      9.0,
+      -2.5
+     ],
+     "waterfall_y": [
+      36.0,
+      35.0
+     ],
+     "waterfall_drop_m": 2.0,
+     "centreline": "x = 46 + 2 sin(y/14)"
+    },
+    "meadow_grade_deg": {
+     "avg": [
+      22,
+      30
+     ],
+     "max": 37
+    },
+    "height_grid": {
+     "origin": [
+      -60,
+      -100
+     ],
+     "step_m": 10,
+     "nx": 22,
+     "ny": 22,
+     "note": "rows = y ascending, cols = x ascending; bilinear-interpolate, then sculpt creek channel/waterfall/pond detail",
+     "z": [
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -2.61,
+       -2.25,
+       2.32,
+       8.05,
+       13.48,
+       17.18,
+       17.18,
+       17.18,
+       17.18,
+       17.18,
+       17.18,
+       17.18
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -2.05,
+       -2.48,
+       2.12,
+       8.1,
+       13.86,
+       17.78,
+       17.78,
+       17.78,
+       17.78,
+       17.78,
+       17.78,
+       17.78
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.45,
+       -2.74,
+       1.82,
+       8.08,
+       14.2,
+       18.38,
+       18.38,
+       18.38,
+       18.38,
+       18.38,
+       18.38,
+       18.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.09,
+       -2.85,
+       1.71,
+       8.18,
+       14.6,
+       18.98,
+       18.98,
+       18.98,
+       18.98,
+       18.98,
+       18.98,
+       18.98
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -4.6,
+       -4.6,
+       1.99,
+       8.59,
+       15.12,
+       19.58,
+       19.58,
+       19.58,
+       19.58,
+       19.58,
+       19.58,
+       19.58
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.34,
+       -2.22,
+       2.67,
+       9.3,
+       15.77,
+       20.18,
+       20.18,
+       20.18,
+       20.18,
+       20.18,
+       20.18,
+       20.18
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.69,
+       -1.59,
+       3.53,
+       10.13,
+       16.47,
+       20.78,
+       20.78,
+       20.78,
+       20.78,
+       20.78,
+       20.78,
+       20.78
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.9,
+       -1.02,
+       4.27,
+       10.87,
+       17.13,
+       21.38,
+       21.38,
+       21.38,
+       21.38,
+       21.38,
+       21.38,
+       21.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.86,
+       -0.74,
+       4.67,
+       11.36,
+       17.68,
+       21.98,
+       21.98,
+       21.98,
+       21.98,
+       21.98,
+       21.98,
+       21.98
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.6,
+       -0.83,
+       4.65,
+       11.55,
+       18.12,
+       22.58,
+       22.58,
+       22.58,
+       22.58,
+       22.58,
+       22.58,
+       22.58
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -1.19,
+       -1.16,
+       4.31,
+       11.5,
+       18.45,
+       23.18,
+       23.18,
+       23.18,
+       23.18,
+       23.18,
+       23.18,
+       23.18
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -0.78,
+       -1.39,
+       4.0,
+       11.46,
+       18.78,
+       23.78,
+       23.78,
+       23.78,
+       23.78,
+       23.78,
+       23.78,
+       23.78
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       -0.24,
+       -0.51,
+       4.67,
+       12.05,
+       19.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.17,
+       0.7,
+       5.69,
+       12.71,
+       19.64,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.6,
+       0.6,
+       0.6,
+       0.6,
+       0.6,
+       2.04,
+       3.91,
+       8.42,
+       14.47,
+       20.37,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       1.2,
+       1.2,
+       1.2,
+       1.2,
+       1.2,
+       3.29,
+       5.19,
+       9.61,
+       15.28,
+       20.7,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       1.8,
+       1.8,
+       1.8,
+       1.8,
+       1.8,
+       4.44,
+       6.33,
+       10.61,
+       15.93,
+       20.96,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       2.4,
+       2.4,
+       2.4,
+       2.4,
+       2.4,
+       5.3,
+       7.19,
+       11.27,
+       16.34,
+       21.13,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       3.0,
+       3.0,
+       3.0,
+       3.0,
+       3.0,
+       5.51,
+       7.42,
+       11.36,
+       16.37,
+       21.14,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       3.6,
+       3.6,
+       3.6,
+       3.6,
+       3.6,
+       5.5,
+       7.54,
+       11.29,
+       16.27,
+       21.09,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       4.2,
+       4.2,
+       4.2,
+       4.2,
+       4.2,
+       5.56,
+       7.74,
+       11.27,
+       16.2,
+       21.06,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ],
+      [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       4.8,
+       4.8,
+       4.8,
+       4.8,
+       4.8,
+       5.94,
+       8.12,
+       11.51,
+       16.33,
+       21.11,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38,
+       24.38
+      ]
+     ]
+    }
+   },
+   "zones": {
+    "house": {
+     "pos": [
+      4.88,
+      0,
+      0
+     ],
+     "size": [
+      9.75,
+      13.4,
+      7.6
+     ],
+     "yaw": 180,
+     "desc": "2-story, white lap siding #F4F2EC, gray asphalt shingle roof #6E7174 (gable, ridge N-S), white trim, navy front door #0B1F3A, porch light. Footprint 32x44 ft. Front facade on x=0.",
+     "front_door": [
+      0,
+      0,
+      0
+     ],
+     "hero": true
+    },
+    "porch": {
+     "pos": [
+      -1.22,
+      0,
+      0
+     ],
+     "size": [
+      2.44,
+      8.0,
+      3.0
+     ],
+     "yaw": 180,
+     "desc": "covered front porch, 8 ft deep, 2 white posts, 2 steps, porch light"
+    },
+    "garage": {
+     "pos": [
+      4.25,
+      -10.35,
+      0
+     ],
+     "size": [
+      7.3,
+      7.3,
+      4.8
+     ],
+     "yaw": 180,
+     "desc": "attached 2-car garage (24x24 ft), white roll-up door on the west face x=0.6, NEMA outlet beside the door"
+    },
+    "driveway": {
+     "pos": [
+      -10.2,
+      -10.35,
+      0
+     ],
+     "size": [
+      21.6,
+      7.3,
+      0.02
+     ],
+     "yaw": 0,
+     "desc": "concrete driveway from the garage to the cul-de-sac bulb"
+    },
+    "red_pickup": {
+     "pos": [
+      -7.5,
+      -10.35,
+      0
+     ],
+     "size": [
+      5.4,
+      2.0,
+      1.85
+     ],
+     "yaw": 0,
+     "desc": "Bolts' old red pickup, nose toward the garage (see character.json vehicles)"
+    },
+    "front_lawn": {
+     "pos": [
+      -9.5,
+      7.0,
+      0
+     ],
+     "size": [
+      17.0,
+      27.0,
+      0.0
+     ],
+     "yaw": 0,
+     "desc": "mown lawn, foundation shrubs along the porch"
+    },
+    "mailbox": {
+     "pos": [
+      -20.6,
+      -16.0,
+      0
+     ],
+     "size": [
+      0.5,
+      0.3,
+      1.15
+     ],
+     "yaw": 180,
+     "desc": "curbside mailbox on a wooden post, red flag up"
+    },
+    "propane_tank": {
+     "pos": [
+      4.0,
+      9.2,
+      0
+     ],
+     "size": [
+      2.3,
+      1.0,
+      1.1
+     ],
+     "yaw": 90,
+     "desc": "white 250-gal horizontal propane tank, north side of the house (Build #7 unhooks it)"
+    },
+    "ac_condenser": {
+     "pos": [
+      8.4,
+      7.6,
+      0
+     ],
+     "size": [
+      0.9,
+      0.9,
+      0.9
+     ],
+     "yaw": 0,
+     "desc": "A/C condenser unit on a pad, north-east corner"
+    },
+    "hose_reel": {
+     "pos": [
+      10.3,
+      -5.2,
+      0
+     ],
+     "size": [
+      0.6,
+      0.5,
+      0.8
+     ],
+     "yaw": 0,
+     "desc": "green garden hose on a wall reel at the back corner"
+    },
+    "back_yard": {
+     "pos": [
+      22.0,
+      4.0,
+      0
+     ],
+     "size": [
+      24.0,
+      36.0,
+      0
+     ],
+     "yaw": 0,
+     "desc": "fenced back yard x 10..34, y -14..22 (fits the 200 ft zig-zag trench of Build #6: e.g. 3 x 20 m runs)",
+     "fence": [
+      [
+       5.0,
+       6.7
+      ],
+      [
+       5.0,
+       22.0
+      ],
+      [
+       34.0,
+       22.0
+      ],
+      [
+       34.0,
+       -14.0
+      ],
+      [
+       7.9,
+       -14.0
+      ]
+     ],
+     "fence_kind": "wooden privacy fence, 6 ft (1.83 m), cedar #A47551, posts every 8 ft (instanced)"
+    },
+    "deck": {
+     "pos": [
+      11.6,
+      -1.0,
+      0.6
+     ],
+     "size": [
+      3.7,
+      8.0,
+      0.6
+     ],
+     "yaw": 0,
+     "desc": "wood deck off the back door, grill at its south end"
+    },
+    "grill": {
+     "pos": [
+      12.6,
+      -4.2,
+      0.6
+     ],
+     "size": [
+      0.7,
+      0.6,
+      1.1
+     ],
+     "yaw": 0,
+     "desc": "black kettle-style grill (no brand) \u2014 Build #7 burner target"
+    },
+    "oak_tree": {
+     "pos": [
+      27.0,
+      16.0,
+      0
+     ],
+     "size": [
+      14.0,
+      14.0,
+      15.0
+     ],
+     "yaw": 0,
+     "desc": "big oak (hero tree, unique mesh) with a tire swing on a low branch",
+     "tire_swing": [
+      25.0,
+      14.5,
+      0.6
+     ]
+    },
+    "picnic_table": {
+     "pos": [
+      21.0,
+      3.0,
+      0
+     ],
+     "size": [
+      1.8,
+      1.5,
+      0.75
+     ],
+     "yaw": 90,
+     "desc": "weathered wood picnic table"
+    },
+    "garden": {
+     "pos": [
+      16.0,
+      -44.0,
+      0
+     ],
+     "size": [
+      11.0,
+      10.0,
+      0.4
+     ],
+     "yaw": 0,
+     "desc": "raised-bed vegetable garden: 6 cedar beds 4x10 ft, tomatoes/corn/squash"
+    },
+    "workshop": {
+     "pos": [
+      28.0,
+      -30.0,
+      0
+     ],
+     "size": [
+      12.2,
+      9.1,
+      6.0
+     ],
+     "yaw": 180,
+     "desc": "detached workshop/barn 40x30 ft, red-brown board-and-batten #8C3B2E, gray metal roof, roll-up door on the west face (x=21.9), workbench + pegboard inside, NEMA outlets",
+     "door": [
+      21.9,
+      -30.0,
+      0
+     ]
+    },
+    "battery_shed": {
+     "pos": [
+      28.0,
+      -38.4,
+      0
+     ],
+     "size": [
+      6.0,
+      3.7,
+      2.6
+     ],
+     "yaw": 270,
+     "desc": "lean-to battery shed on the workshop's south wall (Build #1 battery bank)"
+    },
+    "gravel_path": {
+     "pos": [
+      14.9,
+      -22.0,
+      0
+     ],
+     "size": [
+      3.0,
+      22.0,
+      0.02
+     ],
+     "yaw": 0,
+     "desc": "gravel path from the garage corner to the workshop door",
+     "polyline": [
+      [
+       7.9,
+       -14.0
+      ],
+      [
+       14.0,
+       -22.0
+      ],
+      [
+       21.9,
+       -30.0
+      ]
+     ]
+    },
+    "goose_house": {
+     "pos": [
+      38.0,
+      10.0,
+      -0.38
+     ],
+     "size": [
+      1.5,
+      1.2,
+      1.3
+     ],
+     "yaw": 180,
+     "desc": "Torque's small white A-frame goose house + 3 m wire run, outside the fence on the creek bank"
+    },
+    "creek": {
+     "pos": [
+      47.31,
+      10.0,
+      0
+     ],
+     "size": [
+      3.0,
+      200.0,
+      0
+     ],
+     "yaw": 0,
+     "desc": "creek flows N->S, bed 3 m wide, water ~0.3 m deep; centreline = polyline below",
+     "polyline": [
+      [
+       48.0,
+       110,
+       7.42
+      ],
+      [
+       47.52,
+       100,
+       6.92
+      ],
+      [
+       46.29,
+       90,
+       6.42
+      ],
+      [
+       44.92,
+       80,
+       5.92
+      ],
+      [
+       44.08,
+       70,
+       5.42
+      ],
+      [
+       44.18,
+       60,
+       4.53
+      ],
+      [
+       45.17,
+       50,
+       3.64
+      ],
+      [
+       46.56,
+       40,
+       2.76
+      ],
+      [
+       47.68,
+       30,
+       -0.16
+      ],
+      [
+       47.98,
+       20,
+       -1.27
+      ],
+      [
+       47.31,
+       10,
+       -2.39
+      ],
+      [
+       46.0,
+       0,
+       -2.63
+      ],
+      [
+       44.69,
+       -10,
+       -2.77
+      ],
+      [
+       44.02,
+       -20,
+       -2.91
+      ],
+      [
+       44.32,
+       -30,
+       -3.05
+      ],
+      [
+       45.44,
+       -40,
+       -3.19
+      ],
+      [
+       46.83,
+       -50,
+       -3.33
+      ],
+      [
+       47.82,
+       -60,
+       -4.6
+      ],
+      [
+       47.92,
+       -70,
+       -3.61
+      ],
+      [
+       47.08,
+       -80,
+       -3.75
+      ],
+      [
+       45.71,
+       -90,
+       -3.89
+      ],
+      [
+       44.48,
+       -100,
+       -4.03
+      ]
+     ]
+    },
+    "creek_top": {
+     "pos": [
+      44.08,
+      70,
+      5.42
+     ],
+     "size": [
+      6,
+      6,
+      2
+     ],
+     "yaw": 0,
+     "desc": "top of the 26 ft fall \u2014 Build #2 screened intake site"
+    },
+    "waterfall": {
+     "pos": [
+      47.14,
+      35.5,
+      1.4
+     ],
+     "size": [
+      4,
+      2,
+      2.0
+     ],
+     "yaw": 0,
+     "desc": "small waterfall, 2.0 m (6.5 ft) drop + pool below (pool radius 3 m) \u2014 Build #3 ram-pump drive-fall site"
+    },
+    "creek_bottom": {
+     "pos": [
+      47.2,
+      9,
+      -2.5
+     ],
+     "size": [
+      6,
+      6,
+      2
+     ],
+     "yaw": 0,
+     "desc": "bottom of the 26 ft fall \u2014 Build #2 turbine site"
+    },
+    "pond": {
+     "pos": [
+      48.0,
+      -60.0,
+      -3.4
+     ],
+     "size": [
+      18.0,
+      18.0,
+      1.2
+     ],
+     "yaw": 0,
+     "desc": "small pond downstream (south), reeds, water surface z -3.4"
+    },
+    "meadow": {
+     "pos": [
+      68.0,
+      20.0,
+      0
+     ],
+     "size": [
+      36.0,
+      150.0,
+      0
+     ],
+     "yaw": 0,
+     "desc": "grass meadow climbing from the creek to the ridge crest (avg grade ~22-30 deg, max ~37 deg \u2014 steep; see BUILD-SPEC)",
+     "z_range": [
+      -2.5,
+      24.38
+     ],
+     "split_rail_fence": [
+      [
+       62,
+       -40,
+       4.79
+      ],
+      [
+       64,
+       0,
+       7.09
+      ],
+      [
+       63,
+       40,
+       10.15
+      ],
+      [
+       60,
+       80,
+       11.36
+      ]
+     ]
+    },
+    "ridge_pad": {
+     "pos": [
+      96.0,
+      52.0,
+      24.38
+     ],
+     "size": [
+      14.0,
+      14.0,
+      0
+     ],
+     "yaw": 0,
+     "desc": "flat hilltop pad on the ridge \u2014 Build #1 turbine, Build #3 tank"
+    },
+    "woods": {
+     "pos": [
+      115.0,
+      5.0,
+      0
+     ],
+     "size": [
+      70.0,
+      210.0,
+      0
+     ],
+     "yaw": 0,
+     "desc": "instanced woods: oak 40 % / maple 35 % / pine 25 %, ~1 tree per 40 m^2, clearing r=12 m around ridge_pad; plus a north strip y 84..110 x 0..150",
+     "regions": [
+      [
+       [
+        86,
+        -100
+       ],
+       [
+        150,
+        -100
+       ],
+       [
+        150,
+        110
+       ],
+       [
+        86,
+        110
+       ]
+      ],
+      [
+       [
+        0,
+        84
+       ],
+       [
+        150,
+        84
+       ],
+       [
+        150,
+        110
+       ],
+       [
+        0,
+        110
+       ]
+      ]
+     ]
+    },
+    "creek_crossing": {
+     "pos": [
+      45.72,
+      -2,
+      -1.85
+     ],
+     "size": [
+      4.0,
+      1.6,
+      0.4
+     ],
+     "yaw": 0,
+     "desc": "PROPOSED (not in the proposal): plank footbridge so Bolts can walk from the yard to the ridge",
+     "proposed": true
+    },
+    "ram_tank_alt_site": {
+     "pos": [
+      78.9,
+      52,
+      20.23
+     ],
+     "size": [
+      4,
+      4,
+      0
+     ],
+     "yaw": 0,
+     "desc": "PROPOSED alt site for the Build #3 tank, ~65 ft above the waterfall pump (pad itself is ~79 ft above it)",
+     "proposed": true
+    }
+   },
+   "street": {
+    "cul_de_sac": {
+     "centre": [
+      -32.0,
+      0.0,
+      -0.1
+     ],
+     "radius": 15.0,
+     "desc": "asphalt bulb #3B3D40, concrete curb, our driveway meets it at the east side"
+    },
+    "street": {
+     "from": [
+      -32.0,
+      0.0,
+      -0.1
+     ],
+     "to": [
+      -220.0,
+      0.0,
+      -0.1
+     ],
+     "width": 8.5,
+     "sidewalk": {
+      "width": 1.5,
+      "grass_strip": 1.2,
+      "both_sides": true
+     },
+     "desc": "residential street running west from the bulb"
+    },
+    "utility_poles": {
+     "instanced": true,
+     "height": 10.7,
+     "positions": [
+      [
+       -17.0,
+       12.0,
+       0
+      ],
+      [
+       -45,
+       8.0,
+       0
+      ],
+      [
+       -83,
+       8.0,
+       0
+      ],
+      [
+       -121,
+       8.0,
+       0
+      ],
+      [
+       -159,
+       8.0,
+       0
+      ],
+      [
+       -197,
+       8.0,
+       0
+      ]
+     ],
+     "desc": "wooden poles, 3 wires, service drop to our house north-west corner"
+    },
+    "neighbor_houses": [
+     {
+      "id": "nb_north",
+      "pos": [
+       -6.0,
+       38.0,
+       0
+      ],
+      "yaw": 225,
+      "siding": "#AFC4D6",
+      "model": "nbr_A",
+      "desc": "pale-blue 2-story; its side yard runs along OUR north fence (y=22..24) -> the peeking-neighbor gag"
+     },
+     {
+      "id": "nb_south",
+      "pos": [
+       -14.0,
+       -40.0,
+       0
+      ],
+      "yaw": 135,
+      "siding": "#D8CBB0",
+      "model": "nbr_B",
+      "desc": "beige ranch"
+     },
+     {
+      "id": "nb_west_n",
+      "pos": [
+       -70.0,
+       22.0,
+       0
+      ],
+      "yaw": 270,
+      "siding": "#9AA79A",
+      "model": "nbr_A",
+      "desc": "sage 2-story"
+     },
+     {
+      "id": "nb_west_s",
+      "pos": [
+       -70.0,
+       -22.0,
+       0
+      ],
+      "yaw": 90,
+      "siding": "#B9B9B4",
+      "model": "nbr_B",
+      "desc": "gray ranch"
+     }
+    ],
+    "neighbor_fence_line": [
+     [
+      -12.0,
+      23.0
+     ],
+     [
+      34.0,
+      23.0
+     ]
+    ]
+   },
+   "far": {
+    "hills": {
+     "kind": "ring of 2D cards / low-poly with baked texture",
+     "radius": 650,
+     "height_range": [
+      40,
+      120
+     ]
+    },
+    "water_tower": {
+     "pos": [
+      -420.0,
+      -260.0,
+      0
+     ],
+     "height": 38.0,
+     "color": "#D9DCDF",
+     "desc": "town water tower, blank tank (no lettering)"
+    },
+    "town": {
+     "pos": [
+      -500.0,
+      -150.0,
+      0
+     ],
+     "kind": "2D card"
+    }
+   },
+   "camera_spots": {
+    "street_wide": {
+     "pos": [
+      -62.0,
+      -10.0,
+      6.0
+     ],
+     "look_at": [
+      0.0,
+      2.0,
+      3.0
+     ],
+     "lens_mm": 28,
+     "desc": "from down the street: porch, pickup, mailbox, nb_north + nb_south in frame"
+    },
+    "porch": {
+     "pos": [
+      -6.5,
+      -3.5,
+      1.7
+     ],
+     "look_at": [
+      0.0,
+      0.0,
+      1.5
+     ],
+     "lens_mm": 35
+    },
+    "back_yard": {
+     "pos": [
+      13.0,
+      -11.0,
+      2.4
+     ],
+     "look_at": [
+      27.0,
+      14.0,
+      1.0
+     ],
+     "lens_mm": 28
+    },
+    "workshop_door": {
+     "pos": [
+      13.0,
+      -27.0,
+      1.9
+     ],
+     "look_at": [
+      21.9,
+      -30.0,
+      1.6
+     ],
+     "lens_mm": 32
+    },
+    "creek_top": {
+     "pos": [
+      37.49,
+      76,
+      6.93
+     ],
+     "look_at": [
+      44.0,
+      66,
+      5.56
+     ],
+     "lens_mm": 28
+    },
+    "creek_bottom": {
+     "pos": [
+      40.56,
+      4,
+      0.64
+     ],
+     "look_at": [
+      47.68,
+      30,
+      0.84
+     ],
+     "lens_mm": 28,
+     "desc": "looking upstream at the fall and the waterfall"
+    },
+    "ridge_pad": {
+     "pos": [
+      86,
+      40,
+      25.61
+     ],
+     "look_at": [
+      96.0,
+      52.0,
+      27.38
+     ],
+     "lens_mm": 24
+    },
+    "aerial_overview": {
+     "pos": [
+      -70.0,
+      -125.0,
+      95.0
+     ],
+     "look_at": [
+      35.0,
+      5.0,
+      0.0
+     ],
+     "lens_mm": 24,
+     "desc": "sees street, house, yard, workshop, creek, pond and ridge pad"
+    }
+   },
+   "interiors": {
+    "garage": {
+     "world_anchor": [
+      4.25,
+      -10.35,
+      0
+     ],
+     "size": [
+      7.3,
+      7.3,
+      2.75
+     ],
+     "door": {
+      "pos": [
+       -3.65,
+       0,
+       0
+      ],
+      "kind": "2-car roll-up door 16x7 ft, west wall"
+     },
+     "windows": [
+      {
+       "pos": [
+        0,
+        -3.65,
+        1.4
+       ],
+       "size": [
+        1.0,
+        0.9
+       ]
+      }
+     ],
+     "camera_spots": {
+      "door_inside": {
+       "pos": [
+        -2.8,
+        -2.6,
+        1.6
+       ],
+       "look_at": [
+        2.5,
+        1.5,
+        1.0
+       ]
+      },
+      "workbench": {
+       "pos": [
+        0.5,
+        0.5,
+        1.7
+       ],
+       "look_at": [
+        3.2,
+        2.5,
+        0.95
+       ]
+      }
+     },
+     "desc": "concrete floor, pegboard + workbench on the east wall, shelves, chest freezer, NEMA outlets; pickup may be parked outside",
+     "interior_door_to": "house (mudroom door, north wall)"
+    },
+    "basement": {
+     "world_anchor": [
+      4.88,
+      0,
+      -2.6
+     ],
+     "size": [
+      9.75,
+      13.4,
+      2.4
+     ],
+     "door": {
+      "pos": [
+       3.0,
+       5.5,
+       0
+      ],
+      "kind": "stairs up to the kitchen, north-east corner"
+     },
+     "windows": [
+      {
+       "pos": [
+        -4.875,
+        -4,
+        2.0
+       ],
+       "size": [
+        0.8,
+        0.4
+       ],
+       "kind": "egress/hopper window to the front lawn"
+      }
+     ],
+     "camera_spots": {
+      "stairs": {
+       "pos": [
+        2.5,
+        4.5,
+        1.8
+       ],
+       "look_at": [
+        -1.5,
+        -2.5,
+        0.8
+       ]
+      },
+      "utility_corner": {
+       "pos": [
+        -2.0,
+        2.0,
+        1.6
+       ],
+       "look_at": [
+        3.5,
+        -5.0,
+        1.0
+       ]
+      }
+     },
+     "desc": "unfinished: poured-concrete walls, exposed joists, furnace, water heater, electric panel (Build #1 tie-in), sump pit"
+    },
+    "kitchen": {
+     "world_anchor": [
+      7.0,
+      3.6,
+      0
+     ],
+     "size": [
+      5.0,
+      4.5,
+      2.7
+     ],
+     "door": {
+      "pos": [
+       2.5,
+       0,
+       0
+      ],
+      "kind": "back door to the deck, east wall"
+     },
+     "windows": [
+      {
+       "pos": [
+        0,
+        2.25,
+        1.3
+       ],
+       "size": [
+        1.2,
+        1.0
+       ],
+       "kind": "over the sink, faces north"
+      }
+     ],
+     "camera_spots": {
+      "doorway": {
+       "pos": [
+        -2.0,
+        -1.6,
+        1.7
+       ],
+       "look_at": [
+        1.5,
+        1.5,
+        1.0
+       ]
+      },
+      "counter": {
+       "pos": [
+        1.2,
+        -1.5,
+        1.6
+       ],
+       "look_at": [
+        -1.0,
+        2.0,
+        0.95
+       ]
+      }
+     },
+     "desc": "classic US kitchen: white shaker cabinets, butcher-block counter, gas range (propane), fridge, island",
+     "interior_door_to": "living_room"
+    },
+    "attic": {
+     "world_anchor": [
+      4.88,
+      0,
+      5.4
+     ],
+     "size": [
+      9.75,
+      13.4,
+      2.2
+     ],
+     "door": {
+      "pos": [
+       0,
+       -4.0,
+       0
+      ],
+      "kind": "pull-down ladder hatch in the floor"
+     },
+     "windows": [
+      {
+       "pos": [
+        0,
+        6.7,
+        1.0
+       ],
+       "size": [
+        0.8,
+        0.6
+       ],
+       "kind": "gable vent window, north end"
+      },
+      {
+       "pos": [
+        0,
+        -6.7,
+        1.0
+       ],
+       "size": [
+        0.8,
+        0.6
+       ],
+       "kind": "gable vent window, south end"
+      }
+     ],
+     "camera_spots": {
+      "hatch": {
+       "pos": [
+        0.8,
+        -3.0,
+        1.4
+       ],
+       "look_at": [
+        0,
+        4.0,
+        0.8
+       ]
+      },
+      "gable": {
+       "pos": [
+        0,
+        5.5,
+        1.5
+       ],
+       "look_at": [
+        0,
+        -4.0,
+        0.6
+       ]
+      }
+     },
+     "desc": "unfinished gable attic: sloped rafters (ridge 2.2 m above the joists, 0.3 m at the eaves), pink insulation batts, plywood walkway, boxes",
+     "roof_shape": "gable, ridge along Y"
+    },
+    "living_room": {
+     "world_anchor": [
+      3.0,
+      -3.0,
+      0
+     ],
+     "size": [
+      5.6,
+      6.0,
+      2.7
+     ],
+     "door": {
+      "pos": [
+       -2.8,
+       2.6,
+       0
+      ],
+      "kind": "front door/foyer, west wall"
+     },
+     "windows": [
+      {
+       "pos": [
+        -2.8,
+        -1.0,
+        1.3
+       ],
+       "size": [
+        1.6,
+        1.4
+       ],
+       "kind": "front window onto the porch"
+      }
+     ],
+     "camera_spots": {
+      "sofa_view": {
+       "pos": [
+        2.2,
+        -2.4,
+        1.5
+       ],
+       "look_at": [
+        -2.0,
+        1.5,
+        1.0
+       ]
+      },
+      "window": {
+       "pos": [
+        -1.8,
+        1.8,
+        1.6
+       ],
+       "look_at": [
+        -2.8,
+        -1.0,
+        1.4
+       ]
+      }
+     },
+     "desc": "sofa, recliner, TV on a console, wood floor, brick fireplace on the south wall, family photos (no faces needed)"
+    }
+   },
+   "builds": []
+  }
+ },
+ "trips": {},
+ "_trip_location_schema": {
+  "id": "example_trip",
+  "name": "Display name (US-English, generic, no real brand)",
+  "region": "e.g. lake_cabin | hometown | remote_work",
+  "season": "late_summer | autumn | winter | spring",
+  "origin_note": "Blender metres, Z up, origin at the main arrival point",
+  "zones": {
+   "<zone_id>": {
+    "pos": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     1,
+     1,
+     1
+    ],
+    "yaw": 0,
+    "desc": ""
+   }
+  },
+  "camera_spots": {
+   "<spot_id>": {
+    "pos": [
+     0,
+     0,
+     1.7
+    ],
+    "look_at": [
+     5,
+     0,
+     1.0
+    ],
+    "lens_mm": 28
+   }
+  },
+  "builds": []
+ },
+ "_build_schema": {
+  "id": "wind_turbine",
+  "build_no": 1,
+  "title": "Storm knocked out the power. So he built a wind turbine taller than his house",
+  "location": "mercer_hollow",
+  "interior": null,
+  "zone": "ridge_pad",
+  "pos": [
+   96.0,
+   52.0,
+   24.38
+  ],
+  "rot": 0,
+  "status": "approved | scheduled | posted",
+  "idle_anim": "rotor_spin",
+  "lod": {
+   "hero": "full",
+   "mid": "lod1 (>60 m from camera)",
+   "far": "lod2 (>150 m)"
+  },
+  "depends_on": [],
+  "callback": "the windmill we built in Build #1",
+  "posted_date": "YYYY-MM-DD",
+  "_notes": "loader places every build with status approved|scheduled|posted; never delete a build (retired = visible old attempt). location = key of locations{}; interior = null for exterior or a key of that location's interiors{}."
+ },
+ "cables_pipes": [],
+ "_cables_pipes_schema": {
+  "from": "wind_turbine",
+  "to": "battery_shed",
+  "kind": "buried_cable | pipe | hose",
+  "path": [
+   [
+    0,
+    0,
+    0
+   ]
+  ]
+ }
+}
