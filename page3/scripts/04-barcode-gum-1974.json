@@ -1,0 +1,184 @@
+{
+  "id": "ed-04-barcode-gum-1974",
+  "topic_id": "B5",
+  "series": "Money & Payments",
+  "world": [
+    "W1",
+    "W2"
+  ],
+  "title": "The First Thing Ever Scanned at a Checkout Was a Pack of Gum",
+  "keyword": "how barcodes work",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Beep. Beep. Beep. You've heard that sound thousands of times at the checkout. But the very first beep at a real checkout came from a pack of gum. Follow the beep.",
+      "stop": "strip_mall_checkout",
+      "move": "drift",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ONE PACK OF GUM",
+          "cue": "gum"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: the barcode itself. Those black bars and white gaps aren't a picture. They're just a number, twelve digits long, written in stripes a machine can read.",
+      "stop": "macro_barcode",
+      "move": "snap",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "big",
+          "text": "12 DIGITS",
+          "cue": "twelve"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the scanner. It sweeps a beam of light across the bars and reads the pattern back as those twelve digits. The last digit is a built-in check, so a bad read gets caught and you scan again.",
+      "stop": "macro_scanner",
+      "move": "portal",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "SCANNER",
+          "cue": "scanner"
+        },
+        {
+          "type": "chips",
+          "text": "LAST DIGIT = ERROR CHECK",
+          "cue": "check"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the register. Here's what surprises people. On a typical packaged item, the price isn't in the barcode at all. The register looks that number up in the store's computer, like finding a name in your contacts, and the computer sends back what it is and what it costs. That's how a sale price can change overnight without anyone touching the package.",
+      "stop": "macro_terminal",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "chips",
+          "text": "NO PRICE IN THE BARS",
+          "cue": "price"
+        },
+        {
+          "type": "label",
+          "text": "STORE COMPUTER LOOKUP",
+          "cue": "computer"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. The first product ever scanned at a real checkout was a pack of chewing gum. It happened in Troy, Ohio, on June 26, 1974, just after eight in the morning. One beep, one pack of gum, and that same twelve-digit idea is now on nearly everything you buy.",
+      "stop": "macro_barcode",
+      "move": "snap",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "big",
+          "text": "JUNE 26, 1974",
+          "cue": "june"
+        },
+        {
+          "type": "label",
+          "text": "TROY, OHIO",
+          "cue": "troy"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "So every beep is a tiny lookup: stripes, number, price. Another one decoded. What's the first thing you remember buying with your own money? Tell me in the comments, and share this with someone who loves random history. Next time you're at the checkout, listen for it. Beep. Beep. Beep.",
+      "stop": "strip_mall_checkout",
+      "move": "backout",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "YOUR FIRST PURCHASE?",
+          "cue": "first"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 262,
+  "fb_caption": "Decoded: the beep at every checkout.\nThe bars are just a 12-digit number, and the very first one scanned at a real checkout was on a pack of gum in Ohio in 1974.\nWhat's the first thing you remember buying with your own money?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#Barcode",
+    "#HistoryFacts",
+    "#DidYouKnow"
+  ],
+  "engagement_comment": "What's the first thing you ever bought with your own money? Ours was candy. Obviously. 🍬",
+  "sources": [
+    {
+      "claim": "First UPC-marked grocery item scanned at a checkout: a pack of chewing gum, Troy, Ohio, June 26, 1974, at 8:01 a.m.",
+      "urls": [
+        "https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use",
+        "https://en.wikipedia.org/wiki/Universal_Product_Code",
+        "https://www.ideastream.org/2024-06-25/50-years-ago-the-first-retail-barcode-was-scanned-at-an-ohio-grocery-store"
+      ]
+    },
+    {
+      "claim": "A UPC is a 12-digit number shown as bars and spaces; a laser/light beam sweeps across the code to read it",
+      "urls": [
+        "https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use",
+        "https://en.wikipedia.org/wiki/Universal_Product_Code",
+        "https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf"
+      ]
+    },
+    {
+      "claim": "The 12th digit is a check digit that lets the scanner detect a misread",
+      "urls": [
+        "https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf",
+        "https://en.wikipedia.org/wiki/Universal_Product_Code"
+      ]
+    },
+    {
+      "claim": "Standard UPC barcodes do not contain the price; the register looks the number up in the store's database, which is why sale prices need no re-labelling",
+      "urls": [
+        "https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf",
+        "https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist with the date, town and time (8:01 a.m. → 'just after eight'). HEDGED: 'on a typical packaged item' - store-printed labels for weighed items (meat, produce) can carry a price or weight inside the code, so 'the price is never in a barcode' would be wrong. 'Nearly everything you buy' is soft. DROPPED: the gum brand, the store name and the people involved (no brand names); 'why gum was chosen' and the gum's price (accounts differ / not in two opened sources); 'laser or camera' detail and 'dark bars absorb light' (not in opened sources); number of scans per day. One opened source is a 2008 state government fact sheet - its fee information is outdated and is not used. The contacts-lookup line is the one analogy. | Planner review 24 Nov 2026: hook no longer claims the gum CAUSED barcode adoption (it was only the first scan)."
+}

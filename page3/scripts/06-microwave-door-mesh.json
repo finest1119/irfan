@@ -1,0 +1,186 @@
+{
+  "id": "ed-06-microwave-door-mesh",
+  "topic_id": "C3",
+  "series": "Home",
+  "world": [
+    "W3"
+  ],
+  "title": "Why There's a Metal Mesh in Your Microwave Door",
+  "keyword": "why microwave door has mesh",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You stand there watching your leftovers spin behind a window full of tiny dots. Ever wonder why there's a metal screen in that glass? It's the reason you can watch your food cook at all. Let's go in.",
+      "stop": "kitchen_microwave",
+      "move": "drift",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "WHY THE TINY DOTS?",
+          "cue": "dots"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: inside the box. A part called a magnetron makes microwaves, which are a kind of radio wave you can't see. The metal walls reflect them, so the waves bounce around until your food absorbs them.",
+      "stop": "kitchen_microwave",
+      "move": "portal",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "label",
+          "text": "WAVES BOUNCE OFF METAL",
+          "cue": "bounce"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the food. The waves make its water molecules vibrate, and all that motion becomes heat. And no, it doesn't cook from the inside out. The outer layers heat first, and the warmth works its way in.",
+      "stop": "kitchen_microwave",
+      "move": "orbit",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "WATER MOLECULES VIBRATE",
+          "cue": "vibrate"
+        },
+        {
+          "type": "chips",
+          "text": "NOT INSIDE-OUT",
+          "cue": "inside"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the door. You need to see in, but the waves need to stay in. So a sheet of metal is built into the glass, punched full of tiny holes, each only about as wide as the tip of a pen. And federal safety rules strictly limit how much is allowed to leak.",
+      "stop": "macro_microwave_mesh",
+      "move": "snap",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "label",
+          "text": "METAL SCREEN IN THE GLASS",
+          "cue": "metal"
+        },
+        {
+          "type": "big",
+          "text": "ABOUT 1 MM HOLES",
+          "cue": "holes"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. The microwaves in your oven are nearly five inches long. To a wave that big, those holes are like a soccer net to a beach ball, so the screen acts almost like solid metal. But visible light waves are thousands of times smaller than the holes, so they slip right through. You see in. The microwaves stay in.",
+      "stop": "macro_microwave_mesh",
+      "move": "orbit",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "big",
+          "text": "ABOUT 5 INCHES LONG",
+          "cue": "five"
+        },
+        {
+          "type": "chips",
+          "text": "LIGHT SLIPS THROUGH",
+          "cue": "light"
+        },
+        {
+          "type": "chips",
+          "text": "MICROWAVES STAY IN",
+          "cue": "stay"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "And if that door is ever damaged or won't close right, stop using the oven. Another one decoded. Do you watch your food spin, or walk away? Tell me below, and share this with someone who stands back from the microwave. Next time your leftovers spin, look at the dots.",
+      "stop": "kitchen_microwave",
+      "move": "backout",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "WATCH IT OR WALK AWAY?",
+          "cue": "watch"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 278,
+  "fb_caption": "Decoded: the tiny dots in your microwave door.\nThe waves are nearly 5 inches long, and the holes are pinhole-size. Light gets out. Microwaves don't.\nDo you watch your food spin, or walk away?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#Microwave",
+    "#ScienceFacts",
+    "#DidYouKnow"
+  ],
+  "engagement_comment": "Be honest: do you stand and watch the food spin, or walk away? 👀 (And who was told as a kid not to stand too close?)",
+  "sources": [
+    {
+      "claim": "Microwaves are produced by a magnetron, reflected within the metal interior, and absorbed by food; they make water molecules vibrate, producing heat; ovens do not cook 'from the inside out'",
+      "urls": [
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+      ]
+    },
+    {
+      "claim": "Home ovens operate at about 2,450 MHz, a wavelength of about 12 cm (12.2 cm = 4.8 in)",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://en.wikipedia.org/wiki/Microwave_oven"
+      ]
+    },
+    {
+      "claim": "Door screen holes are about 1 mm, far smaller than the wavelength, so microwaves cannot pass; visible light wavelengths are about 2,000 times smaller than the holes and pass through",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://en.wikipedia.org/wiki/Microwave_oven"
+      ]
+    },
+    {
+      "claim": "Federal standard limits leakage; do not use an oven with a damaged door, hinges, latches or seals",
+      "urls": [
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist: wavelength about 12 cm (4.8 in → 'nearly five inches'); holes about 1 mm. HEDGED: the screen acts 'almost like' solid metal (a small, federally limited amount can leak); hole size said as 'about as wide as the tip of a pen' with '1 MM' on screen (US-units exception: no natural inch value). 'Thousands of times smaller' = the university source's 'about 2000 times'. Mechanism wording follows FDA ('vibrate'), not 'resonance'; the inside-out myth is corrected in the script. DROPPED: 'glass alone would let microwaves through' (only FDA states it among opened sources); the 2.45 GHz number (used in episode 02 instead), any leakage number, and all internal-parts/repair detail beyond naming the magnetron. Added FDA's damaged-door advice. The soccer net is the one analogy."
+}

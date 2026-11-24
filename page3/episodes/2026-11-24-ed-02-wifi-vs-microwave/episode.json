@@ -1,0 +1,579 @@
+{
+  "id": "2026-11-24-ed-02-wifi-vs-microwave",
+  "page": "everyday_decoded",
+  "keyword": "wifi and microwave same band",
+  "slug": "wifi-and-microwave-same-band",
+  "title": "Why Your Wi-Fi Stutters When the Microwave Is On",
+  "fb_caption": "Decoded: why your video freezes when someone starts the microwave.\nYour Wi-Fi and your microwave share the same slice of the airwaves.\nDoes your Wi-Fi stutter when the microwave runs?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#WiFi",
+    "#Microwave",
+    "#TechTips"
+  ],
+  "engagement_comment": "Yes or no: does your Wi-Fi drop when the microwave is running? And is your router anywhere near the kitchen? 👀",
+  "sources": [
+    "Wi-Fi commonly uses the 2.4 GHz band (and a 5 GHz band); microwave ovens emit in the 2.4 GHz band and can interfere with Wi-Fi: https://en.wikipedia.org/wiki/2.4_GHz_radio_use ; https://gizmodo.com/why-does-your-microwave-oven-mess-with-the-wi-fi-connec-1666117933",
+    "Home microwave ovens operate at about 2,450 MHz (2.45 GHz): https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html ; https://en.wikipedia.org/wiki/Microwave_oven",
+    "Microwaves make water molecules in food vibrate, producing heat; metal interior reflects the waves: https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens ; https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+    "Door screen holes are far smaller than the wavelength so microwaves stay in; a federal standard limits leakage (5 mW/cm2 at about 2 inches): https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html ; https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+    "Leakage (not harmful to people, federally limited) can interfere with Wi-Fi/Bluetooth; moving to the 5 GHz band avoids it: https://gizmodo.com/why-does-your-microwave-oven-mess-with-the-wi-fi-connec-1666117933 ; https://en.wikipedia.org/wiki/Microwave_oven ; https://en.wikipedia.org/wiki/2.4_GHz_radio_use"
+  ],
+  "sources_structured": [
+    {
+      "claim": "Wi-Fi commonly uses the 2.4 GHz band (and a 5 GHz band); microwave ovens emit in the 2.4 GHz band and can interfere with Wi-Fi",
+      "urls": [
+        "https://en.wikipedia.org/wiki/2.4_GHz_radio_use",
+        "https://gizmodo.com/why-does-your-microwave-oven-mess-with-the-wi-fi-connec-1666117933"
+      ]
+    },
+    {
+      "claim": "Home microwave ovens operate at about 2,450 MHz (2.45 GHz)",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://en.wikipedia.org/wiki/Microwave_oven"
+      ]
+    },
+    {
+      "claim": "Microwaves make water molecules in food vibrate, producing heat; metal interior reflects the waves",
+      "urls": [
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+      ]
+    },
+    {
+      "claim": "Door screen holes are far smaller than the wavelength so microwaves stay in; a federal standard limits leakage (5 mW/cm2 at about 2 inches)",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens"
+      ]
+    },
+    {
+      "claim": "Leakage (not harmful to people, federally limited) can interfere with Wi-Fi/Bluetooth; moving to the 5 GHz band avoids it",
+      "urls": [
+        "https://gizmodo.com/why-does-your-microwave-oven-mess-with-the-wi-fi-connec-1666117933",
+        "https://en.wikipedia.org/wiki/Microwave_oven",
+        "https://en.wikipedia.org/wiki/2.4_GHz_radio_use"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist (same 2.4 GHz band). HEDGED: 'nearly all' waves stay inside; 'many routers' have 5 GHz. Worded as 'same band', not 'same frequency', and said Wi-Fi also uses another band. DROPPED: 'an old microwave is worse' from the plan (only one opened source says older units have poor shielding); power comparison (oven watts vs router watts) - not in an opened source; any health claim beyond 'federal rules strictly limit leakage' (FDA). No 'resonance' or 'cooks from the inside' wording. The leaf-blower line is the one analogy.",
+  "topic_id": "A4",
+  "series": "Phone & Internet",
+  "word_count": 256,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Your video freezes the second someone starts heating leftovers. That's not bad luck. Your Wi-Fi and your microwave have something weird in common, and it's floating around your kitchen right now.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "drift",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WI-FI VS. MICROWAVE",
+            "cue": "microwave"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "hand_phone",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          },
+          {
+            "move": "snap",
+            "to": "hand_phone__detail",
+            "dur": 0.3,
+            "cue": "your#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: your router. It talks to your phone using invisible radio waves, and one of its main lanes is a band of the airwaves called 2.4 gigahertz.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "living_room_router",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "big",
+            "text": "2.4 GHz",
+            "cue": "24"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "living_room_router",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_router"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_router__detail",
+            "dur": 0.8,
+            "cue": "airwaves",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_router__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the kitchen. A microwave oven uses radio waves too, trapped inside a metal box. They make the water molecules in your food vibrate, and all that motion turns into heat.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "kitchen_microwave",
+          "move": "travel",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WAVES HEAT THE WATER",
+            "anchor": "kitchen_microwave",
+            "cue": "water"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "kitchen_microwave",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave"
+          },
+          {
+            "move": "snap",
+            "to": "kitchen_microwave__detail",
+            "dur": 0.3,
+            "cue": "they",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the door. The metal walls and that dotted screen keep nearly all of those waves inside the box, and federal safety rules strictly limit how much is allowed to leak.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_microwave_mesh",
+          "move": "snap",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "DOOR SCREEN",
+            "anchor": "macro_microwave_mesh",
+            "cue": "screen"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "macro_microwave_mesh",
+            "dur": 0.3,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_microwave_mesh"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__detail",
+            "dur": 1.0,
+            "cue": "the#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_microwave_mesh__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__alt",
+            "dur": 0.8,
+            "cue": "how",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_microwave_mesh__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: back at the router. While that oven is running, your phone and your router struggle to hear each other. That's the stall you see on your screen.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "living_room_router",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "CAN'T HEAR EACH OTHER",
+            "anchor": "living_room_router",
+            "cue": "hear"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4"
+            ],
+            "cues": [
+              "four"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "living_room_router",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_router"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_router__detail",
+            "dur": 1.2,
+            "cue": "thats",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_router__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Your microwave cooks at about 2.45 gigahertz, right inside the same band as that Wi-Fi lane. So the tiny bit that slips out works like a leaf blower starting up next to a quiet conversation. Harmless to you, but very loud to your Wi-Fi.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "kitchen_microwave",
+          "move": "orbit",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "big",
+            "text": "ABOUT 2.45 GHz",
+            "cue": "245"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SAME BAND AS WI-FI"
+            ],
+            "cues": [
+              "band"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "kitchen_microwave",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "kitchen_microwave"
+          },
+          {
+            "move": "snap",
+            "to": "kitchen_microwave__detail",
+            "dur": 0.3,
+            "cue": "so",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "kitchen_microwave__detail"
+          },
+          {
+            "move": "travel",
+            "to": "kitchen_microwave__alt",
+            "dur": 0.8,
+            "cue": "harmless",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "kitchen_microwave__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "The fix? Many routers also have a 5 gigahertz lane the microwave doesn't touch. Or just move the router farther from the kitchen. Another one decoded. Does your Wi-Fi stutter when the microwave runs? Comment yes or no, and share this with whoever always blames the internet company. Next time your video freezes, check who's heating leftovers.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TRY THE 5 GHz LANE",
+              "YES OR NO?"
+            ],
+            "cues": [
+              "5",
+              "yes"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "kitchen_microwave",
+            "dur": 1.2,
+            "cue": "many",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "kitchen_microwave"
+          },
+          {
+            "move": "travel",
+            "to": "kitchen_microwave__detail",
+            "dur": 1.0,
+            "cue": "another",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "kitchen_microwave__detail"
+          },
+          {
+            "move": "travel",
+            "to": "kitchen_microwave__alt",
+            "dur": 0.8,
+            "cue": "comment",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "kitchen_microwave__alt"
+          },
+          {
+            "move": "backout",
+            "to": "hand_phone",
+            "dur": 4.0,
+            "cue": "next",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W3"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "hand_phone",
+      "living_room_router",
+      "kitchen_microwave",
+      "macro_microwave_mesh",
+      "living_room_router",
+      "kitchen_microwave",
+      "hand_phone"
+    ],
+    "moves": [
+      "drift",
+      "travel",
+      "travel",
+      "snap",
+      "travel",
+      "orbit",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "amber",
+      "amber",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "travel": 1.5,
+      "snap": 0.3,
+      "orbit": 3.0,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · PHONE & INTERNET #4",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      "STOP 5",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

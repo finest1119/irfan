@@ -1,0 +1,570 @@
+{
+  "id": "2026-11-24-ed-09-gps-relativity",
+  "page": "everyday_decoded",
+  "keyword": "how gps works relativity",
+  "slug": "how-gps-works-relativity",
+  "title": "Your Phone's GPS Would Be Off by Miles Without Einstein",
+  "fb_caption": "Decoded: the blue dot on your map.\nGPS satellite clocks run about 38 millionths of a second fast every day. Without Einstein's math, your position would drift by miles.\nDid you know your phone only listens?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#GPS",
+    "#Einstein",
+    "#ScienceFacts"
+  ],
+  "engagement_comment": "'Knew it' or 'no way': your phone never sends anything UP to GPS satellites. It only listens. 🛰️",
+  "sources": [
+    "GPS satellites fly at about 20,200 km (12,550 miles); each circles the Earth twice a day; 24-slot constellation (31 operational as of mid-2023) keeps at least four in view: https://archive.gps.gov/systems/gps/space/ ; https://en.wikipedia.org/wiki/Global_Positioning_System",
+    "Satellites constantly broadcast signals; the receiver in your phone listens; a fix needs four or more satellites; GPS does not require the user to transmit any data: https://spaceplace.nasa.gov/gps/en/ ; https://en.wikipedia.org/wiki/Global_Positioning_System ; https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+    "Each satellite carries an atomic clock; signal travel time gives distance: https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html ; https://en.wikipedia.org/wiki/Global_Positioning_System",
+    "Relativity: motion slows the satellite clocks about 7 microseconds/day, weaker gravity speeds them up about 45, net about +38 microseconds/day: https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html ; https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System",
+    "Uncorrected, position errors would accumulate at about 10 km (6 miles) per day (one source: roughly 11.4 km/day); the clock rate is offset to compensate: https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html ; https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System"
+  ],
+  "sources_structured": [
+    {
+      "claim": "GPS satellites fly at about 20,200 km (12,550 miles); each circles the Earth twice a day; 24-slot constellation (31 operational as of mid-2023) keeps at least four in view",
+      "urls": [
+        "https://archive.gps.gov/systems/gps/space/",
+        "https://en.wikipedia.org/wiki/Global_Positioning_System"
+      ]
+    },
+    {
+      "claim": "Satellites constantly broadcast signals; the receiver in your phone listens; a fix needs four or more satellites; GPS does not require the user to transmit any data",
+      "urls": [
+        "https://spaceplace.nasa.gov/gps/en/",
+        "https://en.wikipedia.org/wiki/Global_Positioning_System",
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html"
+      ]
+    },
+    {
+      "claim": "Each satellite carries an atomic clock; signal travel time gives distance",
+      "urls": [
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+        "https://en.wikipedia.org/wiki/Global_Positioning_System"
+      ]
+    },
+    {
+      "claim": "Relativity: motion slows the satellite clocks about 7 microseconds/day, weaker gravity speeds them up about 45, net about +38 microseconds/day",
+      "urls": [
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+        "https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System"
+      ]
+    },
+    {
+      "claim": "Uncorrected, position errors would accumulate at about 10 km (6 miles) per day (one source: roughly 11.4 km/day); the clock rate is offset to compensate",
+      "urls": [
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+        "https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System"
+      ]
+    }
+  ],
+  "fact_notes": "APPLIED section 6: altitude 12,550 miles; signals come DOWN and the phone only receives (stated as its own stop); drift about 6 miles (10 km) a day - the two opened sources say 'about 10 kilometers each day' and 'roughly 11.4 km/day', so 'about six miles' is the low, safe end. '38 millionths of a second' = 38 microseconds, said in plain words. HEDGED: 'more than two dozen' satellites (24 slots; 31 operational in the 2023 government count). 'Knows which street you're on' replaces any accuracy-in-feet claim. Simplified: 'the fix is built into the system' (satellite clock rates are offset before launch; receivers apply small extra corrections). DROPPED: accuracy numbers, assisted-GPS/cell-tower help, the pre-launch frequency figure. Einstein is a historical figure, not a brand. The official gps.gov page moved; the citation is its government archive copy (opened). Lightning-and-thunder is the one analogy.",
+  "topic_id": "D2",
+  "series": "Transport",
+  "word_count": 273,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "The blue dot on your map knows which street you're on. Without Albert Einstein, it would be off by miles before the day was over. To see why, we have to go up. Way up.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "drift",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "YOUR BLUE DOT NEEDS EINSTEIN",
+            "cue": "einstein"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "hand_phone",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          },
+          {
+            "move": "snap",
+            "to": "hand_phone__detail",
+            "dur": 0.3,
+            "cue": "without",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone__detail"
+          },
+          {
+            "move": "travel",
+            "to": "hand_phone__alt",
+            "dur": 0.8,
+            "cue": "to",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: about 12,550 miles above you. More than two dozen GPS satellites are up here, and each one circles the entire Earth twice a day.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "sky_satellites",
+          "move": "crane",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "big",
+            "text": "ABOUT 12,550 MILES UP",
+            "cue": "12550"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: one satellite, up close. It carries an atomic clock, and it broadcasts the same simple message over and over: here's who I am, and here's exactly what time it is.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "sky_satellites",
+          "move": "orbit",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "ATOMIC CLOCK ON BOARD",
+            "anchor": "sky_satellites",
+            "cue": "clock"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "sky_satellites"
+          },
+          {
+            "move": "snap",
+            "to": "sky_satellites__detail",
+            "dur": 0.3,
+            "cue": "one",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "sky_satellites__detail"
+          },
+          {
+            "move": "travel",
+            "to": "sky_satellites__alt",
+            "dur": 1.0,
+            "cue": "i#2",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "sky_satellites__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: follow one of those signals back down to your hand. Notice the direction. The signals only come down. Your phone never sends anything up to those satellites. It just listens.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3",
+              "SIGNALS COME DOWN",
+              "YOUR PHONE JUST LISTENS"
+            ],
+            "cues": [
+              "three",
+              "down",
+              "listens"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "hand_phone",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          },
+          {
+            "move": "snap",
+            "to": "hand_phone__detail",
+            "dur": 0.3,
+            "cue": "your#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: a chip inside. It measures how long each signal took to arrive. Like counting the seconds between lightning and thunder, time becomes distance. With at least four satellites, it can work out where you are.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_phone_board",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "big",
+            "text": "AT LEAST 4 SATELLITES",
+            "cue": "satellites"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4",
+              "TIME = DISTANCE"
+            ],
+            "cues": [
+              "four",
+              "time"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "macro_phone_board",
+            "dur": 0.3,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_phone_board"
+          },
+          {
+            "move": "travel",
+            "to": "macro_phone_board__detail",
+            "dur": 1.2,
+            "cue": "like",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_phone_board__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_phone_board__alt",
+            "dur": 1.0,
+            "cue": "with",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_phone_board__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Those clocks don't tick like clocks on the ground. The satellites move fast, which slows them a little. But gravity is weaker up there, which speeds them up more. Net result: they gain about 38 millionths of a second a day. Left uncorrected, your position would drift about six miles every day. So the fix is built in.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "sky_satellites",
+          "move": "crane",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "big",
+            "text": "ABOUT 38 MICROSECONDS A DAY",
+            "cue": "38"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ABOUT 6 MILES OF DRIFT A DAY"
+            ],
+            "cues": [
+              "six"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "crane",
+            "to": "sky_satellites",
+            "dur": 2.0,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "sky_satellites"
+          },
+          {
+            "move": "travel",
+            "to": "sky_satellites__detail",
+            "dur": 0.8,
+            "cue": "but",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "sky_satellites__detail"
+          },
+          {
+            "move": "travel",
+            "to": "sky_satellites__alt",
+            "dur": 1.2,
+            "cue": "net",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "sky_satellites__alt"
+          },
+          {
+            "move": "travel",
+            "to": "sky_satellites",
+            "dur": 1.0,
+            "cue": "left",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "sky_satellites"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So every time that blue dot lands on the right street, Einstein gets proven right again. Another one decoded. Did you know your phone only listens? Comment knew it, or no way, and share this with whoever gets lost with the map open. Now look at that blue dot again.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "KNEW IT OR NO WAY?"
+            ],
+            "cues": [
+              "knew"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "sky_satellites__detail",
+            "dur": 0.3,
+            "cue": "blue",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "sky_satellites__detail"
+          },
+          {
+            "move": "travel",
+            "to": "sky_satellites__alt",
+            "dur": 1.2,
+            "cue": "did",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "sky_satellites__alt"
+          },
+          {
+            "move": "backout",
+            "to": "hand_phone",
+            "dur": 4.0,
+            "cue": "map",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W2"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "hand_phone",
+      "sky_satellites",
+      "sky_satellites",
+      "hand_phone",
+      "macro_phone_board",
+      "sky_satellites",
+      "hand_phone"
+    ],
+    "moves": [
+      "drift",
+      "crane",
+      "orbit",
+      "travel",
+      "snap",
+      "crane",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "crane": 2.0,
+      "orbit": 3.0,
+      "travel": 1.5,
+      "snap": 0.3,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · TRANSPORT #2",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      null,
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

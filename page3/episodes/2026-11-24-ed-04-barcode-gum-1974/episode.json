@@ -1,0 +1,507 @@
+{
+  "id": "2026-11-24-ed-04-barcode-gum-1974",
+  "page": "everyday_decoded",
+  "keyword": "how barcodes work",
+  "slug": "how-barcodes-work",
+  "title": "The First Thing Ever Scanned at a Checkout Was a Pack of Gum",
+  "fb_caption": "Decoded: the beep at every checkout.\nThe bars are just a 12-digit number, and the very first one scanned at a real checkout was on a pack of gum in Ohio in 1974.\nWhat's the first thing you remember buying with your own money?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#Barcode",
+    "#HistoryFacts",
+    "#DidYouKnow"
+  ],
+  "engagement_comment": "What's the first thing you ever bought with your own money? Ours was candy. Obviously. 🍬",
+  "sources": [
+    "First UPC-marked grocery item scanned at a checkout: a pack of chewing gum, Troy, Ohio, June 26, 1974, at 8:01 a.m.: https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use ; https://en.wikipedia.org/wiki/Universal_Product_Code ; https://www.ideastream.org/2024-06-25/50-years-ago-the-first-retail-barcode-was-scanned-at-an-ohio-grocery-store",
+    "A UPC is a 12-digit number shown as bars and spaces; a laser/light beam sweeps across the code to read it: https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use ; https://en.wikipedia.org/wiki/Universal_Product_Code ; https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf",
+    "The 12th digit is a check digit that lets the scanner detect a misread: https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf ; https://en.wikipedia.org/wiki/Universal_Product_Code",
+    "Standard UPC barcodes do not contain the price; the register looks the number up in the store's database, which is why sale prices need no re-labelling: https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf ; https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use"
+  ],
+  "sources_structured": [
+    {
+      "claim": "First UPC-marked grocery item scanned at a checkout: a pack of chewing gum, Troy, Ohio, June 26, 1974, at 8:01 a.m.",
+      "urls": [
+        "https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use",
+        "https://en.wikipedia.org/wiki/Universal_Product_Code",
+        "https://www.ideastream.org/2024-06-25/50-years-ago-the-first-retail-barcode-was-scanned-at-an-ohio-grocery-store"
+      ]
+    },
+    {
+      "claim": "A UPC is a 12-digit number shown as bars and spaces; a laser/light beam sweeps across the code to read it",
+      "urls": [
+        "https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use",
+        "https://en.wikipedia.org/wiki/Universal_Product_Code",
+        "https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf"
+      ]
+    },
+    {
+      "claim": "The 12th digit is a check digit that lets the scanner detect a misread",
+      "urls": [
+        "https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf",
+        "https://en.wikipedia.org/wiki/Universal_Product_Code"
+      ]
+    },
+    {
+      "claim": "Standard UPC barcodes do not contain the price; the register looks the number up in the store's database, which is why sale prices need no re-labelling",
+      "urls": [
+        "https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf",
+        "https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist with the date, town and time (8:01 a.m. → 'just after eight'). HEDGED: 'on a typical packaged item' - store-printed labels for weighed items (meat, produce) can carry a price or weight inside the code, so 'the price is never in a barcode' would be wrong. 'Nearly everything you buy' is soft. DROPPED: the gum brand, the store name and the people involved (no brand names); 'why gum was chosen' and the gum's price (accounts differ / not in two opened sources); 'laser or camera' detail and 'dark bars absorb light' (not in opened sources); number of scans per day. One opened source is a 2008 state government fact sheet - its fee information is outdated and is not used. The contacts-lookup line is the one analogy. | Planner review 24 Nov 2026: hook no longer claims the gum CAUSED barcode adoption (it was only the first scan).",
+  "topic_id": "B5",
+  "series": "Money & Payments",
+  "word_count": 262,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Beep. Beep. Beep. You've heard that sound thousands of times at the checkout. But the very first beep at a real checkout came from a pack of gum. Follow the beep.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "strip_mall_checkout",
+          "move": "drift",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ONE PACK OF GUM",
+            "cue": "gum"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "strip_mall_checkout",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "strip_mall_checkout"
+          },
+          {
+            "move": "snap",
+            "to": "strip_mall_checkout__detail",
+            "dur": 0.3,
+            "cue": "but",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "strip_mall_checkout__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: the barcode itself. Those black bars and white gaps aren't a picture. They're just a number, twelve digits long, written in stripes a machine can read.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_barcode",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "big",
+            "text": "12 DIGITS",
+            "cue": "twelve"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "macro_barcode",
+            "dur": 0.3,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode"
+          },
+          {
+            "move": "travel",
+            "to": "macro_barcode__detail",
+            "dur": 0.8,
+            "cue": "theyre",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the scanner. It sweeps a beam of light across the bars and reads the pattern back as those twelve digits. The last digit is a built-in check, so a bad read gets caught and you scan again.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_scanner",
+          "move": "portal",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "SCANNER",
+            "anchor": "macro_scanner",
+            "cue": "scanner"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2",
+              "LAST DIGIT = ERROR CHECK"
+            ],
+            "cues": [
+              "two",
+              "check"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "portal",
+            "to": "macro_scanner",
+            "dur": 0.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_scanner"
+          },
+          {
+            "move": "snap",
+            "to": "macro_scanner__detail",
+            "dur": 0.3,
+            "cue": "digits",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_scanner__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the register. Here's what surprises people. On a typical packaged item, the price isn't in the barcode at all. The register looks that number up in the store's computer, like finding a name in your contacts, and the computer sends back what it is and what it costs. That's how a sale price can change overnight without anyone touching the package.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_terminal",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "STORE COMPUTER LOOKUP",
+            "anchor": "macro_terminal",
+            "cue": "computer"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3",
+              "NO PRICE IN THE BARS"
+            ],
+            "cues": [
+              "three",
+              "price"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "macro_terminal",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_terminal"
+          },
+          {
+            "move": "travel",
+            "to": "macro_terminal__detail",
+            "dur": 1.0,
+            "cue": "the#3",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_terminal__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_terminal__alt",
+            "dur": 0.8,
+            "cue": "what#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_terminal__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. The first product ever scanned at a real checkout was a pack of chewing gum. It happened in Troy, Ohio, on June 26, 1974, just after eight in the morning. One beep, one pack of gum, and that same twelve-digit idea is now on nearly everything you buy.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_barcode",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "big",
+            "text": "JUNE 26, 1974",
+            "cue": "june"
+          },
+          {
+            "type": "label",
+            "text": "TROY, OHIO",
+            "anchor": "macro_barcode",
+            "cue": "troy"
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "macro_barcode",
+            "dur": 0.3,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode"
+          },
+          {
+            "move": "travel",
+            "to": "macro_barcode__detail",
+            "dur": 1.2,
+            "cue": "it",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_barcode__alt",
+            "dur": 1.0,
+            "cue": "one",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So every beep is a tiny lookup: stripes, number, price. Another one decoded. What's the first thing you remember buying with your own money? Tell me in the comments, and share this with someone who loves random history. Next time you're at the checkout, listen for it. Beep. Beep. Beep.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "strip_mall_checkout",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "YOUR FIRST PURCHASE?"
+            ],
+            "cues": [
+              "first"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "macro_barcode",
+            "dur": 0.8,
+            "cue": "a",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode"
+          },
+          {
+            "move": "snap",
+            "to": "macro_barcode__detail",
+            "dur": 0.3,
+            "cue": "whats",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_barcode__alt",
+            "dur": 1.0,
+            "cue": "tell",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_barcode__alt"
+          },
+          {
+            "move": "backout",
+            "to": "strip_mall_checkout",
+            "dur": 4.0,
+            "cue": "checkout",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "strip_mall_checkout"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W2"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "strip_mall_checkout",
+      "macro_barcode",
+      "macro_scanner",
+      "macro_terminal",
+      "macro_barcode",
+      "strip_mall_checkout"
+    ],
+    "moves": [
+      "drift",
+      "snap",
+      "portal",
+      "travel",
+      "snap",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "snap": 0.3,
+      "portal": 0.5,
+      "travel": 1.5,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · MONEY & PAYMENTS #5",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

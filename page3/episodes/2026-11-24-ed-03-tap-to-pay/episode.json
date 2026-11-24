@@ -1,0 +1,514 @@
+{
+  "id": "2026-11-24-ed-03-tap-to-pay",
+  "page": "everyday_decoded",
+  "keyword": "how tap to pay works",
+  "slug": "how-tap-to-pay-works",
+  "title": "Where Your Payment Goes When You Tap Your Card",
+  "fb_caption": "Decoded: what really happens when you tap your card.\nA few seconds, four stops, and a card with no battery.\nTeam tap or team chip?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#TapToPay",
+    "#MoneyFacts"
+  ],
+  "engagement_comment": "Team TAP or team CHIP-in-the-slot? Vote below 👇 (bonus: did you know your card has no battery?)",
+  "sources": [
+    "A one-time-use security code is generated for every EMV contactless/chip transaction to safeguard against fraud: https://www.emvco.com/wp-content/uploads/2023/06/EMVCo_QRG_EMV-CONTACTLESS_FINAL.pdf ; https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona",
+    "Contactless cards have no battery; a built-in coil/antenna is powered by the reader's field (inductive coupling): https://en.wikipedia.org/wiki/Contactless_smart_card ; https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona",
+    "Very short range: chip is powered wirelessly by the terminal at up to about 4 cm (card maker); the general card standard allows up to about 10 cm / 4 in (encyclopedia) - so within a few inches: https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona ; https://en.wikipedia.org/wiki/Contactless_smart_card",
+    "Authorization path: point of sale → processor/acquirer → card network → issuing bank, which checks the card/account and returns approve or decline; usually just a few seconds: https://stripe.com/resources/more/card-authorization-explained ; https://www.nmi.com/blog/credit-card-flow-the-journey-data-takes-from-swipe-to-payment"
+  ],
+  "sources_structured": [
+    {
+      "claim": "A one-time-use security code is generated for every EMV contactless/chip transaction to safeguard against fraud",
+      "urls": [
+        "https://www.emvco.com/wp-content/uploads/2023/06/EMVCo_QRG_EMV-CONTACTLESS_FINAL.pdf",
+        "https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona"
+      ]
+    },
+    {
+      "claim": "Contactless cards have no battery; a built-in coil/antenna is powered by the reader's field (inductive coupling)",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Contactless_smart_card",
+        "https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona"
+      ]
+    },
+    {
+      "claim": "Very short range: chip is powered wirelessly by the terminal at up to about 4 cm (card maker); the general card standard allows up to about 10 cm / 4 in (encyclopedia) - so within a few inches",
+      "urls": [
+        "https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona",
+        "https://en.wikipedia.org/wiki/Contactless_smart_card"
+      ]
+    },
+    {
+      "claim": "Authorization path: point of sale → processor/acquirer → card network → issuing bank, which checks the card/account and returns approve or decline; usually just a few seconds",
+      "urls": [
+        "https://stripe.com/resources/more/card-authorization-explained",
+        "https://www.nmi.com/blog/credit-card-flow-the-journey-data-takes-from-swipe-to-payment"
+      ]
+    }
+  ],
+  "fact_notes": "APPLIED section 6: 'two seconds' → 'a few seconds'. HEDGED/CHANGED: the plan's 'about 1.5 inches (4 cm)' has only ONE opened source (a card maker's page); a second opened source gives the general standard's limit as about 10 cm (4 in). So the script says 'within a few inches' and shows no number on screen. 'A copy of it is no good for another [purchase]' is the plain-word version of the standards body's 'one-time code to safeguard against fraud'. DROPPED: 'no PIN' (some taps do ask for one), any transaction-time number in milliseconds, anything about reading at a distance or how fraud is attempted, and phone-wallet features (cards only). The standards body's own range specification could not be opened (a chip maker's note that quotes 4 cm timed out twice). No card network, bank or store named. The relay race is the one analogy.",
+  "topic_id": "B1",
+  "series": "Money & Payments",
+  "word_count": 269,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You tap your card at the register. A few seconds later: approved. No swipe, barely a pause. But in that little gap, your payment went on a trip. Here's where it went.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "strip_mall_checkout",
+          "move": "orbit",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHERE DID YOUR TAP GO?",
+            "cue": "tap"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "strip_mall_checkout",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "strip_mall_checkout"
+          },
+          {
+            "move": "snap",
+            "to": "strip_mall_checkout__detail",
+            "dur": 0.3,
+            "cue": "but",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "strip_mall_checkout__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one is inside the card. Hidden in the plastic is a thin wire coil, an antenna you never see.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_card_coil",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "HIDDEN ANTENNA COIL",
+            "anchor": "macro_card_coil",
+            "cue": "coil"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "It feeds stop two: the chip, a tiny computer. For this purchase it creates a one-time security code. It's made for this single payment, so a copy of it is no good for another.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_card_chip",
+          "move": "portal",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "ONE-TIME CODE",
+            "anchor": "macro_card_chip",
+            "cue": "code"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "portal",
+            "to": "macro_card_chip",
+            "dur": 0.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_chip"
+          },
+          {
+            "move": "travel",
+            "to": "macro_card_chip__detail",
+            "dur": 0.8,
+            "cue": "its",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_chip__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the terminal. It bundles that code with the amount and sends the request out of the store.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_terminal",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "PAYMENT TERMINAL",
+            "anchor": "macro_terminal",
+            "cue": "terminal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: the handoff. Like a baton in a relay race, the request passes from the store's payment processor, to the card network, to your bank's computers. They check the code and your account, and send one word back down the line: approved. The whole relay usually takes just a few seconds.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "data_center",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4",
+              "PROCESSOR, NETWORK, BANK",
+              "USUALLY A FEW SECONDS"
+            ],
+            "cues": [
+              "four",
+              "processor",
+              "seconds"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "data_center",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "data_center"
+          },
+          {
+            "move": "snap",
+            "to": "data_center__detail",
+            "dur": 0.3,
+            "cue": "your",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "data_center__detail"
+          },
+          {
+            "move": "travel",
+            "to": "data_center__alt",
+            "dur": 1.0,
+            "cue": "the#7",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "data_center__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Your card has no battery. None. The terminal gives off a small energy field, and when the card gets close, that coil picks up just enough power to wake the chip. It only works at very close range, within a few inches, which is why you have to bring the card right up to the terminal.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_card_coil",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NO BATTERY",
+              "POWERED BY THE TERMINAL",
+              "WORKS ONLY UP CLOSE"
+            ],
+            "cues": [
+              "battery",
+              "power",
+              "close"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "macro_card_coil",
+            "dur": 0.3,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_coil"
+          },
+          {
+            "move": "snap",
+            "to": "macro_card_coil__detail",
+            "dur": 0.3,
+            "cue": "the#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_coil__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_card_coil__alt",
+            "dur": 1.2,
+            "cue": "wake",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_coil__alt"
+          },
+          {
+            "move": "travel",
+            "to": "macro_card_coil",
+            "dur": 1.0,
+            "cue": "the#4",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_coil"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So that beep is a tiny computer waking up, doing its math, and going back to sleep. And all you did was tap. Another one decoded. Team tap, or team chip in the slot? Comment below, and share this with someone who still swipes. Next time you tap your card, count the seconds.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "strip_mall_checkout",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TEAM TAP OR TEAM CHIP?"
+            ],
+            "cues": [
+              "team"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "macro_card_coil__detail",
+            "dur": 0.8,
+            "cue": "to",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_coil__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_card_coil__alt",
+            "dur": 1.2,
+            "cue": "comment",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_card_coil__alt"
+          },
+          {
+            "move": "backout",
+            "to": "strip_mall_checkout",
+            "dur": 4.0,
+            "cue": "next",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "strip_mall_checkout"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W2"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "strip_mall_checkout",
+      "macro_card_coil",
+      "macro_card_chip",
+      "macro_terminal",
+      "data_center",
+      "macro_card_coil",
+      "strip_mall_checkout"
+    ],
+    "moves": [
+      "orbit",
+      "snap",
+      "portal",
+      "travel",
+      "travel",
+      "snap",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "orbit": 3.0,
+      "snap": 0.3,
+      "portal": 0.5,
+      "travel": 1.5,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · MONEY & PAYMENTS #1",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      "STOP 5",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

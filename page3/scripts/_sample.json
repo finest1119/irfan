@@ -1,0 +1,105 @@
+{
+  "id": "c5-water-tower-sample",
+  "topic_id": "C5",
+  "series": "C",
+  "world": ["W1", "W3"],
+  "title": "Why Your Town's Water Tower Is a Giant Battery for Water Pressure",
+  "keyword": "water tower sample",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You turn on the kitchen faucet, and water rushes out. No pump in your house is pushing it. So what is? The answer is standing on the edge of town, and it is basically a giant battery for water pressure.",
+      "stop": "faucet_kitchen",
+      "move": "drift",
+      "spark": "ice",
+      "overlays": [
+        {"type": "card", "text": "WHAT PUSHES YOUR TAP WATER?", "cue": "faucet"}
+      ]
+    },
+    {
+      "id": "wall",
+      "text": "Follow the water backward. Behind the wall, a small pipe runs down under the floor and out toward the street, completely full and under pressure, all day and all night.",
+      "stop": "wall_pipes",
+      "move": "section",
+      "spark": "ice",
+      "overlays": [
+        {"type": "label", "text": "SUPPLY PIPE", "cue": "pipe"}
+      ]
+    },
+    {
+      "id": "main",
+      "text": "Under the street it joins the water main, a much bigger pipe shared by every house on the block. Think of it like a river that never stops, just waiting for someone to open a tap.",
+      "stop": "water_main_slice",
+      "move": "section",
+      "spark": "ice",
+      "overlays": [
+        {"type": "label", "text": "WATER MAIN", "cue": "main"},
+        {"type": "chips", "text": "SHARED BY THE WHOLE BLOCK", "cue": "shared"}
+      ]
+    },
+    {
+      "id": "plant",
+      "text": "The water started at a treatment plant. It is filtered, cleaned and tested, then pumped out into the town's pipes and up into the tower.",
+      "stop": "treatment_plant",
+      "move": "travel",
+      "spark": "ice",
+      "overlays": [
+        {"type": "chips", "text": "FILTERED", "cue": "filtered"},
+        {"type": "chips", "text": "CLEANED AND TESTED", "cue": "cleaned"}
+      ]
+    },
+    {
+      "id": "tower",
+      "text": "Pumps fill the tower when demand is low, often at night. Then the tank just sits up there, high above every rooftop, holding thousands of gallons.",
+      "stop": "water_tower",
+      "move": "crane",
+      "spark": "ice",
+      "overlays": [
+        {"type": "label", "text": "WATER TOWER", "cue": "tower"}
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "And here is the twist. The tower does not push the water at all. Gravity does. Every two point three one feet of height adds about one pound per square inch of pressure at your tap.",
+      "stop": "water_tower",
+      "move": "orbit",
+      "spark": "ice",
+      "overlays": [
+        {"type": "twist", "text": "TWIST", "cue": "twist"},
+        {"type": "big", "text": "2.31 FT = ABOUT 1 PSI", "cue": "every"}
+      ]
+    },
+    {
+      "id": "why",
+      "text": "That is why towers stand so tall, and why the pressure stays steady even if the power goes out for a while. The height is the stored energy.",
+      "stop": "suburb_wide",
+      "move": "travel",
+      "spark": "ice",
+      "overlays": [
+        {"type": "chips", "text": "HEIGHT = STORED PRESSURE", "cue": "height"}
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "Did you know your water was riding on gravity? Tell us in the comments, and send this to someone who thinks the tower is just a big sign. Because all you did was turn the faucet.",
+      "stop": "faucet_kitchen",
+      "move": "backout",
+      "spark": "ice",
+      "overlays": [
+        {"type": "card", "text": "DID YOU KNOW THIS?", "cue": "did"},
+        {"type": "chips", "text": "TELL US IN THE COMMENTS", "cue": "tell"},
+        {"type": "chips", "text": "SEND THIS TO A FRIEND", "cue": "send"}
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 257,
+  "fb_caption": "Decoded: what really pushes the water out of your faucet. It is not a pump in your house. It is gravity, stored in your town's water tower. Did you know? What should we decode next?",
+  "hashtags": ["#WaterTower", "#TapWater", "#Gravity"],
+  "engagement_comment": "Quick poll: before this video, what did you think pushed your tap water? 1 = a pump, 2 = gravity, 3 = never thought about it!",
+  "sources": [
+    {"claim": "SAMPLE ONLY: about 2.31 feet of water height = about 1 psi", "urls": ["https://www.usgs.gov/", "https://www.epa.gov/"]}
+  ],
+  "fact_notes": "SAMPLE SCRIPT for testing page3/tools/make_episode.py only. Not fact-checked, not for posting."
+}

@@ -1,0 +1,204 @@
+{
+  "id": "ed-02-wifi-vs-microwave",
+  "topic_id": "A4",
+  "series": "Phone & Internet",
+  "world": [
+    "W1",
+    "W3"
+  ],
+  "title": "Why Your Wi-Fi Stutters When the Microwave Is On",
+  "keyword": "wifi and microwave same band",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Your video freezes the second someone starts heating leftovers. That's not bad luck. Your Wi-Fi and your microwave have something weird in common, and it's floating around your kitchen right now.",
+      "stop": "hand_phone",
+      "move": "drift",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "WI-FI VS. MICROWAVE",
+          "cue": "microwave"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: your router. It talks to your phone using invisible radio waves, and one of its main lanes is a band of the airwaves called 2.4 gigahertz.",
+      "stop": "living_room_router",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "big",
+          "text": "2.4 GHz",
+          "cue": "2.4"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the kitchen. A microwave oven uses radio waves too, trapped inside a metal box. They make the water molecules in your food vibrate, and all that motion turns into heat.",
+      "stop": "kitchen_microwave",
+      "move": "travel",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "WAVES HEAT THE WATER",
+          "cue": "water"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the door. The metal walls and that dotted screen keep nearly all of those waves inside the box, and federal safety rules strictly limit how much is allowed to leak.",
+      "stop": "macro_microwave_mesh",
+      "move": "snap",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "label",
+          "text": "DOOR SCREEN",
+          "cue": "screen"
+        }
+      ]
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: back at the router. While that oven is running, your phone and your router struggle to hear each other. That's the stall you see on your screen.",
+      "stop": "living_room_router",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 4",
+          "cue": "four"
+        },
+        {
+          "type": "label",
+          "text": "CAN'T HEAR EACH OTHER",
+          "cue": "hear"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Your microwave cooks at about 2.45 gigahertz, right inside the same band as that Wi-Fi lane. So the tiny bit that slips out works like a leaf blower starting up next to a quiet conversation. Harmless to you, but very loud to your Wi-Fi.",
+      "stop": "kitchen_microwave",
+      "move": "orbit",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "big",
+          "text": "ABOUT 2.45 GHz",
+          "cue": "2.45"
+        },
+        {
+          "type": "chips",
+          "text": "SAME BAND AS WI-FI",
+          "cue": "band"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "The fix? Many routers also have a 5 gigahertz lane the microwave doesn't touch. Or just move the router farther from the kitchen. Another one decoded. Does your Wi-Fi stutter when the microwave runs? Comment yes or no, and share this with whoever always blames the internet company. Next time your video freezes, check who's heating leftovers.",
+      "stop": "hand_phone",
+      "move": "backout",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "TRY THE 5 GHz LANE",
+          "cue": "5"
+        },
+        {
+          "type": "chips",
+          "text": "YES OR NO?",
+          "cue": "yes"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 256,
+  "fb_caption": "Decoded: why your video freezes when someone starts the microwave.\nYour Wi-Fi and your microwave share the same slice of the airwaves.\nDoes your Wi-Fi stutter when the microwave runs?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#WiFi",
+    "#Microwave",
+    "#TechTips"
+  ],
+  "engagement_comment": "Yes or no: does your Wi-Fi drop when the microwave is running? And is your router anywhere near the kitchen? 👀",
+  "sources": [
+    {
+      "claim": "Wi-Fi commonly uses the 2.4 GHz band (and a 5 GHz band); microwave ovens emit in the 2.4 GHz band and can interfere with Wi-Fi",
+      "urls": [
+        "https://en.wikipedia.org/wiki/2.4_GHz_radio_use",
+        "https://gizmodo.com/why-does-your-microwave-oven-mess-with-the-wi-fi-connec-1666117933"
+      ]
+    },
+    {
+      "claim": "Home microwave ovens operate at about 2,450 MHz (2.45 GHz)",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://en.wikipedia.org/wiki/Microwave_oven"
+      ]
+    },
+    {
+      "claim": "Microwaves make water molecules in food vibrate, producing heat; metal interior reflects the waves",
+      "urls": [
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+      ]
+    },
+    {
+      "claim": "Door screen holes are far smaller than the wavelength so microwaves stay in; a federal standard limits leakage (5 mW/cm2 at about 2 inches)",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens"
+      ]
+    },
+    {
+      "claim": "Leakage (not harmful to people, federally limited) can interfere with Wi-Fi/Bluetooth; moving to the 5 GHz band avoids it",
+      "urls": [
+        "https://gizmodo.com/why-does-your-microwave-oven-mess-with-the-wi-fi-connec-1666117933",
+        "https://en.wikipedia.org/wiki/Microwave_oven",
+        "https://en.wikipedia.org/wiki/2.4_GHz_radio_use"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist (same 2.4 GHz band). HEDGED: 'nearly all' waves stay inside; 'many routers' have 5 GHz. Worded as 'same band', not 'same frequency', and said Wi-Fi also uses another band. DROPPED: 'an old microwave is worse' from the plan (only one opened source says older units have poor shielding); power comparison (oven watts vs router watts) - not in an opened source; any health claim beyond 'federal rules strictly limit leakage' (FDA). No 'resonance' or 'cooks from the inside' wording. The leaf-blower line is the one analogy."
+}

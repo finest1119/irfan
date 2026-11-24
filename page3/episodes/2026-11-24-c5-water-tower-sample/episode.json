@@ -1,0 +1,485 @@
+{
+  "id": "2026-11-24-c5-water-tower-sample",
+  "page": "everyday_decoded",
+  "keyword": "water tower sample",
+  "slug": "water-tower-sample",
+  "title": "Why Your Town's Water Tower Is a Giant Battery for Water Pressure",
+  "fb_caption": "Decoded: what really pushes the water out of your faucet. It is not a pump in your house. It is gravity, stored in your town's water tower. Did you know? What should we decode next?",
+  "hashtags": [
+    "#WaterTower",
+    "#TapWater",
+    "#Gravity",
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained"
+  ],
+  "engagement_comment": "Quick poll: before this video, what did you think pushed your tap water? 1 = a pump, 2 = gravity, 3 = never thought about it!",
+  "sources": [
+    "SAMPLE ONLY: about 2.31 feet of water height = about 1 psi: https://www.usgs.gov/ ; https://www.epa.gov/"
+  ],
+  "sources_structured": [
+    {
+      "claim": "SAMPLE ONLY: about 2.31 feet of water height = about 1 psi",
+      "urls": [
+        "https://www.usgs.gov/",
+        "https://www.epa.gov/"
+      ]
+    }
+  ],
+  "fact_notes": "SAMPLE SCRIPT for testing page3/tools/make_episode.py only. Not fact-checked, not for posting.",
+  "topic_id": "C5",
+  "series": "C",
+  "word_count": 257,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You turn on the kitchen faucet, and water rushes out. No pump in your house is pushing it. So what is? The answer is standing on the edge of town, and it is basically a giant battery for water pressure.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "faucet_kitchen",
+          "move": "drift",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHAT PUSHES YOUR TAP WATER?",
+            "cue": "faucet"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "faucet_kitchen",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen"
+          },
+          {
+            "move": "snap",
+            "to": "faucet_kitchen__detail",
+            "dur": 0.3,
+            "cue": "so",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wall",
+      "text": "Follow the water backward. Behind the wall, a small pipe runs down under the floor and out toward the street, completely full and under pressure, all day and all night.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "wall_pipes",
+          "move": "section",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "SUPPLY PIPE",
+            "anchor": "wall_pipes",
+            "cue": "pipe"
+          }
+        ],
+        "camera": [
+          {
+            "move": "section",
+            "to": "wall_pipes",
+            "dur": 1.8,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "section": "wall_pipes",
+            "stop": "wall_pipes"
+          },
+          {
+            "move": "travel",
+            "to": "wall_pipes__detail",
+            "dur": 0.8,
+            "cue": "all",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "wall_pipes__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "main",
+      "text": "Under the street it joins the water main, a much bigger pipe shared by every house on the block. Think of it like a river that never stops, just waiting for someone to open a tap.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "water_main_slice",
+          "move": "section",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WATER MAIN",
+            "anchor": "water_main_slice",
+            "cue": "main"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "SHARED BY THE WHOLE BLOCK"
+            ],
+            "cues": [
+              "shared"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "section",
+            "to": "water_main_slice",
+            "dur": 1.8,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "section": "water_main_slice",
+            "stop": "water_main_slice"
+          },
+          {
+            "move": "snap",
+            "to": "water_main_slice__detail",
+            "dur": 0.3,
+            "cue": "think",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "water_main_slice__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "plant",
+      "text": "The water started at a treatment plant. It is filtered, cleaned and tested, then pumped out into the town's pipes and up into the tower.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "treatment_plant",
+          "move": "travel",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "chips",
+            "items": [
+              "FILTERED",
+              "CLEANED AND TESTED"
+            ],
+            "cues": [
+              "filtered",
+              "cleaned"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tower",
+      "text": "Pumps fill the tower when demand is low, often at night. Then the tank just sits up there, high above every rooftop, holding thousands of gallons.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "water_tower",
+          "move": "crane",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WATER TOWER",
+            "anchor": "water_tower",
+            "cue": "tower"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "And here is the twist. The tower does not push the water at all. Gravity does. Every two point three one feet of height adds about one pound per square inch of pressure at your tap.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "water_tower",
+          "move": "orbit",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "big",
+            "text": "2.31 FT = ABOUT 1 PSI",
+            "cue": "every"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "water_tower"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower__detail",
+            "dur": 1.0,
+            "cue": "is",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "water_tower__detail"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower__alt",
+            "dur": 0.8,
+            "cue": "every",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "water_tower__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "why",
+      "text": "That is why towers stand so tall, and why the pressure stays steady even if the power goes out for a while. The height is the stored energy.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "suburb_wide",
+          "move": "travel",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "chips",
+            "items": [
+              "HEIGHT = STORED PRESSURE"
+            ],
+            "cues": [
+              "height"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "suburb_wide",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "suburb_wide"
+          },
+          {
+            "move": "travel",
+            "to": "suburb_wide__detail",
+            "dur": 1.2,
+            "cue": "the#2",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "suburb_wide__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Did you know your water was riding on gravity? Tell us in the comments, and send this to someone who thinks the tower is just a big sign. Because all you did was turn the faucet.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "faucet_kitchen",
+          "move": "backout",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DID YOU KNOW THIS?",
+            "cue": "did"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS",
+              "SEND THIS TO A FRIEND"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "suburb_wide__alt",
+            "dur": 1.0,
+            "cue": "tell",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "suburb_wide__alt"
+          },
+          {
+            "move": "backout",
+            "to": "faucet_kitchen",
+            "dur": 4.0,
+            "cue": "sign",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W3"
+    ],
+    "beats": [
+      "hook",
+      "wall",
+      "main",
+      "plant",
+      "tower",
+      "twist",
+      "why",
+      "outro"
+    ],
+    "stops": [
+      "faucet_kitchen",
+      "wall_pipes",
+      "water_main_slice",
+      "treatment_plant",
+      "water_tower",
+      "water_tower",
+      "suburb_wide",
+      "faucet_kitchen"
+    ],
+    "moves": [
+      "drift",
+      "section",
+      "section",
+      "travel",
+      "crane",
+      "orbit",
+      "travel",
+      "backout"
+    ],
+    "spark": [
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "section": 1.8,
+      "travel": 1.5,
+      "crane": 2.0,
+      "orbit": 3.0,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · HOME #5",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      null,
+      "STOP 5",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

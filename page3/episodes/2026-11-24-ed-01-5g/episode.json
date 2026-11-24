@@ -1,0 +1,572 @@
+{
+  "id": "2026-11-24-ed-01-5g",
+  "page": "everyday_decoded",
+  "keyword": "how 5g works",
+  "slug": "how-5g-works",
+  "title": "What Really Happens When You Open an App on 5G",
+  "fb_caption": "Decoded: what really happens when you open an app on 5G.\nYour tap goes phone → tower → fiber under the street → data center → back, in a blink.\nWhere does your signal always drop?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#5G",
+    "#TechFacts"
+  ],
+  "engagement_comment": "Quick poll: how many bars do you have right now? Drop the number 👇 (and tell us the spot where your signal always dies)",
+  "sources": [
+    "Massive-MIMO base stations use dozens or hundreds of antennas; beamforming focuses a concentrated beam that points in the direction of a user: https://spectrum.ieee.org/5g-bytes-beamforming-explained ; https://www.ezurio.com/resources/blog/understanding-beamforming",
+    "Millimeter waves (high-band 5G) can't easily pass through buildings/obstacles and are absorbed by foliage; even a single leaf, plasterboard walls, doors and glass cause large losses: https://spectrum.ieee.org/5g-bytes-millimeter-waves-explained ; https://www.nist.gov/node/1691641",
+    "Millimeter waves are also weakened by rain / weather: https://spectrum.ieee.org/5g-bytes-millimeter-waves-explained ; https://www.lightreading.com/mobile/5g/millimeter-wave-5g-the-usain-bolt-of-wireless/a/d-id/742192",
+    "Mobile mmWave 5G range was expected to be about 100-200 m (328-656 ft); mmWave links are limited beyond tens of meters: https://www.lightreading.com/mobile/5g/millimeter-wave-5g-the-usain-bolt-of-wireless/a/d-id/742192 ; https://www.cablinginstall.com/articles/print/volume-26/issue-7/features/design/the-role-of-fiber-in-5g-networks.html",
+    "Cell sites connect to the core network by backhaul, typically a high-speed wireline/fiber link (wireless backhaul is the minority, used where fiber is unavailable): https://www.cablinginstall.com/articles/print/volume-26/issue-7/features/design/the-role-of-fiber-in-5g-networks.html ; https://www.ceragon.com/what-is-5g-wireless-backhaul",
+    "Fiber optics carry information as pulses of light through thin strands of glass: https://en.wikipedia.org/wiki/Fiber-optic_communication ; https://www.explainthatstuff.com/fiberoptics.html"
+  ],
+  "sources_structured": [
+    {
+      "claim": "Massive-MIMO base stations use dozens or hundreds of antennas; beamforming focuses a concentrated beam that points in the direction of a user",
+      "urls": [
+        "https://spectrum.ieee.org/5g-bytes-beamforming-explained",
+        "https://www.ezurio.com/resources/blog/understanding-beamforming"
+      ]
+    },
+    {
+      "claim": "Millimeter waves (high-band 5G) can't easily pass through buildings/obstacles and are absorbed by foliage; even a single leaf, plasterboard walls, doors and glass cause large losses",
+      "urls": [
+        "https://spectrum.ieee.org/5g-bytes-millimeter-waves-explained",
+        "https://www.nist.gov/node/1691641"
+      ]
+    },
+    {
+      "claim": "Millimeter waves are also weakened by rain / weather",
+      "urls": [
+        "https://spectrum.ieee.org/5g-bytes-millimeter-waves-explained",
+        "https://www.lightreading.com/mobile/5g/millimeter-wave-5g-the-usain-bolt-of-wireless/a/d-id/742192"
+      ]
+    },
+    {
+      "claim": "Mobile mmWave 5G range was expected to be about 100-200 m (328-656 ft); mmWave links are limited beyond tens of meters",
+      "urls": [
+        "https://www.lightreading.com/mobile/5g/millimeter-wave-5g-the-usain-bolt-of-wireless/a/d-id/742192",
+        "https://www.cablinginstall.com/articles/print/volume-26/issue-7/features/design/the-role-of-fiber-in-5g-networks.html"
+      ]
+    },
+    {
+      "claim": "Cell sites connect to the core network by backhaul, typically a high-speed wireline/fiber link (wireless backhaul is the minority, used where fiber is unavailable)",
+      "urls": [
+        "https://www.cablinginstall.com/articles/print/volume-26/issue-7/features/design/the-role-of-fiber-in-5g-networks.html",
+        "https://www.ceragon.com/what-is-5g-wireless-backhaul"
+      ]
+    },
+    {
+      "claim": "Fiber optics carry information as pulses of light through thin strands of glass",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Fiber-optic_communication",
+        "https://www.explainthatstuff.com/fiberoptics.html"
+      ]
+    }
+  ],
+  "fact_notes": "HEDGED: mmWave range - plan said 'a few hundred yards'; best opened source (industry estimate, 2018) says 100-200 m, so the script says 'often reaches only a few hundred feet'. 'Even your hand' DROPPED (the opened study only lists body blockage as a topic it measured); replaced by 'even rain', which two opened sources state. 'Dozens of antennas' is true of massive-MIMO panels, so 'can be packed with'. Backhaul is 'usually' fiber (some sites use wireless links). DROPPED: any latency figure in milliseconds and any speed number (not sourced). The 'express lane' line is the one analogy. No carrier named.",
+  "topic_id": "A1",
+  "series": "Phone & Internet",
+  "word_count": 272,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You tap an app on 5G, and it opens before your thumb is even off the glass. In that blink, your request left your hand, crossed town, and came all the way back. Here's the trip it took.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "drift",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "YOUR TAP TAKES A TRIP",
+            "cue": "tap"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "hand_phone",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          },
+          {
+            "move": "snap",
+            "to": "hand_phone__detail",
+            "dur": 0.3,
+            "cue": "in",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one is inside your phone. Tiny antennas turn your tap into radio waves and send them out through the air.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_phone_antenna",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "PHONE ANTENNAS",
+            "anchor": "macro_phone_antenna",
+            "cue": "antennas"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the nearest cell tower. Those flat panels near the top can be packed with dozens of small antennas, all listening for phones like yours.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "cell_tower",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "ANTENNA PANELS",
+            "anchor": "cell_tower",
+            "cue": "panels"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "cell_tower",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "cell_tower"
+          },
+          {
+            "move": "travel",
+            "to": "cell_tower__detail",
+            "dur": 0.8,
+            "cue": "phones",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "cell_tower__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: down the pole to the base. From here your request usually leaves on a fiber line, a thread of glass that carries data as flashes of light.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "tower_base",
+          "move": "crane",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "FIBER LINE",
+            "anchor": "tower_base",
+            "cue": "fiber"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "crane",
+            "to": "tower_base",
+            "dur": 2.0,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "tower_base"
+          },
+          {
+            "move": "snap",
+            "to": "tower_base__detail",
+            "dur": 0.3,
+            "cue": "flashes",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "tower_base__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four runs under the street. Your request races through that glass like a car on an express lane with no stoplights.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "street_slice_fiber",
+          "move": "section",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "UNDER THE STREET",
+            "anchor": "street_slice_fiber",
+            "cue": "street"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4"
+            ],
+            "cues": [
+              "four"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop5",
+      "text": "Stop five: a data center, a building full of computers. A server there finds what you asked for and sends the answer right back the way it came.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "data_center",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "DATA CENTER",
+            "anchor": "data_center",
+            "cue": "data"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 5"
+            ],
+            "cues": [
+              "five"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "data_center",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "data_center"
+          },
+          {
+            "move": "travel",
+            "to": "data_center__detail",
+            "dur": 1.0,
+            "cue": "a#2",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "data_center__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. That tower doesn't just spray signal in every direction. 5G antennas can steer a narrow beam toward your phone. And the very fastest kind of 5G, called millimeter wave, is easy to block. Walls, tree leaves, even rain can get in the way, so it often reaches only a few hundred feet.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "cell_tower",
+          "move": "orbit",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STEERED BEAMS",
+              "EASY TO BLOCK",
+              "OFTEN A FEW HUNDRED FEET"
+            ],
+            "cues": [
+              "steer",
+              "block",
+              "hundred"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "cell_tower",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "cell_tower"
+          },
+          {
+            "move": "snap",
+            "to": "cell_tower__detail",
+            "dur": 0.3,
+            "cue": "and",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "cell_tower__detail"
+          },
+          {
+            "move": "travel",
+            "to": "cell_tower__alt",
+            "dur": 1.2,
+            "cue": "walls",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "cell_tower__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "That's why your phone can fly on one corner and crawl on the next. And all you did was tap. Another one decoded. Where does your signal always drop? Tell me in the comments, and share this with someone who's always hunting for bars. Now tap that app again, and picture the trip.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "hand_phone",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WHERE DOES YOUR SIGNAL DROP?"
+            ],
+            "cues": [
+              "where"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "cell_tower",
+            "dur": 1.0,
+            "cue": "phone",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "cell_tower"
+          },
+          {
+            "move": "travel",
+            "to": "cell_tower__detail",
+            "dur": 0.8,
+            "cue": "where",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "cell_tower__detail"
+          },
+          {
+            "move": "backout",
+            "to": "hand_phone",
+            "dur": 4.0,
+            "cue": "now",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "hand_phone"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W2"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "stop5",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "hand_phone",
+      "macro_phone_antenna",
+      "cell_tower",
+      "tower_base",
+      "street_slice_fiber",
+      "data_center",
+      "cell_tower",
+      "hand_phone"
+    ],
+    "moves": [
+      "drift",
+      "snap",
+      "travel",
+      "crane",
+      "section",
+      "travel",
+      "orbit",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "snap": 0.3,
+      "travel": 1.5,
+      "crane": 2.0,
+      "section": 1.8,
+      "orbit": 3.0,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · PHONE & INTERNET #1",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      "STOP 5",
+      "STOP 6",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

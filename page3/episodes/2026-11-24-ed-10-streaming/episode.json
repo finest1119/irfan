@@ -1,0 +1,526 @@
+{
+  "id": "2026-11-24-ed-10-streaming",
+  "page": "everyday_decoded",
+  "keyword": "how streaming works",
+  "slug": "how-streaming-works",
+  "title": "You Hit Play. The Show Didn't Come From Far Away",
+  "fb_caption": "Decoded: what happens when you hit play.\nThe show was already waiting on a server near you, and it arrives in chunks just a few seconds long.\nWhat's the last show you binged?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#Streaming",
+    "#TechFacts",
+    "#MovieNight"
+  ],
+  "engagement_comment": "What's the last show you binged in one weekend? No judgment. (OK, a little judgment.) 📺",
+  "sources": [
+    "Content delivery networks cache content on servers geographically closer to users to cut delay; streaming companies use them to deliver video; a miss goes back to the origin server: https://aws.amazon.com/what-is/cdn/ ; https://en.wikipedia.org/wiki/Content_delivery_network",
+    "Video is broken into short segments, typically 2-6 seconds each (one platform's spec: target 6 seconds): https://www.mux.com/articles/adaptive-bitrate-streaming-guide ; https://bitmovin.com/blog/mpeg-dash-hls-segment-length/ ; https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices",
+    "Each segment is encoded at multiple bitrates/resolutions; the player decides which version to request next from its bandwidth estimate, switching up or down between segments: https://www.mux.com/articles/adaptive-bitrate-streaming-guide ; https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming ; https://bitmovin.com/blog/mpeg-dash-hls-segment-length/",
+    "Fiber optics carry data as pulses of light through strands of glass; used for internet/TV/phone: https://en.wikipedia.org/wiki/Fiber-optic_communication ; https://www.explainthatstuff.com/fiberoptics.html"
+  ],
+  "sources_structured": [
+    {
+      "claim": "Content delivery networks cache content on servers geographically closer to users to cut delay; streaming companies use them to deliver video; a miss goes back to the origin server",
+      "urls": [
+        "https://aws.amazon.com/what-is/cdn/",
+        "https://en.wikipedia.org/wiki/Content_delivery_network"
+      ]
+    },
+    {
+      "claim": "Video is broken into short segments, typically 2-6 seconds each (one platform's spec: target 6 seconds)",
+      "urls": [
+        "https://www.mux.com/articles/adaptive-bitrate-streaming-guide",
+        "https://bitmovin.com/blog/mpeg-dash-hls-segment-length/",
+        "https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices"
+      ]
+    },
+    {
+      "claim": "Each segment is encoded at multiple bitrates/resolutions; the player decides which version to request next from its bandwidth estimate, switching up or down between segments",
+      "urls": [
+        "https://www.mux.com/articles/adaptive-bitrate-streaming-guide",
+        "https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming",
+        "https://bitmovin.com/blog/mpeg-dash-hls-segment-length/"
+      ]
+    },
+    {
+      "claim": "Fiber optics carry data as pulses of light through strands of glass; used for internet/TV/phone",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Fiber-optic_communication",
+        "https://www.explainthatstuff.com/fiberoptics.html"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist. Chunk length: opened sources say 'typically two to six seconds' (two streaming-tech vendors) and 'target 6 seconds' (a device maker's spec); other documents quote up to 10 seconds, so the script says 'typically just a few seconds' with no number. HEDGED: 'typically keep copies of popular shows', 'in your own region', 'in many neighborhoods ... fiber' (many homes are on cable or wireless). The hook's 'a couple of seconds' is scene-setting. OUR ARITHMETIC: a 2-hour movie ÷ 6-second chunks = 1,200 video requests → 'more than a thousand tiny deliveries'. Simplified: 'master library' = the origin servers. DROPPED: any service name, servers placed inside internet providers' own buildings (company-specific), bitrate/resolution numbers, 'HD'. Sources name companies but the script does not. The grocery shelf is the one analogy.",
+  "topic_id": "F1",
+  "series": "Entertainment",
+  "word_count": 262,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You hit play on the couch, and a couple of seconds later the show starts, sharp and clear. It feels like it's beaming in from some giant building far away. It's not. The show was already waiting nearby.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "living_room_tv",
+          "move": "drift",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "IT WAS ALREADY NEARBY",
+            "cue": "nearby"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "living_room_tv",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv"
+          },
+          {
+            "move": "snap",
+            "to": "living_room_tv__detail",
+            "dur": 0.3,
+            "cue": "it",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: your router. Here's the first surprise. Your TV doesn't ask for the whole show. It asks for one small piece at a time.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "living_room_router",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "ONE SMALL PIECE",
+            "anchor": "living_room_router",
+            "cue": "piece"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "living_room_router",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_router"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_router__detail",
+            "dur": 0.8,
+            "cue": "it",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_router__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: under your street. In many neighborhoods, that request rides out on a fiber line, as flashes of light.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "street_slice_fiber",
+          "move": "section",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "FIBER LINE",
+            "anchor": "street_slice_fiber",
+            "cue": "fiber"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: not some far-off headquarters, but a server room in your own region. Streaming services typically keep copies of popular shows on servers placed close to viewers. It's like a grocery store stocking the shelf near you, so you don't have to drive to the farm. Shorter trip, faster start.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "edge_server_room",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "SERVERS CLOSE TO YOU",
+            "anchor": "edge_server_room",
+            "cue": "server"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3",
+              "COPIES OF POPULAR SHOWS"
+            ],
+            "cues": [
+              "three",
+              "copies"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "edge_server_room",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "edge_server_room"
+          },
+          {
+            "move": "snap",
+            "to": "edge_server_room__detail",
+            "dur": 0.3,
+            "cue": "streaming",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "edge_server_room__detail"
+          },
+          {
+            "move": "travel",
+            "to": "edge_server_room__alt",
+            "dur": 1.0,
+            "cue": "its",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "edge_server_room__alt"
+          },
+          {
+            "move": "travel",
+            "to": "edge_server_room",
+            "dur": 0.8,
+            "cue": "shorter",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "edge_server_room"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: the big data center far away. It still holds the master library, and it quietly keeps those local shelves stocked.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "data_center",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "MASTER LIBRARY",
+            "anchor": "data_center",
+            "cue": "library"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4"
+            ],
+            "cues": [
+              "four"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. You're never watching one long video. The show is chopped into chunks, typically just a few seconds long, and every chunk is saved at several quality levels. Before each one, your TV checks your connection and picks the best version it can handle. That's why the picture sometimes goes blurry, then snaps back sharp. It didn't break. It switched.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "living_room_tv",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "CHUNKS A FEW SECONDS LONG",
+              "QUALITY CAN SWITCH"
+            ],
+            "cues": [
+              "chunks",
+              "quality"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "living_room_tv",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_tv__detail",
+            "dur": 1.2,
+            "cue": "the#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv__detail"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_tv__alt",
+            "dur": 1.0,
+            "cue": "before",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv__alt"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_tv",
+            "dur": 0.8,
+            "cue": "thats",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So one movie night is more than a thousand tiny deliveries from just down the road. Another one decoded. What's the last show you binged? Drop it in the comments, and share this with someone whose stream is always buffering. Now go hit play.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "living_room_tv",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "LAST SHOW YOU BINGED?"
+            ],
+            "cues": [
+              "binged"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "living_room_tv__detail",
+            "dur": 0.3,
+            "cue": "is",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv__detail"
+          },
+          {
+            "move": "travel",
+            "to": "living_room_tv__alt",
+            "dur": 1.0,
+            "cue": "whats",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv__alt"
+          },
+          {
+            "move": "backout",
+            "to": "living_room_tv",
+            "dur": 4.0,
+            "cue": "whose",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "living_room_tv"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W3"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "living_room_tv",
+      "living_room_router",
+      "street_slice_fiber",
+      "edge_server_room",
+      "data_center",
+      "living_room_tv",
+      "living_room_tv"
+    ],
+    "moves": [
+      "drift",
+      "travel",
+      "section",
+      "travel",
+      "travel",
+      "travel",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "travel": 1.5,
+      "section": 1.8,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · ENTERTAINMENT #1",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      "STOP 5",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

@@ -1,0 +1,525 @@
+{
+  "id": "2026-11-24-ed-07-water-tower",
+  "page": "everyday_decoded",
+  "keyword": "how water towers work",
+  "slug": "how-water-towers-work",
+  "title": "Your Town's Water Tower Is a Giant Battery for Water Pressure",
+  "fb_caption": "Decoded: what pushes the water out of your faucet.\nIn many towns it's gravity, stored up in the water tower, like a battery for water pressure.\nWhat's painted on your town's water tower?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#WaterTower",
+    "#Engineering",
+    "#SmallTown"
+  ],
+  "engagement_comment": "What's painted on YOUR town's water tower? Team name, mascot, giant peach? Tell us where you're from 👇",
+  "sources": [
+    "Water towers use gravity to provide pressure; each foot of height adds about 0.43 psi (so about 2.3 ft per psi): https://www.ipm.org/amomentofscience/physics-water-towers/ ; https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers ; https://www.mentalfloss.com/article/64577/how-do-water-towers-work",
+    "A typical tank holds about a million gallons, roughly one day's supply: https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers ; https://www.mentalfloss.com/article/64577/how-do-water-towers-work",
+    "The tower covers peak (morning) demand so pumps can be sized for average demand; it is refilled when demand is low, e.g. at night: https://www.mentalfloss.com/article/64577/how-do-water-towers-work ; https://www.ipm.org/amomentofscience/physics-water-towers/ ; https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers",
+    "Towers can keep water flowing for a limited time during a power outage: https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers ; https://www.mentalfloss.com/article/64577/how-do-water-towers-work ; https://www.ipm.org/amomentofscience/physics-water-towers/"
+  ],
+  "sources_structured": [
+    {
+      "claim": "Water towers use gravity to provide pressure; each foot of height adds about 0.43 psi (so about 2.3 ft per psi)",
+      "urls": [
+        "https://www.ipm.org/amomentofscience/physics-water-towers/",
+        "https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers",
+        "https://www.mentalfloss.com/article/64577/how-do-water-towers-work"
+      ]
+    },
+    {
+      "claim": "A typical tank holds about a million gallons, roughly one day's supply",
+      "urls": [
+        "https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers",
+        "https://www.mentalfloss.com/article/64577/how-do-water-towers-work"
+      ]
+    },
+    {
+      "claim": "The tower covers peak (morning) demand so pumps can be sized for average demand; it is refilled when demand is low, e.g. at night",
+      "urls": [
+        "https://www.mentalfloss.com/article/64577/how-do-water-towers-work",
+        "https://www.ipm.org/amomentofscience/physics-water-towers/",
+        "https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers"
+      ]
+    },
+    {
+      "claim": "Towers can keep water flowing for a limited time during a power outage",
+      "urls": [
+        "https://www.waterworld.com/drinking-water/distribution/article/14287229/what-is-the-purpose-of-water-towers",
+        "https://www.mentalfloss.com/article/64577/how-do-water-towers-work",
+        "https://www.ipm.org/amomentofscience/physics-water-towers/"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist. The opened sources state it as 0.43 psi per foot; 2.31 ft per psi is the same conversion (1 ÷ 0.433), said as 'every 2.3 feet ... about one psi'. HEDGED: 'in many towns' (not every system uses an elevated tank); 'typical ... around a million gallons, roughly a day's supply'; 'often overnight'; outage running time said only as 'for a while' (one source says at least 24 hours - not used). OUR ARITHMETIC: 100 ft × 0.43 = about 43 psi (an example height, not a claim about typical towers - typical tower height had only one opened source and was dropped). Simplified: treatment-plant pumps and tower-filling pumps are described as the same pumps; real systems may use separate pump stations. DROPPED: house pressure range numbers. Battery is the one analogy (it is the hook line from the plan). | Planner review 24 Nov 2026: tank size softened to 'a big tower can hold around a million gallons, often about a day's supply'.",
+  "topic_id": "C5",
+  "series": "Home",
+  "word_count": 263,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You turn on the kitchen faucet and water shoots out, instantly, with real force. But there's no pump in your house. So what's pushing it? In many towns, the answer is that giant tank on legs at the edge of town.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "faucet_kitchen",
+          "move": "drift",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHAT'S PUSHING YOUR WATER?",
+            "cue": "pushing"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "faucet_kitchen",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen"
+          },
+          {
+            "move": "snap",
+            "to": "faucet_kitchen__detail",
+            "dur": 0.3,
+            "cue": "but",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen__detail"
+          },
+          {
+            "move": "travel",
+            "to": "faucet_kitchen__alt",
+            "dur": 0.8,
+            "cue": "in#2",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: the pipes hidden inside your wall. The water in them is already under pressure, just waiting there, long before you ever touch the handle.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "wall_pipes",
+          "move": "section",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "ALREADY UNDER PRESSURE",
+            "anchor": "wall_pipes",
+            "cue": "pressure"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the water main buried under your street, the big pipe that feeds the whole block.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "water_main_slice",
+          "move": "section",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WATER MAIN",
+            "anchor": "water_main_slice",
+            "cue": "main"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the treatment plant, where the water is cleaned and big pumps send it out across the whole town.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "treatment_plant",
+          "move": "travel",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "TREATMENT PLANT",
+            "anchor": "treatment_plant",
+            "cue": "plant"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: up we go. Pumps push water up into the tower when the town is quiet, often overnight. A big tower can hold around a million gallons, often about a day's supply for the town. Then comes the morning rush of showers, and the tank drains back down, like a battery being used.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "water_tower",
+          "move": "crane",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "big",
+            "text": "ABOUT 1 MILLION GALLONS",
+            "cue": "million"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4",
+              "FILLS WHEN DEMAND IS LOW"
+            ],
+            "cues": [
+              "four",
+              "quiet"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "crane",
+            "to": "water_tower",
+            "dur": 2.0,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "water_tower"
+          },
+          {
+            "move": "snap",
+            "to": "water_tower__detail",
+            "dur": 0.3,
+            "cue": "a",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "water_tower__detail"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower__alt",
+            "dur": 1.0,
+            "cue": "then",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "water_tower__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. The tower isn't just storage. Its real trick is height. Gravity pulls that water down, and every 2.3 feet of height adds about one pound per square inch of pressure, or one psi. So water sitting 100 feet up pushes with about 43 psi. That's why it can keep your water flowing for a while, even when the power goes out.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "water_tower",
+          "move": "orbit",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "big",
+            "text": "2.3 FT = ABOUT 1 PSI",
+            "cue": "23"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "HEIGHT = PRESSURE",
+              "WORKS IN AN OUTAGE"
+            ],
+            "cues": [
+              "height",
+              "power"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "water_tower"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower",
+            "dur": 0.8,
+            "cue": "the#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "water_tower"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower__detail",
+            "dur": 1.2,
+            "cue": "gravity",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "water_tower__detail"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower__alt",
+            "dur": 1.0,
+            "cue": "psi",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "water_tower__alt"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower",
+            "dur": 0.8,
+            "cue": "thats",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "water_tower"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So the push at your faucet is just gravity. Another one decoded. What's painted on your town's water tower? Tell me in the comments, and share this with someone who drives past one every day. Now go turn on that faucet.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "faucet_kitchen",
+          "move": "backout",
+          "spark": "ice"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WHAT'S ON YOUR TOWER?"
+            ],
+            "cues": [
+              "painted"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "water_tower__detail",
+            "dur": 0.3,
+            "cue": "faucet",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "water_tower__detail"
+          },
+          {
+            "move": "travel",
+            "to": "water_tower__alt",
+            "dur": 1.0,
+            "cue": "tell",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "water_tower__alt"
+          },
+          {
+            "move": "backout",
+            "to": "faucet_kitchen",
+            "dur": 4.0,
+            "cue": "one#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "faucet_kitchen"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1",
+      "W3"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "faucet_kitchen",
+      "wall_pipes",
+      "water_main_slice",
+      "treatment_plant",
+      "water_tower",
+      "water_tower",
+      "faucet_kitchen"
+    ],
+    "moves": [
+      "drift",
+      "section",
+      "section",
+      "travel",
+      "crane",
+      "orbit",
+      "backout"
+    ],
+    "spark": [
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice",
+      "ice"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "section": 1.8,
+      "travel": 1.5,
+      "crane": 2.0,
+      "orbit": 3.0,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · HOME #5",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      null,
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

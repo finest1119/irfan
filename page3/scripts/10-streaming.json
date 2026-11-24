@@ -1,0 +1,198 @@
+{
+  "id": "ed-10-streaming",
+  "topic_id": "F1",
+  "series": "Entertainment",
+  "world": [
+    "W1",
+    "W3"
+  ],
+  "title": "You Hit Play. The Show Didn't Come From Far Away",
+  "keyword": "how streaming works",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You hit play on the couch, and a couple of seconds later the show starts, sharp and clear. It feels like it's beaming in from some giant building far away. It's not. The show was already waiting nearby.",
+      "stop": "living_room_tv",
+      "move": "drift",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "IT WAS ALREADY NEARBY",
+          "cue": "nearby"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: your router. Here's the first surprise. Your TV doesn't ask for the whole show. It asks for one small piece at a time.",
+      "stop": "living_room_router",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "label",
+          "text": "ONE SMALL PIECE",
+          "cue": "piece"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: under your street. In many neighborhoods, that request rides out on a fiber line, as flashes of light.",
+      "stop": "street_slice_fiber",
+      "move": "section",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "FIBER LINE",
+          "cue": "fiber"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: not some far-off headquarters, but a server room in your own region. Streaming services typically keep copies of popular shows on servers placed close to viewers. It's like a grocery store stocking the shelf near you, so you don't have to drive to the farm. Shorter trip, faster start.",
+      "stop": "edge_server_room",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "label",
+          "text": "SERVERS CLOSE TO YOU",
+          "cue": "server"
+        },
+        {
+          "type": "chips",
+          "text": "COPIES OF POPULAR SHOWS",
+          "cue": "copies"
+        }
+      ]
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: the big data center far away. It still holds the master library, and it quietly keeps those local shelves stocked.",
+      "stop": "data_center",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 4",
+          "cue": "four"
+        },
+        {
+          "type": "label",
+          "text": "MASTER LIBRARY",
+          "cue": "library"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. You're never watching one long video. The show is chopped into chunks, typically just a few seconds long, and every chunk is saved at several quality levels. Before each one, your TV checks your connection and picks the best version it can handle. That's why the picture sometimes goes blurry, then snaps back sharp. It didn't break. It switched.",
+      "stop": "living_room_tv",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "chips",
+          "text": "CHUNKS A FEW SECONDS LONG",
+          "cue": "chunks"
+        },
+        {
+          "type": "chips",
+          "text": "QUALITY CAN SWITCH",
+          "cue": "quality"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "So one movie night is more than a thousand tiny deliveries from just down the road. Another one decoded. What's the last show you binged? Drop it in the comments, and share this with someone whose stream is always buffering. Now go hit play.",
+      "stop": "living_room_tv",
+      "move": "backout",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "LAST SHOW YOU BINGED?",
+          "cue": "binged"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 262,
+  "fb_caption": "Decoded: what happens when you hit play.\nThe show was already waiting on a server near you, and it arrives in chunks just a few seconds long.\nWhat's the last show you binged?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#Streaming",
+    "#TechFacts",
+    "#MovieNight"
+  ],
+  "engagement_comment": "What's the last show you binged in one weekend? No judgment. (OK, a little judgment.) 📺",
+  "sources": [
+    {
+      "claim": "Content delivery networks cache content on servers geographically closer to users to cut delay; streaming companies use them to deliver video; a miss goes back to the origin server",
+      "urls": [
+        "https://aws.amazon.com/what-is/cdn/",
+        "https://en.wikipedia.org/wiki/Content_delivery_network"
+      ]
+    },
+    {
+      "claim": "Video is broken into short segments, typically 2-6 seconds each (one platform's spec: target 6 seconds)",
+      "urls": [
+        "https://www.mux.com/articles/adaptive-bitrate-streaming-guide",
+        "https://bitmovin.com/blog/mpeg-dash-hls-segment-length/",
+        "https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices"
+      ]
+    },
+    {
+      "claim": "Each segment is encoded at multiple bitrates/resolutions; the player decides which version to request next from its bandwidth estimate, switching up or down between segments",
+      "urls": [
+        "https://www.mux.com/articles/adaptive-bitrate-streaming-guide",
+        "https://en.wikipedia.org/wiki/Adaptive_bitrate_streaming",
+        "https://bitmovin.com/blog/mpeg-dash-hls-segment-length/"
+      ]
+    },
+    {
+      "claim": "Fiber optics carry data as pulses of light through strands of glass; used for internet/TV/phone",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Fiber-optic_communication",
+        "https://www.explainthatstuff.com/fiberoptics.html"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist. Chunk length: opened sources say 'typically two to six seconds' (two streaming-tech vendors) and 'target 6 seconds' (a device maker's spec); other documents quote up to 10 seconds, so the script says 'typically just a few seconds' with no number. HEDGED: 'typically keep copies of popular shows', 'in your own region', 'in many neighborhoods ... fiber' (many homes are on cable or wireless). The hook's 'a couple of seconds' is scene-setting. OUR ARITHMETIC: a 2-hour movie ÷ 6-second chunks = 1,200 video requests → 'more than a thousand tiny deliveries'. Simplified: 'master library' = the origin servers. DROPPED: any service name, servers placed inside internet providers' own buildings (company-specific), bitrate/resolution numbers, 'HD'. Sources name companies but the script does not. The grocery shelf is the one analogy."
+}

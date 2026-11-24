@@ -1,0 +1,548 @@
+{
+  "id": "2026-11-24-ed-08-traffic-light-loop",
+  "page": "everyday_decoded",
+  "keyword": "how traffic lights detect cars",
+  "slug": "how-traffic-lights-detect-cars",
+  "title": "How the Traffic Light Knows You're Waiting",
+  "fb_caption": "Decoded: how the traffic light knows you're there.\nIt isn't weighing your car. At many intersections, a wire loop under the road senses the metal.\nWhat's the longest red light in your town?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#TrafficLight",
+    "#Driving",
+    "#DidYouKnow"
+  ],
+  "engagement_comment": "Name the longest red light in your town. We'll start: the one you're always late at. 🚦",
+  "sources": [
+    "Inductive-loop detector: turns of insulated wire in a sawed slot in the pavement, energized (about 10-200 kHz), connected by lead-in cable to an electronics unit in the controller cabinet: https://www.fhwa.dot.gov/publications/research/operations/its/06108/02.cfm ; https://www.fhwa.dot.gov/publications/research/operations/its/06139/appende.cfm",
+    "A vehicle's metal induces eddy currents (in the undercarriage) that decrease the loop's inductance; the electronics unit senses the change and signals the controller: https://www.fhwa.dot.gov/publications/research/operations/its/06108/02.cfm ; https://www.fhwa.dot.gov/publications/research/operations/its/06139/appende.cfm",
+    "The loop senses metal, not weight: https://www.ky3.com/2026/08/27/fact-finders-does-rocking-your-car-near-stop-signal-trigger-traffic-light/ ; https://www.fhwa.dot.gov/publications/research/operations/its/06139/appende.cfm",
+    "The inductive loop has become the most utilized sensor in traffic management; other signals use radar or video detection: https://www.fhwa.dot.gov/publications/research/operations/its/06108/02.cfm ; https://www.ky3.com/2026/08/27/fact-finders-does-rocking-your-car-near-stop-signal-trigger-traffic-light/"
+  ],
+  "sources_structured": [
+    {
+      "claim": "Inductive-loop detector: turns of insulated wire in a sawed slot in the pavement, energized (about 10-200 kHz), connected by lead-in cable to an electronics unit in the controller cabinet",
+      "urls": [
+        "https://www.fhwa.dot.gov/publications/research/operations/its/06108/02.cfm",
+        "https://www.fhwa.dot.gov/publications/research/operations/its/06139/appende.cfm"
+      ]
+    },
+    {
+      "claim": "A vehicle's metal induces eddy currents (in the undercarriage) that decrease the loop's inductance; the electronics unit senses the change and signals the controller",
+      "urls": [
+        "https://www.fhwa.dot.gov/publications/research/operations/its/06108/02.cfm",
+        "https://www.fhwa.dot.gov/publications/research/operations/its/06139/appende.cfm"
+      ]
+    },
+    {
+      "claim": "The loop senses metal, not weight",
+      "urls": [
+        "https://www.ky3.com/2026/08/27/fact-finders-does-rocking-your-car-near-stop-signal-trigger-traffic-light/",
+        "https://www.fhwa.dot.gov/publications/research/operations/its/06139/appende.cfm"
+      ]
+    },
+    {
+      "claim": "The inductive loop has become the most utilized sensor in traffic management; other signals use radar or video detection",
+      "urls": [
+        "https://www.fhwa.dot.gov/publications/research/operations/its/06108/02.cfm",
+        "https://www.ky3.com/2026/08/27/fact-finders-does-rocking-your-car-near-stop-signal-trigger-traffic-light/"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist (metal, not weight) with the FHWA Traffic Detector Handbook; the explicit 'does not sense weight' wording comes from a 2026 local-news fact check with a state DOT specialist. HEDGED: 'many use radar or cameras instead'; 'has long been one of the most widely used sensors' (the FHWA handbook saying 'most utilized' dates from 2006, so no claim that it is still number one). Simplified: 'disturbs the field' stands in for 'eddy currents lower the loop's inductance'. The hook's 'a few seconds later' is scene-setting. DROPPED: the 10-200 kHz figure, anything about bicycles/motorcycles not being detected, and any tips for triggering or beating a light. Metal detector is the one analogy.",
+  "topic_id": "D1",
+  "series": "Transport",
+  "word_count": 277,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You roll up to a red light on an empty street at midnight. A few seconds later it turns green, just for you. Nobody's watching. So how did the light know you were there?",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "intersection",
+          "move": "drift",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "HOW DID IT KNOW?",
+            "cue": "know"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "intersection",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "intersection"
+          },
+          {
+            "move": "snap",
+            "to": "intersection__detail",
+            "dur": 0.3,
+            "cue": "a#3",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "intersection__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: look down. See those dark lines cut into the pavement near the stop line? Under them is a loop of wire, sealed into a slot sawed into the road.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "road_loop_slice",
+          "move": "section",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WIRE LOOP IN THE ROAD",
+            "anchor": "road_loop_slice",
+            "cue": "loop"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "section",
+            "to": "road_loop_slice",
+            "dur": 1.8,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "section": "road_loop_slice",
+            "stop": "road_loop_slice"
+          },
+          {
+            "move": "travel",
+            "to": "road_loop_slice__detail",
+            "dur": 0.8,
+            "cue": "under",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: inside that loop. A small electric current runs through the wire all day, creating an invisible magnetic field just above the road.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "road_loop_slice",
+          "move": "snap",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "MAGNETIC FIELD",
+            "anchor": "road_loop_slice",
+            "cue": "magnetic"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2"
+            ],
+            "cues": [
+              "two"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "snap",
+            "to": "road_loop_slice",
+            "dur": 0.3,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice"
+          },
+          {
+            "move": "snap",
+            "to": "road_loop_slice__detail",
+            "dur": 0.3,
+            "cue": "a",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: that plain metal cabinet on the corner. A cable links the loop to electronics inside, and they watch that field. When something disturbs it, the signal controller gets the message: car waiting.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "signal_cabinet",
+          "move": "travel",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "SIGNAL CABINET",
+            "anchor": "signal_cabinet",
+            "cue": "cabinet"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3",
+              "CAR WAITING"
+            ],
+            "cues": [
+              "three",
+              "waiting"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "signal_cabinet",
+            "dur": 1.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "signal_cabinet"
+          },
+          {
+            "move": "travel",
+            "to": "signal_cabinet__detail",
+            "dur": 1.0,
+            "cue": "when",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "signal_cabinet__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: the signal overhead. The controller works you into the cycle, and you get your green. Not every intersection works this way. Many use radar or cameras instead. But the buried loop has long been one of the most widely used sensors on American roads.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "intersection",
+          "move": "crane",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "ALSO: RADAR OR CAMERAS",
+            "anchor": "intersection",
+            "cue": "radar"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 4"
+            ],
+            "cues": [
+              "four"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "crane",
+            "to": "intersection",
+            "dur": 2.0,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "intersection"
+          },
+          {
+            "move": "snap",
+            "to": "intersection__detail",
+            "dur": 0.3,
+            "cue": "many",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "intersection__detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Many people think the road feels your car's weight. It doesn't. The loop senses metal. When the metal underside of your car sits over that wire, it disturbs the field, and that tiny change is the signal. The road isn't a scale. It's a giant metal detector.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "road_loop_slice",
+          "move": "section",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "label",
+            "text": "A GIANT METAL DETECTOR",
+            "anchor": "road_loop_slice",
+            "cue": "detector"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NOT WEIGHT",
+              "IT SENSES METAL"
+            ],
+            "cues": [
+              "weight",
+              "metal"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "section",
+            "to": "road_loop_slice",
+            "dur": 1.8,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "section": "road_loop_slice",
+            "stop": "road_loop_slice"
+          },
+          {
+            "move": "travel",
+            "to": "road_loop_slice__detail",
+            "dur": 1.2,
+            "cue": "when",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice__detail"
+          },
+          {
+            "move": "travel",
+            "to": "road_loop_slice__alt",
+            "dur": 1.0,
+            "cue": "signal",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "So at a light like this, you're not just waiting on a timer. You're parked on a metal detector. Another one decoded. What's the longest red light in your town? Name the intersection in the comments, and share this with the friend who creeps forward at every light. Next time you roll up to a red, look down.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "intersection",
+          "move": "backout",
+          "spark": "teal"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "LONGEST RED IN YOUR TOWN?"
+            ],
+            "cues": [
+              "longest"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "road_loop_slice",
+            "dur": 0.8,
+            "cue": "on",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice"
+          },
+          {
+            "move": "snap",
+            "to": "road_loop_slice__detail",
+            "dur": 0.3,
+            "cue": "name",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "road_loop_slice__detail"
+          },
+          {
+            "move": "backout",
+            "to": "intersection",
+            "dur": 4.0,
+            "cue": "time#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "intersection"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W1"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "stop4",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "intersection",
+      "road_loop_slice",
+      "road_loop_slice",
+      "signal_cabinet",
+      "intersection",
+      "road_loop_slice",
+      "intersection"
+    ],
+    "moves": [
+      "drift",
+      "section",
+      "snap",
+      "travel",
+      "crane",
+      "section",
+      "backout"
+    ],
+    "spark": [
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal",
+      "teal"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "section": 1.8,
+      "snap": 0.3,
+      "travel": 1.5,
+      "crane": 2.0,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · TRANSPORT #1",
+    "stop_chips": [
+      null,
+      "STOP 1",
+      null,
+      "STOP 2",
+      "STOP 3",
+      "STOP 4",
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

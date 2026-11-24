@@ -1,0 +1,200 @@
+{
+  "id": "ed-05-central-ac",
+  "topic_id": "C1",
+  "series": "Home",
+  "world": [
+    "W3"
+  ],
+  "title": "Your Air Conditioner Doesn't Make Cold Air",
+  "keyword": "how central air conditioning works",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "It's ninety-five degrees out. You bump the thermostat down, and cool air pours from the vents. But here's the strange part: your air conditioner isn't making cold. It's taking heat away. Follow the heat.",
+      "stop": "thermostat",
+      "move": "drift",
+      "spark": "ice",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "YOUR AC DOESN'T MAKE COLD",
+          "cue": "cold"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: the indoor coil. A very cold fluid called refrigerant runs through its metal tubes. A fan pushes your warm house air across them, and the refrigerant soaks up the heat like a sponge. The air comes out cooler because its heat got left behind.",
+      "stop": "ac_indoor_coil",
+      "move": "travel",
+      "spark": "ice",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "label",
+          "text": "INDOOR COIL",
+          "cue": "coil"
+        },
+        {
+          "type": "chips",
+          "text": "REFRIGERANT SOAKS UP HEAT",
+          "cue": "soaks"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the lines running through your wall. The refrigerant, now loaded with your living room's heat, heads outside.",
+      "stop": "ac_lines_wall",
+      "move": "section",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "REFRIGERANT LINES",
+          "cue": "lines"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the big unit in the yard. A compressor squeezes the refrigerant, which makes it even hotter, and a fan blows that heat off into the outdoor air. That's why the air coming off that unit feels so warm. It's your house's heat, leaving.",
+      "stop": "ac_condenser",
+      "move": "travel",
+      "spark": "amber",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "label",
+          "text": "OUTDOOR UNIT",
+          "cue": "unit"
+        },
+        {
+          "type": "chips",
+          "text": "HEAT DUMPED OUTSIDE",
+          "cue": "heat"
+        }
+      ]
+    },
+    {
+      "id": "stop4",
+      "text": "Then the refrigerant cools back down, returns inside, and does it all over again, until your house reaches the temperature you asked for.",
+      "stop": "ac_lines_wall",
+      "move": "section",
+      "spark": "ice",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 4",
+          "cue": "refrigerant"
+        },
+        {
+          "type": "label",
+          "text": "BACK INSIDE",
+          "cue": "inside"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Your AC is also pulling water out of thin air. When humid air hits that cold indoor coil, the moisture turns into drops, drips into a pan, and drains away through a small pipe. On a humid day, a home system can pull five gallons of water or more out of your air.",
+      "stop": "ac_indoor_coil",
+      "move": "snap",
+      "spark": "ice",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "chips",
+          "text": "PULLS WATER FROM THE AIR",
+          "cue": "water"
+        },
+        {
+          "type": "big",
+          "text": "5+ GALLONS A DAY",
+          "cue": "five"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "So that cool, dry air is really just your air with the heat and the water taken out. Another one decoded. What's your thermostat set to right now? Drop the number in the comments, and share this with whoever keeps changing it. Next time you bump that thermostat down, remember where the heat goes.",
+      "stop": "thermostat",
+      "move": "backout",
+      "spark": "ice",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "WHAT'S YOURS SET TO?",
+          "cue": "thermostat"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 277,
+  "fb_caption": "Decoded: your AC doesn't make cold air. It moves heat outside.\nAnd on a humid day it pulls gallons of water out of your air.\nWhat's your thermostat set to right now?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#AirConditioning",
+    "#HomeFacts"
+  ],
+  "engagement_comment": "Thermostat wars: what number is yours set to right now? 🥶 68? 72? 76? Drop it below.",
+  "sources": [
+    {
+      "claim": "Air conditioners transfer heat from the home's interior to the outside; evaporator coil removes heat and humidity using refrigerant; condenser coils release the collected heat outdoors; compressor moves refrigerant between them",
+      "urls": [
+        "https://www.energy.gov/sites/prod/files/2014/06/f16/HomeCooling101.pdf",
+        "https://www.carrier.com/us/en/residential/hvac-resources/air-conditioners/how-do-air-conditioners-work/"
+      ]
+    },
+    {
+      "claim": "Refrigerant shifts between liquid and gas; indoor (evaporator) coil absorbs heat from air blown across it; compressor raises the refrigerant's pressure and temperature; outdoor coil releases the heat",
+      "urls": [
+        "https://www.carrier.com/us/en/residential/hvac-resources/air-conditioners/how-do-air-conditioners-work/",
+        "https://www.energy.gov/sites/prod/files/2014/06/f16/HomeCooling101.pdf"
+      ]
+    },
+    {
+      "claim": "Air conditioners dehumidify: water vapor condenses on the cold evaporator coil and drains away",
+      "urls": [
+        "https://courses.ems.psu.edu/egee102/node/2425",
+        "https://hvac-blog.acca.org/the-ultimate-guide-to-hvac-condensate/",
+        "https://www.energy.gov/sites/prod/files/2014/06/f16/HomeCooling101.pdf"
+      ]
+    },
+    {
+      "claim": "Condensate volume: about 5-20 gallons per day (trade association) / 10-30 gallons per day on a humid day (university course)",
+      "urls": [
+        "https://hvac-blog.acca.org/the-ultimate-guide-to-hvac-condensate/",
+        "https://courses.ems.psu.edu/egee102/node/2425"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist (moves heat + removes water). HEDGED: water volume said as 'can pull five gallons or more on a humid day' - the two opened sources give 5-20 and 10-30 gallons/day and neither is a measured standard. 'Ninety-five degrees' in the hook is scene-setting, not a claim. Simplified: the refrigerant's liquid/gas change is described only as 'very cold fluid ... soaks up heat' and 'cools back down'. DROPPED: the inventor/history, efficiency or cost numbers, and anything that sounds like a repair step (no refrigerant, drain-clearing or electrical instructions). The DOE Energy Saver web pages returned 'not found' today, so the DOE citation is the Energy Saver 101 Home Cooling PDF (opened and read). No maker named in the script; one maker's explainer is used only as a source. The sponge is the one analogy."
+}

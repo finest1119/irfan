@@ -1,0 +1,552 @@
+{
+  "id": "2026-11-24-ed-06-microwave-door-mesh",
+  "page": "everyday_decoded",
+  "keyword": "why microwave door has mesh",
+  "slug": "why-microwave-door-has-mesh",
+  "title": "Why There's a Metal Mesh in Your Microwave Door",
+  "fb_caption": "Decoded: the tiny dots in your microwave door.\nThe waves are nearly 5 inches long, and the holes are pinhole-size. Light gets out. Microwaves don't.\nDo you watch your food spin, or walk away?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#Microwave",
+    "#ScienceFacts",
+    "#DidYouKnow"
+  ],
+  "engagement_comment": "Be honest: do you stand and watch the food spin, or walk away? 👀 (And who was told as a kid not to stand too close?)",
+  "sources": [
+    "Microwaves are produced by a magnetron, reflected within the metal interior, and absorbed by food; they make water molecules vibrate, producing heat; ovens do not cook 'from the inside out': https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens ; https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+    "Home ovens operate at about 2,450 MHz, a wavelength of about 12 cm (12.2 cm = 4.8 in): https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html ; https://en.wikipedia.org/wiki/Microwave_oven",
+    "Door screen holes are about 1 mm, far smaller than the wavelength, so microwaves cannot pass; visible light wavelengths are about 2,000 times smaller than the holes and pass through: https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html ; https://en.wikipedia.org/wiki/Microwave_oven",
+    "Federal standard limits leakage; do not use an oven with a damaged door, hinges, latches or seals: https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens ; https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+  ],
+  "sources_structured": [
+    {
+      "claim": "Microwaves are produced by a magnetron, reflected within the metal interior, and absorbed by food; they make water molecules vibrate, producing heat; ovens do not cook 'from the inside out'",
+      "urls": [
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+      ]
+    },
+    {
+      "claim": "Home ovens operate at about 2,450 MHz, a wavelength of about 12 cm (12.2 cm = 4.8 in)",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://en.wikipedia.org/wiki/Microwave_oven"
+      ]
+    },
+    {
+      "claim": "Door screen holes are about 1 mm, far smaller than the wavelength, so microwaves cannot pass; visible light wavelengths are about 2,000 times smaller than the holes and pass through",
+      "urls": [
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+        "https://en.wikipedia.org/wiki/Microwave_oven"
+      ]
+    },
+    {
+      "claim": "Federal standard limits leakage; do not use an oven with a damaged door, hinges, latches or seals",
+      "urls": [
+        "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+        "https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html"
+      ]
+    }
+  ],
+  "fact_notes": "CONFIRMED the plan's twist: wavelength about 12 cm (4.8 in → 'nearly five inches'); holes about 1 mm. HEDGED: the screen acts 'almost like' solid metal (a small, federally limited amount can leak); hole size said as 'about as wide as the tip of a pen' with '1 MM' on screen (US-units exception: no natural inch value). 'Thousands of times smaller' = the university source's 'about 2000 times'. Mechanism wording follows FDA ('vibrate'), not 'resonance'; the inside-out myth is corrected in the script. DROPPED: 'glass alone would let microwaves through' (only FDA states it among opened sources); the 2.45 GHz number (used in episode 02 instead), any leakage number, and all internal-parts/repair detail beyond naming the magnetron. Added FDA's damaged-door advice. The soccer net is the one analogy.",
+  "topic_id": "C3",
+  "series": "Home",
+  "word_count": 278,
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "pause_between_beats": 0.3,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You stand there watching your leftovers spin behind a window full of tiny dots. Ever wonder why there's a metal screen in that glass? It's the reason you can watch your food cook at all. Let's go in.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "kitchen_microwave",
+          "move": "drift",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY THE TINY DOTS?",
+            "cue": "dots"
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "to": "kitchen_microwave",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave"
+          },
+          {
+            "move": "snap",
+            "to": "kitchen_microwave__detail",
+            "dur": 0.3,
+            "cue": "ever",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave__detail"
+          },
+          {
+            "move": "travel",
+            "to": "kitchen_microwave__alt",
+            "dur": 0.8,
+            "cue": "lets",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: inside the box. A part called a magnetron makes microwaves, which are a kind of radio wave you can't see. The metal walls reflect them, so the waves bounce around until your food absorbs them.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "kitchen_microwave",
+          "move": "portal",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WAVES BOUNCE OFF METAL",
+            "anchor": "kitchen_microwave",
+            "cue": "bounce"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 1"
+            ],
+            "cues": [
+              "one"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "portal",
+            "to": "kitchen_microwave__inside",
+            "dur": 0.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave__inside"
+          },
+          {
+            "move": "snap",
+            "to": "kitchen_microwave__inside_detail",
+            "dur": 0.3,
+            "cue": "see",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave__inside_detail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: the food. The waves make its water molecules vibrate, and all that motion becomes heat. And no, it doesn't cook from the inside out. The outer layers heat first, and the warmth works its way in.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "kitchen_microwave",
+          "move": "orbit",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "WATER MOLECULES VIBRATE",
+            "anchor": "kitchen_microwave",
+            "cue": "vibrate"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 2",
+              "NOT INSIDE-OUT"
+            ],
+            "cues": [
+              "two",
+              "inside"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "kitchen_microwave"
+          },
+          {
+            "move": "travel",
+            "to": "kitchen_microwave__inside_alt",
+            "dur": 1.0,
+            "cue": "food",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "kitchen_microwave__inside_alt"
+          },
+          {
+            "move": "travel",
+            "to": "kitchen_microwave__inside",
+            "dur": 0.8,
+            "cue": "and#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "kitchen_microwave__inside"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the door. You need to see in, but the waves need to stay in. So a sheet of metal is built into the glass, punched full of tiny holes, each only about as wide as the tip of a pen. And federal safety rules strictly limit how much is allowed to leak.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_microwave_mesh",
+          "move": "snap",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "label",
+            "text": "METAL SCREEN IN THE GLASS",
+            "anchor": "macro_microwave_mesh",
+            "cue": "metal"
+          },
+          {
+            "type": "big",
+            "text": "ABOUT 1 MM HOLES",
+            "cue": "holes"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "STOP 3"
+            ],
+            "cues": [
+              "three"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "portal",
+            "to": "macro_microwave_mesh",
+            "dur": 0.5,
+            "cue": 0.0,
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_microwave_mesh"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__detail",
+            "dur": 1.2,
+            "cue": "so",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_microwave_mesh__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__alt",
+            "dur": 1.0,
+            "cue": "tip",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "macro_microwave_mesh__alt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. The microwaves in your oven are nearly five inches long. To a wave that big, those holes are like a soccer net to a beach ball, so the screen acts almost like solid metal. But visible light waves are thousands of times smaller than the holes, so they slip right through. You see in. The microwaves stay in.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "macro_microwave_mesh",
+          "move": "orbit",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TWIST",
+            "style": "twist",
+            "cue": "twist"
+          },
+          {
+            "type": "big",
+            "text": "ABOUT 5 INCHES LONG",
+            "cue": "five"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "LIGHT SLIPS THROUGH",
+              "MICROWAVES STAY IN"
+            ],
+            "cues": [
+              "light",
+              "stay"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "none",
+            "cue": 0.0,
+            "lead": 0.0,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "macro_microwave_mesh"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh",
+            "dur": 0.8,
+            "cue": "the#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "macro_microwave_mesh"
+          },
+          {
+            "move": "snap",
+            "to": "macro_microwave_mesh__detail",
+            "dur": 0.3,
+            "cue": "to",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "macro_microwave_mesh__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__alt",
+            "dur": 1.0,
+            "cue": "solid",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "macro_microwave_mesh__alt"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh",
+            "dur": 0.8,
+            "cue": "you#1",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "macro_microwave_mesh"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "And if that door is ever damaged or won't close right, stop using the oven. Another one decoded. Do you watch your food spin, or walk away? Tell me below, and share this with someone who stands back from the microwave. Next time your leftovers spin, look at the dots.",
+      "shot": {
+        "builder": "ed_oneshot",
+        "params": {
+          "stop": "kitchen_microwave",
+          "move": "backout",
+          "spark": "amber"
+        },
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ANOTHER ONE DECODED",
+            "cue": "decoded"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WATCH IT OR WALK AWAY?"
+            ],
+            "cues": [
+              "watch"
+            ]
+          }
+        ],
+        "camera": [
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__detail",
+            "dur": 1.2,
+            "cue": "oven",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": -4.0
+            },
+            "stop": "macro_microwave_mesh__detail"
+          },
+          {
+            "move": "travel",
+            "to": "macro_microwave_mesh__alt",
+            "dur": 1.0,
+            "cue": "tell",
+            "lead": 0.4,
+            "hold": {
+              "type": "orbit",
+              "deg_s": 4.0
+            },
+            "stop": "macro_microwave_mesh__alt"
+          },
+          {
+            "move": "backout",
+            "to": "kitchen_microwave",
+            "dur": 4.0,
+            "cue": "next",
+            "lead": 0.4,
+            "hold": {
+              "type": "drift"
+            },
+            "stop": "kitchen_microwave"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2",
+  "style": {
+    "font_set": "montserrat",
+    "highlight_color": "#FFB000",
+    "twist_card": {
+      "bg": "#FFB000",
+      "fg": "#1B1F24"
+    }
+  },
+  "oneshot": {
+    "world": "hometown_usa",
+    "worlds_used": [
+      "W3"
+    ],
+    "beats": [
+      "hook",
+      "stop1",
+      "stop2",
+      "stop3",
+      "twist",
+      "outro"
+    ],
+    "stops": [
+      "kitchen_microwave",
+      "kitchen_microwave",
+      "kitchen_microwave",
+      "macro_microwave_mesh",
+      "macro_microwave_mesh",
+      "kitchen_microwave"
+    ],
+    "moves": [
+      "drift",
+      "portal",
+      "orbit",
+      "snap",
+      "orbit",
+      "backout"
+    ],
+    "spark": [
+      "amber",
+      "amber",
+      "amber",
+      "amber",
+      "amber",
+      "amber"
+    ],
+    "move_durations_s": {
+      "drift": 3.0,
+      "portal": 0.5,
+      "orbit": 3.0,
+      "snap": 0.3,
+      "backout": 4.0
+    },
+    "spark_colors": {
+      "teal": "#00B3A4",
+      "amber": "#FFB000",
+      "ice": "#7FD4FF"
+    },
+    "twist_beat": "twist",
+    "series_chip": "DECODED · HOME #3",
+    "stop_chips": [
+      null,
+      null,
+      null,
+      "STOP 1",
+      null,
+      null
+    ],
+    "sign_off": "Another one decoded.",
+    "anchors": "label anchor = stop id; Blender empty ANC_<stop> (WORLDS-SPEC.md)"
+  },
+  "generated_by": "page3/tools/make_episode.py"
+}

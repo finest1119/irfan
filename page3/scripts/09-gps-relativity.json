@@ -1,0 +1,209 @@
+{
+  "id": "ed-09-gps-relativity",
+  "topic_id": "D2",
+  "series": "Transport",
+  "world": [
+    "W1",
+    "W2"
+  ],
+  "title": "Your Phone's GPS Would Be Off by Miles Without Einstein",
+  "keyword": "how gps works relativity",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "The blue dot on your map knows which street you're on. Without Albert Einstein, it would be off by miles before the day was over. To see why, we have to go up. Way up.",
+      "stop": "hand_phone",
+      "move": "drift",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "YOUR BLUE DOT NEEDS EINSTEIN",
+          "cue": "einstein"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one: about 12,550 miles above you. More than two dozen GPS satellites are up here, and each one circles the entire Earth twice a day.",
+      "stop": "sky_satellites",
+      "move": "crane",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "big",
+          "text": "ABOUT 12,550 MILES UP",
+          "cue": "12550"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "Stop two: one satellite, up close. It carries an atomic clock, and it broadcasts the same simple message over and over: here's who I am, and here's exactly what time it is.",
+      "stop": "sky_satellites",
+      "move": "orbit",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "ATOMIC CLOCK ON BOARD",
+          "cue": "clock"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: follow one of those signals back down to your hand. Notice the direction. The signals only come down. Your phone never sends anything up to those satellites. It just listens.",
+      "stop": "hand_phone",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "chips",
+          "text": "SIGNALS COME DOWN",
+          "cue": "down"
+        },
+        {
+          "type": "chips",
+          "text": "YOUR PHONE JUST LISTENS",
+          "cue": "listens"
+        }
+      ]
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: a chip inside. It measures how long each signal took to arrive. Like counting the seconds between lightning and thunder, time becomes distance. With at least four satellites, it can work out where you are.",
+      "stop": "macro_phone_board",
+      "move": "snap",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 4",
+          "cue": "four"
+        },
+        {
+          "type": "chips",
+          "text": "TIME = DISTANCE",
+          "cue": "time"
+        },
+        {
+          "type": "big",
+          "text": "AT LEAST 4 SATELLITES",
+          "cue": "satellites"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Those clocks don't tick like clocks on the ground. The satellites move fast, which slows them a little. But gravity is weaker up there, which speeds them up more. Net result: they gain about 38 millionths of a second a day. Left uncorrected, your position would drift about six miles every day. So the fix is built in.",
+      "stop": "sky_satellites",
+      "move": "crane",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "big",
+          "text": "ABOUT 38 MICROSECONDS A DAY",
+          "cue": "38"
+        },
+        {
+          "type": "chips",
+          "text": "ABOUT 6 MILES OF DRIFT A DAY",
+          "cue": "six"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "So every time that blue dot lands on the right street, Einstein gets proven right again. Another one decoded. Did you know your phone only listens? Comment knew it, or no way, and share this with whoever gets lost with the map open. Now look at that blue dot again.",
+      "stop": "hand_phone",
+      "move": "backout",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "KNEW IT OR NO WAY?",
+          "cue": "knew"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 273,
+  "fb_caption": "Decoded: the blue dot on your map.\nGPS satellite clocks run about 38 millionths of a second fast every day. Without Einstein's math, your position would drift by miles.\nDid you know your phone only listens?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#GPS",
+    "#Einstein",
+    "#ScienceFacts"
+  ],
+  "engagement_comment": "'Knew it' or 'no way': your phone never sends anything UP to GPS satellites. It only listens. 🛰️",
+  "sources": [
+    {
+      "claim": "GPS satellites fly at about 20,200 km (12,550 miles); each circles the Earth twice a day; 24-slot constellation (31 operational as of mid-2023) keeps at least four in view",
+      "urls": [
+        "https://archive.gps.gov/systems/gps/space/",
+        "https://en.wikipedia.org/wiki/Global_Positioning_System"
+      ]
+    },
+    {
+      "claim": "Satellites constantly broadcast signals; the receiver in your phone listens; a fix needs four or more satellites; GPS does not require the user to transmit any data",
+      "urls": [
+        "https://spaceplace.nasa.gov/gps/en/",
+        "https://en.wikipedia.org/wiki/Global_Positioning_System",
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html"
+      ]
+    },
+    {
+      "claim": "Each satellite carries an atomic clock; signal travel time gives distance",
+      "urls": [
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+        "https://en.wikipedia.org/wiki/Global_Positioning_System"
+      ]
+    },
+    {
+      "claim": "Relativity: motion slows the satellite clocks about 7 microseconds/day, weaker gravity speeds them up about 45, net about +38 microseconds/day",
+      "urls": [
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+        "https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System"
+      ]
+    },
+    {
+      "claim": "Uncorrected, position errors would accumulate at about 10 km (6 miles) per day (one source: roughly 11.4 km/day); the clock rate is offset to compensate",
+      "urls": [
+        "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+        "https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System"
+      ]
+    }
+  ],
+  "fact_notes": "APPLIED section 6: altitude 12,550 miles; signals come DOWN and the phone only receives (stated as its own stop); drift about 6 miles (10 km) a day - the two opened sources say 'about 10 kilometers each day' and 'roughly 11.4 km/day', so 'about six miles' is the low, safe end. '38 millionths of a second' = 38 microseconds, said in plain words. HEDGED: 'more than two dozen' satellites (24 slots; 31 operational in the 2023 government count). 'Knows which street you're on' replaces any accuracy-in-feet claim. Simplified: 'the fix is built into the system' (satellite clock rates are offset before launch; receivers apply small extra corrections). DROPPED: accuracy numbers, assisted-GPS/cell-tower help, the pre-launch frequency figure. Einstein is a historical figure, not a brand. The official gps.gov page moved; the citation is its government archive copy (opened). Lightning-and-thunder is the one analogy."
+}

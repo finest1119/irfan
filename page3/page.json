@@ -1,0 +1,89 @@
+{
+  "page": "everyday_decoded",
+  "name": "Everyday Decoded",
+  "tagline": "The hidden side of the things you use every day.",
+  "audience": {"country": "US", "language": "en-US", "units": "US first (°F, miles, mph, gallons, inches); metric in brackets only if useful"},
+  "fb": {
+    "page_id_env": "FB_PAGE_ID",
+    "page_token_env": "FB_PAGE_TOKEN",
+    "note": "Page ID and token are read from the laptop's .env at runtime. Never store them in this file or in git.",
+    "is_ai_generated": true,
+    "visibility": "public",
+    "engagement_comment_as_page": true
+  },
+  "voice": {
+    "provider": "gemini",
+    "voice": "Sadaltager",
+    "rotate": false,
+    "director_notes": "Friendly American-English expert for a US social video about how everyday things work. Curious, warm, knowledgeable tone; about 165-175 words per minute. Short sentences, continuous narration, a small pause right before the twist fact. Lively intonation, never monotone or salesy.",
+    "wpm_target": [165, 175],
+    "pause_between_beats": 0.3,
+    "whoosh_sfx_db_under_vo": -20
+  },
+  "tts_defaults": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "trim_pauses": true
+  },
+  "render_defaults": {
+    "resolution": [1080, 1920],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 1,
+    "note": "Laptop #2 (RTX 3050, ~4 GB VRAM): one Blender GPU process at a time (PLAN 7b). Samples/engine are set by the benchmark."
+  },
+  "palette": {
+    "charcoal": "#1B1F24",
+    "teal": "#00B3A4",
+    "amber": "#FFB000",
+    "ice": "#7FD4FF",
+    "white": "#FFFFFF"
+  },
+  "spark_colors": {"teal": "#00B3A4", "amber": "#FFB000", "ice": "#7FD4FF"},
+  "captions": {
+    "band": [0.22, 0.31],
+    "position": "top-centre",
+    "text_color": "#FFFFFF",
+    "highlight": "amber",
+    "highlight_color": "#FFB000",
+    "note": "Needs a per-Page highlight colour option in pipeline/overlay_v2.py (today: red). Shared change, not done here."
+  },
+  "fonts": {
+    "caption": "PLACEHOLDER: Montserrat ExtraBold (open licence, to be committed in assets/fonts/)",
+    "caption_highlight": "PLACEHOLDER: Montserrat Black",
+    "cards_chips": "PLACEHOLDER: Barlow Condensed SemiBold",
+    "note": "Per PLAN 7b font resolver: open-licence fonts committed in the repo; Avenir Next / DIN are Mac-only and stay WJH-only."
+  },
+  "cards": {
+    "twist": {"style": "twist", "text": "TWIST", "background": "#FFB000", "text_color": "#1B1F24"},
+    "series_chip": "DECODED · {SERIES} #{N}",
+    "stop_chip": "STOP {N}"
+  },
+  "series": {
+    "A": "PHONE & INTERNET",
+    "B": "MONEY",
+    "C": "HOME",
+    "D": "TRANSPORT",
+    "E": "FOOD & DELIVERY",
+    "F": "ENTERTAINMENT"
+  },
+  "hashtags_base": ["#EverydayDecoded", "#HowItWorks", "#Explained"],
+  "sign_off": "Another one decoded.",
+  "comment_prompt": "What should we decode next?",
+  "caption_opener": "Decoded: ",
+  "length_s": {"target": [75, 100], "floor": 60, "cap": 120},
+  "word_count": [200, 300],
+  "posting": {
+    "timezone": "America/New_York",
+    "note": "Times are US Eastern wall-clock; the scheduler converts with a tz database (EST/EDT shift), never a fixed MYT offset.",
+    "slots": [
+      {"id": "morning", "local": "07:30", "label": "Morning commute"},
+      {"id": "lunch", "local": "12:00", "label": "Lunch"},
+      {"id": "after_work", "local": "17:30", "label": "After work"},
+      {"id": "prime", "local": "20:00", "label": "Prime time"},
+      {"id": "late", "local": "22:30", "label": "Late / West-coast evening"}
+    ],
+    "ramp_up": {"per_day": 2, "slots": ["lunch", "prime"], "then": "3/day -> 5/day after the render benchmark and week-1 insights"}
+  },
+  "worlds": {"default_scene": "hometown_usa", "built": ["W1", "W2", "W3"], "planned": ["W4", "W5"]}
+}

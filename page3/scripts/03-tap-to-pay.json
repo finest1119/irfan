@@ -1,0 +1,200 @@
+{
+  "id": "ed-03-tap-to-pay",
+  "topic_id": "B1",
+  "series": "Money & Payments",
+  "world": [
+    "W1",
+    "W2"
+  ],
+  "title": "Where Your Payment Goes When You Tap Your Card",
+  "keyword": "how tap to pay works",
+  "voice": "Sadaltager",
+  "beats": [
+    {
+      "id": "hook",
+      "text": "You tap your card at the register. A few seconds later: approved. No swipe, barely a pause. But in that little gap, your payment went on a trip. Here's where it went.",
+      "stop": "strip_mall_checkout",
+      "move": "orbit",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "WHERE DID YOUR TAP GO?",
+          "cue": "tap"
+        }
+      ]
+    },
+    {
+      "id": "stop1",
+      "text": "Stop one is inside the card. Hidden in the plastic is a thin wire coil, an antenna you never see.",
+      "stop": "macro_card_coil",
+      "move": "snap",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 1",
+          "cue": "one"
+        },
+        {
+          "type": "label",
+          "text": "HIDDEN ANTENNA COIL",
+          "cue": "coil"
+        }
+      ]
+    },
+    {
+      "id": "stop2",
+      "text": "It feeds stop two: the chip, a tiny computer. For this purchase it creates a one-time security code. It's made for this single payment, so a copy of it is no good for another.",
+      "stop": "macro_card_chip",
+      "move": "portal",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 2",
+          "cue": "two"
+        },
+        {
+          "type": "label",
+          "text": "ONE-TIME CODE",
+          "cue": "code"
+        }
+      ]
+    },
+    {
+      "id": "stop3",
+      "text": "Stop three: the terminal. It bundles that code with the amount and sends the request out of the store.",
+      "stop": "macro_terminal",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 3",
+          "cue": "three"
+        },
+        {
+          "type": "label",
+          "text": "PAYMENT TERMINAL",
+          "cue": "terminal"
+        }
+      ]
+    },
+    {
+      "id": "stop4",
+      "text": "Stop four: the handoff. Like a baton in a relay race, the request passes from the store's payment processor, to the card network, to your bank's computers. They check the code and your account, and send one word back down the line: approved. The whole relay usually takes just a few seconds.",
+      "stop": "data_center",
+      "move": "travel",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "chips",
+          "text": "STOP 4",
+          "cue": "four"
+        },
+        {
+          "type": "chips",
+          "text": "PROCESSOR, NETWORK, BANK",
+          "cue": "processor"
+        },
+        {
+          "type": "chips",
+          "text": "USUALLY A FEW SECONDS",
+          "cue": "seconds"
+        }
+      ]
+    },
+    {
+      "id": "twist",
+      "text": "Here's the twist. Your card has no battery. None. The terminal gives off a small energy field, and when the card gets close, that coil picks up just enough power to wake the chip. It only works at very close range, within a few inches, which is why you have to bring the card right up to the terminal.",
+      "stop": "macro_card_coil",
+      "move": "snap",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "TWIST",
+          "style": "twist",
+          "cue": "twist"
+        },
+        {
+          "type": "chips",
+          "text": "NO BATTERY",
+          "cue": "battery"
+        },
+        {
+          "type": "chips",
+          "text": "POWERED BY THE TERMINAL",
+          "cue": "power"
+        },
+        {
+          "type": "chips",
+          "text": "WORKS ONLY UP CLOSE",
+          "cue": "close"
+        }
+      ]
+    },
+    {
+      "id": "outro",
+      "text": "So that beep is a tiny computer waking up, doing its math, and going back to sleep. And all you did was tap. Another one decoded. Team tap, or team chip in the slot? Comment below, and share this with someone who still swipes. Next time you tap your card, count the seconds.",
+      "stop": "strip_mall_checkout",
+      "move": "backout",
+      "spark": "teal",
+      "overlays": [
+        {
+          "type": "card",
+          "text": "ANOTHER ONE DECODED",
+          "cue": "decoded"
+        },
+        {
+          "type": "chips",
+          "text": "TEAM TAP OR TEAM CHIP?",
+          "cue": "team"
+        }
+      ]
+    }
+  ],
+  "twist_beat": "twist",
+  "word_count": 269,
+  "fb_caption": "Decoded: what really happens when you tap your card.\nA few seconds, four stops, and a card with no battery.\nTeam tap or team chip?",
+  "hashtags": [
+    "#EverydayDecoded",
+    "#HowItWorks",
+    "#Explained",
+    "#TapToPay",
+    "#MoneyFacts"
+  ],
+  "engagement_comment": "Team TAP or team CHIP-in-the-slot? Vote below 👇 (bonus: did you know your card has no battery?)",
+  "sources": [
+    {
+      "claim": "A one-time-use security code is generated for every EMV contactless/chip transaction to safeguard against fraud",
+      "urls": [
+        "https://www.emvco.com/wp-content/uploads/2023/06/EMVCo_QRG_EMV-CONTACTLESS_FINAL.pdf",
+        "https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona"
+      ]
+    },
+    {
+      "claim": "Contactless cards have no battery; a built-in coil/antenna is powered by the reader's field (inductive coupling)",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Contactless_smart_card",
+        "https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona"
+      ]
+    },
+    {
+      "claim": "Very short range: chip is powered wirelessly by the terminal at up to about 4 cm (card maker); the general card standard allows up to about 10 cm / 4 in (encyclopedia) - so within a few inches",
+      "urls": [
+        "https://www.thalesgroup.com/pt-pt/countries/americas/thales-brazil/dis/servicos-financeiros/cartaos/sem-contato/como-funciona",
+        "https://en.wikipedia.org/wiki/Contactless_smart_card"
+      ]
+    },
+    {
+      "claim": "Authorization path: point of sale → processor/acquirer → card network → issuing bank, which checks the card/account and returns approve or decline; usually just a few seconds",
+      "urls": [
+        "https://stripe.com/resources/more/card-authorization-explained",
+        "https://www.nmi.com/blog/credit-card-flow-the-journey-data-takes-from-swipe-to-payment"
+      ]
+    }
+  ],
+  "fact_notes": "APPLIED section 6: 'two seconds' → 'a few seconds'. HEDGED/CHANGED: the plan's 'about 1.5 inches (4 cm)' has only ONE opened source (a card maker's page); a second opened source gives the general standard's limit as about 10 cm (4 in). So the script says 'within a few inches' and shows no number on screen. 'A copy of it is no good for another [purchase]' is the plain-word version of the standards body's 'one-time code to safeguard against fraud'. DROPPED: 'no PIN' (some taps do ask for one), any transaction-time number in milliseconds, anything about reading at a distance or how fraud is attempted, and phone-wallet features (cards only). The standards body's own range specification could not be opened (a chip maker's note that quotes 4 cm timed out twice). No card network, bank or store named. The relay race is the one analogy."
+}
