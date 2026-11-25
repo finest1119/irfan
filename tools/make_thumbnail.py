@@ -1,0 +1,542 @@
+"""Make a Reel cover (1080x1920 JPG, <10 MB) from a hero frame, styled by a per-Page preset. Page-agnostic.
+
+Style follows branding/THUMBNAIL-STYLE.md: a real frame from the reel's own scene with the hero object in the lower
+~55-60%, and a TWO-TIER hook in the top ~12-40%: a white heavy-sans SETUP line (short question / danger / motion
+wording) + a 1-3 word (preset payoff.max_words) ALL-CAPS PAYOFF in solid colour boxes (one box per line). Max 8 words in total. Every word must be
+literally true to the reel. All key content must sit inside the preset's safe zone (default y 285..1635 = the centre
+1080x1350 feed crop); the script refuses to write the file otherwise.
+
+Usage:
+  .venv/bin/python tools/make_thumbnail.py HERO.png OUT.jpg --setup "Your tower can act like a" --payoff "CHIMNEY"
+      [--style wjh|sme|ed|path.json] [--micro "context line"] [--sticker "fact" --sticker-at x,y]
+      [--sticker-label "TOWER"] [--badge "BUILD #01"] [--payoff-lines "THE TOP|FLOORS"] [--accent #hex] [--zoom 1.0] [--focus 0.5,0.5] [--text-top PX]
+      [--arrow x,y,angle] [--circle x,y,r] [--debug-safe]
+
+  --payoff "A B|C"   "|" splits payoff boxes; otherwise auto 1 line (2 if wider than payoff.max_width).
+  --zoom / --focus   cover-fit crop of the hero: zoom >1 crops tighter, focus = crop centre as fractions.
+  --arrow / --circle pointer in 1080x1920 coords (arrow TIP at x,y, angle 0=right 90=down -90=up). Presets with
+                     "pointers": false (wjh, per the style spec) reject them. With "pointer": {"style": "leader"} the
+                     --arrow draws a thin elbow leader line from the sticker (or from the angle) to a dot at x,y.
+  --sticker-label T  optional small label line above the sticker text (e.g. TOWER above "50 FT").
+  --badge TEXT       set / override the badge text (e.g. "BUILD #01"); uses the preset's badge style.
+  --debug-safe       also writes OUT-debug.jpg with the safe zone and content boxes drawn.
+
+Preset JSON schema (tools/thumb_styles/<name>.json; every key optional, defaults below in DEFAULT).
+Every key marked (opt-in) is off by default, so presets that don't use it render exactly as before.
+  font                  path (repo-relative or absolute) of the heavy sans, e.g. assets/fonts/Montserrat-ExtraBold.ttf,
+                        OR a fallback list of paths: the first file that exists wins, missing ones are skipped
+  text_top              y of the top of the hook block (px)
+  align                 "center" | "left"
+  margin_x              side margin (px)
+  safe                  [y0, y1] key-content zone
+  gap                   px between setup / payoff / micro
+  grade                 {"contrast": 1.05, "saturation": 1.10, "vignette": 0.0-1.0 edge darkening}
+  top_shade             0-1: dark gradient over the top 45% for text legibility (0 = off), OR (opt-in) a colour panel:
+                        "#hex" or {"color", "alpha" 0-1 (1), "opaque_to" px (576), "fade_to" px (864),
+                                   "grid": null | {"step" px (54), "major_every" (5), "color" (#FFFFFF),
+                                                   "alpha" (0.10), "major_alpha" (0.20), "width" (1), "major_width" (2)}}
+                        = solid colour down to opaque_to, fading linearly to clear at fade_to, with an optional
+                        blueprint grid that fades with it.
+  setup                 {"size", "color", "shadow" 0-1, "box" null|"#hex", "box_text", "case": asis|upper|sentence}
+  payoff                {"size", "max_width", "box", "text", "pad": [y, x], "radius", "stagger" px, "shadow" 0-1,
+                         "font" (opt-in) path or fallback list, default = top-level font,
+                         "max_words" (3) payoff word limit (setup + payoff still max 8),
+                         "min_size" (opt-in) without "|", shrink down to this size to keep ONE line before wrapping,
+                         "under_strip" (opt-in) null | {"height" (20), "stripe" (26), "colors" [bg, stripe]
+                                        (default [payoff.box, payoff.text])}: hazard-stripe band under the last box}
+  micro                 {"size", "box", "text"}
+  sticker               {"size", "box", "text", "radius",
+                         "shadow" (0.35), "max_width" (420) text width before wrapping, "min_size" (opt-in) shrink the
+                         text down to this size to stay on one line / not overflow max_width, "pad" ([14, 24]), "align" (center|left),
+                         "label" (opt-in) default label text (--sticker-label overrides), "label_size" (0.45 x size),
+                         "label_color" (= text), "label_gap" (6),
+                         "border" (opt-in) null | {"width", "color"},
+                         "ticks" (opt-in) null | {"step" (18), "len" (24), "major_every" (5), "width" (3),
+                                                  "color" (= border colour or text)}: measuring-tape ticks on the bottom}
+  border                {"width", "color"}  frame around the whole image (0 = none)
+  ticker                null | {"color", "accent", "height", "y_offset"}: thin news-ticker strip above the hook
+  badge                 null | {"text", "box", "text_color", "size", "y"}: small corner badge (must be true!), plus
+                        (opt-in) "x" left edge of the TEXT; the box starts "pad" further left (default: right-aligned at the margin), "pad" ([8, 16]), "radius" (4),
+                        "rotate" degrees (counter-clockwise), "outline" null | {"color", "width"} (stamp look, use with
+                        "box": null), "decorative" true = exempt from the safe-zone check (may be cropped off)
+  pointers              true/false: allow --arrow/--circle
+  pointer               (opt-in) {"style": "arrow" (default fat arrow) | "leader", "color" (= payoff.box), "width" (6),
+                         "dot_r" (14), "dot_color" (#FFFFFF), "slant" deg (10), "length" (260, used without a sticker),
+                         "from_y" (0.5 = leaves the sticker at half its height)}
+"""
+import argparse
+import io
+import json
+import math
+import os
+import sys
+
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+STYLES = os.path.join(ROOT, "tools", "thumb_styles")
+W, H = 1080, 1920
+MAX_BYTES = 10 * 1024 * 1024
+
+DEFAULT = {
+    "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+    "text_top": 300, "align": "center", "margin_x": 90, "safe": [285, 1635], "gap": 16,
+    "grade": {"contrast": 1.05, "saturation": 1.10, "vignette": 0.3},
+    "top_shade": 0.0,
+    "setup": {"size": 74, "color": "#FFFFFF", "shadow": 0.45, "box": None, "box_text": "#111111", "case": "asis"},
+    "payoff": {"size": 150, "max_width": 900, "box": "#E63946", "text": "#FFFFFF", "pad": [12, 28], "radius": 6,
+               "stagger": 0, "shadow": 0.35},
+    "micro": {"size": 42, "box": "#FFFFFF", "text": "#111111"},
+    "sticker": {"size": 40, "box": "#FFD21F", "text": "#111111", "radius": 14},
+    "border": {"width": 0, "color": "#000000"},
+    "ticker": None,
+    "badge": None,
+    "pointers": True,
+}
+
+
+def load_style(name):
+    path = name if name.endswith(".json") else os.path.join(STYLES, name + ".json")
+    st = json.load(open(path))
+    out = json.loads(json.dumps(DEFAULT))
+    for k, v in st.items():
+        if k.startswith("_"):
+            continue
+        if isinstance(v, dict) and isinstance(out.get(k), dict):
+            out[k].update(v)
+        else:
+            out[k] = v
+    return out
+
+
+def rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def resolve_font(spec):
+    """A path or a fallback list of paths (repo-relative or absolute); the first existing file wins."""
+    cands = [spec] if isinstance(spec, str) else list(spec)
+    for c in cands:
+        p = c if os.path.isabs(c) else os.path.join(ROOT, c)
+        if os.path.isfile(p):
+            return p
+    sys.exit("no font found; tried: %s" % cands)
+
+
+def hazard(img, box, colors, stripe):
+    """45-degree hazard stripes filling box: colors = [background, stripe]."""
+    x0, y0, x1, y1 = [int(round(v)) for v in box]
+    w, h = x1 - x0, y1 - y0
+    if w <= 0 or h <= 0:
+        return
+    tile = Image.new("RGBA", (w, h), rgb(colors[0]) + (255,))
+    d = ImageDraw.Draw(tile)
+    for sx in range(-h - 2 * stripe, w + 2 * stripe, 2 * stripe):
+        d.polygon([(sx, h), (sx + stripe, h), (sx + stripe + h, 0), (sx + h, 0)], fill=rgb(colors[1]) + (255,))
+    img.alpha_composite(tile, (x0, y0))
+
+
+def color_panel(im, ts):
+    """Opt-in top_shade colour panel (+ optional blueprint grid) that fades out downwards."""
+    if isinstance(ts, str):
+        ts = {"color": ts}
+    alpha = ts.get("alpha", 1.0)
+    y_op, y_fade = ts.get("opaque_to", int(H * 0.30)), ts.get("fade_to", int(H * 0.45))
+    col = Image.new("L", (1, H))
+    for y in range(H):
+        f = 1.0 if y <= y_op else max(0.0, 1 - (y - y_op) / max(1, y_fade - y_op))
+        col.putpixel((0, y), int(round(255 * alpha * f)))
+    mask = col.resize((W, H))
+    im = Image.composite(Image.new("RGB", (W, H), rgb(ts["color"])), im, mask)
+    g = ts.get("grid")
+    if g:
+        step, every = g.get("step", 54), g.get("major_every", 5)
+        gc = rgb(g.get("color", "#FFFFFF"))
+        lines = Image.new("L", (W, H), 0)
+        d = ImageDraw.Draw(lines)
+        for i, v in enumerate(range(0, max(W, H), step)):
+            major = every and i % every == 0
+            a_ = int(255 * (g.get("major_alpha", 0.20) if major else g.get("alpha", 0.10)))
+            lw = g.get("major_width", 2) if major else g.get("width", 1)
+            if v < W:
+                d.line((v, 0, v, H), fill=a_, width=lw)
+            if v < H:
+                d.line((0, v, W, v), fill=a_, width=lw)
+        gmask = ImageChops.multiply(lines, mask)
+        im = Image.composite(Image.new("RGB", (W, H), gc), im, gmask)
+    return im
+
+
+def hero_plate(path, zoom, focus, grade, top_shade):
+    im = Image.open(path).convert("RGB")
+    s = max(W / im.width, H / im.height) * zoom
+    im = im.resize((max(W, round(im.width * s)), max(H, round(im.height * s))), Image.LANCZOS)
+    fx, fy = focus
+    x0 = min(max(0, round(im.width * fx - W / 2)), im.width - W)
+    y0 = min(max(0, round(im.height * fy - H / 2)), im.height - H)
+    im = im.crop((x0, y0, x0 + W, y0 + H))
+    im = ImageEnhance.Contrast(im).enhance(grade.get("contrast", 1.05))
+    im = ImageEnhance.Color(im).enhance(grade.get("saturation", 1.10))
+    vig = grade.get("vignette", 0.0)
+    if vig:
+        vg = Image.new("L", (W // 8, H // 8))
+        px = vg.load()
+        for y in range(vg.height):
+            for x in range(vg.width):
+                d = math.hypot((x - vg.width / 2) / (vg.width / 2), (y - vg.height / 2) / (vg.height / 2)) / math.sqrt(2)
+                px[x, y] = int(255 * (1 - vig * max(0.0, d - 0.35) / 0.65))
+        vg = vg.resize((W, H), Image.BICUBIC).filter(ImageFilter.GaussianBlur(20))
+        im = Image.composite(im, Image.new("RGB", (W, H), (0, 0, 0)), vg)
+    if isinstance(top_shade, (str, dict)):
+        im = color_panel(im, top_shade)
+    elif top_shade:
+        g = Image.new("L", (1, H))
+        for y in range(H):
+            g.putpixel((0, y), int(255 * top_shade * max(0.0, 1 - y / (H * 0.45))))
+        im = Image.composite(Image.new("RGB", (W, H), (0, 0, 0)), im, g.resize((W, H)))
+    return im
+
+
+class Painter:
+    """Draws onto an RGBA image and records every content box (for the safe-zone check)."""
+
+    def __init__(self, img):
+        self.img = img
+        self.boxes = []
+
+    def shadow_rect(self, box, r, strength, off=(6, 10), blur=12):
+        if strength <= 0:
+            return
+        sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rounded_rectangle([box[0] + off[0], box[1] + off[1], box[2] + off[0], box[3] + off[1]],
+                                             r, fill=(0, 0, 0, int(255 * strength)))
+        self.img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(blur)))
+
+    def text(self, xy, s, font, color, shadow=0.0, box=None, box_text=None, pad=(0, 0), radius=6, key=True):
+        """xy = (x_left_of_ink, y_top_of_ink). Returns the outer box."""
+        bb = font.getbbox(s)
+        x, y = xy
+        ox, oy = x - bb[0], y - bb[1]
+        ink = (x, y, x + bb[2] - bb[0], y + bb[3] - bb[1])
+        outer = (ink[0] - pad[1], ink[1] - pad[0], ink[2] + pad[1], ink[3] + pad[0])
+        if box:
+            self.shadow_rect(outer, radius, shadow)
+            ImageDraw.Draw(self.img).rounded_rectangle(outer, radius, fill=rgb(box) + (255,))
+            color = box_text or color
+        elif shadow > 0:
+            sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            ImageDraw.Draw(sh).text((ox, oy + 3), s, font=font, fill=(0, 0, 0, int(255 * shadow)))
+            self.img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(12)))
+            self.img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(4)))
+        ImageDraw.Draw(self.img).text((ox, oy), s, font=font, fill=rgb(color) + (255,))
+        if key:
+            self.boxes.append(outer)
+        return outer
+
+
+def ink_size(font, s):
+    bb = font.getbbox(s)
+    return bb[2] - bb[0], bb[3] - bb[1]
+
+
+def wrap(font, words, max_w):
+    lines, cur = [], []
+    for w in words:
+        if cur and ink_size(font, " ".join(cur + [w]))[0] > max_w:
+            lines.append(" ".join(cur))
+            cur = [w]
+        else:
+            cur.append(w)
+    return lines + [" ".join(cur)] if cur else lines
+
+
+def balanced(font, words, max_w):
+    """One line if it fits, else the 2-line split with the most even widths (no orphan words)."""
+    if ink_size(font, " ".join(words))[0] <= max_w or len(words) < 2:
+        return [" ".join(words)]
+    best = min(range(1, len(words)), key=lambda k: max(ink_size(font, " ".join(words[:k]))[0],
+                                                         ink_size(font, " ".join(words[k:]))[0]))
+    return [" ".join(words[:best]), " ".join(words[best:])]
+
+
+def draw_arrow(d, x, y, ang, col, dark, L=260):
+    a = math.radians(ang)
+    ux, uy = math.cos(a), math.sin(a)
+    px_, py_ = -uy, ux
+    head, hw, sw = 110, 85, 34
+    bx, by = x - ux * head, y - uy * head
+    tx, ty = x - ux * L, y - uy * L
+    pts = [(tx + px_ * sw / 2, ty + py_ * sw / 2), (bx + px_ * sw / 2, by + py_ * sw / 2),
+           (bx + px_ * hw, by + py_ * hw), (x, y), (bx - px_ * hw, by - py_ * hw),
+           (bx - px_ * sw / 2, by - py_ * sw / 2), (tx - px_ * sw / 2, ty - py_ * sw / 2)]
+    d.polygon(pts, fill=col, outline=dark, width=10)
+    return (min(p[0] for p in pts) - 5, min(p[1] for p in pts) - 5, max(p[0] for p in pts) + 5, max(p[1] for p in pts) + 5)
+
+
+def case(s, mode):
+    if mode == "upper":
+        return s.upper()
+    if mode == "sentence":
+        return s[:1].upper() + s[1:]
+    return s
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("hero")
+    ap.add_argument("out")
+    ap.add_argument("--setup", required=True, help="setup line, 2-5 words")
+    ap.add_argument("--payoff", required=True,
+                    help="payoff, 1-3 words (preset payoff.max_words), ALL CAPS ('|' = box break)")
+    ap.add_argument("--micro", help="optional small context line under the payoff")
+    ap.add_argument("--sticker", help="optional fact sticker text (must be stated in the reel)")
+    ap.add_argument("--sticker-at", default="540,1350", help="sticker centre x,y")
+    ap.add_argument("--sticker-label", help="optional small label line above the sticker text (e.g. TOWER)")
+    ap.add_argument("--badge", help="badge text (overrides the preset's badge text; must be true)")
+    ap.add_argument("--style", default="wjh", help="preset name in tools/thumb_styles/ or a .json path")
+    ap.add_argument("--accent", help="override payoff box colour")
+    ap.add_argument("--text-top", type=float)
+    ap.add_argument("--arrow")
+    ap.add_argument("--circle")
+    ap.add_argument("--zoom", type=float, default=1.0)
+    ap.add_argument("--focus", default="0.5,0.5")
+    ap.add_argument("--debug-safe", action="store_true")
+    a = ap.parse_args()
+
+    st = load_style(a.style)
+    if a.accent:
+        st["payoff"]["box"] = a.accent
+    font_path = resolve_font(st["font"])
+    pfont_path = resolve_font(st["payoff"]["font"]) if st["payoff"].get("font") else font_path
+    max_pw = st["payoff"].get("max_words", 3)
+    sw, pw = a.setup.split(), a.payoff.replace("|", " ").split()
+    if not 1 <= len(pw) <= max_pw:
+        sys.exit("payoff must be 1-%d words (got %d)" % (max_pw, len(pw)))
+    if len(sw) + len(pw) > 8:
+        sys.exit("hook is %d words; max 8 (setup + payoff)" % (len(sw) + len(pw)))
+    if (a.arrow or a.circle) and not st.get("pointers", True):
+        sys.exit("style %r does not allow arrows/circles (THUMBNAIL-STYLE.md: no arrows or circles)" % a.style)
+
+    img = hero_plate(a.hero, a.zoom, [float(v) for v in a.focus.split(",")], st["grade"], st.get("top_shade", 0))
+    img = img.convert("RGBA")
+    P = Painter(img)
+    mx = st["margin_x"]
+    col_w = W - 2 * mx
+    y = a.text_top if a.text_top is not None else st["text_top"]
+    center = st.get("align", "center") == "center"
+
+    def xpos(w, shift=0):
+        return (W - w) / 2 + shift if center else mx + shift
+
+    # ticker strip (decorative, sits just above the hook)
+    tk = st.get("ticker")
+    if tk:
+        th, ty = tk.get("height", 10), y + tk.get("y_offset", -26)
+        d = ImageDraw.Draw(img)
+        d.rectangle((mx, ty, W - mx, ty + th), fill=rgb(tk["color"]) + (255,))
+        d.rectangle((mx, ty, mx + tk.get("accent_w", 140), ty + th), fill=rgb(tk["accent"]) + (255,))
+
+    # setup line(s)
+    s = st["setup"]
+    spad = (14, 24) if s.get("box") else (0, 0)
+    stext = case(a.setup, s.get("case", "asis"))
+    for ssize in range(s["size"], int(s["size"] * 0.8) - 1, -2):   # one line if it fits at >= 80% size
+        sf = ImageFont.truetype(font_path, ssize)
+        if ink_size(sf, stext)[0] <= col_w - 2 * spad[1]:
+            break
+    for ln in balanced(sf, stext.split(), col_w - 2 * spad[1]):
+        w, h = ink_size(sf, ln)
+        box = P.text((xpos(w), y + spad[0]), ln, sf, s["color"], shadow=s.get("shadow", 0.45),
+                     box=s.get("box"), box_text=s.get("box_text"), pad=spad, radius=6)
+        y = box[3] + st["gap"] * 0.6
+    y += st["gap"]
+
+    # payoff boxes
+    p = st["payoff"]
+    pf = ImageFont.truetype(pfont_path, p["size"])
+    if p.get("min_size") and "|" not in a.payoff:   # opt-in: keep one line by shrinking to min_size before wrapping
+        for fsize in range(p["size"], p["min_size"] - 1, -2):
+            f1 = ImageFont.truetype(pfont_path, fsize)
+            if ink_size(f1, a.payoff.upper())[0] <= p["max_width"] - 2 * p["pad"][1]:
+                pf = f1
+                break
+    plines = [ln.strip() for ln in a.payoff.upper().split("|")] if "|" in a.payoff else \
+        wrap(pf, a.payoff.upper().split(), p["max_width"] - 2 * p["pad"][1])
+    size = pf.size
+    while max(ink_size(pf, ln)[0] for ln in plines) + 2 * p["pad"][1] > min(p["max_width"], col_w) and size > 60:
+        size -= 4
+        pf = ImageFont.truetype(pfont_path, size)
+    cap_h = ink_size(pf, "H")[1]
+    for i, ln in enumerate(plines):
+        w, _ = ink_size(pf, ln)
+        shift = (p.get("stagger", 0) * (1 if i % 2 else -1)) if len(plines) > 1 else 0
+        bb = pf.getbbox(ln)
+        # align on cap height so boxes are equal height regardless of descenders
+        x = xpos(w, shift)
+        top = y + p["pad"][0]
+        outer = (x - p["pad"][1], top - p["pad"][0], x + w + p["pad"][1], top + cap_h + p["pad"][0])
+        P.shadow_rect(outer, p["radius"], p.get("shadow", 0.35))
+        ImageDraw.Draw(img).rounded_rectangle(outer, p["radius"], fill=rgb(p["box"]) + (255,))
+        ImageDraw.Draw(img).text((x - bb[0], top - pf.getbbox("H")[1]), ln, font=pf, fill=rgb(p["text"]) + (255,))
+        P.boxes.append(outer)
+        y = outer[3] + max(8, st["gap"] * 0.5)
+    us = p.get("under_strip")
+    if us:   # hazard-stripe band glued under the last payoff box
+        strip = (outer[0], outer[3], outer[2], outer[3] + us.get("height", 20))
+        hazard(img, strip, us.get("colors", [p["box"], p["text"]]), us.get("stripe", 26))
+        P.boxes.append(strip)
+        y = strip[3] + max(8, st["gap"] * 0.5)
+
+    if a.micro:
+        m = st["micro"]
+        mf = ImageFont.truetype(font_path, m["size"])
+        w, _ = ink_size(mf, a.micro)
+        P.text((xpos(w), y + 10 + 10), a.micro, mf, m["text"], box=m.get("box"), box_text=m["text"], pad=(10, 20))
+
+    sticker_box = None
+    if a.sticker:
+        k = st["sticker"]
+        a.sticker_label = a.sticker_label or k.get("label")
+        ksize, kmax = k["size"], k.get("max_width", 420)
+        kf = ImageFont.truetype(font_path, ksize)
+        cx, cy = [float(v) for v in a.sticker_at.split(",")]
+        if k.get("min_size"):   # opt-in: shrink (down to min_size) to keep one line, then to avoid overflow
+            while ink_size(kf, a.sticker)[0] > kmax and ksize > k["min_size"]:
+                ksize -= 2
+                kf = ImageFont.truetype(font_path, ksize)
+        lines = wrap(kf, a.sticker.split(), kmax)
+        if k.get("min_size"):
+            while max(ink_size(kf, ln)[0] for ln in lines) > kmax and ksize > k["min_size"]:
+                ksize -= 2
+                kf = ImageFont.truetype(font_path, ksize)
+                lines = wrap(kf, a.sticker.split(), kmax)
+        lh = ksize * 1.15
+        ws = [ink_size(kf, ln)[0] for ln in lines]
+        kpad = k.get("pad", [14, 24])
+        lab_h = lab_w = 0
+        if a.sticker_label:
+            lf = ImageFont.truetype(font_path, k.get("label_size", int(round(ksize * 0.45))))
+            lab_w, _ = ink_size(lf, a.sticker_label)
+            lab_h = ink_size(lf, "H")[1] + k.get("label_gap", 6)
+        bw, bh = max(ws + [lab_w]) + 2 * kpad[1], lh * len(lines) + 2 * kpad[0] + lab_h
+        box = (cx - bw / 2, cy - bh / 2, cx + bw / 2, cy + bh / 2)
+        P.shadow_rect(box, k["radius"], k.get("shadow", 0.35))
+        kb = k.get("border")
+        if kb:
+            ImageDraw.Draw(img).rounded_rectangle(box, k["radius"], fill=rgb(k["box"]) + (255,),
+                                                  outline=rgb(kb["color"]) + (255,), width=kb.get("width", 6))
+        else:
+            ImageDraw.Draw(img).rounded_rectangle(box, k["radius"], fill=rgb(k["box"]) + (255,))
+        left = k.get("align", "center") == "left"
+        if a.sticker_label:
+            bb = lf.getbbox(a.sticker_label)
+            lx = box[0] + kpad[1] if left else cx - lab_w / 2
+            ImageDraw.Draw(img).text((lx - bb[0], box[1] + kpad[0] - lf.getbbox("H")[1]), a.sticker_label, font=lf,
+                                     fill=rgb(k.get("label_color", k["text"])) + (255,))
+        for i, ln in enumerate(lines):
+            bb = kf.getbbox(ln)
+            tx = box[0] + kpad[1] if left else cx - ws[i] / 2
+            ImageDraw.Draw(img).text((tx - bb[0], box[1] + kpad[0] + lab_h + i * lh - kf.getbbox("H")[1]), ln,
+                                     font=kf, fill=rgb(k["text"]) + (255,))
+        tk_ = k.get("ticks")
+        if tk_:   # measuring-tape ticks rising from the inside of the bottom edge
+            inset = kb.get("width", 6) if kb else 0
+            tcol = rgb(tk_.get("color", kb["color"] if kb else k["text"])) + (255,)
+            step, tl, every = tk_.get("step", 18), tk_.get("len", 24), tk_.get("major_every", 5)
+            yb = box[3] - inset
+            td = ImageDraw.Draw(img)
+            for j, tx in enumerate(range(int(box[0] + kpad[1] * 0.5), int(box[2] - inset - 2), step)):
+                ln_ = tl if every and j % every == 0 else tl * 0.5
+                td.line((tx, yb - ln_, tx, yb), fill=tcol, width=tk_.get("width", 3))
+        P.boxes.append(box)
+        sticker_box = box
+
+    d = ImageDraw.Draw(img)
+    accent = rgb(p["box"]) + (255,)
+    pt = st.get("pointer") or {}
+    if a.arrow and pt.get("style", "arrow") == "leader":
+        vals = [float(v) for v in a.arrow.split(",")]
+        x, yy = vals[0], vals[1]
+        lcol = rgb(pt.get("color", p["box"])) + (255,)
+        lw, r = pt.get("width", 6), pt.get("dot_r", 14)
+        if sticker_box:
+            b = sticker_box
+            sy = b[1] + (b[3] - b[1]) * pt.get("from_y", 0.5)
+            sx = b[2] if x >= (b[0] + b[2]) / 2 else b[0]
+        else:
+            ang = math.radians(vals[2] if len(vals) > 2 else 0)
+            sx, sy = x - math.cos(ang) * pt.get("length", 260), yy - math.sin(ang) * pt.get("length", 260)
+        sgn = 1 if x >= sx else -1
+        ex = x - sgn * min(abs(x - sx), abs(yy - sy) * math.tan(math.radians(pt.get("slant", 10))))
+        d.line([(sx, sy), (ex, sy), (x, yy)], fill=lcol, width=lw, joint="curve")
+        d.ellipse((x - r, yy - r, x + r, yy + r), fill=rgb(pt.get("dot_color", "#FFFFFF")) + (255,), outline=lcol,
+                  width=max(3, lw - 1))
+        P.boxes.append((x - r, yy - r, x + r, yy + r))
+    elif a.arrow:
+        x, yy, ang = [float(v) for v in a.arrow.split(",")]
+        P.boxes.append(draw_arrow(d, x, yy, ang, accent, (0, 0, 0, 255)))
+    if a.circle:
+        x, yy, r = [float(v) for v in a.circle.split(",")]
+        d.ellipse((x - r - 6, yy - r - 6, x + r + 6, yy + r + 6), outline=(0, 0, 0, 255), width=34)
+        d.ellipse((x - r, yy - r, x + r, yy + r), outline=accent, width=22)
+        P.boxes.append((x - r - 23, yy - r - 23, x + r + 23, yy + r + 23))
+
+    bg = st.get("badge")
+    if a.badge:
+        bg = dict(bg or {"box": p["box"], "text_color": p["text"]}, text=a.badge)
+    if bg and bg.get("text"):
+        bf = ImageFont.truetype(font_path, bg.get("size", 34))
+        w, _ = ink_size(bf, bg["text"])
+        bx = bg["x"] if "x" in bg else W - mx - w
+        bpad, brad = tuple(bg.get("pad", (8, 16))), bg.get("radius", 4)
+        bcol = bg.get("text_color", "#FFFFFF")
+        if not bg.get("rotate") and not bg.get("outline"):
+            P.text((bx, bg.get("y", 300)), bg["text"], bf, bcol, box=bg.get("box"), box_text=bcol, pad=bpad,
+                   radius=brad, key=not bg.get("decorative"))
+        else:   # stamp: drawn on its own layer, optionally outlined and rotated about its centre
+            layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            outer = Painter(layer).text((bx, bg.get("y", 300)), bg["text"], bf, bcol, box=bg.get("box"),
+                                        box_text=bcol, pad=bpad, radius=brad)
+            ol = bg.get("outline")
+            if ol:
+                ImageDraw.Draw(layer).rounded_rectangle(outer, brad, outline=rgb(ol["color"]) + (255,),
+                                                        width=ol.get("width", 5))
+            if bg.get("rotate"):
+                layer = layer.rotate(bg["rotate"], resample=Image.BICUBIC,
+                                     center=((outer[0] + outer[2]) / 2, (outer[1] + outer[3]) / 2))
+            img.alpha_composite(layer)
+            if not bg.get("decorative"):
+                P.boxes.append(layer.getchannel("A").getbbox())
+
+    bd = st.get("border", {})
+    if bd.get("width"):
+        d.rectangle((0, 0, W - 1, H - 1), outline=rgb(bd["color"]) + (255,), width=bd["width"])
+
+    s0, s1 = st["safe"]
+    bad = [b for b in P.boxes if b[1] < s0 or b[3] > s1 or b[0] < 0 or b[2] > W]
+    if bad:
+        sys.exit("key content outside the safe zone y %d..%d: %s" % (s0, s1, [tuple(int(v) for v in b) for b in bad]))
+
+    img = img.convert("RGB")
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)) or ".", exist_ok=True)
+    for q in (92, 88, 84, 80, 75, 70):
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=q, optimize=True, progressive=True)
+        if buf.tell() < MAX_BYTES:
+            break
+    open(a.out, "wb").write(buf.getvalue())
+    print("%s  %dx%d  %.0f KB  q%d  style %s  hook: %r / %r" % (a.out, W, H, buf.tell() / 1024, q, a.style,
+                                                               a.setup, plines))
+    if a.debug_safe:
+        dbg = img.copy()
+        dd = ImageDraw.Draw(dbg)
+        for yy in (s0, s1):
+            dd.line((0, yy, W, yy), fill=(0, 255, 0), width=6)
+        for b in P.boxes:
+            dd.rectangle(b, outline=(255, 255, 0), width=3)
+        dbg.save(os.path.splitext(a.out)[0] + "-debug.jpg", quality=80)
+
+
+if __name__ == "__main__":
+    main()

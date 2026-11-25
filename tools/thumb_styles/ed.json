@@ -1,0 +1,19 @@
+{
+  "_about": "Everyday Decoded (Page 3): clean 'decoded' look, deliberately unlike WJH (centred, red square boxes, navy ticker) and The World Decoded (centred staggered stickers). LEFT-aligned hook, white setup, teal pill-rounded payoff box(es) with white text, amber micro/sticker with charcoal text, charcoal top shade, 'EVERYDAY DECODED' brand badge (charcoal + teal). Palette from page3/PLAN-v1.md: charcoal #1B1F24, teal #00B3A4, amber #FFB000. Full look (scan bar + lens brackets + logo) is in page3/branding/thumbnail/ed_thumbnail.py.",
+  "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "text_top": 400,
+  "align": "left",
+  "margin_x": 90,
+  "safe": [285, 1635],
+  "gap": 20,
+  "grade": {"contrast": 1.05, "saturation": 1.10, "vignette": 0.0},
+  "top_shade": 0.6,
+  "setup": {"size": 70, "color": "#FFFFFF", "shadow": 0.5, "box": null, "case": "asis"},
+  "payoff": {"size": 140, "max_width": 900, "box": "#00B3A4", "text": "#FFFFFF", "pad": [14, 36], "radius": 40, "stagger": 0, "shadow": 0.35},
+  "micro": {"size": 42, "box": "#FFB000", "text": "#1B1F24"},
+  "sticker": {"size": 40, "box": "#FFB000", "text": "#1B1F24", "radius": 30},
+  "border": {"width": 0, "color": "#1B1F24"},
+  "ticker": null,
+  "badge": {"text": "EVERYDAY DECODED", "box": "#1B1F24", "text_color": "#00B3A4", "size": 32, "y": 310},
+  "pointers": false
+}

@@ -4,6 +4,9 @@ Usage:
   .venv/bin/python tools/fb_schedule_reel.py "output/<keyword> fb.mp4" "output/<keyword>.post.md" "2026-11-25 08:00"
   .venv/bin/python tools/fb_schedule_reel.py ... now          # publish immediately instead of scheduling
   .venv/bin/python tools/fb_schedule_reel.py --label <video_id>  # (re)apply the AI label once the post exists
+  ... --thumb <image.jpg>   custom cover; without it "<keyword> thumb.jpg" next to "<keyword> fb.mp4" is used if present.
+  Cover = POST /{video-id}/thumbnails (multipart source + is_preferred=true) after the reel is created; a failure only
+  warns (the reel stays scheduled). For reels already scheduled: tools/fb_set_thumbnail.py <video_id> <image>.
 
 Time is Malaysia time (UTC+8) unless SCHEDULE_TZ is set (e.g. America/New_York for the Self-Made
 Engineer laptop; Windows needs `pip install tzdata`), see pipeline/platform_cfg.py. Caption = "## Facebook caption" section of post.md (caption + hashtags).
@@ -49,6 +52,51 @@ def call(method, path, **q):
         return {"ERR": e.code, "msg": json.loads(e.read()).get("error", {}).get("message")}
 
 
+def set_thumbnail(video_id, image, tries=3, gap=20):
+    """Upload a custom cover to /{video-id}/thumbnails (is_preferred=true). Never raises; returns the result dict."""
+    try:
+        boundary = "----wjhthumb%d" % int(time.time() * 1000)
+        ext = os.path.splitext(image)[1].lower()
+        ctype = "image/png" if ext == ".png" else "image/jpeg"
+        parts = []
+        for k, v in (("access_token", TOKEN), ("is_preferred", "true")):
+            parts.append(("--%s\r\nContent-Disposition: form-data; name=\"%s\"\r\n\r\n%s\r\n" % (boundary, k, v)).encode())
+        parts.append(("--%s\r\nContent-Disposition: form-data; name=\"source\"; filename=\"thumb%s\"\r\n"
+                      "Content-Type: %s\r\n\r\n" % (boundary, ext or ".jpg", ctype)).encode())
+        body = b"".join(parts) + open(image, "rb").read() + ("\r\n--%s--\r\n" % boundary).encode()
+    except Exception as e:
+        return {"ERR": "local", "msg": "%s: %s" % (type(e).__name__, e)}
+    r = None
+    for i in range(tries):
+        try:
+            req = urllib.request.Request(G + "%s/thumbnails" % video_id, data=body, method="POST",
+                                         headers={"Content-Type": "multipart/form-data; boundary=" + boundary})
+            r = json.load(urllib.request.urlopen(req, timeout=120))
+            if not isinstance(r, dict):          # docs are ambiguous (struct vs list); any 2xx body = success
+                return {"success": True, "data": r}
+            if r.get("success") is not False:
+                return r
+        except urllib.error.HTTPError as e:
+            try:
+                r = {"ERR": e.code, "msg": json.loads(e.read()).get("error", {}).get("message")}
+            except Exception:
+                r = {"ERR": e.code, "msg": "non-JSON error body"}
+        except Exception as e:  # URLError, timeout, bad JSON: never let the cover break posting
+            r = {"ERR": type(e).__name__, "msg": str(e)[:200]}
+        if i < tries - 1:
+            time.sleep(gap)
+    return r
+
+
+def find_thumb(video):
+    """'<keyword> fb.mp4' -> '<keyword> thumb.jpg' (also accepts '<keyword> fb thumb.jpg') if it exists."""
+    stem = os.path.splitext(video)[0]
+    for c in (re.sub(r" fb$", "", stem) + " thumb.jpg", stem + " thumb.jpg"):
+        if os.path.exists(c):
+            return c
+    return None
+
+
 def caption(post_md):
     t = open(post_md, encoding="utf-8").read()
     m = re.search(r"## Facebook caption\s*\n(.+?)\n## ", t, re.S)
@@ -76,7 +124,7 @@ def label(video_id, wait=600):
     return None, {"ERR": "no post_id"}
 
 
-def main(video, post_md, when):
+def main(video, post_md, when, thumb=None):
     size = os.path.getsize(video)
     desc = caption(post_md)
     st = call("POST", PAGE + "/video_reels", upload_phase="start")
@@ -108,12 +156,28 @@ def main(video, post_md, when):
     pid, lr = label(vid, wait=300)
     rec.update(post_id=pid, label_result=lr)
     save(rec)
+    thumb = thumb or find_thumb(video)
+    if thumb:
+        try:
+            tr = set_thumbnail(vid, thumb)
+            print("thumbnail:", tr if "ERR" not in tr else "WARNING cover not set (reel still scheduled): %s" % tr)
+            rec.update(thumb=os.path.basename(thumb), thumb_result=tr)
+            save(rec)
+        except Exception as e:
+            print("WARNING thumbnail step failed (reel still scheduled): %s" % e)
     print(json.dumps({k: rec[k] for k in ("video_id", "post_id", "when_myt")}))
 
 
 if __name__ == "__main__":
     a = sys.argv[1:]
+    th = None
+    if "--thumb" in a:
+        i = a.index("--thumb")
+        th = a[i + 1]
+        del a[i:i + 2]
+        if not os.path.exists(th):
+            sys.exit("--thumb file not found: %s" % th)
     if a[0] == "--label":
         label(a[1])
     else:
-        main(a[0], a[1], " ".join(a[2:]))
+        main(a[0], a[1], " ".join(a[2:]), th)

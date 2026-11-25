@@ -3,6 +3,7 @@
 Usage:
   Blender -b --factory-startup -P pipeline/blender/render_episode_v2.py -- \
       EPISODE_JSON WORKDIR SHOT_INDEX [--range A-B] [--still F[,F...]] [--scale 0.5] [--samples N] [--tag x]
+      [--cam-zoom 1.3] [--cam-dolly 5] [--cam-shift x,y]   (still only: hero-frame camera, see hero_camera())
 
 Reads  WORKDIR/audio/timings.json, WORKDIR/captions.json (ctx.word_time()), WORKDIR/tex_v2/ (PIL textures).
 Writes WORKDIR/frames_v2/<NN>_<beat>/####.jpg      (only frames A..B with --range; existing frames are skipped)
@@ -47,6 +48,26 @@ def load_builders():
             import traceback
             traceback.print_exc()
     return S.V2_BUILDERS
+
+
+def hero_camera(scene, zoom=1.0, dolly=0.0, shift="0,0"):
+    """Still-only (thumbnail hero frames): freeze the shot camera as it is at the current frame into a new,
+    un-animated camera, then multiply its focal length by `zoom`, move it `dolly` metres along its view axis
+    (+ = closer) and apply lens shift "x,y" (fractions of the frame). Opt-in; animation renders never call it."""
+    import mathutils
+    src = scene.camera
+    mw = src.matrix_world.copy()           # evaluated (constraints + keys) at the current frame
+    cd = src.data.copy()
+    cd.animation_data_clear()
+    cd.lens = src.data.lens * zoom
+    sx, sy = [float(v) for v in shift.split(",")]
+    cd.shift_x, cd.shift_y = src.data.shift_x + sx, src.data.shift_y + sy
+    cam = bpy.data.objects.new("HeroCam", cd)
+    scene.collection.objects.link(cam)
+    fwd = mw.to_quaternion() @ mathutils.Vector((0.0, 0.0, -1.0))
+    cam.matrix_world = mathutils.Matrix.Translation(fwd * dolly) @ mw
+    scene.camera = cam
+    print("[render_v2] hero cam: lens %.1f -> %.1f, dolly %.1f m, shift %s" % (src.data.lens, cd.lens, dolly, shift))
 
 
 def main():
@@ -95,8 +116,13 @@ def main():
         sdir = os.path.join(workdir, "stills_v2")
         os.makedirs(sdir, exist_ok=True)
         scene.render.image_settings.file_format = "PNG"
+        cam0 = scene.camera
         for fr in [int(x) for x in still.split(",")]:
+            scene.camera = cam0
             scene.frame_set(min(fr, frames))
+            if opt("--cam-zoom") or opt("--cam-dolly") or opt("--cam-shift"):
+                hero_camera(scene, float(opt("--cam-zoom", 1)), float(opt("--cam-dolly", 0)),
+                            opt("--cam-shift", "0,0"))
             scene.render.filepath = os.path.join(sdir, "%s_f%04d%s.png" % (name, fr, opt("--tag", "")))
             t1 = time.time()
             bpy.ops.render.render(write_still=True)

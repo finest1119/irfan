@@ -1,0 +1,19 @@
+{
+  "_about": "What Just Happened: news-urgency look. Navy #0B1F3A + red #E63946. White heavy setup line, red 'breaking'-style payoff box(es), thin navy news-ticker strip with a red lead block above the hook. No arrows/circles (branding/THUMBNAIL-STYLE.md). Schema: see tools/make_thumbnail.py header.",
+  "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "text_top": 350,
+  "align": "center",
+  "margin_x": 90,
+  "safe": [285, 1635],
+  "gap": 18,
+  "grade": {"contrast": 1.06, "saturation": 1.12, "vignette": 0.2},
+  "top_shade": 0.25,
+  "setup": {"size": 72, "color": "#FFFFFF", "shadow": 0.55, "box": null, "case": "asis"},
+  "payoff": {"size": 148, "max_width": 900, "box": "#E63946", "text": "#FFFFFF", "pad": [16, 30], "radius": 6, "stagger": 22, "shadow": 0.45},
+  "micro": {"size": 42, "box": "#0B1F3A", "text": "#FFFFFF"},
+  "sticker": {"size": 40, "box": "#FFD21F", "text": "#0B1F3A", "radius": 14},
+  "border": {"width": 0, "color": "#0B1F3A"},
+  "ticker": {"color": "#0B1F3A", "accent": "#E63946", "height": 12, "y_offset": -26, "accent_w": 150},
+  "badge": null,
+  "pointers": false
+}

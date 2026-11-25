@@ -1,0 +1,35 @@
+{
+  "_about": "Self-Made Engineer (Page 2) 'spec sheet' look: steel navy #14212E + safety orange #FF7A1A + off-white #F4F1EA. Navy blueprint-grid header panel (top_shade colour + grid), rotated outline 'BUILD #NN' stamp (--badge, decorative), LEFT-aligned hook: sentence-case off-white setup on the navy panel, ALL-CAPS navy payoff (up to 4 words) on a flat square orange plate with a hazard-stripe band under it. Measured callout = navy sticker with an orange border, orange label (--sticker-label), big off-white number and measuring-tape ticks, plus a thin orange elbow leader ending in a dot on the real build (--arrow x,y with pointer.style leader). No shadows, square corners. Spec + target: page2/branding/THUMBNAIL-PRESET-SME.md, page2/branding/thumb-sample-build01.jpg. Not expressible yet: the round logo, the top hazard strip, the 330 px frame shift and the orange bar left of the setup. Font: Oswald Bold, falling back to Montserrat if the file is missing.",
+  "font": ["assets/fonts/Oswald-Bold.ttf", "assets/fonts/Montserrat-ExtraBold.ttf"],
+  "text_top": 440,
+  "align": "left",
+  "margin_x": 90,
+  "safe": [285, 1635],
+  "gap": 18,
+  "grade": {"contrast": 1.05, "saturation": 1.1, "vignette": 0.0},
+  "top_shade": {
+    "color": "#14212E", "opaque_to": 560, "fade_to": 760,
+    "grid": {"step": 54, "major_every": 5, "color": "#F4F1EA", "alpha": 0.10, "major_alpha": 0.20}
+  },
+  "setup": {"size": 92, "color": "#F4F1EA", "shadow": 0.0, "box": null, "box_text": "#F4F1EA", "case": "sentence"},
+  "payoff": {
+    "size": 190, "max_width": 900, "box": "#FF7A1A", "text": "#14212E", "pad": [18, 30], "radius": 0,
+    "stagger": 0, "shadow": 0.0, "max_words": 4, "min_size": 110,
+    "under_strip": {"height": 20, "stripe": 26, "colors": ["#FF7A1A", "#14212E"]}
+  },
+  "micro": {"size": 42, "box": "#14212E", "text": "#F4F1EA"},
+  "sticker": {
+    "size": 170, "min_size": 110, "max_width": 410, "box": "#14212E", "text": "#F4F1EA", "radius": 0,
+    "shadow": 0.0, "pad": [22, 30], "align": "left", "label_size": 50, "label_color": "#FF7A1A", "label_gap": 14,
+    "border": {"width": 6, "color": "#FF7A1A"},
+    "ticks": {"step": 18, "len": 26, "major_every": 5, "width": 3}
+  },
+  "border": {"width": 0, "color": "#14212E"},
+  "ticker": null,
+  "badge": {
+    "box": null, "text_color": "#FF7A1A", "size": 58, "x": 112, "y": 276, "pad": [10, 22], "radius": 0,
+    "rotate": 4, "outline": {"color": "#FF7A1A", "width": 5}, "decorative": true
+  },
+  "pointers": true,
+  "pointer": {"style": "leader", "color": "#FF7A1A", "width": 6, "dot_r": 14, "dot_color": "#F4F1EA"}
+}

@@ -49,6 +49,11 @@ Steps (`--steps`, default `tts,captions,textures,render,assemble,fb,post,qc`):
      spelling or wrong numbers in on-screen text; black/broken/frozen frames or visible flicker; audio glitches
      (clipping, cut-off words, stray voice/noise); pauses > ~1.2 s or dead air; text unreadable or overlapping the
      captions; policy risk (graphic content, investment advice, defamation); caption/hashtag/AI-label problems.
+   - **Thumbnail (Irfan, 25 Nov 2026, all Pages):** every reel ships a custom cover `<name> thumb.jpg` (1080×1920,
+     key content inside the centre 1080×1350) made with `tools/make_thumbnail.py` from a dramatic hero frame of the
+     episode's own scene + a two-tier hook (setup line + 1–3 word ALL-CAPS payoff box, ≤8 words, TRUE to the script; see `branding/THUMBNAIL-STYLE.md`),
+     per-Page preset `--style wjh|sme|ed` (each Page looks different), no small text/logos. 2 variants; the Fable QC picks the stronger. **MUST FIX** if the text is
+     unreadable (at phone-grid size) or false/misleading. `fb_schedule_reel.py` uploads it automatically.
    - **SKIP (log one line, no repair):** minor visual artifacts under ~1 s; whisper mishearings when the audio is
      fine; pauses 0.75–1.2 s; small cosmetic imperfections and optional upgrades. Never spend a re-render or another
      QC cycle on a skip item. (qc_full's 0.75 s pause flag is informational up to 1.2 s.)
