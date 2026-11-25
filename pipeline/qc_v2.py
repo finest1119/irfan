@@ -41,7 +41,7 @@ def probe(path):
 def main():
     ep_path, final = os.path.abspath(sys.argv[1]), os.path.abspath(sys.argv[2])
     ep = json.load(open(ep_path))
-    workdir = os.path.join(ROOT, "output", ep["slug"])
+    workdir = os.environ.get("EPISODE_WORKDIR") or os.path.join(ROOT, "output", ep["slug"])
     qdir = os.path.join(workdir, "qc")
     os.makedirs(qdir, exist_ok=True)
     fps = ep.get("render", {}).get("fps", 30)

@@ -331,8 +331,11 @@ def main():
         return args[args.index(name) + 1] if name in args else default
 
     ep = json.load(open(ep_path))
-    out_root = os.path.join(ROOT, "output")
-    workdir = os.path.join(out_root, ep["slug"])
+    # --workdir / --out-root (or env EPISODE_WORKDIR) let other Pages finish inside their own folders;
+    # defaults stay output/<slug> and output/ (WJH unchanged). Exported so overlay_v2 / qc_v2 follow it.
+    out_root = os.path.abspath(opt("--out-root", os.path.join(ROOT, "output")))
+    workdir = os.path.abspath(opt("--workdir", os.environ.get("EPISODE_WORKDIR") or os.path.join(out_root, ep["slug"])))
+    os.environ["EPISODE_WORKDIR"] = workdir
     os.makedirs(workdir, exist_ok=True)
     final_path = os.path.join(out_root, ep["keyword"] + ".mp4")
     post_path = os.path.join(out_root, ep["keyword"] + ".post.md")

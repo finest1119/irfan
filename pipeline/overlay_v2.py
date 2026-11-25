@@ -916,7 +916,7 @@ def paste(img, sp):
 
 def _ctx(ep_path, idx):
     ep = load_ep(ep_path)
-    workdir = os.path.join(ROOT, "output", ep["slug"])
+    workdir = os.environ.get("EPISODE_WORKDIR") or os.path.join(ROOT, "output", ep["slug"])
     tim = json.load(open(os.path.join(workdir, "audio", "timings.json")))
     caps = json.load(open(os.path.join(workdir, "captions.json")))
     fps = ep.get("render", {}).get("fps", 30)
@@ -1001,7 +1001,7 @@ class _NoCaps:
 
 def qc_streams(ep_path, parallel=4):
     ep = load_ep(ep_path)
-    workdir = os.path.join(ROOT, "output", ep["slug"])
+    workdir = os.environ.get("EPISODE_WORKDIR") or os.path.join(ROOT, "output", ep["slug"])
     os.makedirs(os.path.join(workdir, "qc"), exist_ok=True)
     res = {}
     for kind in ("overlay", "base"):
@@ -1023,7 +1023,7 @@ def qc_streams(ep_path, parallel=4):
 
 def assemble(ep_path, parallel=4, beats=None):
     ep = load_ep(ep_path)
-    workdir = os.path.join(ROOT, "output", ep["slug"])
+    workdir = os.environ.get("EPISODE_WORKDIR") or os.path.join(ROOT, "output", ep["slug"])
     idxs = beats if beats is not None else list(range(len(ep["beats"])))
     with Pool(parallel) as pool:
         res = pool.map(render_beat, [(ep_path, i) for i in idxs])
