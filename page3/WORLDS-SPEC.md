@@ -590,7 +590,7 @@ a smaller key at 45° + subtle teal rim), so the interior is **bright like a pro
 
 ## 6. VRAM / texture budget (RTX 3050, ~4 GB; PLAN 7b)
 
-- **Target peak ≤ 3.2 GB** (leave ~0.8 GB for OptiX/denoiser/driver). Budget: textures ≤ 1.0 GB, geometry/BVH ≤
+- **Target peak ≤ 3.0 GB** (chief, 25 Nov 2026; hard ceiling 3.2 GB; leave ~1 GB for OptiX/denoiser/driver). Budget: textures ≤ 1.0 GB, geometry/BVH ≤
   1.2 GB, render buffers + denoiser ≈ 0.6 GB.
 - **Textures:** ≤ 2K for hero/near (≤ 30 maps), 1K for mid (≤ 100), 512 for far/props; pack AO/rough/metal into one
   ORM map; HDRI 2K only; facade atlases instead of per-building maps; macro sets mostly procedural. 8-bit maps

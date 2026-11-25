@@ -1,6 +1,6 @@
 # Setup laptop Windows: senarai langkah (Everyday Decoded / Page 3)
 
-Untuk: Irfan. Disediakan 24 Nov 2026 oleh session Page 3. Laptop: Intel i5, RTX 3050 (~4 GB VRAM).
+Untuk: Irfan. Disediakan 24 Nov 2026 oleh session Page 3. Laptop ED: **Asus ROG Strix G513QC** (Ryzen 7 5800H, 16 GB RAM, RTX 3050 Laptop 4 GB VRAM, ~322 GB kosong, Windows 11 Home).
 Laptop Page 2 (Self-Made Engineer) ikut langkah yang sama; cuma `.env` dia lain.
 
 Cara guna: Irfan buat **Bahagian A** (pasang program). Lepas Claude Code dah jalan di laptop tu,
@@ -15,6 +15,10 @@ Tanda ☐ → ☑ bila siap.
    - Settings → Windows Update → install semua, restart.
    - Pasang **NVIDIA App** (nvidia.com), kemudian pilih driver **Studio** (bukan Game Ready) dan install.
 
+☐ **1b. Pastikan Blender guna GPU NVIDIA (laptop ni ada 2 GPU: AMD dalam CPU + RTX 3050)**
+   - Buka **Armoury Crate** → GPU Mode → pilih **Ultimate** (atau Standard; jangan Eco).
+   - Settings → System → Display → **Graphics** → tambah `blender.exe` → Options → **High performance (NVIDIA)**.
+
 ☐ **2. Setting kuasa (supaya laptop tak tidur masa render)**
    - Settings → System → Power: **Screen off / Sleep = Never** (bila plugged in).
    - Control Panel → Power Options → "Choose what closing the lid does" → **Do nothing** (plugged in).
@@ -22,7 +26,7 @@ Tanda ☐ → ☑ bila siap.
 
 ☐ **3. Git**: git-scm.com → Download for Windows → install (tekan Next sahaja).
 
-☐ **4. Python 3.11**: python.org → Downloads → Python **3.11** (Windows installer 64-bit).
+☐ **4. Python 3.12** (sama dengan laptop SME): python.org → Downloads → Python **3.12** (versi 3.12.x terkini) (Windows installer 64-bit).
    - ⚠️ Di skrin pertama installer, **tandakan "Add python.exe to PATH"**.
 
 ☐ **5. Blender 5.3.0** (mesti sama versi dengan Mac): blender.org → Download → "Previous versions" kalau
@@ -73,7 +77,8 @@ Tanda ☐ → ☑ bila siap.
    Claude akan buat:
    - `python -m venv .venv` dan install pakej (google-genai 1.47.0, faster-whisper 1.2.1, python-dotenv 1.2.1,
      pillow 11.3.0, numpy 2.0.2)
-   - download aset Poly Haven (HDRI + tekstur; folder ni tak ada dalam git)
+   - `python tools/fetch_cc0.py` (aset CC0 dalam assets/cc0/manifest.json)
+   - download aset Poly Haven `assets/polyhaven/` (HDRI kloofendal 2K + 3 tekstur 1K, senarai dalam README Mac; belum ada dalam manifest fetch_cc0)
    - semak Blender, ffmpeg (encoder `hevc_nvenc`) dan Codex dari Python
 
 ☐ **13. Fail `.env` (Irfan sendiri, JANGAN paste dalam chat)**

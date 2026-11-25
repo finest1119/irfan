@@ -286,7 +286,7 @@ Mac) and updates with `git pull`.** Consequences:
   edit each other's folders, so conflicts stay in shared `pipeline/` only.
 
 **Setup checklist (day 1):** Claude Code (same account) · Git + GitHub login · `git clone` finest1119/irfan,
-check out the same branch · Python 3.11 + `.venv` (`google-genai faster-whisper python-dotenv pillow numpy`) ·
+check out the same branch · Python 3.12 (same as SME) + `.venv` (`google-genai faster-whisper python-dotenv pillow numpy`) ·
 Blender 5.3 · ffmpeg full build (with nvenc) on PATH · Codex CLI (for `tools/gen_image.py`; same account) ·
 latest NVIDIA Studio driver · Poly Haven assets downloaded · `.env` typed by Irfan (never committed or printed).
 
