@@ -1,7 +1,7 @@
 # PLAN v1 — Page 3 "Everyday Decoded": how everyday things work behind the scenes (US audience)
 
 Written 24 Nov 2026 by the Page 3 session. Status: **PLAN APPROVED by Irfan 24 Nov 2026 (section 8).**
-Nothing built yet. FB Page live: Everyday Decoded, Page ID 1465128156682768 (section 9). Runs later on **Windows laptop #2** (RTX 3050, ~4 GB VRAM), same Claude Max
+Nothing built yet. **CHANGED 25 Nov 2026: ED publishes on Irfan's existing Page "Beyond Measure" (renamed to Everyday Decoded, live 26 Nov; **Graph API Page ID 1379706781903422**, facebook.com/BeyondMeasureExplained, profile id 61596694560826). The empty Page 1465128156682768 is no longer used — see section 0.** Runs later on **Windows laptop #2** (RTX 3050, ~4 GB VRAM), same Claude Max
 account, target **5 reels/day** after a ramp-up. Reuses the v2 pipeline (`irfan/pipeline/README.md`).
 Does not touch WJH files or `irfan/page2/`.
 
@@ -13,6 +13,63 @@ zones (section 3.7). No company/brand names or claims unless clearly sourced (an
 
 Fact status: every number here was checked in a batched Fable 5.2 fact-check (section 6). Each episode still gets its
 own Fable fact-check at script time (2+ sources) before render, as in the SOP.
+
+---
+
+## 0. FAST-START: Beyond Measure → Everyday Decoded (25 Nov – 19 Dec 2026)
+
+**Why (Irfan via chief, 25 Nov):** Beyond Measure is in FB's Content Monetisation challenge: **1,000,000 views on
+NEW posts, 19 Nov – 19 Dec** (2,789 so far). The remaining ~997k over ~24 days is **~40k views/day**. Its old reels
+(Tunguska, cheetah vs pronghorn, reaction-time ruler, Krakatoa, mantis shrimp) are science comparisons/explainers,
+so ED fits. Rules: original content only (no reposts), AI label ON, US audience. Production runs on the Asus.
+Honest odds: 40k/day from a near-zero base needs 1–2 reels that break out (100k+); volume + strong hooks raise the
+chance, nothing guarantees it. Speed and volume beat polish for these 25 days (QC triage rule 7c still applies).
+
+**Key decision: do NOT wait for the full one-shot hometown world.** The full world (WORLDS-SPEC M0–M3) is about a
+week of building plus benchmarking. Instead:
+- **Track A, now (main track):** ED topics made with the **existing, proven v2 pipeline**: multi-shot cuts, the
+  existing `scene_lib_v2_*` worlds (city, tower, air, sea, storm, travel, yard, market, campus, river, winter) plus
+  small new props, the ED overlay style block (Montserrat, amber highlight, amber twist card) and the ED cover
+  (7d). Simpler scenes, cut-away diagrams, 25–45 s reels.
+- **Track B, in parallel (lower priority):** build the hometown one-shot world in small steps. Switch its episodes in
+  once M1 passes the benchmark (≤ 1.5 s/frame, ≤ 3.0 GB VRAM).
+
+**Timeline**
+| When | What |
+|---|---|
+| D0–1 (25–26 Nov) | Asus setup done (WINDOWS-SETUP.md), `.env` with the Beyond Measure → ED Page token, 10 s v2 benchmark on the Asus. Write + fact-check the first 6 Track A scripts. |
+| D2 (27 Nov, Thanksgiving) | **First reel posts** if the benchmark passes and pilot QC is clean (target: 2 reels). Fallback if the Asus isn't ready: no post that day (the Mac belongs to WJH). |
+| D3–D7 | **2 reels/day**, rising to **3/day** once render time per reel is known (<~1.5 h each). |
+| Week 2–4 | **3/day steady** (a 4th on days with a free render slot); first Track B one-shot reels once M1 passes. Double down on the topic/format of whatever beats 20k views in 48 h (sequels, "part 2"). |
+Posting slots (ET): about 12:00, 17:00 and 20:00 (section 3.7). Every post: Public, AI label ON, hashtags, ED cover,
+engagement comment as the Page (posting checklist).
+
+**Topic list ranked for US virality (Track A = buildable now with existing worlds/simple scenes)**
+| Rank | Topic (bank id) | Why it can spread | Track A scene |
+|---|---|---|---|
+| 1 | Microwave door mesh (C3, ep 06) | everyone owns one; "why can I see through it?" | kitchen cut-away, simple set |
+| 2 | GPS needs Einstein (D2, ep 09) | mind-blow + science, fits the old Beyond Measure audience | sky/space shot + city |
+| 3 | 911 finds you without words (A3) | emotional, useful, shareable | city + tower |
+| 4 | Elevator counterweight (D5) | "I never knew" + safety curiosity | tower world, shaft cut-away |
+| 5 | Pack of gum changed every store (B5, ep 04) | story twist with a date (1974) | market world |
+| 6 | TV remote light your phone sees (F4) | viewers try it at home → comments | living-room set, simple |
+| 7 | Bananas gassed on purpose (E4) | food surprise, debate in comments | market + ship (sea) |
+| 8 | Checked bag's hidden ride (D4) | travel season (Thanksgiving/Christmas) | air world |
+| 9 | Traffic light knows you're waiting (D1, ep 08) | daily frustration | city world |
+| 10 | Water tower = pressure battery (C5, ep 07) | small-town USA icon | city/tower |
+| 11 | Yellow first-down line (F2) | football season, huge US audience | stadium needs new set (later) |
+| 12 | Phone screen can't feel a glove (F5) | winter timing | simple hand/phone set |
+| 13 | Tap to pay in seconds (B1, ep 03) | daily habit | market + city |
+| 14 | Your 5G tap crosses town (A1, ep 01) | best as the one-shot pilot | Track B |
+Later/reserve: fog landings (air), QR codes, milk 161 °F, chip cards, satellite TV, central AC, Wi-Fi vs microwave.
+Each episode still gets its own Fable fact-check (2+ sources) before render.
+
+**API posting on the new Page:** `tools/fb_schedule_reel.py` reads `FB_PAGE_ID` + `FB_PAGE_TOKEN` (+ optional
+`SCHEDULE_TZ=America/New_York`) from the **repo-root `.env` on the Asus**. **DONE 26 Nov:** Page ID **1379706781903422**; a never-expiring PAGE
+token (app ft; publish_video, pages_manage_posts, pages_manage_engagement, pages_read_engagement,
+pages_read_user_content, pages_show_list; verified by the chief) is saved by Irfan in the gitignored `irfan/.env.page3`
+on the Mac. Irfan copies it by USB to the Asus as the repo-root `.env` (+ GEMINI_API_KEY, SCHEDULE_TZ); then a
+read-only check on the Asus (type PAGE, valid, matching Page ID; never print the token). The old `page3/.env` (empty Page 1465128156682768) is obsolete and must not be used.
 
 ---
 
@@ -343,11 +400,11 @@ Irfan: "kalau macam ada very small error kan bila QC tu, aku rasa maybe tak perl
 
 ## 9. Next steps (after Irfan's choices)
 1. ✅ **Everyday Decoded** FB Page LIVE (chief session, 24 Nov 2026): https://www.facebook.com/profile.php?id=61596825063341
-   — **Graph API Page ID `1465128156682768`** (= `FB_PAGE_ID` in the Windows laptop's `.env`; the profile-URL id
+   — **SUPERSEDED 26 Nov: ED now posts on Page 1379706781903422 (section 0); the following is the old empty Page.** Graph API Page ID `1465128156682768` (= `FB_PAGE_ID` in the Windows laptop's `.env`; the profile-URL id
    61596825063341 is different). Logo C + cover A, bio, contact email, intro post (Public, pinned), Monetisation
    "Notify me" done — details in `irfan/page3/PAGE-SETUP-REPORT.md`. ✅ **Page token DONE (24 Nov 2026):**
    generated by Irfan in Graph API Explorer (app "ft"), saved in `irfan/page3/.env` (gitignored). Verified via
-   Graph API: type PAGE, valid, never expires, all 6 scopes. Copy `page3/.env` into the Windows laptop's `.env` at setup.
+   Graph API: type PAGE, valid, never expires, all 6 scopes. (Obsolete: copy `irfan/.env.page3` instead, section 0.)
 2. Windows laptop #2 setup (as Page 2 PLAN section 6) + render benchmark.
 3. Shared one-shot renderer (with Page 2) → Page 3 worlds W1+W3 (Opus), Spark + dive helpers.
 4. Fable batch: first 10 scripts (spread across worlds) → pilot reel → Irfan approves the look → schedule.

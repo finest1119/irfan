@@ -82,9 +82,12 @@ Tanda ☐ → ☑ bila siap.
    - semak Blender, ffmpeg (encoder `hevc_nvenc`) dan Codex dari Python
 
 ☐ **13. Fail `.env` (Irfan sendiri, JANGAN paste dalam chat)**
-   - Di Mac, buka fail `irfan/page3/.env` (ada FB_PAGE_ID + FB_PAGE_TOKEN Everyday Decoded).
-   - Salin ke laptop guna pendrive atau password manager.
-   - Di laptop, letak dalam `Documents\irfan\.env`, dan tambah juga baris `GEMINI_API_KEY=...` dari `.env` Mac.
+   - Di Mac, ambil fail **`irfan/.env.page3`** (ada `FB_PAGE_ID=1379706781903422` + FB_PAGE_TOKEN Page Everyday Decoded,
+     dulu Beyond Measure). **Jangan guna `irfan/page3/.env`**: itu Page lama yang kosong (1465128156682768), dah tak dipakai.
+   - Salin ke laptop guna pendrive (USB).
+   - Di laptop, namakan semula jadi `Documents\irfan\.env` (nama mesti tepat `.env`), dan tambah juga baris
+     `GEMINI_API_KEY=...` dari `.env` Mac, serta `SCHEDULE_TZ=America/New_York`.
+   - Lepas tu Claude semak (baca sahaja, token tak ditunjuk): jenis PAGE, valid, Page ID 1379706781903422.
    - Laptop Page 2 guna token Page 2, bukan yang ini.
    - Fail `.env` tak masuk GitHub (dah di-ignore). Repo ni **public**, jadi jangan sekali-kali letak token
      dalam fail lain.
