@@ -20,6 +20,13 @@ Scene VRAM limit: **≤ 3 GB** (PROPOSAL 7.3).
   rest, instanced clutter (boxes, cans, tools, joists, rafters), one 2K HDRI or a sun plus area lights.
 
 ## 2. Bolts (≤ 30k tris visible, one 2K core set)
+> **LOCKED BODY (25 Nov 2026, Irfan-approved, session 11/12):** Bolts is the Quaternius Superhero_Male base
+> (`BOLTS_IMPL=s9`) with the **s11 normalized proportions** (`MH_BOLTS_PROP=s11`): 1.778 m, trunk 34–36 cm wide,
+> 2 cm belly, upper arm 0.304 m / forearm 0.259 m, wrist at crotch level in idle, 18.9 cm hands. Both are the code
+> defaults. Full numbers: `character.json` → `bolts.proportions.locked_body`. **Do not change the body mid-series**;
+> never mix s6 / the s9 profile into an episode. The tri budget below is exceeded (electrician + harness ≈ 34.7k
+> visible), accepted because it is only ~5 MB of geometry.
+
 - One armature. Core mesh = body, head, hair/beard cards and the 4 signatures, on a single 2K atlas. Each outfit
   is a separate low mesh (≤ ~9k tris including props) with its own **1K** set, parented to the same armature.
   Swap outfits with keyframed `hide_render` + `hide_viewport`. Hidden objects don't go to the GPU. Swaps happen

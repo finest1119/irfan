@@ -17,6 +17,8 @@
   }
  ],
  "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
   "voice": "Fenrir",
   "pause_between_beats": 0.3,
   "director_notes": "Male host narrator, natural American accent, excitable and warm, ~175 WPM, third person."
@@ -103,8 +105,8 @@
   },
   "tailgate_plan": {
    "pos": [
-    118.0,
-    52.5,
+    124.0,
+    53.0,
     22.11
    ],
    "look_at": [
@@ -264,6 +266,19 @@
     1.5
    ],
    "lens": 35
+  },
+  "street_wide": {
+   "pos": [
+    -62.0,
+    -3.0,
+    6.0
+   ],
+   "look_at": [
+    0.0,
+    2.0,
+    3.0
+   ],
+   "lens": 28
   },
   "fence_peek": {
    "pos": [

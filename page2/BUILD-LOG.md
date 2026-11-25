@@ -786,3 +786,111 @@ Blender 5.3.0, Metal. One Blender process at a time (checked with `pgrep` before
 - The neck is the kit's slim neck. It is now visible (about 5 cm in front). In 3/4 close-ups it can read slightly long or thin.
 - Boots are unchanged and still read large.
 - The pre-existing missing kit normal maps (`T_Hair_1_Normal`, `T_Eye_Normal`) are still logged.
+
+---
+
+# Session 12 (25 Nov 2026, Opus): body locked, real TTS, re-plan, final-quality render test
+One Blender process at a time (`pgrep -il blender` before every run). Nothing outside `page2/` was edited. No commits.
+
+## Body locked (series default)
+- The code defaults were already `BOLTS_IMPL=s9` (`characters.py`) and `MH_BOLTS_PROP=s11` (`characters_s9.py`), so no code changed.
+- `character.json` → `bolts.proportions.locked_body`: Quaternius Superhero base, s11 proportions, approved 25 Nov 2026, the session 11 measurements, and the rule that the body must not change mid-series. Nothing in code reads `character.json`, so the new key is safe. The file was re-indented (2 spaces); its content is otherwise unchanged. Backup: `episodes/build-01/work/character.before-s12.json.txt`.
+- `BUILD-SPEC-character-world.md` §2: a LOCKED BODY note.
+
+## Real TTS (pipeline/tts.py + pipeline/captions.py, run directly on the page2 workdir; make_episode.py NOT used because it writes to the repo `output/`)
+- `episode.json` `tts` had no `model`, so `tts.py` would have raised a KeyError. Added `model: gemini-3.8-flash-tts` and `fallback_model: gemini-3.1-flash-tts-preview` (same as voice-test/WJH) to `episode.json` and `tools/make_build01_episode.py`. The diff is only those 2 lines; backup `work/episode.before-s12.json.txt`. Voice Fenrir and the episode's own director notes were kept. These are terser than the voice-test sample notes.
+- **VO: `work/audio/voice.wav`, 85.69 s** (synthetic was 104.2 s), 24 kHz mono. Beat WAVs `work/audio/beat_<id>.wav`, `usage.json`, `timings.json` (no `synthetic` flag).
+- Takes:
+  - hook: the 1st take read the director notes aloud. tts.py's Whisper guard caught it and retried.
+  - snag1: take 1 added a leading "But"; take 2 said "narrator". Both were caught by a Whisper medium.en check and kept in `work/audio/rejected/`. Take 3 is verbatim.
+- Whisper medium.en on every beat: verbatim, except normal number/name spellings ("50", "1.5", "Boltz").
+- Base.en mishears that don't matter, because caption text comes from the script: "streak" (street), "snack" (snag), "turban" (turbine).
+- No pause > 0.6 s inside the VO (silencedetect −40 dB); the only one is the 0.86 s tail. Peak −0.6 dBFS.
+- **Cost:** final takes 2,120 audio-output tokens ≈ $0.019. With the 3 rejected takes, about **$0.025**.
+- **Captions:** `work/captions.json` (265 words, 88 chunks; real, no `synthetic` flag) and `work/captions/` (PNG stream + list.ffconcat).
+  - Every beat's words lie inside its speech window.
+  - No chunk overlap; chunk length 0.25–1.81 s.
+  - 5 words have zero length (Again., Wind, Build, Honest, Small), all at sentence starts, from interpolation. Minor.
+- The synthetic files are kept in `work/synthetic_s11/`.
+
+## Re-plan (real timings)
+- `oneshot.py plan`: **2,571 frames (85.7 s), 24 moves, 16 events, 23 jobs. Longest hold 4.6 s** (works, f1894–2031). No static runs > 1 s. Exit 0.
+- The warnings are the 3 planned same-stop push-ins (they were already there with synthetic timings) and 2 small key delays (4 and 12 frames).
+- The works.2 min-motion override is gone.
+- `test_oneshot.py`: **ALL PASS**.
+
+## Final-quality render test (scale 1.0 = 1080×1920, 32 samples, Cycles Metal, `--mblur 3d`)
+- **Timing stills** (`work/test_s12/`, `stills_final_sheet.jpg`):
+
+  | Frame | Shot | Time |
+  |---|---|---|
+  | f60 | street, dusk | 23.1 s |
+  | f270 | porch, Bolts | 19.8 s |
+  | f900 | tower_low | 32.1 s |
+  | f2100 | kitchen window | 63.3 s |
+
+- **Test job f445–510** (66 frames, 2.2 s; the mission-beat tailgate hold plus the snap to turbine_head):
+  - `oneshot.py render --range 445-510 --scale 1.0 --samples 32`: 3,521 s wall for the 66 frames. The first frame was saved at 59 s, of which roughly 10 s is the world build.
+  - Per frame: **mean 53.2 s**, holds 45–49 s, 3D-blur snap frames 56–62 s.
+  - Log: `work/test_s12/render_445-510.log` and `oneshot/logs/job_0445-0510.log`.
+  - Two log lines: "motion blur keys failed … using a frame handler" is the existing fallback; the 2 missing kit normal maps are known.
+- **Full-render estimate on this Mac (M2 Pro): 2,571 frames × 35–55 s ≈ 25–39 h** (central about 30 h). That is **over the 4 h limit, so the full render was NOT started.** Recommendation: render on the Windows laptop (RTX 3050, OptiX) with the resumable driver. Measure s/frame on its first job before committing.
+- **qc_oneshot on the 66 frames:** PASS (pixel checks on; 13 diff spikes, all inside planned windows; median diff 1.22). Report: `work/test_s12/qc_oneshot_445-510.json`.
+- **A/V:** `work/test_s12/test_445-510_av.mp4` (frames + voice.wav from 14.8 s). Sync rests on the plan, not this clip: the plan's **2,571 frames = 85.69 s × 30 fps** of voice.wav, and every camera/overlay cue is resolved from the real word times in `captions.json`.
+- **Caption timing:** every caption chunk lies inside its beat's speech window and starts on the real word time. This is checked from `captions.json`; overlay_v2 was not run.
+- **Contact sheet:** `work/test_contact.jpg` (every 6 frames; the 1-per-2 s frames are marked `*2s`, since 2.2 s gives only 2). **It shows the PRE-FIX camera** (the tail-vane bug below). The fix is verified only by stills at 0.5 scale / 16 samples; it was not re-rendered at final quality or re-QC'd.
+- **Flicker:** `pipeline/qc_flicker.py` on the test clip → `work/test_s12/qc_flicker_445-510.json`.
+  - Caption band: 0 unexpected ABA.
+  - Full frame: no unexpected spikes, but per-pixel flicker averages 0.76 % (max 5.6 %) on the hold frames.
+  - It is concentrated on the thin grass blades at the bottom and the canopy edges at the top, plus a soft denoiser blotch on the lawn (`flicker_crop_470_472.jpg`).
+  - Judged **minor** (shimmer, not a flash); re-check on the full video. Possible upgrade: more samples or a denoiser with albedo/normal guides.
+- **qc_full / qc_v2:** not run. They need the finished MP4 (see below).
+
+## SERIOUS issue found and fixed: tailgate_plan camera behind the flat tail vane
+- In the test frames f449–498 (~1.7 s, mission beat "And yes, he pulled the permit first"), a big white slab filled the lower half of the frame and Bolts was seen from behind.
+- A ray-cast on a saved still blend identified it as `bw_turbine_vane`, 1.4 m from the camera. While the tower lies flat (session 8 rotor/stand change), the tail vane sits right in front of the old `tailgate_plan` spot. That spot had never been stilled at its own frames.
+- **Fix:** `tailgate_plan.pos` (118, 52.5) → **(124, 53.0)**, same height and look-at, in `episode.json` and `tools/make_build01_episode.py`.
+- New stills f452/475/497 (`work/test_s12/tailgate_fix.jpg`): Bolts in 3/4 view, pointing along the flat tower, with the red pickup beside him and no occluder.
+- Re-plan: still 2,571 frames, longest hold 4.6 s. `test_oneshot` ALL PASS.
+- **The 66 test frames used the OLD camera.** They and their track file were moved to `work/test_s12/frames_445-510_oldcam/`, so the resumable full render will re-render them. `work/frames_oneshot/` is empty.
+
+## Final MP4: path not ready (pipeline)
+- `pipeline/overlay_v2.py` `_ctx` (line ~919) and line ~1004 hard-code `workdir = ROOT/output/<slug>`, which is WJH's `output/`. `make_episode.main` does the same.
+- `step_assemble_v2` and `normalise_voice` already take a workdir; they just call `overlay_v2.assemble`, which doesn't.
+- Page 3 has its own `page3/tools/make_episode.py` + overlay style work, but no page2 finishing script exists for build-01, and nothing in BUILD-LOG documents one.
+- Needed before the final MP4: a workdir argument or env var for `overlay_v2.assemble` (a WJH/pipeline change). Alternatively, a page2 finishing script that does not route through `output/`. Then `oneshot.py link` → overlay_v2 → voice normalise → mux → qc_v2/qc_full.
+
+## Hold sweep (real plan, one still per hold midpoint, 0.35 scale / 8 samples)
+- 24 stills: `work/test_s12/hold_sweep.jpg` (`test_s12/sweep/`).
+- **SERIOUS, fixed: `street_wide` (callback hold f2237–2290, "one porch light stays on") was fully blocked by a street-tree canopy.**
+  - A ray-cast found `cc0_broadleaf_lod0` 1.1–1.9 m in front of the camera.
+  - Cause: the world camera spot (-62, -10, 6) sits inside the street-tree row (|y| 9.5–14). Street trees skip `ok()`, so the 9 m spot clearance never applied, and that spot had never been stilled.
+  - Fix (episode only, the world is unchanged): `spots.street_wide` = **(-62, -3, 6)** on the road centre-line, same look-at (0, 2, 3), lens 28, in `episode.json` + the generator.
+  - New stills f2240/2264/2288 (`test_s12/street_wide_fix.jpg`): house, porch light ON, Bolts on the porch, pickup, dusk.
+  - A canopy edge brushes the top-right corner at f2240 (minor).
+- All other holds read correctly.
+  - Minor: f1643 `tail_hinge__detail` shows mostly tower with the nacelle cut at the top, and the f1736 goose head pokes into a corner (the gag).
+- After both fixes: plan 2,571 frames, longest hold 4.6 s, `test_oneshot` ALL PASS, `qc_oneshot` (plan-only) PASS. `oneshot/qc_oneshot.json` is refreshed (it had been from the synthetic era).
+
+## For the Windows render
+- Copy the two Quaternius zips to `assets/cc0/quaternius/` first. Without them, `BOLTS_IMPL` silently falls back to s6, which breaks the locked body.
+- **Check `bolts_impl = s9_quaternius` in the first job's `stats_*.json`** before letting the rest run.
+- Measure s/frame on job 1 (f1–150).
+
+## Lower-cost option (estimate)
+- At 0.5 scale / 16 samples: ~7–12 s/frame here → **~5–9 h**, still over 4 h on this Mac.
+- EEVEE is untested on this scene.
+
+## Open issues (minor, logged, not repaired)
+- 5 caption words have zero length at sentence starts (interpolated): Again., Wind, Build, Honest, Small.
+- Whisper base.en mishears in the alignment log only (captions use the script).
+- Missing kit normal maps (known).
+- The episode's director notes are terser than the voice-test sample notes. The take sounds verbatim; no style check by ear was done.
+
+## Finishing Build #1 into an MP4 (WJH commit 6b93dcd, 25 Nov 2026)
+`pipeline/make_episode.py` now takes `--workdir` and `--out-root`, and exports `EPISODE_WORKDIR` to overlay_v2/qc_v2. WJH's defaults are unchanged.
+Once the full render is done (Windows laptop, `oneshot.py render` + `link`):
+```
+.venv/bin/python pipeline/make_episode.py page2/episodes/build-01/episode.json --workdir page2/episodes/build-01/work --out-root page2/episodes/build-01/out --steps assemble,fb,post,qc
+```
+Untested end to end: WJH only checked the imports. If you call overlay_v2 directly, set `EPISODE_WORKDIR=page2/episodes/build-01/work`.

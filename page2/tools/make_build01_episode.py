@@ -42,7 +42,7 @@ SPOTS = {
     "porch_bolts": {"pos": [-5.8, -2.2, 1.75], "look_at": [-1.0, 0.8, 1.55], "lens": 35},
     # beat 2
     "ridge_crane": {"pos": P(101.0, 53.0, 4.0), "look_at": [px, py, pz + 6.0], "lens": 24},
-    "tailgate_plan": {"pos": [118.0, 52.5, pz + 1.9], "look_at": [121.0, 57.0, pz + 1.0], "lens": 35},
+    "tailgate_plan": {"pos": [124.0, 53.0, pz + 1.9], "look_at": [121.0, 57.0, pz + 1.0], "lens": 35},
     # beat 3
     # the head lies at the tip of the FLAT tower until the hack1 tilt-up (stills 24 Nov: old spot saw only grass)
     "turbine_head": {"pos": [px - 4.0, py - TOWER_LEN - 3.0, pz + 2.2], "look_at": [px, py - TOWER_LEN, pz + 0.8],
@@ -63,7 +63,9 @@ SPOTS = {
     "battery_close": {"pos": [27.0, -42.2, 1.5], "look_at": [28.0, -38.8, 1.0], "lens": 40},
     "ridge_far": {"pos": [40.0, -48.0, 6.0], "look_at": [px, py, pz + 12.0], "lens": 40},
     "kitchen_window": {"pos": [7.0, 10.5, 2.0], "look_at": [7.0, 4.5, 1.5], "lens": 35},
-    # beat 9 (street_wide is a world camera spot)
+    # beat 9: street_wide overrides the world camera spot (-62,-10,6), which sits inside the street-tree row
+    # (s12: a canopy 1.3 m in front of it filled the frame); same look-at, camera moved onto the road centre
+    "street_wide": {"pos": [-62.0, -3.0, 6.0], "look_at": [0.0, 2.0, 3.0], "lens": 28},
     "fence_peek": {"pos": [18.0, 15.0, 1.7], "look_at": [18.0, 22.5, 1.9], "lens": 30},
     # beat 10 / 11
     "continuity_wide": {"pos": [-40.0, -80.0, 55.0], "look_at": [60.0, 10.0, 8.0], "lens": 22},
@@ -209,7 +211,8 @@ def main():
         "outfit": "electrician",
         "outfit_extras": ["fall_arrest_harness"],
         "builds_in_episode": [{"id": "wind_turbine", "mode": "assemble"}],
-        "tts": {"voice": "Fenrir", "pause_between_beats": 0.3,
+        "tts": {"model": "gemini-3.8-flash-tts", "fallback_model": "gemini-3.1-flash-tts-preview",
+                "voice": "Fenrir", "pause_between_beats": 0.3,
                 "director_notes": "Male host narrator, natural American accent, excitable and warm, ~175 WPM, third person."},
         "render": {"resolution": [1080, 1920], "fps": 30, "samples": 32, "engine": "cycles"},
         "oneshot": {"min_hold_s": 0.25, "hidden_joins": [], "whoosh_db": -20},
