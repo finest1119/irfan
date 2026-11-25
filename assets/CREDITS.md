@@ -30,5 +30,11 @@
   `python tools/fetch_assets.py` re-downloads missing/changed ones (Windows laptop setup).
 
 ## CC0 upgrade for Self-Made Engineer (25 Nov 2026) — `assets/cc0/` (gitignored; list + checksums in `assets/cc0/manifest.json`, re-download with `tools/fetch_cc0.py`)
-- Poly Haven (CC0, polyhaven.com): island_tree_02, pine_sapling_small, shrub_02/03/04, grass_bermuda_01, grass_medium_02, rock_moss_set_01, rock_07 (1k models); white_planks_clean, grey_roof_01, gravel_road, river_small_rocks, grooved_concrete_driveway, excavated_soil_wall (2k textures).
+- Poly Haven (CC0, polyhaven.com): island_tree_02, tree_small_02 (added 25 Nov, session 7), pine_sapling_small, shrub_02/03/04, grass_bermuda_01, grass_medium_02, rock_moss_set_01, rock_07 (1k models); white_planks_clean, grey_roof_01, gravel_road, river_small_rocks, grooved_concrete_driveway, excavated_soil_wall (2k textures).
 - Kenney (CC0, kenney.nl): Furniture Kit, Survival Kit, Car Kit.
+- Quaternius (CC0, quaternius.com, by @Quaternius; free "Standard" zips from itch.io, added 25 Nov, session 9): Universal Base Characters (Superhero_Male base body, Hair_Beard, Hair_Buzzed, eyes/eyebrows) and Universal Animation Library (UAL1_Standard: Idle_Loop, Walk_Loop retargeted) — Bolts on Page 2 (`page2/blender/characters_s9.py`).
+
+## Oswald (Page 2 / SME thumbnail font, 25 Nov 2026)
+- Files: `assets/fonts/Oswald-Bold.ttf`, `assets/fonts/Oswald-SemiBold.ttf` (static instances at wght 700 / 600, cut with fontTools from Google Fonts' variable `ofl/oswald/Oswald[wght].ttf`) + `assets/fonts/Oswald-OFL.txt`.
+- Authors: The Oswald Project Authors (Vernon Adams et al.) — https://github.com/googlefonts/OswaldFont
+- Licence: SIL Open Font License 1.1 (free for commercial use; may be bundled; may not be sold on its own).

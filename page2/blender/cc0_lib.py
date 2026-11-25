@@ -32,6 +32,10 @@ TREES = {
     # broadleaf (stands in for the old oak/maple balloons): island_tree_02 is 4.2 x 3.4 m -> ~9-10 m tree
     "cc0_broadleaf_lod0": ("island_tree_02", "island_tree_02", dict(scale=(2.3, 2.3, 3.0), leaf_keep=0.72, grow=1.12, branch=0.14)),
     "cc0_broadleaf_lod1": ("island_tree_02", "island_tree_02", dict(scale=(2.3, 2.3, 3.0), leaf_keep=0.2, grow=1.75, branch=0.03)),
+    # s7 second broadleaf (maple slot): tree_small_02, a slender curved trunk + dense clustered canopy, 4.65 m -> ~9 m.
+    # 1.94M leaf tris in the source, so it is thinned harder than island_tree_02.
+    "cc0_broadleaf2_lod0": ("tree_small_02", "tree_small_02", dict(scale=2.0, leaf_keep=0.24, grow=1.45, branch=0.3)),
+    "cc0_broadleaf2_lod1": ("tree_small_02", "tree_small_02", dict(scale=2.0, leaf_keep=0.07, grow=2.3, branch=0.06)),
     # pine (pine_sapling_small a/c, 1.0-1.3 m) -> 5-6 m young pines (sparse by nature: keep every twig near camera)
     "cc0_pine_lod0": ("pine_sapling_small", "pine_sapling_small_a", dict(scale=4.4, leaf_keep=1.0, grow=1.0, branch=1.0)),
     "cc0_pine_lod1": ("pine_sapling_small", "pine_sapling_small_a", dict(scale=4.4, leaf_keep=0.3, grow=1.6, branch=1.0)),
@@ -368,6 +372,11 @@ def get(name, haze=True):
             for m in ob.data.materials:
                 if m is not None:
                     _haze_wrap(m)
+        if name.startswith("cc0_"):            # s7: Poly Haven plants/rocks follow MH_Weather frost/snow (default 0)
+            rocky = name.startswith(("cc0_rock", "cc0_pebble"))
+            for m in ob.data.materials:
+                if m is not None:
+                    weather_wrap(m, foliage=not rocky)
     _GOT[name] = ob
     return ob
 
@@ -437,13 +446,65 @@ def _haze_wrap(m):
     Lk.new(mix.outputs[0], out.inputs["Surface"])
 
 
+def weather_wrap(m, foliage=True):
+    """Frost/snow for library materials, driven by the MH_Weather group the presets key (frost / snow presets).
+    Rocks: the terrain/roof rule (B._snow_mix: white on up-facing surfaces + a light frost). Foliage/grass cards
+    face every way, so they are not normal-gated: frost 0.35 + snow (0.35 + 0.4 * up-facing). Both are an exact
+    no-op at frost = snow = 0 (Mix factor 0), so day/dusk episodes render unchanged."""
+    if m.get("mh_weather") or m.node_tree is None:
+        return False
+    p = next((n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if p is None:
+        return False
+    import mh_blender as B
+    m["mh_weather"] = True
+    N, Lk = m.node_tree.nodes, m.node_tree.links
+    bc = p.inputs["Base Color"]
+    if bc.is_linked:
+        src = bc.links[0].from_socket
+    else:
+        rgb = N.new("ShaderNodeRGB")
+        rgb.outputs[0].default_value = tuple(bc.default_value)
+        src = rgb.outputs[0]
+    if not foliage:
+        Lk.new(B._snow_mix(N, Lk, src), bc)
+        return True
+    wg = B.group_node(N, B.weather_group())
+    geo = N.new("ShaderNodeNewGeometry")
+    sep = N.new("ShaderNodeSeparateXYZ")
+    Lk.new(geo.outputs["Normal"], sep.inputs[0])
+    up = N.new("ShaderNodeMapRange")
+    up.inputs["From Min"].default_value = 0.0
+    up.inputs["From Max"].default_value = 0.8
+    up.inputs["To Min"].default_value = 0.35
+    up.inputs["To Max"].default_value = 0.75
+    Lk.new(sep.outputs["Z"], up.inputs["Value"])
+    sn = N.new("ShaderNodeMath")
+    sn.operation = "MULTIPLY"
+    Lk.new(up.outputs["Result"], sn.inputs[0])
+    Lk.new(wg.outputs["snow"], sn.inputs[1])
+    fr = N.new("ShaderNodeMath")
+    fr.operation = "MULTIPLY_ADD"
+    fr.use_clamp = True
+    Lk.new(wg.outputs["frost"], fr.inputs[0])
+    fr.inputs[1].default_value = 0.35
+    Lk.new(sn.outputs[0], fr.inputs[2])
+    mx = N.new("ShaderNodeMix")
+    mx.data_type = "RGBA"
+    Lk.new(fr.outputs[0], mx.inputs["Factor"])
+    Lk.new(src, mx.inputs["A"])
+    mx.inputs["B"].default_value = (0.9, 0.93, 0.97, 1.0)
+    Lk.new(mx.outputs["Result"], bc)
+    return True
+
+
 def tex_path(asset, kind, res="2k"):
     p = PH_TEX / asset / ("%s_%s_%s.jpg" % (asset, kind, res))
     return p if p.exists() else None
 
 
 def ph_mat(name, asset, scale=1.0, tint=None, rough_mul=1.0, normal=0.8, rot=0.0, coord="Object", haze=True,
-           blend=0.25, walls_horizontal=False, max_px=2048):
+           blend=0.25, walls_horizontal=False, max_px=2048, snow=False):
     """2K Poly Haven PBR (diff + nor_gl + arm) with box projection on object coords (scale = texture metres per
     tile). tint multiplies the base colour. Returns None if the textures are missing."""
     if name in bpy.data.materials:
@@ -498,6 +559,9 @@ def ph_mat(name, asset, scale=1.0, tint=None, rough_mul=1.0, normal=0.8, rot=0.0
         Lk.new(col, mx.inputs["A"])
         mx.inputs["B"].default_value = tuple(tint[:3]) + (1.0,)
         col = mx.outputs["Result"]
+    if snow:                                   # s7: roofs keep the old roof_snow behaviour (MH_Weather frost/snow)
+        import mh_blender as B
+        col = B._snow_mix(N, Lk, col)
     Lk.new(col, p.inputs["Base Color"])
     if arm is not None:
         ta = img(arm, True)

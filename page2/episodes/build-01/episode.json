@@ -628,6 +628,11 @@
       ],
       "yaw": 90
      }
+    },
+    "lights": {
+     "porch": false,
+     "house": false,
+     "kitchen": true
     }
    }
   },

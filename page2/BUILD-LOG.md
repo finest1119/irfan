@@ -366,3 +366,423 @@ Pack (fallback), Farm Animal Pack and Cars Pack Google Drive folders list anonym
 - Creek rocks, the pebble bed and the shed props appear in none of the 14 frames, so they are visually unverified.
 - `--save-blend` now runs `make_paths_relative`, but it was not exercised this session.
 - A CC0 pickup exists (Kenney `truck.glb`). It was rejected from its preview thumbnail (toy proportions), not from a test render.
+
+---
+
+# Session 7 (25 Nov 2026, Opus): CC0 upgrade visual fixes
+Blender 5.3.0, Metal, `--scale 0.35`, 8 samples, as in session 6. Every run used one Blender process (checked with `pgrep` first).
+
+## Fixed
+1. **Torque: seams and faceting.**
+   - **Root cause of the "dark seam curves" (f1450):** they were not mesh seams. They were the shadows of tall CC0 grass blades falling across his white breast. They disappear in a grass-free studio render and in the game scene once grass is cleared.
+   - **Fix:** `build_grass` now keeps a 0.6 m mown patch along every Torque cast spot and walk path in the episode (`self.exclude`).
+   - **Geometry is now one merged surface anyway** (`characters_s6._merge_plumage`):
+     - Body, neck, head and the folded wing pads are built as closed shells at full ring resolution.
+     - They are voxel-remeshed (12 mm) into ONE surface, smoothed twice, and re-weighted from the source shells (inverse-distance blend of the 6 nearest source vertices).
+     - The result is `torque_body`: about 7k quads, smooth shaded, no subsurf.
+     - The bill, eyes, feather tips, legs and feet stay in `torque_parts` (subsurf 1).
+     - The neck no longer pokes into the body as an open tube, and faceting is gone at close range.
+   - **Tris: 18.4k render** (was 5.4k; the old 5k line is exceeded). In VRAM that is about 2 MB, so it was accepted. The rig, clips and anchors are unchanged.
+2. **Turbine (Build #1).** In `world_mercer.build_wind_turbine` + helpers `_lathe_x`, `_airfoil`, `_blade`, `_autosmooth`:
+   - **Blades:** 3 tapered, twisted blades with a cambered NACA-like section (24 % thick at the root → 12 % at the tip; chord 0.215 → 0.045 m). Pitch runs 18° → 1.5° from root to tip.
+     - Each has a round root in a steel clamp, and the tip radius is 1.75 m.
+     - The leading edge is derived from the keyed spin (+X), and the suction side faces downwind.
+   - **Hub:** a white spinner (nose cone) and hub plate.
+   - **Nacelle:** a new streamlined light-grey `bw_turbine_nacelle` with a dark alternator band, 4 cooling fins and a yaw clamp. It replaces the dark cylinder.
+   - **Tail vane bug (rendered pitch black at f1600 in v2):** `bmesh.ops.solidify` left both caps coincident, so the vane self-shadowed. It is now an explicit 3 cm plate.
+   - Object names, the rotor empty, spin keys and anchors are unchanged.
+3. **Dusk.**
+   - `key_preset` now keys the physical sky's `sun_rotation = 180° − sun_az`. The add_dusk_sky initial value is 270°.
+     - The lamp, at rotation (90−elev, 0, az), puts the sun towards (sin az, −cos az).
+     - Blender 5.3's sky texture puts its sun at (sin rot, cos rot). This was measured, not assumed: rot 0 → +Y, rot 90 → +X.
+   - My first try (az + 180) put the disc on the wrong side; v2's fixed 180° was also wrong.
+   - Verified with paired −X / +X views at f60: the sun disc and orange glow now sit at −X, the side the lamp lights the house from.
+   - Effect: f60 looks into the anti-solar sky (blue-purple with a pink belt) instead of the orange glow. That is real dusk.
+   - The dusk preset is deeper:
+
+     | Setting | v2 | v3 |
+     |---|---|---|
+     | Sun elevation | 4° | 2.5° |
+     | Sun energy | 4.5 | 3.4 |
+     | Sun colour | (1, .46, .2) | (1, .4, .16) |
+     | Tint | (1, .66, .48) | (.92, .6, .5) |
+     | Strength | .30 | .24 |
+     | Exposure | 0.15 | 0.0 |
+     | Fog | (.62, .46, .42) | (.5, .4, .42) |
+     | Sky gain | (.42, .42, .56) | (.34, .35, .5) |
+
+   - f60, f300, f2800 and f3050 still read after the direction fix (full set re-rendered).
+4. **Porch light** (`make_build01_episode.py` LIGHTS + regenerated `episode.json`; the diff is lights only):
+   - The hook is now `porch: true` (f1).
+   - The mission beat carries `porch: false`, so the light turns off at f353, mid-move, together with the day preset.
+   - The callback (f2655 →) already had it on.
+   - Plan + QC PASS, longest hold 5.9 s. ⚠ **Story note for the chief:** the hook VO is a blackout ("the whole street goes dark") and the payoff is "one porch light stays on". A lit porch in the hook weakens that contrast. To switch it back, flip `LIGHTS["hook"]["porch"]`.
+5. **Frost/snow on the CC0 assets** (default off; build-01 is unchanged because the Mix factor is 0):
+   - **Roof:** `cc0_lib.ph_mat(..., snow=True)` restores `B._snow_mix` on `grey_roof_01`.
+   - **Plants, grass and rocks:** `cc0_lib.weather_wrap()` is applied in `get()` to every `cc0_*` template.
+     - Rocks use the roof/terrain rule.
+     - Foliage cards are NOT normal-gated (they face every way): frost 0.35 + snow × (0.35…0.75 by up-facing).
+     - This is new behaviour: the old procedural trees and grass never had frost/snow (only the terrain and roofs did).
+   - Tested with a scratch copy of the episode (hook = `snow`, mission = `frost`). The roof turns white, the trees and grass frost, the terrain snows.
+6. **Second broadleaf:** Poly Haven `tree_small_02` (CC0, 1k glTF, 101 MB).
+   - Added to `assets/cc0/manifest.json` (11 files, sha256 recorded) and fetched with `tools/fetch_cc0.py --only tree_small_02`.
+   - Library rebuilt in 30 s → 91.6 MB. Templates: `cc0_broadleaf2_lod0` 486k tris, `cc0_broadleaf2_lod1` 157k.
+   - It fills the "maple" slot (about 40 % of broadleaves). A library built before s7 falls back to broadleaf 1.
+   - `assets/CREDITS.md` updated.
+7. **Creek rocks and shed props verified:** see `f2150_creek` (moss rocks on the bank, pool) and `f2150_shed_wide` (barrel, bucket, shovel, crates and box beside the battery rack).
+
+## Tooling
+- `render_oneshot.py --views FILE.json` (still runs only) adds QC views off the plan: `[{"f", "tag", "anchor"?, "pos", "look", "lens"}]`. Positions are anchor-relative when `anchor` is given. It runs after the plan stills, so it never touches a reel.
+- `oneshot.py still` forwards `--views` and `--tag`.
+- `--save-blend` exercised: a 57 MB .blend with **0 absolute image paths** (the test .blend was then deleted).
+- **Windows box:** run `python tools/fetch_cc0.py` (fetches `tree_small_02`), then rebuild the library (`Blender -b --factory-startup -P page2/blender/cc0_lib.py -- build`). Without that, the maple slot silently falls back to broadleaf 1.
+
+## Outputs
+- `episodes/build-01/work/stills_contact_v3.jpg`: the 14 plan frames + the Torque f1450 close-up, turbine close/side, dusk-sun check, shed, creek and woods views.
+- `episodes/build-01/work/before_after_v3.jpg`: v2 on top, v3 below (f60/300/700/1150/1450/1600/2800).
+- The v2 stills are kept in `episodes/build-01/work/stills_v2/`.
+
+## Timings / VRAM
+- World build: 5.7 s.
+- Stills take 1.9–6.2 s each. The full set (14 + 7 views) takes 99 s in one process.
+- From `stats_0060-3050.json`:
+
+  | Item | Value |
+  |---|---|
+  | CC0 template tris | 1.61M (was 0.96M) |
+  | Geometry estimate | 258 MB |
+  | Images estimate | 492 MB |
+  | Torque | 18.4k tris |
+  | Bolts | 40.7k tris (all outfits) |
+
+  **Total ≈ 1.45–2.05 GB** with the 0.3–0.6 GB of buffers/denoiser and 0.4–0.7 GB of context. That is inside the 3 GB budget. Still to be measured with `nvidia-smi` on Windows.
+
+## Tests
+- `test_oneshot.py`: **ALL PASS**.
+- build-01 plan: PASS. `qc_oneshot`: PASS.
+
+## Open issues (logged, not repaired: minor or outside this brief)
+- f700 / flat tower: the hub sits about 0.4 m above the pad, so one blade still dips into the grass whatever the parking angle. It needs a raised hinge or a tower-top stand (a geometry change to the tilt-up).
+- Creek: the moss rocks read, but the river-pebble bed barely shows through the murky green water. That is a water-material choice, not a missing asset.
+- In the frost/snow presets the white siding reads grey-brown, because those presets have no sun (sun = 0). This predates s7.
+- Torque's mown patch is 0.6 m. If a future episode keys him on a path the episode doesn't list, the grass shadows return.
+- Bolts' quality (waits on the Quaternius decision) and the Kenney kitchen were skipped, per the brief.
+
+---
+
+# Session 8 (25 Nov 2026, Opus): Build #1 fixes (flat tower, distant hills, kitchen window)
+Blender 5.3.0, Metal, `--scale 0.35`, 8 samples. One Blender process at a time (`oneshot.py still` waits). `episode.json` was NOT regenerated this session: the hook porch is OFF (`LIGHTS["hook"]["porch"] = False`), and f300 now shows the lamp unlit.
+
+## Fixed
+1. **Flat tower: rotor blade in the ground** (`world_mercer.build_wind_turbine`, assemble mode only).
+   - **Rotor parked with one blade straight up** while the tower is down: a constant −90° phase on the rotor keys. The spin timing is unchanged. The two lower tips now sit 0.875 m below the hub, not 1.52 m.
+   - **Timber tower-top stand** `bw_turbine_stand`: a sawhorse with splayed legs, side braces, a V cradle and a rubber pad, 1.15 m below the tower top.
+     - The lowered angle is solved from the terrain `H()` under the rotor so the hub rests 1.32 m above the ground. It comes out at **86.69°** instead of 90°.
+     - The hinge, pivot, guys, ghost and the upright pose are unchanged. The stand stays on the ground after the tilt-up, as a crew would leave it.
+   - **New QC, `turbine_clearance()`:** for frame 1 and every frame from tilt_start to tilt_end (122 frames), it finds the lowest vertex of the blades, nacelle and vane above `H()`. The results go into the stats JSON (`turbine_min_clear_m`, etc.). **Min clearance +0.33 m**; it was negative before.
+   - The camera stops were not changed. The f700 framing still holds with the hub 0.9 m higher.
+2. **Distant hills** (`World._ridges`, `World._canopy_mat`; this replaces the 22 squashed spheres in `build_far`).
+   - **Shape:** three rings of real ridge terrain around (40, 0), at R+110, R+350 and R+700 m (R = 650), with heights of 18–55, 30–85 and 45–120 m.
+     - Rounded crests with an offset crest line, 260 m spur noise and a 2.4 m crown-bump treeline. The edges sink below the far ground plane.
+     - 1,600–2,000 segments × 18 rows, **184k tris in total**.
+     - The western sector (the dusk sun at az −90°) is capped at about 1.6° elevation, so the ridges never shade the dusk scene. The dusk sun disc still shows above them in `f0060_dusk_sun`.
+   - **Material (shader only, no textures):**
+     - Voronoi crowns (~6 m), dark gaps between crowns, and per-crown brightness jitter.
+     - 40 m stand/ravine noise and 150 m patches of conifer, broadleaf and dry clearing.
+     - A light crown bump.
+   - **Aerial perspective:** the scene fog via `L._fog_wrap(density_scale=0.55)`, so it follows the keyed `MH_Fog` colour per preset. Dusk turns the ridges mauve-grey.
+     - Near ridges read green with a visible canopy texture; the back ridges fade blue-grey toward the horizon.
+3. **Kitchen through the window (f2550).** Diagnosis: the Kenney furniture kit has **no textures**; it uses flat palette materials. The softness came from the glass (transmission 1 + alpha 0.25 veiled the room, and the 8-sample denoiser smeared it) and from flat toy colours.
+   - **Glass `mh_clear_glass`:** a Transparent BSDF + a faint Fresnel gloss (Layer Weight 0.12 × 0.55).
+   - **Materials (`mercer_cc0._kitchen_materials`):** per-object slots (the library meshes are untouched):
+     - oak-grain cabinets and walnut accents (procedural wave grain + satin coat);
+     - brushed stainless steel, black enamel, and dark glass on the stove.
+   - **Room:** a white subway-tile backsplash (procedural brick, 7.5 × 15 cm), an under-cabinet LED strip, and a 2.8 × 1.6 m ceiling area light (140 W, warm).
+     - All are keyed through `add_light("kitchen", …)`, so they switch off with the kitchen lights.
+
+## Outputs
+- `episodes/build-01/work/stills_contact_v4.jpg`: the same 21 tiles and layout as v3 (14 plan frames + 7 check views from `views_v3.json`).
+- `episodes/build-01/work/before_after_v4.jpg`: v3 on top, v4 below (f700, f940, f1360, f2550).
+- The v3 stills are kept in `episodes/build-01/work/stills_v3/`.
+
+## Timings / VRAM
+- World build: 7.1 s. Full set (14 + 7 views): 116 s in one process.
+- From `stats_0060-3050.json`:
+
+  | Item | Value |
+  |---|---|
+  | Geometry estimate | **285 MB** (was 258; ridges +27 MB) |
+  | Images estimate | 492 MB (unchanged) |
+  | New textures | none |
+
+- **Total ≈ 1.5–2.1 GB** with the buffers/denoiser and the context. That is inside the 3 GB budget. Still to be measured with `nvidia-smi` on Windows.
+
+## Tests
+- `test_oneshot.py`: **ALL PASS**.
+- build-01 plan: PASS (longest hold 5.9 s). `qc_oneshot`: **PASS**.
+
+## Open issues (logged, not repaired)
+- **Mid-ground haze (f940, f1360):** the 150–400 m lawn and the CC0 woods still go mint/pale under the scene haze (bright lawn colour × blue fog). This is not the hills; it needs a darker far-terrain/field mix or a lower fog density.
+- The ridges ignore frost and snow (build-01 has none). Winter episodes would want `weather_wrap`-style snow on `mh_far_canopy`.
+- The kitchen stool's pink seat sits right behind the glass, so it reads as a blob at the bottom of f2550. It could move 0.3 m back.
+- The hook lights have `kitchen: true` during the "whole street goes dark" blackout. It is not visible in the hook shots, but the story team should check.
+- The tower stand stays on the ground after the tilt-up; it is visible small in wide upright shots.
+
+---
+
+# Session 9 (25 Nov 2026, Opus): Bolts on the Quaternius base
+Blender 5.3.0, Metal, `--scale 0.35`, 8 samples. One Blender process at a time (checked with `pgrep` before each run).
+
+## What was built
+- **`page2/blender/characters_s9.py`** (new): Bolts on the CC0 Quaternius Universal Base Characters `Superhero_Male_FullBody.gltf`
+  (the only male body in the free Standard kit) + Universal Animation Library `UAL1_Standard.glb`.
+  - **Body:** reshaped at rest into a regular middle-aged build (coordinator QC, 2 rounds).
+    - Arm chains (bones + skin) move 3.5 cm in per side and the whole shoulder girdle narrows smoothly with them. Upper arms are 52 % slimmer
+      at the biceps but only ~12 % at the deltoid, with a 1.2 cm pad on the cap so the arm-down skinning keeps it round. Forearms 16 % slimmer.
+    - **Shoulder fix (Irfan's QC: shoulders curved inwards).** There were three causes:
+      - The barrel blend ran up to z 1.5 and pulled the armpit/upper-chest sides in under an un-moved deltoid.
+      - The deltoid cap had been lowered 3 cm.
+      - The arm chain moved 5 cm while the trunk beside it did not, leaving a step.
+      - Fix: the barrel blend fades out by z 1.4, the TRUNK top rings were widened, the deltoid is padded instead of lowered, the traps are lowered
+        only 0.8 cm, and the girdle moves in smoothly. Front, 3/4 and back show neck → trapezius → round deltoid → arm in both outfits;
+        the clothes come from the same cloth base, so they follow.
+      - Checked in idle, walk and all 5 gestures; point, thumbs-up and winch crank have the arm raised.
+      - Walk: the whole arm (upper, fore, hand) now swings 0.16 rad clear of the belly.
+      - Sheet: `bolts_shoulders_before_after.jpg`.
+    - Every trunk slice is blended to a superellipse (`TRUNK` table): the waist is wider and straight, the chest plain (pecs flattened),
+      the lats gone, the traps lowered. A belly shows in profile, and the outer upper thighs are widened so the hips match the shoulders.
+    - Object scale 0.9823 → **1.778 m**.
+  - **Head:** the kit's eyes (re-hued to blue-gray) and eyebrows, plus CC0 `Hair_Beard` and `Hair_Buzzed` (Rigged to Head Bone),
+    pointed at the body rig after a Head-rest check. All are tinted salt-and-pepper through a luminance ramp; the skin uses
+    the Light albedo with a slight desaturation and subsurface.
+  - **Clothes = shells of the body:** one smoothed copy of the body (Taubin, 60 iterations; head, hands and feet pinned)
+    serves as the cloth base. Every garment is cut from it with `bisect_plane` (clean edges), selected by rest
+    position + dominant bone, and pushed out along the full-mesh normals. Weights are inherited 1:1, so the gloves bend
+    with the finger bones. The body under each outfit is hidden by the old Mask contract (`hide_under_<outfit>`, eroded by one ring).
+    - **Electrician:** coveralls with a chest band, sleeve and leg reflective bands, a belt and a zip line; yellow gloves with
+      gauntlet cuffs; a lofted collar; a cap-style hard hat with peak and crown rib; a multimeter with a lead.
+    - **Workshop:** henley with rolled cuffs and collar, work pants with belt, buckle, pouch and hammer, navy cap.
+    - **Harness extra:** straps cut from the same cloth base at +2.4 cm, so they stay parallel to the coveralls.
+    - **Boots:** lofted shaft, foot and sole (subsurf 1), smooth weights on calf/foot/ball.
+  - **Signatures:** glasses on the forehead below any brim, a lofted red bandana with knot and a hanging triangle on the
+    `bandana_tail_1/2` bones, the pencil behind the RIGHT ear, the tape at the LEFT hip. All are fitted to measured head/neck/hip surfaces.
+  - **Rig:** the native 65-bone Quaternius skeleton plus non-deform `prop_L/R`, `hat_root`, `tape_clip` and deform
+    `bandana_tail_1/2`. `ANC_bolts` is placed where s6 had it (head top + 5 cm, rest). Rest pose faces −Y.
+  - **Animation:** UAL is imported once and sampled at 30 fps (seconds-based; import fps read from the scene). It is
+    **retargeted** by armature-space rotation delta from the UAL rest onto the body rest (the two rests differ on nearly every bone),
+    and the pelvis translation is scaled by the hip-height ratio. The UAL objects/actions are then deleted. The bake keys **every bone on
+    every frame** (quaternion, sign-continuous) plus the pelvis location, with an 8-frame world-rotation crossfade at clip switches.
+
+    | Clip | Source |
+    |---|---|
+    | idle | **relaxed upright stand** (`Animator._relaxed_stand`). UAL `Idle_Loop` is a wide, bent-knee "ready" crouch with the arms out, so only its spine/neck/head life is kept (at half strength). The legs are straight at rest width (about shoulder width), the pelvis is level with a slow weight shift, the arms hang close to the body and the hands are relaxed. Every gesture overlay is built on this stand. |
+    | walk | UAL `Walk_Loop` (in place; checked in the studio: upright, no crouch) |
+    | point, thumbs_up, hands_on_hips, scratch_beard, winch_crank (crank) | **not in the free kit** → `Idle_Loop` legs/breathing + an arm/finger overlay. The overlay is solved from hand targets (2-bone IK, hand frame, forearm twist share, finger curl about the rest bend axis) and eased in like the s6 clips. Thumbs-up has a real fist with the thumb bones straight up. |
+
+    Unknown clips fall back to idle with a log line. `make_clip_actions` writes `bolts_<clip>` actions (`--clip-actions`).
+- **`characters.py`:** `BOLTS_IMPL` (env `MH_BOLTS_IMPL`) = `s9` (default) / `s6` / `v1`, falling back down that chain if a build raises.
+  The dict carries `impl`. `apply_cast` uses the dict's `bake` when present, otherwise the old euler `bake_clips`. Torque is unchanged (s6).
+- **`render_oneshot.py`:** writes `bolts_impl` and `bolts_tris_visible` to the stats JSON; `--clip-actions` dispatches to s9.
+- **Fixed during QC:**
+  - The glTF rig imports with QUATERNION rotation, so apply_cast's yaw keys did nothing (Bolts always faced −Y). The rig is now XYZ.
+  - `materials.clear()` after `to_mesh` reset the shells' material indices (no reflective bands or belt). The slots are now set first.
+  - Band/belt materials were classified after the normal offset, which gave ragged edges on the belly. They are now classified on the cut surface.
+  - The relaxed left thumb went into the thigh. Fixed by moving the arm out and turning the palm a little back. The tape case was moved 2 cm forward, clear of the harness belt.
+- **Assets:** `assets/cc0/manifest.json`: the Quaternius item moved from `skipped` to two `files` entries (zips, size + sha256, `url: manual:<itch page>`).
+  `fetch_cc0.py --check` is all ok. `assets/CREDITS.md` has a Quaternius line.
+
+## Outputs (`episodes/build-01/work/`)
+- `stills_contact_v5.jpg`: the 14 plan frames + 8 Bolts views (`views_v5.json`, anchored on `bolts`). The v5 stills are kept in `stills_v5/`, the v4 ones in `stills_v4/`.
+- `bolts_v5.jpg`: studio turnaround (front, 3/4, side, back, electrician + harness, idle), face front/side, thumbs-up close-up.
+- `before_after_v5.jpg`: v4 top, v5 below, on f60/f300/f1300/f1360 (the plan frames where Bolts shows).
+- `bolts_shoulders_before_after.jpg`: shoulder close-ups before (top) / after (bottom). Electrician and workshop front, 3/4 and back,
+  plus point (raised arm) and winch crank.
+- `bolts_old_vs_new.jpg`: OLD s6 (`MH_BOLTS_IMPL=s6`) top vs NEW s9 bottom, same studio lights and cameras, with the
+  concept turnaround and `branding/profile-logo-final.png` as reference tiles.
+
+## Timings / tris / VRAM
+- Bolts build: 2.0 s; bake of 2,999 frames × 71 bones inside the still run. Full still set (14 + 8 views): 118–157 s.
+- Render tris visible: **electrician + harness 34.3k**, workshop 26.9k (body core 16.2k incl. hair/beard/eyes). That is over the old 30k line,
+  but it is ~5 MB of geometry. Torque 18.4k (unchanged).
+- From `stats_0060-3050.json`:
+
+  | Item | Value |
+  |---|---|
+  | Images | **592.7 MB** (was 492; +5 × 2K body/hair maps) |
+  | Geometry | 289.7 MB (was 285) |
+
+  **Total ≈ 1.6–2.2 GB** with buffers/denoiser and context, inside 3 GB. Still to be measured with `nvidia-smi` on Windows.
+
+## Tests
+- `test_oneshot.py`: **ALL PASS**.
+- build-01 plan: PASS (longest hold 5.9 s). `qc_oneshot`: **PASS**.
+- Fallback checked: `MH_BOLTS_IMPL=s6` builds the procedural Bolts (studio run).
+
+## Open issues (logged, not repaired: minor)
+- The face is still the kit's young "hero" face under the beard (no age lines); the free kit has no other male head.
+- No six-pack or pecs show through the clothes now. A soft crease remains under the chest band in hard light.
+- Walk: at the front of the swing the glove brushes the harness belt (no penetration). Walk is not used in build-01.
+- Reflective chest band: a few-mm wave near the armpits (normal offset on a curved surface).
+- The kit's beard mesh has a ragged sideburn silhouette at close range.
+- Pose clips other than idle/walk are overlays, not mocap. Crank hands are on a circle, not on a modelled winch handle.
+- **Windows:** the two Quaternius zips must be copied by hand to `assets/cc0/quaternius/` (no anonymous URL). `fetch_cc0.py` would try the
+  `manual:` URL and stop, so run it with `--check` or `--only` until then. Extraction next to the zip is found by `characters_s9._kit()`.
+- Leftover in `work/stills_oneshot/`: an old `oneshot_f1600.blend1` from an earlier session (not touched).
+
+---
+
+# Session 10 (25 Nov 2026, Opus): old Bolts (s6) comparison
+Irfan asked whether Build #1 can go back to the previous Bolts. Nothing was changed in code: s9 stays the default, and s6 is chosen per run with `MH_BOLTS_IMPL=s6`.
+
+## Runs
+- Blender 5.3.0, Metal, `--frames 300,2150 --scale 0.5 --samples 16`, with identical settings for both runs. Each run used one process and took about 62–64 s.
+- The views are taken from `views_v5.json`, re-tagged so no existing still is overwritten. Files: `work/stills_old_bolts/views_s6.json` and `views_s9.json`.
+- Shots:
+  - f300 hands_on_hips
+  - f1150 scratch_beard
+  - f1300 winch_crank
+  - f2150 thumbs_up close-up
+- f1600 `_thumbhero` was dropped because it shows only the turbine (Bolts is not in frame). Build-01 has no Bolts walk shot.
+- All outputs are in `work/stills_old_bolts/`: the stills, `stats_s6.json`/`stats_s9.json` and `still_s6.log`/`still_s9.log`.
+  The temporary `oneshot/stats_0300-2150.json` was removed and `oneshot/logs/still.log` restored.
+- Sheet: `work/bolts_s6_vs_s9_compare.jpg`. Rows are the frames; OLD (s6) is on the left, CURRENT (s9) on the right.
+
+## Result
+- **s6: PASS.** `bolts_impl = s6_procedural`, with no traceback, FAILED or fallback lines.
+- Visible tris: workshop 27.2k, electrician 32.2k (all outfits 40.7k).
+- s9 run: `s9_quaternius`. It logs 2 missing kit normal maps (`T_Hair_1_Normal_png.png`, `T_Eye_Normal_png.png` under `Godot - UE/`).
+  This is a minor s9 issue and is not repaired.
+- `test_oneshot.py`: ALL PASS with the default and with `MH_BOLTS_IMPL=s6`. The test never imports `characters`, so it does not test either Bolts.
+
+## Impact of switching back to s6
+- **Clips:** all 7 clips exist on s6 (idle, walk, point, thumbs_up, hands_on_hips, scratch_beard, winch_crank). They come from the analytic euler `characters.bolts_pose`, and `apply_cast` picks them automatically.
+  - s6 has **no finger bones** (one `hand.*` bone; the fingers are modelled fixed-curled). There is no fist and no grip.
+  - Thumbs-up reads as an open, raised mitt.
+  - In the winch crank the hands float open with splayed fingers.
+  - In hands_on_hips the hands sink into the hips.
+  - Walk is a simple sine swing, not the UAL mocap. It is not used in build-01.
+- **Continuity:** s6 has every `character.json` signature (glasses on the forehead, red bandana, pencil on the RIGHT ear, tape on the LEFT hip, salt-and-pepper beard, gloves, harness, hard hat).
+  - It looks stylised and procedural: a long neck, a tube torso, puffy shoulder caps and a blocky face.
+  - It has no reflective leg bands in the hook shot, and the bandana knot is a red blob.
+  - The proportions differ visibly from s9. Episodes must not mix the two, so whichever version is picked stays for the series.
+- **Re-render scope:** no final render exists (`work/frames_oneshot/` is missing). Switching costs only a stills/QC pass plus the normal render; nothing has to be redone.
+- **VRAM** (same frames, stats JSON):
+
+  | Item | s6 | s9 |
+  |---|---|---|
+  | Images | 491.8 MB | 592.7 MB |
+  | Geometry | 285.4 MB | 289.7 MB |
+  | Build | 6.4 s | 10.1 s |
+
+  s6 saves about 100 MB of textures, because it has no 2K kit maps. Both fit the 3 GB budget.
+
+---
+
+# Session 11 (25 Nov 2026, Opus): s9 proportion pass
+Irfan keeps s9 but found the arms, shoulders and torso odd. Goal: a normal ~40-year-old hands-on man with a modest belly, at the same height.
+Blender 5.3.0, Metal. One Blender process at a time (checked with `pgrep` before each run). Only `blender/characters_s9.py` changed.
+
+## Profiles (old look kept)
+- `PROFILES` in `characters_s9.py`, picked with env `MH_BOLTS_PROP`:
+  - `s11` (default): the new proportions.
+  - `s9`: the session 9/10 body.
+- **Check:** a studio measure with `MH_BOLTS_PROP=s9` matches the pre-edit build exactly (every bone, slice and contact number).
+- **File baseline:** `work/stills_s9_prop/characters_s9_before_s11.py.txt`.
+- `BOLTS_IMPL` is unchanged (`s9`).
+
+## Changes (rest, armature space, before the 0.9823 object scale; measured values are world, idle)
+
+| What | s9 | s11 |
+|---|---|---|
+| Trunk table, half-width (hips / waist / chest) | 0.192 / 0.200 / 0.186 | 0.180 / 0.168 / 0.180 |
+| Trunk table, half-depth at the belly | 0.150 | 0.131 |
+| Superellipse exponent | 2.4 (boxy) | 2.1 (rounder) |
+| Belly | 2.2 cm | 2.0 cm |
+| Measured skin trunk width, z 0.95–1.28 | 37.6–39.8 cm | 34.0–35.6 cm |
+| Measured skin trunk depth at z 1.13 | 32.9 cm | 29.2 cm |
+| Shoulder breadth (outfit, z 1.38–1.44) | ~50 cm | ~50 cm (`shoulder_in` unchanged; what changed is the slope and how the arms hang) |
+| Shoulder girdle | (no drop) | lowered 1.6 cm (smooth girdle blend, as in `_narrow_shoulders`) → trapezius slopes down; shoulder joint z 1.426 → 1.410 |
+| Upper arm length | 0.247 m | 0.304 m (+5.8 cm, stretch spread over the shaft; deltoid, elbow and wrist shapes kept) |
+| Forearm length | 0.239 m | 0.259 m (+2.0 cm) |
+| Idle elbow z | 1.188 | 1.113 (waist) |
+| Idle wrist z | 0.953 (hip-joint height) | 0.858 (crotch level) |
+| Arm thickness | deltoid −12 %, biceps −40 %, forearm ×0.84 | deltoid −15 %, biceps −42 %, forearm ×0.80 |
+| Hands | 21.0 cm | 18.9 cm (scaled ×0.9 about the wrist) |
+| Glove gauntlet | 6 cm long, 1.2 cm flare | 4.5 cm long, 0.6 cm flare |
+| Thighs | outer hip pad 3 cm | outer hip pad 1.2 cm; inner thigh −14 % near the crotch. This opens a thigh gap: the lowest midline skin vert rises 0.807 → 0.876, because in s9 the inner thighs touched down to 0.807. The legs read longer. |
+| Electrician neckline (front) | chin −3.5 cm | chin −6.8 cm; the cut rises 0.2 m/m towards the back (tilted neckline, so the back is not bare) |
+| Collar | top at chin −2.3 cm | 4.5 cm band ending 0.8 cm above the neckline |
+| Bandana | chin −7.0…−3.6 cm, grow 4.2/3.2 cm | chin −8.8…−5.4 cm, grow 3.6/2.4 cm, 0.12 tilt; the tail bones move with it |
+| Visible neck in front (chin → bandana top) | 3.0 cm | 4.9 cm |
+| Workshop henley neckline | chin −3 cm | chin −6 cm (same tilt) |
+| Idle pose | neck/head blended 0.4/0.3 to rest | neck/head blended 0.65/0.5 to rest, plus 0.14/0.07 rad back (head over the shoulders, no forward "vulture" neck) |
+| Idle upper-arm aim x | 0.27 | 0.20 |
+| Idle forearm x | 0.1 | 0.06 |
+| Walk `ARM_OUT` | 0.16 rad | 0.12 rad |
+
+- **Harness (`_harness_v`):**
+  - Shoulder straps follow a soft V: x 0.106 at the belt → 0.086 at the chest strap → 0.098 over the shoulder. The straps are cut with slanted bisect planes.
+  - Leg loops are tilted round each thigh (0.825 at the thigh centre, dz/dx −0.36), not one horizontal band that read as a shorts hem.
+- **Rest-space constants made relative:**
+  - Sleeve reflective bands sit at wrist −8…−5 cm.
+  - Tape, `tape_clip` bone, multimeter, pouch and hammer x are ×0.93 (the narrower hips).
+- **Unchanged:**
+  - Same height: rest scale 0.9823, 1.778 m.
+  - Face, beard, eyes, finger bones, all 7 clips, every `character.json` signature, both outfits.
+
+## Contacts (studio measure, before → after)
+| Contact | Before | After |
+|---|---|---|
+| hands_on_hips palm → trunk surface | 1.7 / 1.4 cm | 1.0 / 0.9 cm |
+| scratch_beard fingertips → beard | 1.5 / 2.6 cm | 1.5 / 2.1 cm |
+| winch_crank at f646 | short arms fell 3.6 cm short of the target | reached (−0.454 m vs target) |
+| winch_crank at f656 | unchanged | unchanged |
+| Idle forearm → trunk clearance | 0.3 cm | 0.4 cm |
+
+## Outputs (`episodes/build-01/work/`)
+- **`bolts_s9_proportions_before_after.jpg`:** columns BEFORE (s9 now) / AFTER (normalized).
+  - Rows f300, f1150, f1300 and f2150 use the session 10 cameras (`--frames 300,2150 --scale 0.5 --samples 16`, views `stills_s9_prop/views_before.json` / `views_after.json`).
+  - Two more rows: studio idle FRONT and SIDE, 85 mm, identical lights.
+  - The in-world front view (f1800, idle) was occluded by a pole, so neutral views are studio renders. Studio BEFORE = `MH_BOLTS_PROP=s9`, verified identical to the pre-edit code.
+- **`bolts_s9_prop_deform.jpg`:** the 7 clips at their extremes, two 3/4 views each. Walk is shown at A/B. Winch is shown at its 4 crank phases: f641 far, f651 top, f661 near, f671 bottom (40-frame cycle from f601).
+- **`stills_s9_prop/`:**
+  - raw world stills (`*_before*`, `*_after*`);
+  - `studio/` (legacy_* and after_* incl. workshop front/3/4 and all deform frames);
+  - `measure_legacy.json` and `measure_after.json`;
+  - stats and logs;
+  - the studio harness `studio_s11.py.txt` (run: `Blender -b --factory-startup -P studio.py -- OUTDIR TAG --measure --render front,side,q34,back --deform --workshop`).
+- **Housekeeping:** `oneshot/logs/still.log` restored. The temporary `oneshot/stats_0300-2150.json` was moved to `stills_s9_prop/stats_{before,after}.json`.
+
+## Deformation (after)
+- Extra checks (`stills_s9_prop/extra_{after,legacy}.json`, `studio/*_x_*`):
+  - **Lit upper-back, 3/4-back and front close-ups, both outfits:** neck → trapezius → round deltoid, with no inward curve.
+  - **Crank phases:** no elbow or glove enters the belly or harness.
+  - **Idle gloves:** they hang beside the thighs, clear of the leg loops, tape and multimeter.
+  - **Signed glove/arm-to-outfit metric:** inconclusive. The nearest-face sign is noisy on the thin joined props (multimeter, tape, collar).
+    - It reads equal or better than s9 everywhere. Hips: −3.9 vs −3.8 cm. Crank: −2.4…+2.7 vs −8.7…−2.8 cm.
+    - Penetration was therefore judged visually. Hands on hips rest on the hips at f300 with no sinking.
+- The plan stills `f0300_after` / `f2150_after` were checked. f2150 has no Bolts in frame (same as before).
+- `views_before.json` now lists the same 4 views as `views_after.json`. The occluded f1800 world views were dropped.
+- No shoulder collapse, armpit or harness tearing, or candy-wrapper wrists in any clip:
+  - idle
+  - walk (both extremes)
+  - point (arm raised above the shoulder)
+  - thumbs_up
+  - hands_on_hips
+  - scratch_beard
+  - winch_crank (both phases)
+- The workshop outfit was checked front and 3/4.
+
+## Stats / VRAM
+- `bolts_impl = s9_quaternius` in both runs, with no Traceback and no CHARACTERS FAILED.
+- Visible tris: electrician + harness 34.2k → **34.7k** (slanted strap cuts); workshop 26.8k → 26.7k.
+- Images 592.7 MB and geometry 289.7 MB are unchanged. **Total ≈ 1.6–2.2 GB**, inside 3 GB.
+
+## Tests
+- `test_oneshot.py`: **ALL PASS**. It still does not import `characters`; Bolts was verified by the studio and still runs.
+
+## Open issues (minor, logged)
+- Coverall thighs still touch down to z ≈ 0.73. The skin crotch is 0.876; the cloth offset closes the gap. This reads fine at medium distance.
+- The neck is the kit's slim neck. It is now visible (about 5 cm in front). In 3/4 close-ups it can read slightly long or thin.
+- Boots are unchanged and still read large.
+- The pre-existing missing kit normal maps (`T_Hair_1_Normal`, `T_Eye_Normal`) are still logged.

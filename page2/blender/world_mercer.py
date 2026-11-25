@@ -41,8 +41,8 @@ OUTER = (-400.0, 560.0, -300.0, 300.0)
 PRESETS = {
     "day":   {"tint": (1.0, 1.0, 1.0), "strength": 1.0, "exposure": None, "sun": 0.0, "sun_col": (1.0, 0.95, 0.86),
               "sun_elev": 40.0, "sun_az": -35.0, "fog": None, "frost": 0.0, "snow": 0.0},
-    "dusk":  {"tint": (1.0, 0.66, 0.48), "strength": 0.30, "exposure": 0.15, "sun": 4.5, "sun_col": (1.0, 0.46, 0.2),
-              "sun_elev": 4.0, "sun_az": -90.0, "fog": (0.62, 0.46, 0.42), "frost": 0.0, "snow": 0.0, "sky": 1.0},
+    "dusk":  {"tint": (0.92, 0.6, 0.5), "strength": 0.24, "exposure": 0.0, "sun": 3.4, "sun_col": (1.0, 0.4, 0.16),
+              "sun_elev": 2.5, "sun_az": -90.0, "fog": (0.5, 0.4, 0.42), "frost": 0.0, "snow": 0.0, "sky": 1.0},
     "frost": {"tint": (0.86, 0.93, 1.06), "strength": 0.95, "exposure": -0.6, "sun": 0.0, "sun_col": (0.95, 0.97, 1.0),
               "sun_elev": 25.0, "sun_az": -35.0, "fog": (0.80, 0.86, 0.93), "frost": 1.0, "snow": 0.0},
     "snow":  {"tint": (0.90, 0.95, 1.05), "strength": 0.9, "exposure": -0.85, "sun": 0.0, "sun_col": (0.95, 0.97, 1.0),
@@ -179,6 +179,10 @@ class World(object):
             B.key_const(r["sky_mix"].inputs["Factor"], "default_value", [(f, p.get("sky", 0.0))])
             if r.get("sky") is not None:
                 B.key_const(r["sky"], "sun_elevation", [(f, math.radians(p["sun_elev"] - 1.0))])
+                # s7: the sky's sun on the SAME side as the sun lamp. Lamp rotation (90-elev, 0, az) puts the sun
+                # towards (sin az, -cos az); the sky texture's sun sits at (sin rot, cos rot) (measured in Blender
+                # 5.3: rot 0 -> +Y, rot 90 -> +X) -> rot = 180 - az.
+                B.key_const(r["sky"], "sun_rotation", [(f, math.radians(180.0 - p["sun_az"]))])
         wg = B.weather_group()
         B.key_const(wg.nodes["frost"].outputs[0], "default_value", [(f, p["frost"])])
         B.key_const(wg.nodes["snow"].outputs[0], "default_value", [(f, p["snow"])])
@@ -650,17 +654,57 @@ class World(object):
         return {"house_top": (x1 + 0.1, y0 - 0.1, zr)}
 
     def _clear_glass(self):
+        """s8: mostly see-through pane: Transparent BSDF + a faint Fresnel gloss (was transmission 1 + alpha .25, which
+        veiled the kitchen and left the denoiser nothing to resolve behind the glass at low samples)."""
         def mk():
             m, nt, N, Lk, p = S._new_mat("mh_clear_glass")
-            p.inputs["Base Color"].default_value = (0.9, 0.95, 1.0, 1.0)
-            p.inputs["Roughness"].default_value = 0.02
+            N.remove(p)
+            tr = N.new("ShaderNodeBsdfTransparent")
+            tr.inputs["Color"].default_value = (0.96, 0.98, 1.0, 1.0)
+            gl = N.new("ShaderNodeBsdfGlossy")
+            gl.inputs["Roughness"].default_value = 0.02
+            gl.inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
+            lw = N.new("ShaderNodeLayerWeight")
+            lw.inputs["Blend"].default_value = 0.12
+            k = N.new("ShaderNodeMath"); k.operation = "MULTIPLY"; k.inputs[1].default_value = 0.55
+            Lk.new(lw.outputs["Fresnel"], k.inputs[0])
+            mx = N.new("ShaderNodeMixShader")
+            Lk.new(k.outputs[0], mx.inputs[0])
+            Lk.new(tr.outputs[0], mx.inputs[1])
+            Lk.new(gl.outputs[0], mx.inputs[2])
+            return S._finish(m, mx.outputs[0], haze=False)
+        return B._cached("mh_clear_glass", mk)
+
+    def _tile_mat(self):
+        """White subway-tile backsplash (7.5 x 15 cm, grey grout), procedural brick on the wall's X/Z."""
+        def mk():
+            m, nt, N, Lk, p = S._new_mat("mh_kitchen_tile")
+            vec = S._coord(N, Lk, "Object")
+            sep = N.new("ShaderNodeSeparateXYZ")
+            Lk.new(vec, sep.inputs[0])
+            cmb = N.new("ShaderNodeCombineXYZ")
+            Lk.new(sep.outputs["X"], cmb.inputs["X"])
+            Lk.new(sep.outputs["Z"], cmb.inputs["Y"])
+            br = N.new("ShaderNodeTexBrick")
+            br.inputs["Scale"].default_value = 1.0
+            br.inputs["Brick Width"].default_value = 0.15
+            br.inputs["Row Height"].default_value = 0.075
+            br.inputs["Mortar Size"].default_value = 0.004
+            br.inputs["Color1"].default_value = hexc("f2f1ec")
+            br.inputs["Color2"].default_value = hexc("e6e7e3")
+            br.inputs["Mortar"].default_value = hexc("9a978f")
+            Lk.new(cmb.outputs[0], br.inputs["Vector"])
+            Lk.new(br.outputs["Color"], p.inputs["Base Color"])
+            p.inputs["Roughness"].default_value = 0.18
             try:
-                p.inputs["Transmission Weight"].default_value = 1.0
+                p.inputs["Coat Weight"].default_value = 0.3
             except Exception:
                 pass
-            p.inputs["Alpha"].default_value = 0.25
+            inv = N.new("ShaderNodeMath"); inv.operation = "SUBTRACT"; inv.inputs[0].default_value = 1.0
+            Lk.new(br.outputs["Fac"], inv.inputs[1])
+            S._bump(N, Lk, inv.outputs[0], p, 0.4, 0.004)
             return S._finish(m, p.outputs[0], haze=False)
-        return B._cached("mh_clear_glass", mk)
+        return B._cached("mh_kitchen_tile", mk)
 
     def _kitchen_backdrop(self, kx, y1, zf):
         """A lit, low-poly kitchen nook behind the north kitchen window (only what the window can show)."""
@@ -683,8 +727,23 @@ class World(object):
         S.bm_box(bm, (kx - 1.4, yb + 0.35, zf + 1.05), (0.12, 0.12, 0.25), 2)      # lamp base
         S.bm_box(bm, (kx - 1.4, yb + 0.35, zf + 1.3), (0.3, 0.3, 0.22), 4)         # lamp shade
         S.bm_box(bm, (kx, (yb + y1) / 2, zf + 2.78), (3.9, 2.5, 0.04), 5)
-        B.mesh_obj("mh_kitchen_backdrop", bm, [wall, cab, top, fridge, shade, ceil])
+        # s8: subway-tile backsplash between counter and uppers (mat 6) + an under-cabinet LED strip (mat 7); both
+        # survive the CC0 prop pass (it drops mats 1/3/4 and high mat-2 faces only)
+        S.bm_box(bm, (kx - 0.47, yb + 0.06, zf + 1.235), (3.06, 0.012, 0.63), 6)
+        S.bm_box(bm, (kx - 0.7, yb + 0.12, zf + 1.535), (2.1, 0.04, 0.02), 7)
+        led = B.mat_glow("mh_kitchen_led", hexc("fff1dc"), 6.0)
+        B.mesh_obj("mh_kitchen_backdrop", bm, [wall, cab, top, fridge, shade, ceil, self._tile_mat(), led])
         self.add_light("kitchen", B.emission_socket(ceil), "default_value", 1.2, 0.0)
+        self.add_light("kitchen", B.emission_socket(led), "default_value", 6.0, 0.0)
+        # s8: a real ceiling area light (keyed with the kitchen lights, off when the kitchen is off)
+        kl = bpy.data.lights.new("mh_kitchen_light", "AREA")
+        kl.shape = "RECTANGLE"
+        kl.size, kl.size_y = 2.8, 1.6
+        kl.energy = 0.0
+        kl.color = (1.0, 0.9, 0.78)
+        klo = L.link(bpy.data.objects.new("mh_kitchen_light", kl))
+        klo.location = (kx, yb + 1.1, zf + 2.7)
+        self.add_light("kitchen", kl, "energy", 140.0, 0.0)
         self.anchor_pts = getattr(self, "anchor_pts", {})
         self.anchor_pts.update({"fridge": (kx + 1.3, yb + 0.4, zf + 1.2), "lamp": (kx - 1.4, yb + 0.35, zf + 1.3)})
 
@@ -1162,6 +1221,17 @@ class World(object):
     # ---------------------------------------------------------------- grass clumps near the camera waypoints
     def build_grass(self, focus):
         B.part_collection("grass")
+        # s7: the "dark seam curves" on Torque at f1450 were the shadows of tall CC0 grass blades crossing his white
+        # breast (they vanish without grass). Keep a small mown patch along his episode cast spots / walk paths.
+        for beat in self.ep.get("beats", []):
+            tq = (beat.get("shot", {}).get("cast") or {}).get("torque")
+            if not tq or "at" not in tq:
+                continue
+            pts = [tuple(tq["at"][:2])] + [tuple(p[:2]) for p in tq.get("path", [])]
+            for (ax, ay), (bx, by) in zip(pts, pts[1:] + pts[-1:]):
+                n = max(1, int(math.hypot(bx - ax, by - ay) / 0.3))
+                for k in range(n + 1):
+                    self.exclude.append((ax + (bx - ax) * k / n, ay + (by - ay) * k / n, 0.6))
         if MC.enabled():
             gz, dw = self.z["garden"], self.z["driveway"]
 
@@ -1217,19 +1287,12 @@ class World(object):
         B.part_collection("far")
         far = self.loc["far"]
         S.plane_obj("mh_ground_far", 30000, 30000, (0, 0, -0.06), S.ground_mat())
-        hill = S.pbr("mh_hill", hexc("55744a"), 0.95, var=0.15, var_scale=0.01)
-        rng = random.Random(9)
+        # s8: wooded ridges instead of 22 squashed spheres (they read as flat mint-green blobs). Three layered rings
+        # of real terrain (noise skyline, spurs, crown-bumped treeline), a canopy shader (Voronoi crowns + gaps,
+        # species patches) and stronger aerial perspective per distance via the scene fog (keyed per preset).
         R = far["hills"]["radius"]
-        lo, hi = far["hills"]["height_range"]
-        for i in range(22):
-            a = 2 * math.pi * i / 22 + rng.uniform(-0.08, 0.08)
-            d = R + rng.uniform(-60, 140)
-            bm = bmesh.new()
-            B.bm_sphere(bm, (0, 0, 0), 1.0, 2, 0, 0.06, i)
-            o = B.mesh_obj("mh_hill_%d" % i, bm, [hill], smooth=True,
-                           loc=(40 + d * math.cos(a), d * math.sin(a), -12.0))
-            o.scale = (rng.uniform(140, 260), rng.uniform(90, 170), rng.uniform(lo, hi))
-            o.rotation_euler = (0, 0, a)
+        self._ridges(R)
+        rng = random.Random(9)
         wt = far["water_tower"]
         c = hexc(wt["color"][1:])
         tm = S.pbr("mh_water_tower", c, 0.5, metal=0.4)
@@ -1253,6 +1316,120 @@ class World(object):
             S.bm_box(bm, (x, y, hh / 2), (w_, d_, hh), rng.randrange(4))
             S.bm_box(bm, (x, y, hh + 0.2), (w_ + 0.4, d_ + 0.4, 0.4), 4)
         B.mesh_obj("mh_town", bm, mats + [roofm], loc=(tw[0], tw[1], 0))
+
+    def _canopy_mat(self):
+        """Distant forest canopy, shader only: Voronoi crowns (~6 m) x 40 m stand noise lit by a bump, dark gaps between crowns,
+        low-frequency patches of broadleaf / conifer / lighter meadow, then distance haze (fog x 0.55)."""
+        def mk():
+            m, nt, N, Lk, p = S._new_mat("mh_far_canopy")
+            vec = S._coord(N, Lk, "Object")
+            vor = N.new("ShaderNodeTexVoronoi")
+            vor.inputs["Scale"].default_value = 0.16
+            try:
+                vor.inputs["Randomness"].default_value = 0.9
+            except Exception:
+                pass
+            Lk.new(vec, vor.inputs["Vector"])
+            crown = N.new("ShaderNodeMapRange")                 # 1 at a crown centre .. 0 in the gap
+            crown.inputs["From Min"].default_value, crown.inputs["From Max"].default_value = 0.75, 0.1
+            Lk.new(vor.outputs["Distance"], crown.inputs["Value"])
+            pat = N.new("ShaderNodeTexNoise")                   # species / clearing patches (~150 m)
+            pat.inputs["Scale"].default_value = 0.0065
+            pat.inputs["Detail"].default_value = 3.0
+            Lk.new(vec, pat.inputs["Vector"])
+            ramp = N.new("ShaderNodeValToRGB")
+            els = ramp.color_ramp.elements
+            els[0].position, els[0].color = 0.3, hexc("24452a")          # dark conifer
+            els[1].position, els[1].color = 0.72, hexc("5b8338")         # light broadleaf
+            e = els.new(0.5)
+            e.color = hexc("3c6a2e")
+            e = els.new(0.78)
+            e.color = hexc("7a8a4a")                                     # meadow / dry clearing
+            Lk.new(pat.outputs["Fac"], ramp.inputs["Fac"])
+            jit = N.new("ShaderNodeMapRange")                   # per-crown brightness jitter from the cell colour
+            jit.inputs["To Min"].default_value, jit.inputs["To Max"].default_value = 0.72, 1.12
+            sepc = N.new("ShaderNodeSeparateColor")
+            Lk.new(vor.outputs["Color"], sepc.inputs[0])
+            Lk.new(sepc.outputs[0], jit.inputs["Value"])
+            shade = N.new("ShaderNodeMapRange")                 # gaps go dark (self-shadowed understorey)
+            shade.inputs["To Min"].default_value, shade.inputs["To Max"].default_value = 0.45, 1.05
+            Lk.new(crown.outputs["Result"], shade.inputs["Value"])
+            stand = N.new("ShaderNodeTexNoise")                 # tree stands / ravines (~40 m)
+            stand.inputs["Scale"].default_value = 0.025
+            stand.inputs["Detail"].default_value = 4.0
+            Lk.new(vec, stand.inputs["Vector"])
+            stm = N.new("ShaderNodeMapRange")
+            stm.inputs["From Min"].default_value, stm.inputs["From Max"].default_value = 0.3, 0.7
+            stm.inputs["To Min"].default_value, stm.inputs["To Max"].default_value = 0.6, 1.2
+            Lk.new(stand.outputs["Fac"], stm.inputs["Value"])
+            m0 = N.new("ShaderNodeMath"); m0.operation = "MULTIPLY"
+            Lk.new(jit.outputs["Result"], m0.inputs[0])
+            Lk.new(stm.outputs["Result"], m0.inputs[1])
+            m1 = N.new("ShaderNodeMath"); m1.operation = "MULTIPLY"
+            Lk.new(m0.outputs[0], m1.inputs[0])
+            Lk.new(shade.outputs["Result"], m1.inputs[1])
+            mc = N.new("ShaderNodeVectorMath"); mc.operation = "SCALE"
+            Lk.new(ramp.outputs["Color"], mc.inputs[0])
+            Lk.new(m1.outputs[0], mc.inputs["Scale"])
+            Lk.new(mc.outputs["Vector"], p.inputs["Base Color"])
+            p.inputs["Roughness"].default_value = 0.92
+            try:
+                p.inputs["Specular IOR Level"].default_value = 0.2
+            except Exception:
+                pass
+            S._bump(N, Lk, crown.outputs["Result"], p, 0.35, 1.5)
+            L._fog_wrap(m, p.outputs[0], density_scale=0.55)
+            return m
+        return B._cached("mh_far_canopy", mk)
+
+    def _ridges(self, R):
+        """Three rings of wooded ridges around (40, 0): near R+110 (20-70 m), mid R+350, far R+700. The western
+        sector (the low dusk sun at az -90) is kept under ~1.6 deg as seen from the yard so it never shades the
+        scene. Edges sink to z -15 under the far ground plane."""
+        from mathutils import noise
+        mat = self._canopy_mat()
+        cx, cy = 40.0, 0.0
+        rings = [(R + 110, 300.0, 18.0, 55.0, 1600, 1), (R + 350, 380.0, 30.0, 85.0, 1800, 2),
+                 (R + 700, 480.0, 45.0, 120.0, 2000, 3)]
+        tris = 0
+        for r0, wd, hlo, hhi, nseg, seed in rings:
+            M = 18
+            off = Vector((seed * 37.1, seed * 11.3, seed * 5.7))
+            verts = []
+            for i in range(nseg):
+                a = 2 * math.pi * i / nseg
+                ca, sa = math.cos(a), math.sin(a)
+                q = Vector((ca * 1.3, sa * 1.3, 0.0)) + off
+                hb = hlo + (hhi - hlo) * max(0.0, min(1.0, 0.5 + 0.8 * noise.fractal(q, 0.5, 2.0, 2)))
+                west = math.cos(a - math.pi)                       # 1 due west of the yard
+                if west > 0.85:
+                    cap = 0.028 * r0 + 15.0
+                    t = smoothstep((west - 0.85) / 0.1)
+                    hb = hb * (1 - t) + min(hb, cap) * t
+                upk = 0.38 + 0.24 * (0.5 + 0.5 * noise.noise(q * 2.0 + Vector((0, 0, 7))))   # crest position
+                for j in range(M):
+                    u = j / (M - 1)
+                    rr = r0 + wd * u
+                    x, y = cx + rr * ca, cy + rr * sa
+                    w_ = u / upk if u < upk else 1.0 - (u - upk) / (1 - upk)
+                    prof = 0.5 - 0.5 * math.cos(math.pi * max(0.0, w_))      # rounded crest, gentle toe
+                    pq = Vector((x / 260.0, y / 260.0, seed * 3.1))
+                    spur = 1.0 + 0.22 * noise.fractal(pq, 0.5, 2.0, 2)
+                    crown = 2.4 * noise.noise(Vector((x / 11.0, y / 11.0, seed * 1.7)))
+                    zz = -15.0 + (hb * spur + 15.0) * prof + (crown if 0 < j < M - 1 else 0.0) * min(1.0, prof * 3)
+                    verts.append((x, y, zz))
+            faces = []
+            for i in range(nseg):
+                i2 = (i + 1) % nseg
+                for j in range(M - 1):
+                    faces.append((i * M + j, i * M + j + 1, i2 * M + j + 1, i2 * M + j))
+            me = bpy.data.meshes.new("mh_ridge_%d" % seed)
+            me.from_pydata(verts, [], faces)
+            me.polygons.foreach_set("use_smooth", [True] * len(faces))
+            me.materials.append(mat)
+            o = S.obj("mh_ridge_%d" % seed, me)
+            tris += 2 * len(faces)
+        self.stats["ridge_tris"] = tris
 
     # ---------------------------------------------------------------- cut-away sections (hidden until keyed)
     def build_sections(self, sections):
@@ -1404,6 +1581,109 @@ def _rotor_angles(ctx, entry, mode, f0, f1):
     return out
 
 
+# ---------------------------------------------------------------- turbine geometry helpers (s7)
+def _lathe_x(bm, prof, seg, mi, c=(0.0, 0.0, 0.0)):
+    """Surface of revolution about the X axis: prof = [(x, r)] (r = 0 ends close in a pole)."""
+    c = Vector(c)
+    rows = []
+    for x, r in prof:
+        if r <= 1e-6:
+            rows.append([bm.verts.new(c + Vector((x, 0.0, 0.0)))])
+            continue
+        rows.append([bm.verts.new(c + Vector((x, r * math.cos(2 * math.pi * k / seg), r * math.sin(2 * math.pi * k / seg))))
+                     for k in range(seg)])
+    for a, b in zip(rows, rows[1:]):
+        for k in range(seg):
+            if len(a) == 1 and len(b) == 1:
+                continue
+            if len(a) == 1:
+                f = bm.faces.new((a[0], b[(k + 1) % seg], b[k]))
+            elif len(b) == 1:
+                f = bm.faces.new((a[k], a[(k + 1) % seg], b[0]))
+            else:
+                f = bm.faces.new((a[k], a[(k + 1) % seg], b[(k + 1) % seg], b[k]))
+            f.material_index = mi
+    return rows
+
+
+BLADE_R = 1.75       # m tip radius (3.5 m rotor, ~1.5 kW class)
+
+
+def _airfoil(n=12, t=0.12, camber=0.035):
+    """Closed cambered NACA-4-like section, chord 0..1 from the leading edge: [(x, y)], y = + suction side."""
+    pts_u, pts_l = [], []
+    for i in range(n + 1):
+        x = 0.5 * (1 - math.cos(math.pi * i / n))
+        yt = 5 * t * (0.2969 * math.sqrt(x) - 0.126 * x - 0.3516 * x * x + 0.2843 * x ** 3 - 0.1036 * x ** 4)
+        p = 0.4
+        yc = camber / p ** 2 * (2 * p * x - x * x) if x < p else camber / (1 - p) ** 2 * ((1 - 2 * p) + 2 * p * x - x * x)
+        pts_u.append((x, yc + yt))
+        pts_l.append((x, yc - yt))
+    return pts_u + pts_l[-2:0:-1]          # LE -> TE on the suction side, back to the LE on the pressure side
+
+
+def _blade(bm, a, mi_blade, mi_clamp):
+    """One blade at rotor angle a (radial direction (0, -sin a, cos a)). Spinning about +X, the blade moves along
+    m = x * r; the leading edge points along m, pitched by beta towards the wind (-X); suction side faces downwind."""
+    r_hat = Vector((0.0, -math.sin(a), math.cos(a)))
+    m_hat = Vector((1.0, 0.0, 0.0)).cross(r_hat)
+    x_hat = Vector((1.0, 0.0, 0.0))
+    foil = _airfoil(10)
+    nf = len(foil)
+    rows = []
+    # (radius, chord, thickness ratio, pitch deg, roundness 0 = airfoil .. 1 = circle of diameter `chord`)
+    st = [(0.16, 0.085, 1.0, 18.0, 1.0), (0.26, 0.09, 1.0, 18.0, 1.0), (0.34, 0.19, 0.3, 18.0, 0.45), (0.42, 0.215, 0.24, 16.0, 0.0),
+          (0.6, 0.2, 0.2, 12.5, 0.0), (0.85, 0.17, 0.17, 8.5, 0.0), (1.1, 0.14, 0.15, 5.5, 0.0), (1.35, 0.11, 0.13, 3.5, 0.0),
+          (1.58, 0.08, 0.12, 2.0, 0.0), (BLADE_R, 0.045, 0.12, 1.5, 0.0)]
+    for rad, ch, tr, beta, rnd in st:
+        b = math.radians(beta)
+        le = m_hat * math.cos(b) - x_hat * math.sin(b)       # chord direction (TE -> LE)
+        nrm = x_hat * math.cos(b) + m_hat * math.sin(b)      # suction-side normal (downwind)
+        scale_t = tr / 0.12
+        row = []
+        for i, (fx, fy) in enumerate(foil):
+            # airfoil about the quarter-chord pitch axis
+            u, w = (0.25 - fx) * ch, fy * ch * scale_t
+            if rnd > 0:
+                ang = 2 * math.pi * i / nf
+                cu, cw = math.cos(ang) * ch * 0.5, math.sin(ang) * ch * 0.5
+                u, w = u * (1 - rnd) + cu * rnd, w * (1 - rnd) + cw * rnd
+            row.append(bm.verts.new(r_hat * rad + le * u + nrm * w))
+        rows.append(row)
+    for r0, r1 in zip(rows, rows[1:]):
+        for k in range(nf):
+            f = bm.faces.new((r0[k], r0[(k + 1) % nf], r1[(k + 1) % nf], r1[k]))
+            f.material_index = mi_blade
+    tip = bm.verts.new(r_hat * (BLADE_R + 0.012))
+    for k in range(nf):
+        bm.faces.new((rows[-1][k], rows[-1][(k + 1) % nf], tip)).material_index = mi_blade
+    root = bm.verts.new(r_hat * 0.15)
+    for k in range(nf):
+        bm.faces.new((rows[0][(k + 1) % nf], rows[0][k], root)).material_index = mi_blade
+    B.bm_cyl(bm, tuple(r_hat * 0.13), tuple(r_hat * 0.27), 0.056, 0.054, 16, mi_clamp)     # root clamp
+
+
+def _autosmooth(ob, deg=40.0):
+    """Smooth shading with sharp creases kept above `deg` (Blender 4.1+ Mesh.set_sharp_from_angle; older builds:
+    use_auto_smooth). Also makes the face normals consistent (every part here is a closed shell)."""
+    me = ob.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    bm.free()
+    for pl in me.polygons:
+        pl.use_smooth = True
+    try:
+        me.set_sharp_from_angle(angle=math.radians(deg))
+    except AttributeError:
+        try:
+            me.use_auto_smooth = True
+            me.auto_smooth_angle = math.radians(deg)
+        except Exception:
+            pass
+
+
 def build_wind_turbine(ctx, entry, mode):
     """STUB (first pass): Build #1 tilt-up wind turbine. Tower 50 ft, 3 blades, generator, tail vane (furling hinge),
     hinge plate, gin pole, hand winch, 4 guy wires. mode=assemble: lies flat until the hack1 cue, tilts up over 4 s,
@@ -1424,29 +1704,49 @@ def build_wind_turbine(ctx, entry, mode):
     bm = bmesh.new()
     B.bm_cyl(bm, (0, 0, 0), (0, 0, T), 0.19, 0.12, 12, 0)
     B.bm_cyl(bm, (0, 0, T - 0.1), (0, 0, T + 0.25), 0.16, 0.16, 12, 1)
-    B.bm_cyl(bm, (-0.55, 0, T + 0.35), (0.45, 0, T + 0.35), 0.24, 0.2, 14, 1)          # generator (nacelle)
-    B.bm_cyl(bm, (0.4, 0, T + 0.35), (2.4, 0, T + 0.35), 0.05, 0.04, 6, 0)             # tail boom
+    B.bm_cyl(bm, (0.4, 0, T + 0.35), (2.4, 0, T + 0.35), 0.05, 0.04, 10, 0)            # tail boom
     tower = B.mesh_obj("bw_turbine_tower", bm, [steel, dark])
+    # s7: streamlined nacelle (housing + dark alternator band with cooling fins + yaw clamp), smooth shaded
+    shell = S.pbr("mh_nacelle_shell", hexc("d4d7da"), 0.35, coat=0.4)
+    bm = bmesh.new()
+    _lathe_x(bm, [(-0.56, 0.0), (-0.56, 0.17), (-0.53, 0.2), (-0.36, 0.215), (-0.34, 0.235), (-0.12, 0.25),
+                  (0.12, 0.24), (0.32, 0.2), (0.5, 0.13), (0.6, 0.07), (0.63, 0.0)], 28, 0, (0, 0, T + 0.35))
+    for fx in (-0.52, -0.48, -0.44, -0.40):                                                  # alternator fins
+        _lathe_x(bm, [(fx - 0.008, 0.0), (fx - 0.008, 0.232), (fx + 0.008, 0.232), (fx + 0.008, 0.0)], 28, 1,
+                 (0, 0, T + 0.35))
+    B.bm_cyl(bm, (0.0, 0, T + 0.12), (0.0, 0, T + 0.2), 0.2, 0.17, 20, 1)                  # yaw clamp / bearing
+    nac = B.mesh_obj("bw_turbine_nacelle", bm, [shell, dark], smooth=True)
+    nac.parent = piv
+    _autosmooth(nac)
     tower.parent = piv
     rotor = L.link(bpy.data.objects.new("bw_turbine_rotor", None))
     rotor.parent = piv
     rotor.location = (-0.62, 0, T + 0.35)
+    # s7: real 3-blade HAWT rotor: tapered, twisted airfoil blades (root 18 deg -> tip 2 deg pitch), round roots in
+    # steel clamps on a hub plate, white spinner (nose cone). Rotor axis = local X (spins +X), upwind = -X.
     bm = bmesh.new()
-    B.bm_sphere(bm, (-0.15, 0, 0), (0.3, 0.22, 0.22), 2, 1)
+    _lathe_x(bm, [(0.0, 0.0), (0.0, 0.2), (-0.03, 0.215), (-0.12, 0.2), (-0.24, 0.15), (-0.32, 0.09), (-0.37, 0.035),
+                  (-0.385, 0.0)], 28, 0)                                                     # spinner / nose cone
+    _lathe_x(bm, [(0.06, 0.0), (0.06, 0.17), (-0.005, 0.17), (-0.005, 0.0)], 28, 1)        # hub plate
     for k in range(3):
-        a = k * 2 * math.pi / 3
-        vs = S.bm_box(bm, (0, 0, 0), (0.05, 0.22, 1.55), 0)
-        bmesh.ops.translate(bm, verts=vs, vec=(0, 0, 0.95))
-        bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(a, 3, "X"))
-    blades = B.mesh_obj("bw_turbine_blades", bm, [white, dark])
+        _blade(bm, k * 2 * math.pi / 3, 0, 1)
+    blades = B.mesh_obj("bw_turbine_blades", bm, [white, dark], smooth=True)
     blades.parent = rotor
+    _autosmooth(blades)
     tail = L.link(bpy.data.objects.new("bw_turbine_tail_hinge", None))
     tail.parent = piv
     tail.location = (2.4, 0, T + 0.35)
     bm = bmesh.new()
-    v = [bm.verts.new(p) for p in ((0, 0, -0.45), (1.3, 0, -0.6), (1.3, 0, 0.75), (0, 0, 0.55))]
-    f = bm.faces.new(v)
-    bmesh.ops.solidify(bm, geom=[f], thickness=0.03)
+    # s7: an explicit 3 cm plate. bmesh solidify left both caps coincident (zero-area sides), so the vane
+    # self-shadowed and rendered pitch black (f1600 v2).
+    outl = ((0, -0.45), (1.3, -0.6), (1.3, 0.75), (0, 0.55))
+    va = [bm.verts.new((x_, -0.015, z_)) for x_, z_ in outl]
+    vb = [bm.verts.new((x_, 0.015, z_)) for x_, z_ in outl]
+    bm.faces.new(va)
+    bm.faces.new(vb[::-1])
+    for k in range(4):
+        bm.faces.new((va[k], vb[k], vb[(k + 1) % 4], va[(k + 1) % 4]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     vane = B.mesh_obj("bw_turbine_vane", bm, [white])
     vane.parent = tail
     gin = bmesh.new()
@@ -1470,14 +1770,52 @@ def build_wind_turbine(ctx, entry, mode):
         S.anchor(ctx, name, obj_, off)
     f0, f1 = ctx.frame_range
     ang = _rotor_angles(ctx, entry, mode, max(1, f0 - 2), f1 + 2)
+    # s8: assemble mode parks the rotor with blade 0 pointing straight UP while the tower lies down (blade k
+    # direction after the spin = local (0, -sin(a), cos(a)); flat, local +Y is world up -> a = -90 deg). The other two
+    # tips then sit R*cos(60) = 0.875 m below the hub instead of 1.52 m. Only a phase: the spin keys are unchanged.
+    park = -math.pi / 2 if mode != "idle" else 0.0
     fr = sorted(ang)
-    B.set_keys(rotor, "rotation_euler", fr, [(ang[f], 0.0, 0.0) for f in fr])
+    B.set_keys(rotor, "rotation_euler", fr, [(ang[f] + park, 0.0, 0.0) for f in fr])
     if mode == "idle":
         B.set_keys(piv, "rotation_euler", [1], [(0.0, 0.0, 0.0)])
         return {"objects": [piv]}
     ev = ctx.build_events.get(entry["id"], {})
     t0, t1 = ev.get("tilt_start", 1), ev.get("tilt_end", 2)
-    flat = math.radians(90.0)
+    # s8: the lowered tower rests on a timber tower-top stand (sawhorse with a padded V cradle) so the hub sits
+    # HUB_REST m above the ground under the rotor -> lowest tip clearance ~0.4 m. Rotation about X by th puts local
+    # (0, 0, l) at world (0, -l sin th, l cos th) from the hinge; solve th for the hub height over the local ground.
+    LH = T + 0.35
+    HUB_REST = 1.32
+    th = math.radians(90.0)
+    for _ in range(4):
+        yh = y - LH * math.sin(th)
+        gz = max(H(x + dx, yh + dy) for dx in (-0.7, 0.0) for dy in (-1.6, 0.0, 1.6))
+        c = (gz + HUB_REST - (z + 0.42)) / LH
+        th = math.acos(max(-0.3, min(0.35, c)))
+    flat = th
+    s_st = T - 1.15                                       # stand just below the yaw clamp
+    ys, zs_axis = y - s_st * math.sin(flat), z + 0.42 + s_st * math.cos(flat)
+    r_tw = 0.19 + (0.12 - 0.19) * s_st / T
+    top = zs_axis - r_tw / max(0.2, math.sin(flat))      # underside of the tower at the stand
+    gst = H(x, ys)
+    wood = S.pbr("mh_stand_wood", hexc("9c7a52"), 0.75, var=0.12, var_scale=3.0)
+    pad = S.pbr("mh_stand_pad", hexc("2b2b2b"), 0.9)
+    bm = bmesh.new()
+    cz = top - 0.06                                       # cradle beam centre
+    S.bm_box(bm, (0, 0, cz), (0.95, 0.14, 0.1), 0)       # sawhorse beam, across the tower (world X)
+    for sx in (-1, 1):                                    # V cradle cheeks either side of the tower
+        S.bm_box(bm, (sx * (r_tw + 0.05), 0, top + 0.05), (0.07, 0.14, 0.18), 0)
+    S.bm_box(bm, (0, 0, top - 0.006), (2 * r_tw + 0.04, 0.16, 0.012), 1)   # rubber pad under the tower
+    for sx in (-1, 1):
+        for sy in (-1, 1):                                # splayed legs at both beam ends
+            B.bm_cyl(bm, (sx * 0.4, sy * 0.04, cz - 0.04), (sx * 0.55, sy * 0.38, gst - 0.12), 0.035, 0.035, 4, 0)
+    for sy in (-1, 1):                                    # side braces
+        zb = cz - 0.45 * (cz - gst)
+        B.bm_cyl(bm, (-0.48, sy * 0.2, zb), (0.48, sy * 0.2, zb), 0.022, 0.022, 4, 0)
+    B.mesh_obj("bw_turbine_stand", bm, [wood, pad], loc=(x, ys, 0.0))
+    ctx.stats_turbine = {"flat_deg": round(math.degrees(flat), 2), "stand_top_z": round(top - gst, 2),
+                         "hub_rest_z": round(z + 0.42 + LH * math.cos(flat) - H(x, y - LH * math.sin(flat)), 2),
+                         "t0": t0, "t1": t1}
     keys_f, keys_v = [1, t0], [(flat, 0, 0), (flat, 0, 0)]
     for k in range(1, 9):
         f = t0 + (t1 - t0) * k / 8.0
@@ -1500,6 +1838,34 @@ def build_wind_turbine(ctx, entry, mode):
         gh = B.mesh_obj("bw_turbine_ghost", bm, [B.mat_glow("mh_ghost", (0.55, 0.85, 1.0, 1.0), 2.5)], loc=(x, y, z + 0.42))
         B.vis_keys(gh, [(1, False), (g0, True), (g1, False)])
     return {"objects": [piv, rotor, tail]}
+
+
+def turbine_clearance(ctx):
+    """s8 QC: lowest point of the rotor / nacelle / vane above the terrain (H) on every frame where the tower is
+    down or tilting (frame 1, then tilt_start..tilt_end). Negative = something is in the ground."""
+    st = getattr(ctx, "stats_turbine", None)
+    obs = [bpy.data.objects.get(n) for n in ("bw_turbine_blades", "bw_turbine_nacelle", "bw_turbine_vane")]
+    if not st or any(o is None for o in obs):
+        return {}
+    sc = bpy.context.scene
+    keep = sc.frame_current
+    frames = [1] + list(range(st["t0"], st["t1"] + 1))
+    worst, wf = 1e9, None
+    loc = [[v.co.copy() for v in o.data.vertices] for o in obs]
+    for f in frames:
+        sc.frame_set(f)
+        for o, vs in zip(obs, loc):
+            mw = o.matrix_world
+            for co in vs:
+                p = mw @ co
+                d = p.z - H(p.x, p.y)
+                if d < worst:
+                    worst, wf = d, f
+    sc.frame_set(keep)
+    out = {"turbine_" + k: v for k, v in st.items() if k not in ("t0", "t1")}
+    out.update({"turbine_min_clear_m": round(worst, 3), "turbine_min_clear_f": wf, "turbine_clear_frames": len(frames)})
+    print("[mh] turbine clearance: min %.3f m at f%s over %d frames (flat %.2f deg)" % (worst, wf, len(frames), st["flat_deg"]))
+    return out
 
 
 def build_stub_generic(ctx, entry, mode):
@@ -1568,6 +1934,11 @@ def build(ctx, ws, loc_name="mercer_hollow", parts=None, focus=(), sections=None
         t0 = time.time()
         w.builds = place_builds(ctx, ws, loc_name, episode)
         w.stats["t_builds"] = round(time.time() - t0, 2)
+        try:
+            w.stats.update(turbine_clearance(ctx))
+        except Exception:
+            import traceback
+            traceback.print_exc()
     t0 = time.time()
     try:
         _cc0_finish(w, parts)

@@ -874,23 +874,39 @@ def _build_torque(ctx, tq):
     eye = S.pbr("torque_eye", hexc("1a1f2a"), 0.1, coat=1.0)
     iris = S.pbr("torque_iris", hexc(c["eyes"][1:]), 0.15, coat=1.0)
     sk = AutoSkin(TORQUE_BONES)
+    # s7: body, neck, head and folded wing pads are built as closed shells at full ring resolution into their own
+    # collector, then voxel-remeshed into ONE continuous plumage surface (no intersection seams where the wing pads
+    # and the neck meet the body) and re-weighted from the source shells (_merge_plumage).
+    pk = AutoSkin(TORQUE_BONES)
+    global SEG_SCALE
+    seg_keep, SEG_SCALE = SEG_SCALE, 1.0
     # plump teardrop body: breast low in front, back rising into a short pointed tail
     ys = [-0.26, -0.22, -0.14, -0.02, 0.1, 0.2, 0.28, 0.34, 0.38]
     zs = [0.36, 0.33, 0.305, 0.3, 0.315, 0.345, 0.385, 0.42, 0.44]
     rx = [0.05, 0.12, 0.158, 0.168, 0.16, 0.13, 0.085, 0.04, 0.01]
     rz = [0.06, 0.13, 0.16, 0.162, 0.15, 0.12, 0.08, 0.04, 0.01]
-    sk.piece(lambda bm: sweep(bm, [(0, y, z) for y, z in zip(ys, zs)], rx, rz, 20, 0), ["body", "tail", "neck1"], 6.0,
+    pk.piece(lambda bm: sweep(bm, [(0, y, z) for y, z in zip(ys, zs)], rx, rz, 24, 0), ["body", "tail", "neck1"], 6.0,
              bias={"neck1": 2.5})
-    # long S-neck (forward from the breast, back, then up to the head)
+    # long S-neck (forward from the breast, back, then up to the head); capped ends sit inside body / head
     npath = [(0, -0.19, 0.38), (0, -0.228, 0.5), (0, -0.235, 0.6), (0, -0.215, 0.67), (0, -0.2, 0.73), (0, -0.203, 0.775),
              (0, -0.212, 0.8)]
     nr = [0.075, 0.056, 0.044, 0.038, 0.036, 0.037, 0.04]
-    sk.piece(lambda bm: sweep(bm, npath, [r * 1.0 for r in nr], [r * 1.08 for r in nr], 16, 0, cap0=False, cap1=False,
-                              up=(0, -1, 0)), ["body", "neck1", "neck2", "neck3", "head"], 6.0)
+    pk.piece(lambda bm: sweep(bm, npath, [r * 1.0 for r in nr], [r * 1.08 for r in nr], 20, 0, up=(0, -1, 0)),
+             ["body", "neck1", "neck2", "neck3", "head"], 6.0)
     # head: rounded, slightly long, flat-ish crown; cheeks
-    sk.piece(lambda bm: blob(bm, (0, -0.228, 0.815), (0.039, 0.058, 0.043), 18, 12, 0,
+    pk.piece(lambda bm: blob(bm, (0, -0.228, 0.815), (0.039, 0.058, 0.043), 24, 16, 0,
                              lambda q: Vector((q.x * (1.0 - 0.18 * smoothstep(-0.02, -0.058, q.y)), q.y,
                                                q.z - 0.008 * smoothstep(0.0, -0.05, q.y) * (1 if q.z > 0 else 0)))), ["head"])
+    for sx in (-1, 1):
+        side = "L" if sx > 0 else "R"
+        # folded wing: a long flattened pad along the side, tips crossing over the tail
+        wp = [(sx * 0.128, -0.07, 0.36), (sx * 0.148, -0.0, 0.357), (sx * 0.14, 0.08, 0.365), (sx * 0.115, 0.19, 0.385),
+              (sx * 0.075, 0.29, 0.415), (sx * 0.04, 0.36, 0.435)]
+        pk.piece(lambda bm, wp=wp: sweep(bm, wp, [0.02, 0.034, 0.036, 0.03, 0.02, 0.006], [0.035, 0.062, 0.066, 0.05, 0.03, 0.01],
+                                         18, 0, up=(0, 0, 1)), ["wing." + side], 6.0)
+    SEG_SCALE = seg_keep
+    mk = AutoSkin(TORQUE_BONES)
+    _merge_plumage(pk, mk)
     # bill (upper) + knob at the base + nail; lower mandible on the jaw bone
     sk.piece(lambda bm: sweep(bm, [(0, -0.26, 0.813), (0, -0.29, 0.806), (0, -0.318, 0.798), (0, -0.342, 0.79)],
                               [0.025, 0.022, 0.019, 0.012], [0.019, 0.014, 0.01, 0.007], 14, 2, up=(0, 0, 1), power=2.4), ["head"])
@@ -902,11 +918,6 @@ def _build_torque(ctx, tq):
         side = "L" if sx > 0 else "R"
         sk.piece(lambda bm, sx=sx: blob(bm, (sx * 0.0335, -0.245, 0.826), (0.0035, 0.0085, 0.0085), 10, 8, 5), ["head"])
         sk.piece(lambda bm, sx=sx: blob(bm, (sx * 0.0365, -0.246, 0.826), (0.0015, 0.0045, 0.0045), 8, 6, 6), ["head"])
-        # folded wing: a long flattened pad along the side, tips crossing over the tail
-        wp = [(sx * 0.128, -0.07, 0.36), (sx * 0.148, -0.0, 0.357), (sx * 0.14, 0.08, 0.365), (sx * 0.115, 0.19, 0.385),
-              (sx * 0.075, 0.29, 0.415), (sx * 0.04, 0.36, 0.435)]
-        sk.piece(lambda bm, wp=wp: sweep(bm, wp, [0.02, 0.034, 0.036, 0.03, 0.02, 0.006], [0.035, 0.062, 0.066, 0.05, 0.03, 0.01],
-                                         14, 0, up=(0, 0, 1)), ["wing." + side], 6.0)
         # layered primary/secondary feather tips (slightly darker), give the wing its read
         for k, (y0, z0, ln) in enumerate(((0.06, 0.335, 0.2), (0.1, 0.35, 0.2), (0.14, 0.365, 0.19))):
             fp = [(sx * (0.172 - 0.008 * k), y0, z0 + 0.01), (sx * (0.158 - 0.01 * k), y0 + ln * 0.5, z0 + 0.035),
@@ -924,16 +935,71 @@ def _build_torque(ctx, tq):
             sk.piece(lambda bm, x=x, dx=dx, ln=ln: sweep(bm, [(x, 0.0, 0.016), (x + dx * 0.6, -ln * 0.6, 0.012),
                                                              (x + dx, -ln, 0.009)], [0.008, 0.007, 0.005], [0.007, 0.006, 0.004],
                                                          8, 3), ["leg." + side])
-    body = sk.finish("torque_body", [plum, tips, bill, knob, nail, iris, eye, legs], rig)
+    # s7: the merged plumage is dense enough to shade smooth without subdivision; the small parts keep subsurf 1
+    body = mk.finish("torque_body", [plum], rig, subsurf=0)
+    parts = sk.finish("torque_parts", [plum, tips, bill, knob, nail, iris, eye, legs], rig)
     # material index fix: legs/feet used index 3 above for brevity -> remap: knob 3 only for the knob blob
-    _remap_torque_mats(body)
+    _remap_torque_mats(parts)
     anc = L.link(bpy.data.objects.new("ANC_torque", None))
     anc.parent = rig
     anc.parent_type = "BONE"
     anc.parent_bone = "head"
     anc.location = (0, 0.02, 0.05)
     S.anchor(ctx, "torque", anc)
-    return {"rig": rig, "body": body, "tris": tris_of([body])}
+    return {"rig": rig, "body": body, "parts": parts, "tris": tris_of([body, parts])}
+
+
+PLUMAGE_VOXEL = 0.012       # m; ~7k quads (~14k tris) for the merged plumage, smooth shaded, no subsurf
+
+
+def _merge_plumage(pk, sk):
+    """Voxel-remesh the plumage shells collected in `pk` into one closed surface, smooth it a little, and append it
+    to `sk` (material 0). Weights: inverse-distance blend of the 6 nearest source vertices (their skin weights)."""
+    from mathutils import kdtree
+    me = bpy.data.meshes.new("torque_plum_src")
+    pk.bm.to_mesh(me)
+    ob = bpy.data.objects.new("torque_plum_src", me)
+    bpy.context.scene.collection.objects.link(ob)
+    mod = ob.modifiers.new("remesh", "REMESH")
+    mod.mode = "VOXEL"
+    mod.voxel_size = PLUMAGE_VOXEL
+    mod.adaptivity = 0.0
+    dg = bpy.context.evaluated_depsgraph_get()
+    me_r = bpy.data.meshes.new_from_object(ob.evaluated_get(dg))
+    src = [(v.co.copy(), {g: w for g, w in v[pk.dl].items()}) for v in pk.bm.verts]
+    bpy.data.objects.remove(ob, do_unlink=True)
+    bpy.data.meshes.remove(me)
+    pk.bm.free()
+    kd = kdtree.KDTree(len(src))
+    for i, (co, _w) in enumerate(src):
+        kd.insert(co, i)
+    kd.balance()
+    bm = sk.bm
+    tmp = bmesh.new()
+    tmp.from_mesh(me_r)
+    bpy.data.meshes.remove(me_r)
+    for _k in range(2):
+        bmesh.ops.smooth_vert(tmp, verts=tmp.verts, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    vmap = {}
+    for v in tmp.verts:
+        nv = bm.verts.new(v.co)
+        acc = {}
+        for co, i, d in kd.find_n(v.co, 6):
+            w0 = 1.0 / (d + 1e-4) ** 2
+            for g, w in src[i][1].items():
+                acc[g] = acc.get(g, 0.0) + w * w0
+        s = sum(acc.values()) or 1.0
+        for g, w in acc.items():
+            if w / s > 0.01:
+                nv[sk.dl][g] = w / s
+        vmap[v] = nv
+    for f in tmp.faces:
+        try:
+            nf = bm.faces.new([vmap[v] for v in f.verts])
+            nf.material_index = 0
+        except ValueError:
+            pass
+    tmp.free()
 
 
 def _remap_torque_mats(ob):

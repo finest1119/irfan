@@ -16,7 +16,7 @@ import mh_blender as B
 from mh_blender import S, L, hexc
 
 TREE_MAP = {("oak", 0): "cc0_broadleaf_lod0", ("oak", 1): "cc0_broadleaf_lod1",
-            ("maple", 0): "cc0_broadleaf_lod0", ("maple", 1): "cc0_broadleaf_lod1",
+            ("maple", 0): "cc0_broadleaf2_lod0", ("maple", 1): "cc0_broadleaf2_lod1",       # s7: 2nd species
             ("pine", 0): "cc0_pine_lod0", ("pine", 1): "cc0_pine_lod1"}
 
 
@@ -31,6 +31,8 @@ def tree_templates():
     out = {}
     for k, n in TREE_MAP.items():
         o = C.get(n)
+        if o is None and "broadleaf2" in n:        # library built before s7: fall back to the first broadleaf
+            o = C.get(n.replace("broadleaf2", "broadleaf"))
         if o is None:
             return None
         out[k] = o
@@ -144,7 +146,7 @@ def surfaces(world):
     siding = C.ph_mat("mh_cc0_siding", "white_planks_clean", 1.6, tint=hexc("f6f3ec"), normal=0.9,
                        walls_horizontal=True)
     done["siding"] = C.swap_material("mh_siding", siding)
-    roof = C.ph_mat("mh_cc0_roof", "grey_roof_01", 2.2, normal=1.0)
+    roof = C.ph_mat("mh_cc0_roof", "grey_roof_01", 2.2, normal=1.0, snow=True)
     done["roof"] = C.swap_material("mh_shingles", roof)
     gravel = C.ph_mat("mh_cc0_gravel", "gravel_road", 2.5, normal=0.8, max_px=1024)
     done["gravel"] = C.swap_material("mh_gravel", gravel)
@@ -224,20 +226,69 @@ def kitchen_props(kx, y1, zf):
     yb = y1 - 2.6
     face = math.pi                      # Kenney fronts face -Y after import -> turn to face +Y
     row = [("k_cabinet_drawer", -1.6), ("k_sink", -0.85), ("k_cabinet", -0.1), ("k_stove", 0.65)]
-    n = 0
+    placed = []
     for name, dx in row:
-        if _fit(name, (kx + dx, yb + 0.42, zf), face, height=0.92):
-            n += 1
-    if _fit("k_fridge", (kx + 1.5, yb + 0.45, zf), face, height=1.8):
-        n += 1
+        placed.append(_fit(name, (kx + dx, yb + 0.42, zf), face, height=0.92))
+    placed.append(_fit("k_fridge", (kx + 1.5, yb + 0.45, zf), face, height=1.8))
     for dx in (-1.25, -0.1):
-        if _fit("k_upper", (kx + dx, yb + 0.22, zf + 1.55), face, height=0.72):
-            n += 1
+        placed.append(_fit("k_upper", (kx + dx, yb + 0.22, zf + 1.55), face, height=0.72))
     for name, dx, h in (("k_coffee", -1.75, 0.32), ("k_toaster", 0.1, 0.2), ("k_plant", -0.45, 0.3), ("k_radio", 0.3, 0.2)):
-        if _fit(name, (kx + dx, yb + 0.4, zf + 0.92), face, height=h):
-            n += 1
-    if _fit("k_stool", (kx - 0.5, yb + 1.5, zf), 0.0, height=0.75):
-        n += 1
+        placed.append(_fit(name, (kx + dx, yb + 0.4, zf + 0.92), face, height=h))
+    placed.append(_fit("k_stool", (kx - 0.5, yb + 1.5, zf), 0.0, height=0.75))
+    placed = [o for o in placed if o is not None]
+    _kitchen_materials(placed)
+    return len(placed)
+
+
+def _wood_grain(name, col, dark):
+    """Wood with a fine procedural grain (wave bands along the object's Z, noise-distorted) and a satin coat."""
+    def mk():
+        m, nt, N, Lk, p = S._new_mat(name)
+        vec = S._coord(N, Lk, "Object")
+        wv = N.new("ShaderNodeTexWave")
+        wv.bands_direction = "Z"
+        wv.inputs["Scale"].default_value = 30.0
+        wv.inputs["Distortion"].default_value = 2.5
+        wv.inputs["Detail"].default_value = 3.0
+        Lk.new(vec, wv.inputs["Vector"])
+        mr = N.new("ShaderNodeValToRGB")
+        mr.color_ramp.elements[0].color = dark
+        mr.color_ramp.elements[1].color = col
+        Lk.new(wv.outputs["Fac"], mr.inputs["Fac"])
+        Lk.new(mr.outputs["Color"], p.inputs["Base Color"])
+        p.inputs["Roughness"].default_value = 0.42
+        try:
+            p.inputs["Coat Weight"].default_value = 0.25
+        except Exception:
+            pass
+        return S._finish(m, p.outputs[0], haze=False)
+    return B._cached(name, mk)
+
+
+def _kitchen_materials(objs):
+    """s8: readable kitchen through the window. The Kenney furniture kit has flat palette colours (no textures), so
+    'low-res' was flat toy colours + a veiled glass: oak-grain cabinets, walnut accents, brushed stainless, black
+    enamel and dark glass. Per-object material slots, so the shared library meshes keep their own materials."""
+    rep = {
+        "wood": lambda: _wood_grain("mh_k_oak", hexc("b88a58"), hexc("a07447")),
+        "woodDark": lambda: _wood_grain("mh_k_walnut", hexc("6a4a30"), hexc("54391f")),
+        "metal": lambda: S.pbr("mh_k_steel", hexc("c4c8cc"), 0.28, metal=1.0, var=0.04, var_scale=8.0),
+        "metalLight": lambda: S.pbr("mh_k_steel_light", hexc("d8dbde"), 0.3, metal=1.0, var=0.03, var_scale=8.0),
+        "metalMedium": lambda: S.pbr("mh_k_steel", hexc("c4c8cc"), 0.28, metal=1.0, var=0.04, var_scale=8.0),
+        "metalDark": lambda: S.pbr("mh_k_enamel", hexc("1d1e20"), 0.32, var=0.0),
+        "glass": lambda: S.pbr("mh_k_dark_glass", hexc("0e1216"), 0.05, coat=1.0, var=0.0),
+    }
+    n = 0
+    for o in objs:
+        for slot in o.material_slots:
+            m = slot.material
+            if m is None:
+                continue
+            base = m.name.split(".")[0]
+            if base in rep:
+                slot.link = "OBJECT"
+                slot.material = rep[base]()
+                n += 1
     return n
 
 
@@ -395,7 +446,7 @@ def add_dusk_sky(rig):
         except Exception:
             pass
     sky.sun_elevation = math.radians(3.0)
-    sky.sun_rotation = math.radians(180.0)
+    sky.sun_rotation = math.radians(180.0 + 90.0)      # s7: = 180 - az for the dusk lamp (az -90); key_preset keys it
     for attr, v in (("air_density", 1.6), ("dust_density", 4.0), ("aerosol_density", 4.0), ("sun_size", math.radians(2.5)),
                     ("sun_intensity", 0.6)):
         try:
@@ -406,7 +457,7 @@ def add_dusk_sky(rig):
     sky_gain.data_type = "RGBA"
     sky_gain.blend_type = "MULTIPLY"
     sky_gain.inputs["Factor"].default_value = 1.0
-    sky_gain.inputs["B"].default_value = (0.42, 0.42, 0.56, 1.0)
+    sky_gain.inputs["B"].default_value = (0.34, 0.35, 0.5, 1.0)          # s7: a little deeper toward real dusk
     Lk.new(sky.outputs["Color"], sky_gain.inputs["A"])
     mix = N.new("ShaderNodeMix")
     mix.data_type = "RGBA"

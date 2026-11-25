@@ -661,7 +661,10 @@ def apply_cast(ctx, world, chars, plan, f0, f1, episode):
                     obj.rotation_euler = rv
                     obj.keyframe_insert("rotation_euler", frame=f)
         if who == "bolts":
-            bake_clips(obj, bolts_pose, sorted(timeline), lo, f1 + 2, fps)
+            if chars["bolts"].get("bake"):        # s9: retargeted UAL clips + overlays on the Quaternius rig
+                chars["bolts"]["bake"](sorted(timeline), lo, f1 + 2, fps)
+            else:
+                bake_clips(obj, bolts_pose, sorted(timeline), lo, f1 + 2, fps)
         elif who == "torque":
             bake_clips(obj, torque_pose, sorted(timeline), lo, f1 + 2, fps)
     # outfits: default from the episode, changes only inside cast events (mid-move = inside a whip)
@@ -693,15 +696,37 @@ def _s6():
     return C6
 
 
+# ------------------------------------------------------------------ session 9: Bolts on the Quaternius base
+# BOLTS_IMPL picks the Bolts build: "s9" = Quaternius Superhero_Male base + UAL animations (characters_s9.py),
+# "s6" = the procedural smooth-skinned Bolts, "v1" = the first rigid pass. Env MH_BOLTS_IMPL overrides it.
+# A failing build falls back down the chain (s9 -> s6 -> v1) with a loud log line; the dict's "impl" key (also
+# written to the stats JSON as bolts_impl) says which one was used.
+import os as _os
+BOLTS_IMPL = _os.environ.get("MH_BOLTS_IMPL", "s9")
+_CHAIN = {"s9": ("s9", "s6", "v1"), "s6": ("s6", "v1"), "v1": ("v1",)}
+
+
 def build_bolts(ctx, char):
-    if USE_S6:
+    chain = _CHAIN.get(BOLTS_IMPL, ("s6", "v1"))
+    if not USE_S6:
+        chain = tuple(c for c in chain if c != "s6")
+    for impl in chain:
         try:
-            return _s6().build_bolts(ctx, char)
+            if impl == "s9":
+                import characters_s9 as C9
+                out = C9.build_bolts(ctx, char)
+            elif impl == "s6":
+                out = _s6().build_bolts(ctx, char)
+                out["impl"] = "s6_procedural"
+            else:
+                out = build_bolts_v1(ctx, char)
+                out["impl"] = "v1_rigid"
+            return out
         except Exception:
             import traceback
             traceback.print_exc()
-            print("[chars] s6 Bolts FAILED -> v1 fallback")
-    return build_bolts_v1(ctx, char)
+            print("[chars] Bolts %s build FAILED -> next fallback" % impl)
+    raise RuntimeError("no Bolts build succeeded")
 
 
 def build_torque(ctx, tq):

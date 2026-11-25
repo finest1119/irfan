@@ -101,7 +101,8 @@ CAST = {
 }
 
 
-LIGHTS = {"hook": {"porch": False, "house": False, "kitchen": True},
+LIGHTS = {"hook": {"porch": False, "house": False, "kitchen": True},          # script beat 1: "porch light off" (blackout); payoff = one lit porch in callback
+          "mission": {"porch": False, "house": False, "kitchen": True},       # off with the day preset (f353, mid-move)
           "callback": {"porch": True, "house": False, "kitchen": True}}
 
 

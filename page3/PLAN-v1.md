@@ -319,6 +319,19 @@ Irfan: "kalau macam ada very small error kan bila QC tu, aku rasa maybe tak perl
 - **Plan checkers** (`tools/plan_all.py`, `qc_oneshot`): fix PROBLEM lines (errors); log `warn` lines that are
   cosmetic and don't iterate on them.
 
+## 7d. Reel cover / thumbnail — FINAL (Irfan approved v3, 25 Nov 2026)
+
+- **Locked preset:** `tools/thumb_styles/ed.json` (do not change without Irfan). Use it on EVERY ED reel.
+- **Recipe (same as WJH/SME):** a hero frame taken from the actual reel (never a stand-in), with the subject in the
+  lower ~55–60%; two-tier hook in the top 12–40%: a white setup line plus a 1–3 word ALL-CAPS payoff. Max 8 words, all
+  literally true to the reel, key content inside y 285–1635.
+- **ED edit:** left-aligned Montserrat ExtraBold; white setup with a soft shadow; payoff on one line in charcoal text
+  on a TEAL rounded box with a solid AMBER underline bar; a small charcoal "EVERYDAY DECODED" corner pill in teal.
+- **Command:** `.venv/bin/python tools/make_thumbnail.py HERO.png "OUT/<keyword> thumb.jpg" --style ed --setup "..." --payoff "..."`
+  (hero still: `tools/render_hero_frame.py`). Two hook variants per reel; Fable picks.
+- Approved sample: `output/thumbnails/sample-ed-v3.jpg`; comparison: `page3/branding/thumbnail/ed-vs-wjh-sme.jpg`.
+  Superseded (do not use): `ed_thumbnail.py`, `ed_options_v2.py` and the v1/v2 option images.
+
 ## 8. Decisions (Irfan, 24 Nov 2026 — ALL recommendations approved)
 1. Page name: **Everyday Decoded**.
 2. Voice: **fixed Gemini Sadaltager** (one host voice, no rotation).

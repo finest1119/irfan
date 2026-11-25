@@ -17,3 +17,8 @@ config_local.json
 # CC0 3D assets for the Page 2 world (Poly Haven models/textures, Kenney kits); re-fetch with tools/fetch_cc0.py
 assets/cc0/*
 !assets/cc0/manifest.json
+
+# local-only (personal info / third-party reference images / logs)
+page3/PAGE-SETUP-REPORT.md
+branding/thumbnail-reference/
+page3/branding/logo-v2/*.log

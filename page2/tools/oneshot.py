@@ -189,6 +189,10 @@ def cmd_still(a):
         extra += ["--parts", a.parts]
     if a.save_blend:
         extra += ["--save-blend"]
+    if a.views:
+        extra += ["--views", str(Path(a.views).resolve())]
+    if a.tag:
+        extra += ["--tag", a.tag]
     if not a.dry_run:
         wait_free(a.no_wait)
     rc = _run(_blender_cmd(a.episode, a.workdir, extra), Path(a.workdir) / "oneshot" / "logs" / "still.log", a.dry_run)
@@ -236,6 +240,8 @@ def main():
         if name == "still":
             p.add_argument("--frames", required=True, help="global frame numbers, e.g. 40,700")
             p.add_argument("--save-blend", action="store_true")
+            p.add_argument("--views", default="", help="JSON list of extra QC views (anchor-relative cams), still only")
+            p.add_argument("--tag", default="", help="suffix for the still file names, e.g. _v3")
         if name == "render":
             p.add_argument("--range", default="", help="global frames A-B (e.g. 1-600 for a 20 s test)")
             p.add_argument("--force", action="store_true")

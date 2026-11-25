@@ -124,6 +124,35 @@ def make_camera(ctx, plan, lo, hi):
     return cam
 
 
+def render_views(ctx, scene, stdir, path):
+    """Still-only QC views off the camera plan (s7): a JSON list of {"f", "tag", "anchor"?, "pos", "look", "lens"}.
+    With "anchor", pos/look are offsets from that anchor's world position at frame f; without, world coordinates.
+    The plan camera keys are removed for these renders (the still run ends here), so it never touches a reel."""
+    from mathutils import Vector
+    views = json.loads(Path(path).read_text(encoding="utf-8"))
+    cam, tgt = ctx.cam, ctx.cam_target
+    for o in (cam, tgt, cam.data):
+        o.animation_data_clear()
+    cam.parent = tgt.parent = None
+    for v in views:
+        scene.frame_set(int(v["f"]))
+        base = Vector((0.0, 0.0, 0.0))
+        if v.get("anchor"):
+            a = bpy.data.objects.get(B.ANC_PREFIX + v["anchor"])
+            if a is None:
+                print("[oneshot] view %s: no anchor %s, skipped" % (v.get("tag"), v["anchor"]))
+                continue
+            base = a.matrix_world.translation.copy()
+        cam.location = base + Vector(v["pos"])
+        tgt.location = base + Vector(v["look"])
+        cam.data.lens = float(v.get("lens", 50.0))
+        bpy.context.view_layer.update()
+        scene.render.filepath = str(stdir / ("f%04d%s.png" % (int(v["f"]), v.get("tag", "_view"))))
+        t1 = time.time()
+        bpy.ops.render.render(write_still=True)
+        print("[oneshot] view f%d%s %.1fs" % (int(v["f"]), v.get("tag", ""), time.time() - t1))
+
+
 def key_motion_blur(scene, plan, lo, hi, mode):
     """3d: Cycles/EEVEE motion blur only inside blur windows (snaps). 2d: off (overlay blurs from camera_speed)."""
     scene.render.use_motion_blur = False
@@ -417,10 +446,16 @@ def main():
             chars["torque"] = CH.build_torque(ctx, cj["torque_goose"])
             stats["bolts_tris_all_outfits"] = chars["bolts"]["tris_all_outfits"]
             stats["torque_tris"] = chars["torque"]["tris"]
+            stats["bolts_impl"] = chars["bolts"].get("impl", "?")
+            if chars["bolts"].get("tris_visible"):
+                stats["bolts_tris_visible"] = chars["bolts"]["tris_visible"]
             CH.apply_cast(ctx, world, chars, plan, lo, hi, episode)
             if "--clip-actions" in argv:
-                CH.make_clip_actions(chars["bolts"]["rig"], CH.bolts_pose, {"idle": 90, "walk": 32, "point": 40,
-                                     "thumbs_up": 36, "winch_crank": 40, "hands_on_hips": 48, "scratch_beard": 54})
+                if chars["bolts"].get("make_clip_actions"):
+                    chars["bolts"]["make_clip_actions"]()
+                else:
+                    CH.make_clip_actions(chars["bolts"]["rig"], CH.bolts_pose, {"idle": 90, "walk": 32, "point": 40,
+                                         "thumbs_up": 36, "winch_crank": 40, "hands_on_hips": 48, "scratch_beard": 54})
                 CH.make_clip_actions(chars["torque"]["rig"], CH.torque_pose, {"waddle": 24, "idle": 60, "honk": 30, "peck": 33})
         except Exception:
             import traceback
@@ -473,6 +508,8 @@ def main():
             t1 = time.time()
             bpy.ops.render.render(write_still=True)
             print("[oneshot] still f%d %.1fs" % (f, time.time() - t1))
+        if opt("--views"):
+            render_views(ctx, scene, stdir, opt("--views"))
         if "--save-blend" in argv:
             bpy.ops.wm.save_as_mainfile(filepath=str(stdir / ("oneshot_f%04d.blend" % frames[0])), relative_remap=True)
             try:                                   # s6: every texture path relative (the .blend opens on Windows)
