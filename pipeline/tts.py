@@ -29,13 +29,88 @@ class AuthOrBillingError(RuntimeError):
 
 def _client():
     from dotenv import load_dotenv
-    from google import genai
 
     load_dotenv(os.path.join(ROOT, ".env"))
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise AuthOrBillingError("GEMINI_API_KEY missing from .env")
+    if os.environ.get("TTS_BACKEND", "").strip().lower() == "rest":
+        return _RestClient(key)
+    from google import genai
+
     return genai.Client(api_key=key)
+
+
+# ---------------------------------------------------------------- stdlib REST backend (TTS_BACKEND=rest)
+# For machines where the SDK's native dependencies can't load (the Dell: Windows Smart App Control blocks the
+# unsigned cryptography/cffi DLLs that google-genai pulls in through google-auth). Same request as the SDK path,
+# sent with urllib to v1beta. The key goes only in the x-goog-api-key header, never in the URL or in messages.
+REST_BASE = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent"
+
+
+class _RestClient:
+    def __init__(self, key):
+        self._key = key
+
+    def __repr__(self):
+        return "<tts REST client>"
+
+
+class RestApiError(RuntimeError):
+    """HTTP error from the REST backend. `.code` and str() mimic the SDK errors, so _is_rate_limit() and
+    _is_auth_error() classify them the same way (e.g. '429 RESOURCE_EXHAUSTED. {...}')."""
+
+    def __init__(self, code, status, body):
+        self.code = code
+        self.status = status
+        super().__init__("%s %s. %s" % (code, status, body))
+
+
+def _rest_synth(client, model, voice, prompt):
+    import base64
+    import urllib.error
+    import urllib.request
+
+    body = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}},
+        },
+    }
+    req = urllib.request.Request(
+        REST_BASE % model,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json", "x-goog-api-key": client._key},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=300) as r:
+            resp = json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        raw = e.read().decode("utf-8", "replace")
+        status = ""
+        try:
+            status = json.loads(raw).get("error", {}).get("status", "")
+        except ValueError:
+            pass
+        raise RestApiError(e.code, status, raw.replace(client._key, "<key>")[:2000]) from None
+    pcm = b""
+    cands = resp.get("candidates") or []
+    for part in ((cands[0].get("content") or {}).get("parts") or []) if cands else []:
+        data = (part.get("inlineData") or {}).get("data")
+        if data:
+            pcm += base64.b64decode(data)
+    pcm = strip_wav_headers(pcm)
+    if not pcm:
+        raise RuntimeError("TTS returned no audio")
+    um = resp.get("usageMetadata") or {}
+    usage = {
+        "prompt_tokens": um.get("promptTokenCount"),
+        "output_tokens": um.get("candidatesTokenCount"),
+        "total_tokens": um.get("totalTokenCount"),
+    }
+    return pcm, usage
 
 
 def _is_auth_error(exc):
@@ -47,6 +122,8 @@ def _is_auth_error(exc):
 
 
 def synth(client, model, voice, prompt):
+    if isinstance(client, _RestClient):
+        return _rest_synth(client, model, voice, prompt)
     from google.genai import types
 
     cfg = types.GenerateContentConfig(
