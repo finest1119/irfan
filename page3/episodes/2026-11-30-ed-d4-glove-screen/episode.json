@@ -1,0 +1,213 @@
+{
+ "id": "2026-11-30-ed-d4-glove-screen",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "glove screen",
+ "slug": "glove-screen",
+ "title": "Your Phone Screen Can't Feel a Glove",
+ "fb_caption": "Put on winter gloves and your phone stops listening. Under the glass sits an invisible grid of tiny electrodes holding a small electric field. Your fingertip conducts electricity, so it changes the charge where you touch, and the phone pinpoints the spot. A regular glove is an insulator, so it blocks that change and the screen feels nothing. Touchscreen gloves weave conductive thread into the fingertip, so it acts like bare skin. Do you take your gloves off, or own a touchscreen pair?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Smartphone",
+  "#WinterHacks",
+  "#Tech"
+ ],
+ "engagement_comment": "Do you take your gloves off, or own a touchscreen pair? 1 = gloves off every time, 2 = touchscreen gloves, 3 = I just wait until I'm inside.",
+ "sources": [
+  "Wikipedia, Touchscreen (capacitive: grid of crossing conductors; a finger disturbs the electric field and changes the capacitance, which the controller detects; some capacitive screens cannot detect a finger through insulating material such as gloves): https://en.wikipedia.org/wiki/Touchscreen",
+  "Nelson Miller, Why Can't I Wear Gloves With My Touchscreen? (a bare finger draws off some of the screen's charge and the change in capacitance is read as a touch; gloves restrict that flow): https://nelson-miller.com/why-cant-i-wear-gloves-with-my-touchscreen",
+  "Gear Patrol, The Science Behind Touchscreen Gloves (conductive material, most often copper yarn, woven into the fingertip acts as a bare finger): https://www.gearpatrol.com/outdoors/smartphone-compatible-gloves-explained/"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, brisk pace, short pause before the twist.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Your phone ignores you the moment you put on winter gloves. Here's why.",
+   "shot": {
+    "builder": "glove_touch_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "WHY GLOVES FAIL",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "grid",
+   "text": "Under the glass sits an invisible grid of tiny electrodes, holding a small electric field.",
+   "shot": {
+    "builder": "glove_touch_v2",
+    "params": {
+     "view": "grid",
+     "grid_cue": "grid",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "SENSOR GRID",
+      "anchor": "grid",
+      "cue": "grid",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "SMALL ELECTRIC FIELD"
+      ],
+      "cues": [
+       "electric"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "touch",
+   "text": "Your fingertip conducts electricity, so it changes the charge where you touch, and the phone pinpoints it.",
+   "shot": {
+    "builder": "glove_touch_v2",
+    "params": {
+     "view": "touch",
+     "touch_cue": "changes",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "CHARGE CHANGES HERE",
+      "anchor": "tip",
+      "cue": "changes",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "SKIN CONDUCTS"
+      ],
+      "cues": [
+       "conducts"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "glove",
+   "text": "A regular glove is an insulator. It blocks that change, so the screen feels nothing.",
+   "shot": {
+    "builder": "glove_touch_v2",
+    "params": {
+     "view": "glove",
+     "touch_cue": "blocks",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "NOTHING REGISTERS",
+      "anchor": "tip",
+      "cue": "nothing",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "GLOVES INSULATE"
+      ],
+      "cues": [
+       "insulator"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the trick. Touchscreen gloves weave conductive thread into the fingertip, so it acts like bare skin.",
+   "shot": {
+    "builder": "glove_touch_v2",
+    "params": {
+     "view": "thread",
+     "touch_cue": "acts",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "CONDUCTIVE THREAD",
+      "cue": "conductive"
+     },
+     {
+      "type": "label",
+      "text": "THREAD IN THE TIP",
+      "anchor": "tip",
+      "cue": "fingertip",
+      "color": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Do you take your gloves off, or own a touchscreen pair? Tell us below.",
+   "shot": {
+    "builder": "glove_touch_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "GLOVES OFF OR ON?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

@@ -1,0 +1,247 @@
+{
+ "id": "2026-11-30-ed-d3-toll-tag",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "toll tag",
+ "slug": "toll-tag",
+ "title": "You Drive Through a Toll at Highway Speed and Never Stop",
+ "fb_caption": "No booth, no braking, and the toll still gets paid. The little tag on your windshield is a radio ID. As you pass, a reader on the overhead gantry pings it, the tag answers with its ID, and the toll is matched to your account and charged automatically. Many sticker tags don't even have a battery: the reader's radio signal powers them for that instant. No tag? Cameras snap your license plate and the bill comes by mail. Tag on the windshield or bill by mail: which are you?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#RoadTrip",
+  "#Driving",
+  "#Tech"
+ ],
+ "engagement_comment": "Tag on the windshield or bill by mail: which are you? 1 = tag, always, 2 = bill by mail, 3 = I avoid toll roads.",
+ "sources": [
+  "Wikipedia, E-ZPass (RFID transponder read at lane-based or open-road toll points; prepaid account debited; vehicles without a transponder are photographed by plate and the owner billed): https://en.wikipedia.org/wiki/E-ZPass",
+  "Wikipedia, SunPass (SunPass Mini: passive RFID sticker transponder, uses no batteries): https://en.wikipedia.org/wiki/SunPass",
+  "Wikipedia, Radio-frequency identification (passive tags are powered by energy from the reader's interrogating radio waves): https://en.wikipedia.org/wiki/Radio-frequency_identification"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, brisk pace, short pause before the twist.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "You drive under a toll at highway speed, never stop, and still pay.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.55
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "NO STOPPING?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "tag",
+   "text": "That little tag on your windshield is a radio ID, like a tiny name badge for your car.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "tag",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "TOLL TAG",
+      "anchor": "tag",
+      "cue": "tag",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "RADIO ID"
+      ],
+      "cues": [
+       "radio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "read",
+   "text": "As you pass, a reader on the overhead gantry pings it, and the tag answers with its ID.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "read",
+     "ping_cue": "pings",
+     "_still": 0.66
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "READER",
+      "anchor": "reader",
+      "cue": "reader",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "PING",
+       "ANSWER"
+      ],
+      "cues": [
+       "pings",
+       "answers"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "charge",
+   "text": "The toll is matched to your account and charged automatically.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "charge",
+     "send_cue": "matched",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "TOLL SYSTEM",
+      "anchor": "cabinet",
+      "cue": "account",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ACCOUNT CHARGED"
+      ],
+      "cues": [
+       "charged"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. Many sticker tags have no battery. The reader's radio signal powers them for that instant.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "sticker",
+     "power_cue": "powers",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "NO BATTERY NEEDED",
+      "cue": "battery"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "POWERED BY THE READER"
+      ],
+      "cues": [
+       "powers"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "cams",
+   "text": "No tag? Cameras snap your license plate, and the bill comes by mail.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "cams",
+     "flash_cue": "snap",
+     "_still": 0.36
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "PLATE CAMERA",
+      "anchor": "cam",
+      "cue": "cameras",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "BILL BY MAIL"
+      ],
+      "cues": [
+       "bill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Tag on the windshield or bill by mail: which are you? Tell us below.",
+   "shot": {
+    "builder": "toll_tag_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "TAG OR BILL BY MAIL?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

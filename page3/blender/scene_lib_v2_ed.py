@@ -35,6 +35,18 @@ Builders (Track A batch 03, 26 Nov 2026, for 29 Nov):
                                              change_cue), remote with IR LED, spectrum strip with an infrared zone,
                                              pale-violet IR dashes travelling to the TV sensor, phone camera screen
                                              showing the purple-white flash bursts (flash_cue).
+Builders (Track A batch 04, 26 Nov 2026, for 30 Nov):
+  cabin_lights_v2     view hook | dim | path | shades | twist | outro   REUSED scene_lib_v2_air b_cabin_v2, re-lit:
+                                             dusk windows, lights fade on dim_cue, floor path strips, exit pictogram,
+                                             window shades slide up on shade_cue.
+  banana_ripen_v2     view hook | box | ship | room | twist | yellow | outro   store produce display (REUSED _store),
+                                             reefer container, ripening room with teal gas puffs, green -> yellow peels.
+  toll_tag_v2         view hook | tag | read | charge | sticker | cams | outro   REUSED tower city: road + gantry
+                                             (readers, plate cameras), driver's-eye rig with the tag, sticker coil.
+  glove_touch_v2      view hook | grid | touch | glove | thread | outro   REUSED living room: phone, electrode grid,
+                                             pointing hand (skin / knit glove / conductive-thread tip), touch glow.
+  qr_code_v2          view hook | data | damage | level | corners | tip | outro   REUSED store: poster with a QR-like
+                                             code (not decodable), torn patches, finder frames, phone camera view.
 No 3D text (barcode bars are graphics, no digits); non-graphic; textures generated in memory (<= 512 px).
 """
 import math
@@ -3853,4 +3865,1159 @@ S.V2_BUILDERS.update({
     "gps_sky_v2": b_gps_sky_v2,
     "e911_v2": b_e911_v2,
     "remote_ir_v2": b_remote_ir_v2,
+})
+
+
+# ======================================================================================================================
+# Track A batch 04 (26 Nov 2026, for 30 Nov): cabin_lights_v2, banana_ripen_v2, toll_tag_v2, glove_touch_v2, qr_code_v2
+# Cue effects use _hold_* (pops) or _ramp (flat key at the cue, then a fade); no WIREFRAME rings, no CONSTANT keys.
+# ======================================================================================================================
+def _ramp(keyfn, f, v0, v1, dur=18):
+    """Fade v0 -> v1 starting at frame f (a flat key at frame 1 and at f; BEZIER-safe)."""
+    f = max(2, int(f))
+    keyfn(1, v0)
+    keyfn(f, v0)
+    keyfn(f + int(dur), v1)
+
+
+def _ramp_sock(sock, f, v0, v1, dur=18):
+    _ramp(lambda fr, v: L.kf_socket(sock, fr, v), f, v0, v1, dur)
+
+
+def _ramp_attr(idb, path, f, v0, v1, dur=18):
+    _ramp(lambda fr, v: kf(idb, path, fr, v), f, v0, v1, dur)
+
+
+def _em_socks(mat_name):
+    m = bpy.data.materials.get(mat_name)
+    if m is None:
+        return None, None
+    for n in m.node_tree.nodes:
+        if n.type == "EMISSION":
+            return n.inputs["Strength"], n.inputs["Color"]
+    return None, None
+
+
+def _quad(name, c, right, up, w, h, mat, parent=None, uv=True):
+    """UV quad centred on c spanning right (u) and up (v) unit vectors."""
+    c, r, u = Vector(c), Vector(right).normalized() * (w / 2), Vector(up).normalized() * (h / 2)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("uv")
+    vs = [bm.verts.new(c - r - u), bm.verts.new(c + r - u), bm.verts.new(c + r + u), bm.verts.new(c - r + u)]
+    f = bm.faces.new(vs)
+    for lp, t in zip(f.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
+        lp[uvl].uv = t
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]), parent=parent)
+    o.visible_shadow = False
+    return o
+
+
+def _puffs(ctx, name, src, f0, n=8, gap=5, rise=(0.0, 0.0, 0.6), spread=0.25, r=0.08, life=40, color=TEAL,
+           peak=0.6, seed=3, parent=None):
+    """Soft gas puffs (translucent emissive spheres) drifting from src from frame f0: grow, drift, fade."""
+    rng = random.Random(seed)
+    out = []
+    for k in range(n):
+        m, sock = L.add_mat("%s_m%d" % (name, k), color, 0.0)
+        bm = bmesh.new()
+        bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=r)
+        o = S.obj("%s%d" % (name, k), S.mesh_from_bm("%s%d" % (name, k), bm, [m], smooth=True), parent=parent)
+        o.visible_shadow = False
+        a = max(2, int(f0 + k * gap))
+        p0 = Vector(src)
+        p1 = p0 + Vector(rise) + Vector((rng.uniform(-spread, spread), rng.uniform(-spread, spread), 0))
+        kf(o, "location", 1, p0)
+        kf(o, "location", a, p0)
+        kf(o, "location", a + life, p1)
+        _hold_obj(o, "scale", [(1, (0.001,) * 3), (a, (0.4,) * 3)])
+        kf(o, "scale", a + life, Vector((1.6, 1.6, 1.6)))
+        L.kf_socket(sock, 1, 0.0)
+        L.kf_socket(sock, a, 0.0)
+        L.kf_socket(sock, a + int(life * 0.3), peak)
+        L.kf_socket(sock, a + life, 0.0)
+        out.append(o)
+    return out
+
+
+# ---------------------------------------------------------------- cabin_lights_v2 (REUSES scene_lib_v2_air cabin)
+CB_Y0, CB_PITCH, CB_ROWS = -2.0, 0.82, 22
+CB_LEN = CB_ROWS * CB_PITCH + 4.0
+
+
+def _cb_win_y(r):
+    return CB_Y0 + 1.5 + r * CB_PITCH
+
+
+def _cabin_dim(ctx, f_dim, bright=1.0):
+    """f_dim None -> dimmed from frame 1; 0 -> stays bright; else fades bright -> dim at f_dim."""
+    sets = []
+    s, c = _em_socks("cab_ceiling")
+    if s is not None:
+        sets.append((s, 0.45 * bright, 0.12))
+    s, c = _em_socks("cab_led")
+    if s is not None:
+        c.default_value = hexc("9fb8ff")
+        sets.append((s, 2.0 * bright, 0.45))
+    s, c = _em_socks("cab_window")
+    if s is not None:                         # dusk outside
+        c.default_value = hexc("5d74a8")
+        s.default_value = 1.6
+    for o in bpy.data.objects:
+        if o.type == "LIGHT" and o.name.startswith("cab_l"):
+            sets.append((o.data, 80.0 * bright, 16.0))
+        elif o.type == "LIGHT" and o.name.startswith("cab_win"):
+            o.data.energy = 70.0
+            o.data.color = (0.6, 0.7, 1.0)
+    bg = ctx.scene.world.node_tree.nodes.get("Background").inputs["Strength"]
+    sets.append((bg, 0.3, 0.14))
+    for tgt, vb, vd in sets:
+        isl = not hasattr(tgt, "default_value")
+        if f_dim is None or f_dim == 0:
+            v = vd if f_dim is None else vb
+            if isl:
+                tgt.energy = v
+            else:
+                tgt.default_value = v
+        elif isl:
+            _ramp_attr(tgt, "energy", f_dim, vb, vd, 24)
+        else:
+            _ramp_sock(tgt, f_dim, vb, vd, 24)
+
+
+def _cabin_extras(ctx, p, shade_f=None, shade_rows=range(3, 9)):
+    """Floor path light strips, exit signs (green panel + white door / arrow pictogram, no text), window shades."""
+    path = S.emis("cb_path", hexc("ffd59a"), 2.2)
+    bm = bmesh.new()
+    y = CB_Y0 + 0.2
+    while y < CB_Y0 + CB_LEN - 0.4:
+        for sx in (-1, 1):
+            S.bm_box(bm, (sx * 0.33, y, 0.012), (0.035, 0.32, 0.012))
+        y += 0.5
+    S.obj("cb_path", S.mesh_from_bm("cb_path", bm, [path]))
+    grn = S.emis("cb_exit_g", hexc("1fd46a"), 3.5)
+    wht = S.emis("cb_exit_w", hexc("f4fff6"), 3.5)
+    ye = CB_Y0 + CB_LEN - 0.02
+
+    def sign(bm):
+        S.bm_box(bm, (0, ye, 1.9), (1.0, 0.04, 0.4), 0)
+        S.bm_box(bm, (-0.24, ye - 0.025, 1.9), (0.14, 0.01, 0.26), 1)           # door
+        S.bm_box(bm, (0.12, ye - 0.025, 1.9), (0.32, 0.01, 0.06), 1)            # arrow shaft
+        for k in range(4):
+            S.bm_box(bm, (0.26 + 0.024 * k, ye - 0.025, 1.9 + 0.024 * (3 - k) - 0.036), (0.024, 0.01, 0.024), 1)
+            S.bm_box(bm, (0.26 + 0.024 * k, ye - 0.025, 1.9 - 0.024 * (3 - k) + 0.036), (0.024, 0.01, 0.024), 1)
+    ex = S.obj("cb_exit", _mesh("cb_exit", sign, [grn, wht]))
+    shm = S.pbr("cb_shade", hexc("e6e2da"), 0.6, var=0.01)
+    shades = {}
+    for r in range(CB_ROWS + 2):
+        for sx in (-1, 1):
+            y = _cb_win_y(r)
+            o = S.obj("cb_sh%d_%d" % (r, sx), _mesh("cb_sh", lambda bm: S.bm_box(bm, (0, 0, -0.26), (0.012, 0.36, 0.52)),
+                                                    [shm]), (sx * 1.925, y, 1.34))
+            shades[(r, sx)] = o
+            if shade_f is not None and sx == -1 and r in shade_rows:
+                f = int(shade_f + (r - shade_rows[0]) * 3)
+                _ramp_attr(o, "scale", f, Vector((1, 1, 1)), Vector((1, 1, 0.04)), 10)
+            else:
+                o.scale = (1, 1, 0.04)
+    return ex, shades
+
+
+def _v_cabin(ctx, p, view):
+    pp = dict(p)
+    pp.setdefault("exposure", -0.25)
+    A.b_cabin_v2(ctx, pp)
+    f_dim = 0
+    if view in ("hook", "dim"):
+        f_dim = ctx.word_time(p.get("dim_cue", "dim"), 0.4)
+    else:
+        f_dim = None
+    _cabin_dim(ctx, f_dim)
+    shade_f = ctx.word_time(p.get("shade_cue", "shades"), 0.3) if view == "shades" else None
+    ex, shades = _cabin_extras(ctx, p, shade_f)
+    y0 = CB_Y0
+    cams = {
+        "hook": ((0.0, y0 + 0.5, 1.2), (0.0, y0 + 9.0, 1.2), (0.0, y0 + 2.0, 1.18), (0.0, y0 + 9.5, 1.2), 18),
+        "dim": ((0.35, y0 + 1.2, 1.15), (-0.1, y0 + 9.0, 1.15), (0.3, y0 + 2.2, 1.13), (-0.1, y0 + 9.5, 1.15), 20),
+        "path": ((0.12, y0 + 0.8, 0.32), (0.0, y0 + 12.0, 0.75), (0.1, y0 + 2.6, 0.3), (0.0, y0 + 13.0, 0.75), 20),
+        "shades": ((-0.75, y0 + 3.2, 1.62), (-1.95, y0 + 5.6, 1.12), (-0.78, y0 + 3.35, 1.61), (-1.95, y0 + 5.6, 1.12), 24),
+        "twist": ((0.0, y0 + 0.6, 1.0), (0.0, y0 + 14.0, 1.25), (0.0, y0 + 3.0, 0.98), (0.0, y0 + 14.5, 1.25), 20),
+        "outro": ((0.5, y0 + 2.6, 1.25), (-0.9, y0 + 10.0, 1.15), (0.2, y0 + 1.2, 1.3), (-0.4, y0 + 10.0, 1.2), 19),
+    }
+    c0, t0, c1, t1, lens = cams[view]
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=0.05, far=200.0)
+    S.anchor(ctx, "aisle", _empty("cb_aisle", (0.0, y0 + 7.5, 1.0)), (0, 0, 0))
+    S.anchor(ctx, "floor", _empty("cb_floor_a", (0.33, y0 + 6.0, 0.02)), (0, 0, 0))
+    S.anchor(ctx, "exit", ex, (0, CB_Y0 + CB_LEN - 0.05, 1.9))
+    S.anchor(ctx, "shade", shades[(4, -1)], (0, 0, -0.12))
+
+
+def b_cabin_lights_v2(ctx, p):
+    """Why the cabin lights dim for landing. REUSES scene_lib_v2_air b_cabin_v2 (then re-lit in memory: dusk windows,
+    dimmable ceiling / LED cove / area lights, floor path light strips, green exit sign pictogram, window shades).
+    view hook | dim | path | shades | twist | outro. hook/dim: lights fade on dim_cue; shades: left-side shades slide up
+    row by row on shade_cue. Anchors: aisle, floor, exit, shade. Params cam0/1, tgt0/1, lens, exposure."""
+    _v_cabin(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- banana_ripen_v2
+BN_GREEN, BN_YELLOW = hexc("6f9a2e"), hexc("f2cc3a")
+
+
+def _peel_mat(name, fac=0.0, keys=None):
+    """Banana peel: green -> yellow mix (fac 0 green, 1 yellow; keys = (frame, v0, v1, dur) ramp)."""
+    m = bpy.data.materials.new(name)
+    nt = m.node_tree
+    bsdf = nt.nodes.get("Principled BSDF")
+    mx = nt.nodes.new("ShaderNodeMix")
+    mx.data_type = "RGBA"
+    mx.inputs[6].default_value = BN_GREEN
+    mx.inputs[7].default_value = BN_YELLOW
+    mx.inputs[0].default_value = fac
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 60.0
+    mul = nt.nodes.new("ShaderNodeMix")
+    mul.data_type = "RGBA"
+    mul.blend_type = "MULTIPLY"
+    mul.inputs[0].default_value = 0.12
+    nt.links.new(mx.outputs[2], mul.inputs[6])
+    nt.links.new(nz.outputs["Color"], mul.inputs[7])
+    nt.links.new(mul.outputs[2], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.5
+    if keys:
+        _ramp_sock(mx.inputs[0], *keys)
+    return m
+
+
+def _banana_hand_mesh(name, mats, n=6, seed=1):
+    """One 'hand' of bananas (n curved fingers fanned from a crown), crown at the origin, fingers along +X curving
+    up (+Z). mats = [peel, tip, crown]."""
+    rng = random.Random(seed)
+    bm = bmesh.new()
+    sides, rings_n = 8, 16
+    for k in range(n):
+        row = k % 2
+        yaw = math.radians(-32 + 64 * k / max(1, n - 1) + rng.uniform(-3, 3))
+        R, th = 0.15 + rng.uniform(-0.01, 0.01), 1.05 + rng.uniform(-0.05, 0.05)
+        rings = []
+        for i in range(rings_n + 1):
+            t = i / rings_n
+            a = th * t
+            c = Vector((R * math.sin(a), 0, R * (1 - math.cos(a)) + row * 0.022))
+            T_ = Vector((math.cos(a), 0, math.sin(a)))
+            N_ = Vector((-math.sin(a), 0, math.cos(a)))
+            rad = 0.0165 * min(1.0, 0.35 + t / 0.25, (1.0 - t) / 0.3 + 0.12)
+            ring = []
+            for j in range(sides):
+                ph = 2 * math.pi * j / sides
+                q = c + rad * (math.cos(ph) * N_ + math.sin(ph) * Vector((0, 1, 0)))
+                q = Matrix.Rotation(yaw, 3, "Z") @ q
+                ring.append(bm.verts.new(q))
+            rings.append(ring)
+        for i in range(rings_n):
+            for j in range(sides):
+                f = bm.faces.new((rings[i][j], rings[i][(j + 1) % sides], rings[i + 1][(j + 1) % sides], rings[i + 1][j]))
+                f.material_index = 0
+        f = bm.faces.new(list(reversed(rings[0])))
+        f.material_index = 2
+        f = bm.faces.new(rings[-1])
+        f.material_index = 1
+    _rbox(bm, (-0.012, 0, 0.012), (0.04, 0.09, 0.04), 0.01, 1, 2)
+    return S.mesh_from_bm(name, bm, mats, smooth=True)
+
+
+def _bn_mats(name, fac=0.0, keys=None):
+    return [_peel_mat(name, fac, keys), S.pbr("bn_tip", hexc("3b2a1c"), 0.6, var=0),
+            S.pbr("bn_crown", hexc("7a8a3a"), 0.7, var=0.05)]
+
+
+def _bn_place(me, name, loc, yaw=0.0, tilt=0.0, s=1.0):
+    o = S.obj(name, me, loc, (tilt, 0, yaw), (s, s, s))
+    return o
+
+
+def _bn_box(bm, c, open_=True):
+    """Banana carton (kraft, darker band, no print). Open top = no lid face."""
+    x, y, z = c
+    S.bm_box(bm, (x, y, z + 0.005), (0.5, 0.4, 0.01), 0)
+    for sx in (-1, 1):
+        S.bm_box(bm, (x + sx * 0.245, y, z + 0.12), (0.01, 0.4, 0.24), 0)
+        S.bm_box(bm, (x, y + sx * 0.195, z + 0.12), (0.5, 0.01, 0.24), 0)
+    S.bm_box(bm, (x, y - 0.201, z + 0.17), (0.5, 0.004, 0.05), 1)
+    if not open_:
+        S.bm_box(bm, (x, y, z + 0.245), (0.52, 0.42, 0.012), 0)
+
+
+def _bn_stacks(ctx, name, origins, layers=6, open_top=True, me=None, fill_open=True, rng=None):
+    """Pallet stacks of cartons (2 x 2 per layer). Top layer open with banana hands inside."""
+    rng = rng or random.Random(4)
+    kraft = S.pbr("bn_kraft", hexc("b9925f"), 0.85, var=0.08, var_scale=4.0)
+    band = S.pbr("bn_band", hexc("8a5a2b"), 0.8, var=0.04)
+    wood = S.pbr("bn_pallet", hexc("a07c52"), 0.8, var=0.1, var_scale=3.0)
+    bm = bmesh.new()
+    tops = []
+    for (ox, oy) in origins:
+        for k in range(3):
+            S.bm_box(bm, (ox, oy - 0.5 + 0.5 * k, 0.07), (1.0, 0.1, 0.14), 2)
+        S.bm_box(bm, (ox, oy, 0.145), (1.02, 1.2, 0.02), 2)
+        for L_ in range(layers):
+            for i in (-1, 1):
+                for j in (-1, 1):
+                    c = (ox + i * 0.255, oy + j * 0.3, 0.155 + L_ * 0.255)
+                    top = L_ == layers - 1
+                    _bn_box(bm, c, open_=top and open_top)
+                    if top and open_top:
+                        tops.append(c)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [kraft, band, wood]))
+    if me is not None and fill_open:
+        for k, (x, y, z) in enumerate(tops):
+            for m_ in range(2):
+                _bn_place(me, "%s_h%d_%d" % (name, k, m_), (x - 0.1 + 0.02 * m_, y - 0.07 + 0.12 * m_, z + 0.06),
+                          math.radians(rng.uniform(-15, 15)), math.radians(-8), 0.95)
+    return o, tops
+
+
+def _bn_room(ctx, p, kind="room"):
+    """kind 'ship': refrigerated container interior (ribbed walls, cool blue-white light, T-floor);
+    'room': ripening room (insulated panel walls, epoxy floor, air duct + fans, gas nozzle). Lit sets, no void."""
+    sc = ctx.scene
+    w = bpy.data.worlds.new("bn_world")
+    sc.world = w
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.7, 0.76, 0.82, 1.0) if kind == "ship" else (0.78, 0.76, 0.72, 1.0)
+    bg.inputs["Strength"].default_value = 0.35
+    sc.view_settings.exposure = p.get("exposure", -0.4)
+    if kind == "ship":
+        W, H, D = 2.35, 2.55, 12.0
+        L.fog(0.01, hexc("cfe0ee"), start=2.0)
+        wall = S.pbr("bn_cwall", hexc("c9d3dc"), 0.45, 0.6, var=0.03)
+        floor = S.pbr("bn_tfloor", hexc("9aa2aa"), 0.45, 0.7, var=0.04)
+
+        def room(bm):
+            S.bm_box(bm, (0, D / 2 - 0.8, -0.05), (W + 0.4, D + 2.0, 0.1), 1)
+            S.bm_box(bm, (0, D / 2 - 0.8, H + 0.05), (W + 0.4, D + 2.0, 0.1), 0)
+            S.bm_box(bm, (0, D + 0.05, H / 2), (W + 0.4, 0.1, H), 0)
+            S.bm_box(bm, (0, -1.6, H / 2), (W + 0.4, 0.1, H), 0)
+            for sx in (-1, 1):
+                S.bm_box(bm, (sx * (W / 2 + 0.05), D / 2 - 0.8, H / 2), (0.1, D + 2.0, H), 0)
+                y = -1.6
+                while y < D:
+                    S.bm_box(bm, (sx * (W / 2 - 0.01), y, H / 2), (0.03, 0.07, H), 0)
+                    y += 0.14
+            for x in range(-5, 6):
+                S.bm_box(bm, (x * 0.2, D / 2, 0.01), (0.04, D, 0.02), 1)
+        S.obj("bn_container", _mesh("bn_container", room, [wall, floor]))
+        for k in range(4):
+            A._area("bn_cl%d" % k, (0, 1.0 + k * 3.0, H - 0.1), 0.6, 140.0, (0.8, 0.9, 1.0), size_y=2.0)
+        return {"W": W, "H": H, "D": D}
+    W, H, D = 8.0, 4.6, 10.0
+    L.fog(0.004, hexc("e2ddd2"), start=4.0)
+    panel = S.pbr("bn_panel", hexc("d9dcd8"), 0.6, var=0.02)
+    seam = S.pbr("bn_seam", hexc("aab0b2"), 0.5, var=0)
+    floor = S.pbr("bn_epoxy", hexc("8e969c"), 0.35, coat=0.3, var=0.05, var_scale=1.0)
+    duct = S.pbr("bn_duct", hexc("7d868e"), 0.4, 0.6, var=0.02)
+    door = S.pbr("bn_door", hexc("2f6f8f"), 0.5, var=0.02)
+
+    def room(bm):
+        S.bm_box(bm, (0, D / 2 - 0.8, -0.05), (W + 0.4, D + 2.0, 0.1), 2)
+        S.bm_box(bm, (0, D / 2 - 0.8, H + 0.05), (W + 0.4, D + 2.0, 0.1), 0)
+        S.bm_box(bm, (0, D + 0.05, H / 2), (W + 0.4, 0.1, H), 0)
+        S.bm_box(bm, (0, -1.6, H / 2), (W + 0.4, 0.1, H), 0)
+        for sx in (-1, 1):
+            S.bm_box(bm, (sx * (W / 2 + 0.05), D / 2 - 0.8, H / 2), (0.1, D + 2.0, H), 0)
+            for k in range(9):
+                S.bm_box(bm, (sx * (W / 2 - 0.004), k * 1.2, H / 2), (0.01, 0.02, H), 1)
+        for k in range(-3, 4):
+            S.bm_box(bm, (k * 1.2, D - 0.004, H / 2), (0.02, 0.01, H), 1)
+        S.bm_box(bm, (0, D - 0.02, 1.6), (3.0, 0.04, 3.2), 4)                     # roll door
+        for k in range(10):
+            S.bm_box(bm, (0, D - 0.045, 0.2 + k * 0.32), (3.0, 0.01, 0.03), 1)
+        S.bm_box(bm, (0, D / 2, H - 0.45), (1.0, D - 0.4, 0.6), 3)              # air duct
+        for k in range(4):
+            _cyl(bm, (0, 1.2 + k * 2.3, H - 0.78), 0.32, 0.06, "Z", 24, 1)
+    S.obj("bn_rroom", _mesh("bn_rroom", room, [panel, seam, floor, duct, door]))
+    pan = S.emis("bn_lamp", hexc("fff4e0"), 3.0)
+    S.obj("bn_lamps", _mesh("bn_lamps", lambda bm: [S.bm_box(bm, (sx * 2.4, 1.5 + 2.5 * k, H - 0.03), (0.3, 1.4, 0.04))
+                                                    for sx in (-1, 1) for k in range(4)], [pan]))
+    for k in range(4):
+        A._area("bn_rl%d" % k, (0, 1.2 + k * 2.6, H - 0.15), 2.5, 420.0, (1.0, 0.95, 0.88), size_y=2.0)
+    # ethylene nozzle box on the right wall
+    noz = S.pbr("bn_noz", hexc("e8ecee"), 0.4, var=0)
+    S.obj("bn_noz", _mesh("bn_noz", lambda bm: [S.bm_box(bm, (W / 2 - 0.12, 3.0, 3.2), (0.2, 0.5, 0.4)),
+                                                _cyl(bm, (W / 2 - 0.27, 3.0, 3.15), 0.04, 0.12, "X", 12)], [noz]))
+    return {"W": W, "H": H, "D": D, "noz": (W / 2 - 0.36, 3.0, 3.15)}
+
+
+def _bn_store(ctx, p, me):
+    """REUSED supermarket set (_store) with a produce display in front of the gondolas: tiered wood bins with yellow
+    banana hands, red / green apples, oranges."""
+    _store(ctx, p)
+    wood = S.pbr("bn_bin", hexc("9a6a3f"), 0.6, var=0.1, var_scale=4.0)
+    bm = bmesh.new()
+    for t in range(3):
+        S.bm_box(bm, (0, 1.6 + t * 0.45, 0.35 + t * 0.25), (3.0, 0.5, 0.7 + t * 0.5), 0)
+    S.obj("bn_display", S.mesh_from_bm("bn_display", bm, [wood]))
+    rng = random.Random(8)
+    k = 0
+    for t, y_, xs in ((0, 1.44, range(-6, 7)), (0, 1.66, range(-6, 7)), (1, 1.93, range(-8, 9))):
+        for i in xs:
+            x = i * 0.14 + (0.07 if y_ == 1.66 else 0.0)
+            if t == 0 and abs(x) > 0.92:
+                continue
+            z = 0.7 + t * 0.5
+            _bn_place(me, "bn_disp%d" % k, (x + rng.uniform(-0.02, 0.02), y_, z + 0.02),
+                      math.radians(-90 + rng.uniform(-15, 15)), math.radians(rng.uniform(-6, 6)), 1.0)
+            k += 1
+    fruit = [S.pbr("bn_fr%d" % i, hexc(c), 0.45, coat=0.4, var=0.05) for i, c in enumerate(("c8352d", "8cc04a", "f08a24"))]
+    bm = bmesh.new()
+    for i in range(160):
+        side = -1 if i % 2 else 1
+        mi = (i // 2) % 3
+        x = side * rng.uniform(1.0, 1.45)
+        S._ellipsoid(bm, (x, 1.5 + rng.uniform(-0.15, 0.15), 0.74 + rng.uniform(0, 0.08)), (0.04, 0.04, 0.038), mi, 10, 6)
+    for i in range(140):
+        S._ellipsoid(bm, (rng.uniform(-1.4, 1.4), 2.5 + rng.uniform(-0.15, 0.15), 1.74 + rng.uniform(0, 0.08)),
+                     (0.04, 0.04, 0.038), i % 3, 10, 6)
+    S.obj("bn_fruit", S.mesh_from_bm("bn_fruit", bm, fruit, smooth=True))
+
+
+def _bn_close(ctx, p, me):
+    """Close-up: three hands lying on the lid of a closed carton (on a pallet base) at the front of the set, camera
+    looking down at about 40 degrees, stacks blurred behind."""
+    bm = bmesh.new()
+    _bn_box(bm, (0.0, -0.1, 0.62), open_=False)
+    S.bm_box(bm, (0.0, -0.1, 0.31), (0.55, 0.45, 0.62), 0)
+    S.obj("bn_closebox", S.mesh_from_bm("bn_closebox", bm, [S.pbr("bn_kraft", hexc("b9925f")),
+                                                             S.pbr("bn_band", hexc("8a5a2b"))]))
+    z = 0.62 + 0.252
+    hs = [_bn_place(me, "bn_close%d" % k, (-0.15 + 0.14 * k, -0.02 - 0.05 * (k % 2), z + 0.012),
+                    math.radians(-90 + 12 * (k - 1)), 0.0, 1.0) for k in range(3)]
+    _cam_keys2(ctx, [(1, p.get("cam0", (0.08, -0.62, 1.22)), p.get("tgt0", (0.0, -0.12, 0.9))),
+                     (1.0, p.get("cam1", (0.06, -0.58, 1.19)), p.get("tgt1", (0.0, -0.12, 0.9)))],
+               lens=p.get("lens", 35), clip=0.02, far=100.0)
+    ctx.cam.data.dof.use_dof = True
+    ctx.cam.data.dof.focus_object = hs[1]
+    ctx.cam.data.dof.aperture_fstop = p.get("fstop", 4.0)
+    S.anchor(ctx, "bunch", hs[1], (0.0, -0.08, 0.06))
+    return hs
+
+
+def _v_banana(ctx, p, view):
+    T = ctx.frames
+    rng = random.Random(6)
+    if view in ("hook", "outro"):
+        me = _banana_hand_mesh("bn_hand_y", _bn_mats("bn_peel_y", 0.92))
+        _bn_store(ctx, p, me)
+        hero = bpy.data.objects["bn_disp8"]
+        c0, t0, c1, t1, lens = ((0.5, 0.7, 1.2), (0.25, 1.55, 0.74), (0.46, 0.78, 1.18), (0.25, 1.55, 0.74), 38)
+        if view == "outro":
+            c0, t0, c1, t1, lens = ((1.3, -0.9, 1.45), (0.0, 2.2, 1.45), (1.8, -1.7, 1.55), (0.0, 2.3, 1.5), 30)
+        _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+                   lens=p.get("lens", lens), clip=0.02, far=200.0)
+        ctx.cam.data.dof.use_dof = True
+        ctx.cam.data.dof.focus_object = hero
+        ctx.cam.data.dof.aperture_fstop = p.get("fstop", 2.8 if view == "hook" else 5.6)
+        S.anchor(ctx, "bunch", hero, (0, 0, 0.08))
+        return
+    if view in ("box", "ship"):
+        me = _banana_hand_mesh("bn_hand_g", _bn_mats("bn_peel_g", 0.0))
+        R = _bn_room(ctx, p, "ship")
+        origins = [(sx * 0.55, 1.0 + 1.25 * k) for k in range(8) for sx in (-1, 1)]
+        _bn_stacks(ctx, "bn_st", origins, layers=6 if view == "ship" else 4, me=me, rng=rng)
+        if view == "box":
+            # one open carton at waist height in the aisle-end for the close-up
+            hs = _bn_close(ctx, p, me)
+        else:
+            _cam_keys2(ctx, [(1, p.get("cam0", (0.0, -0.45, 1.9)), p.get("tgt0", (0.0, 7.0, 1.0))),
+                             (1.0, p.get("cam1", (0.0, 0.2, 1.85)), p.get("tgt1", (0.0, 7.5, 1.0)))],
+                       lens=p.get("lens", 20), clip=0.02, far=100.0)
+            S.anchor(ctx, "boxes", _empty("bn_boxes_a", (-0.55, 3.5, 1.4)), (0, 0, 0))
+        return
+    # ripening room views (room | twist | yellow)
+    keys = None
+    fac = 0.0
+    if view == "yellow":
+        keys = (ctx.word_time(p.get("ripen_cue", "yellow"), 0.4) - 20, 0.15, 0.95, 40)
+    elif view == "twist":
+        fac = 0.45
+    me = _banana_hand_mesh("bn_hand_r", _bn_mats("bn_peel_r", fac, keys))
+    R = _bn_room(ctx, p, "room")
+    origins = [(sx * (1.3 + 1.25 * j), 1.2 + 1.35 * k) for k in range(5) for j in range(2) for sx in (-1, 1)]
+    _bn_stacks(ctx, "bn_rst", origins, layers=6, me=me, rng=rng)
+    if view == "room":
+        fg = ctx.word_time(p.get("gas_cue", "ethylene"), 0.5)
+        nz = R["noz"]
+        _puffs(ctx, "bn_gas", nz, fg, n=16, gap=4, rise=(-2.4, 0.0, -0.8), spread=0.9, r=0.22, life=55, peak=0.18)
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.6, -0.9, 1.7)), p.get("tgt0", (2.2, 5.0, 2.1))),
+                         (1.0, p.get("cam1", (-0.7, -0.6, 1.68)), p.get("tgt1", (2.3, 5.0, 2.1)))],
+                   lens=p.get("lens", 20), clip=0.02, far=100.0)
+        S.anchor(ctx, "room", _empty("bn_room_a", (0.0, 5.0, 2.0)), (0, 0, 0))
+        return
+    # close-up: a hand resting on an open carton in front of the stacks
+    hs = _bn_close(ctx, p, me)
+    if view == "twist":
+        fw = ctx.word_time(p.get("wisp_cue", "make"), 0.4)
+        for k, h in enumerate(hs):
+            _puffs(ctx, "bn_wisp%d" % k, tuple(Vector(h.location) + Vector((0.0, 0.08, 0.06))), fw - 20 + 6 * k, n=6,
+                   gap=8, rise=(0, 0.05, 0.22), spread=0.04, r=0.03, life=40, peak=0.8, seed=20 + k)
+
+
+def b_banana_ripen_v2(ctx, p):
+    """Bananas picked green, shipped cool, ripened with ethylene. view hook | box | ship | room | twist | yellow |
+    outro. hook/outro: REUSED supermarket set (_store) + produce display; box/ship: refrigerated container with carton
+    stacks of green hands; room/twist/yellow: ripening room (insulated panels, duct + fans); room: teal gas puffs
+    from the wall nozzle (gas_cue); twist: faint teal wisps rising from the bananas; yellow: peels ramp green ->
+    yellow (ripen_cue). Anchors: bunch, boxes, room. Params cam0/1, tgt0/1, lens, fstop, exposure."""
+    _v_banana(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- toll_tag_v2 (REUSES the scene_lib_v2_tower city)
+TL_GX, TL_RY = -150.0, -60.0           # gantry x, road centre y (road rx at y = -60, lanes all heading +X)
+TL_LANES = (-6.6, -2.2, 2.2, 6.6)
+TL_V = 26.0                            # m/s (about 58 mph)
+
+
+def _tl_world(ctx, p):
+    import scene_lib_v2_tower as TW
+    TW.build_city(ctx, p)
+    TW.build_hero(ctx)
+    for nm in [o.name for o in bpy.data.objects if o.name.startswith("tc") and o.parent is None
+               and abs(o.location.y - TL_RY) < 12]:
+        o = bpy.data.objects.get(nm)
+        if o is None:
+            continue
+        kids = [c.name for c in o.children_recursive]
+        bpy.data.objects.remove(o, do_unlink=True)
+        for c in kids:
+            if bpy.data.objects.get(c) is not None:
+                bpy.data.objects.remove(bpy.data.objects[c], do_unlink=True)
+    import scene_lib_v2_city as C
+    S.plane_obj("tl_road", 1800.0, 19.0, (0.0, TL_RY, 0.075), C.asphalt_mat("tl_asphalt", hexc("4a4d52")))
+    white = S.pbr("tl_line", hexc("eeeeea"), 0.6, var=0)
+    bm = bmesh.new()
+    for y in (-4.4, 0.0, 4.4):
+        x = -900.0
+        while x < 900.0:
+            S.bm_box(bm, (x, TL_RY + y, 0.085), (3.0, 0.15, 0.01))
+            x += 12.0
+    for y in (-8.6, 8.6):
+        S.bm_box(bm, (0, TL_RY + y, 0.085), (1800.0, 0.18, 0.01))
+    S.obj("tl_lines", S.mesh_from_bm("tl_lines", bm, [white]))
+    # gantry: two posts + a box truss across the road; readers (white panels) + plate cameras over every lane
+    steel = S.pbr("tl_steel", hexc("aeb4ba"), 0.4, 0.8, var=0.03)
+    gx = TL_GX
+
+    def gantry(bm):
+        for sy in (-1, 1):
+            S.bm_box(bm, (gx, TL_RY + sy * 10.6, 3.6), (0.5, 0.5, 7.2), 0)
+            S.bm_box(bm, (gx, TL_RY + sy * 10.6, 0.15), (1.2, 1.2, 0.3), 0)
+        for z in (6.2, 7.1):
+            for dx in (-0.45, 0.45):
+                S.bm_box(bm, (gx + dx, TL_RY, z), (0.14, 21.6, 0.14), 0)
+        for k in range(15):
+            y = TL_RY - 10.2 + k * 1.46
+            S.bm_box(bm, (gx, y, 6.65), (0.9, 0.08, 0.08), 0)
+            for dx in (-0.45, 0.45):
+                S.bm_box(bm, (gx + dx, y, 6.65), (0.08, 0.08, 0.9), 0)
+    S.obj("tl_gantry", _mesh("tl_gantry", gantry, [steel]))
+    reader = S.pbr("tl_reader", hexc("eef0f2"), 0.4, var=0)
+    dark = S.pbr("tl_cam", hexc("23272c"), 0.35, var=0)
+    glass = S.pbr("tl_lens", hexc("0d1014"), 0.05, coat=1.0, var=0)
+    readers, cams = [], []
+    for k, ly in enumerate(TL_LANES):
+        r = S.obj("tl_rd%d" % k, _mesh("tl_rd%d" % k, lambda bm: [S.bm_box(bm, (0, 0, 0), (0.12, 0.6, 0.6)),
+                                                                   S.bm_box(bm, (0.12, 0, 0.32), (0.3, 0.06, 0.06))],
+                                       [reader]), (gx - 0.62, TL_RY + ly, 5.75), (0, math.radians(-28), 0))
+        readers.append(r)
+        c = S.obj("tl_cm%d" % k, _mesh("tl_cm%d" % k, lambda bm: [S.bm_box(bm, (0, 0, 0), (0.45, 0.2, 0.2), 0),
+                                                                   _cyl(bm, (-0.24, 0, 0), 0.06, 0.04, "X", 12, 1),
+                                                                   S.bm_box(bm, (0.15, 0, 0.18), (0.08, 0.08, 0.2), 0)],
+                                       [dark, glass]), (gx - 0.6, TL_RY + ly + 1.0, 5.95), (0, math.radians(-20), 0))
+        cams.append(c)
+    cab = S.pbr("tl_cabinet", hexc("9da5ad"), 0.5, 0.3, var=0.02)
+    cabinet = S.obj("tl_cabinet", _mesh("tl_cabinet", lambda bm: [
+        _rbox(bm, (gx + 4.0, TL_RY - 13.0, 0.85), (1.0, 0.7, 1.7), 0.03, 1),
+        S.bm_box(bm, (gx + 2.0, TL_RY - 11.6, 0.05), (4.2, 0.25, 0.1))], [cab]))
+    return TW, readers, cams, cabinet
+
+
+def _tl_car(name, lane, f_at, fps, T, model=None, plate=True):
+    """Kenney car on lane, heading +X at TL_V; passes x = TL_GX at frame f_at. Optional front plate."""
+    c = L.make_car(name, loc=(0, TL_RY + TL_LANES[lane], 0.08), rot_z=-math.pi / 2, headlights=False, glow=False,
+                   model=model)
+    o = c.obj
+    for f in (1, T):
+        kf(o, "location", f, Vector((TL_GX + TL_V * (f - f_at) / fps, TL_RY + TL_LANES[lane], 0.08)))
+    _interp(o, "LINEAR")
+    pl = None
+    if plate:
+        pm = S.pbr("tl_plate", hexc("f2f0e6"), 0.5, var=0)
+        pl = S.obj(name + "_plate", _mesh(name + "_plate", lambda bm: S.bm_box(bm, (0, 0, 0), (0.32, 0.02, 0.16)), [pm]),
+                   (0, 2.05, 0.45), parent=o)
+    return o, pl
+
+
+def _tl_rig(ctx, f_at, sticker=False):
+    """Driver's-eye rig moving with the car: dash, A-pillars, roof liner, windshield glass, mirror, toll tag on the
+    glass behind the mirror (box transponder, or a flat sticker tag with an antenna-coil print)."""
+    fps, T = ctx.fps, ctx.frames
+    rig = _empty("tl_rig", (0, 0, 0))
+    for f in (1, T):
+        kf(rig, "location", f, Vector((TL_GX + TL_V * (f - f_at) / fps, TL_RY + TL_LANES[1], 0.08)))
+    _interp(rig, "LINEAR")
+    dash = S.pbr("tl_dash", hexc("2b2e33"), 0.7, var=0.03)
+    liner = S.pbr("tl_liner", hexc("8c8a84"), 0.9, var=0.03)
+    body = S.pbr("tl_hood", hexc("2f6f8f"), 0.3, 0.4, coat=0.8, var=0.01)
+    b0, b1 = Vector((1.0, 0, 1.0)), Vector((0.45, 0, 1.42))
+
+    def shell(bm):
+        _rbox(bm, (0.95, 0, 0.9), (0.6, 1.5, 0.22), 0.05, 2, 0)                     # dash
+        for sy in (-1, 1):                                                         # A-pillars
+            vs = bmesh.ops.create_cube(bm, size=1.0)["verts"]
+            for v in vs:
+                v.co = Vector((v.co.x * 0.08, v.co.y * 0.1, v.co.z * 0.68))
+            bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(math.atan2(0.55, 0.42), 3, "Y"))
+            bmesh.ops.translate(bm, verts=vs, vec=Vector((0.73, sy * 0.76, 1.21)))
+        S.bm_box(bm, (0.0, 0, 1.47), (1.0, 1.6, 0.05), 1)                          # roof liner
+        S.bm_box(bm, (2.2, 0, 0.82), (2.2, 1.6, 0.06), 2)                          # hood
+        _rbox(bm, (0.5, 0.0, 1.33), (0.04, 0.24, 0.07), 0.015, 2, 0)                # mirror
+        S.bm_box(bm, (0.52, 0.0, 1.39), (0.02, 0.02, 0.06), 0)
+    S.obj("tl_shell", _mesh("tl_shell", shell, [dash, liner, body]), parent=rig)
+    d = (b1 - b0).normalized()
+    n = Vector((-0.42, 0, -0.5)).normalized()
+    pc = b0 + d * (b1 - b0).length * 0.8 + Vector((0, -0.14, 0)) + n * 0.012
+    if sticker:
+        img = _sticker_img("tl_sticker_off", False)
+        img2 = _sticker_img("tl_sticker_on", True)
+        return rig, pc, d, n, (img, img2)
+    tm = S.pbr("tl_tagm", hexc("f4f4f0"), 0.45, var=0)
+    tg = _quad("tl_tagfoot", pc - n * 0.004, (0, 1, 0), d, 0.1, 0.06, S.pbr("tl_tagfoot", hexc("c9c9c4")), parent=rig)
+    bm = bmesh.new()
+    S.bm_box(bm, (0, 0, 0), (0.11, 0.075, 0.022))
+    tag = S.obj("tl_tag", S.mesh_from_bm("tl_tag", bm, [tm]), pc + n * 0.01, parent=rig)
+    tag.rotation_euler = Matrix((Vector((0, 1, 0)), d, n)).transposed().to_euler()
+    return rig, tag, d, n, None
+
+
+def _sticker_img(name, on):
+    a = _cv(512, 256, "f3f1ea")
+    col = "19d3c0" if on else "8f959b"
+    for k in range(6):                       # rectangular antenna coil
+        m = 20 + k * 14
+        _rr(a, m, m, 512 - m, 256 - m, 6, col)
+        _rr(a, m + 5, m + 5, 512 - m - 5, 256 - m - 5, 4, "f3f1ea")
+    _rr(a, 236, 108, 276, 148, 4, "ffb000" if on else "3a3f45")
+    if on:
+        _dsc(a, 256, 128, 70, "19d3c0", 0.25, soft=30)
+    return _np_img(name, a)
+
+
+def _v_toll(ctx, p, view):
+    T, fps = ctx.frames, ctx.fps
+    TW, readers, cams, cabinet = _tl_world(ctx, p)
+    rng = random.Random(5)
+    f_mid = int(T * 0.55)
+    if view == "read":
+        f_mid = ctx.word_time(p.get("ping_cue", "pings"), 0.5) + 4
+    elif view == "cams":
+        f_mid = ctx.word_time(p.get("flash_cue", "snap"), 0.4) + 2
+    elif view == "sticker":
+        f_mid = ctx.word_time(p.get("power_cue", "powers"), 0.6) + 2
+    elif view == "tag":
+        f_mid = int(T * 1.25)
+    elif view == "charge":
+        f_mid = int(T * 0.2)
+    # traffic: hero lane 1 at f_mid, others staggered (lane, offset s)
+    hero = None
+    for k, (lane, off) in enumerate(((1, 0.0), (0, -1.1), (2, 0.7), (3, -0.4), (0, 1.6), (2, -1.9), (3, 1.3),
+                                     (1, -2.6), (1, 2.4), (2, 2.9))):
+        if view in ("tag", "sticker") and lane == 1 and off == 0.0:
+            continue
+        o, pl = _tl_car("tlcar%d" % k, lane, f_mid + int(off * fps), fps, T)
+        if off == 0.0:
+            hero, hero_pl = o, pl
+    if view in ("tag", "sticker"):
+        rig, tag, d, n, imgs = _tl_rig(ctx, f_mid, sticker=(view == "sticker"))
+        if view == "sticker":
+            fp = ctx.word_time(p.get("power_cue", "powers"), 0.6)
+            sm = _screen_mat("tl_sticker", list(imgs), [(1, 0.0), (fp, 1.0)], 0.9, gloss=False)
+            pc = tag
+            tag = _quad("tl_stk", pc, (0, 1, 0), d, 0.085, 0.043, sm, parent=rig)
+            _rings(ctx, tuple(pc + n * 0.002), fp, color=TEAL, count=3, gap=8, r1=0.09, life=18, name="tl_pw",
+                   parent=rig, rot=tuple(Matrix((Vector((0, 1, 0)), d, n)).transposed().to_euler()))
+            tag = _empty("tl_stk_a", tuple(pc), rig)
+            cam_l = (p.get("cam0", (0.28, -0.36, 1.27)), p.get("tgt0", (0.56, -0.14, 1.35)))
+            cam_l1 = (p.get("cam1", (0.3, -0.34, 1.275)), p.get("tgt1", (0.56, -0.14, 1.35)))
+            lens = p.get("lens", 30)
+        else:
+            cam_l = (p.get("cam0", (0.0, -0.5, 1.18)), p.get("tgt0", (0.62, -0.12, 1.32)))
+            cam_l1 = (p.get("cam1", (0.03, -0.48, 1.18)), p.get("tgt1", (0.62, -0.12, 1.32)))
+            lens = p.get("lens", 24)
+        _cam_keys2(ctx, [(1, cam_l[0], cam_l[1]), (1.0, cam_l1[0], cam_l1[1])], lens=lens, clip=0.01, far=40000.0)
+        ctx.cam.parent = rig
+        ctx.cam_target.parent = rig
+        ctx.cam.data.dof.use_dof = True
+        ctx.cam.data.dof.focus_object = tag
+        ctx.cam.data.dof.aperture_fstop = p.get("fstop", 4.0 if view == "tag" else 2.8)
+        S.anchor(ctx, "tag", tag, (0, 0, 0))
+        return
+    gx, ry = TL_GX, TL_RY
+    rd = readers[1]
+    if view == "read":
+        fp = f_mid - 4
+        cm, cs = L.add_mat("tl_zone_m", TEAL, 0.0)
+        bm = bmesh.new()
+        rr = bmesh.ops.create_cone(bm, cap_ends=False, segments=24, radius1=1.6, radius2=0.12, depth=5.6)
+        bmesh.ops.translate(bm, vec=Vector((0, 0, 2.8)), verts=rr["verts"])
+        S.obj("tl_zone", S.mesh_from_bm("tl_zone", bm, [cm]), (gx - 0.9, ry + TL_LANES[1], 0.0)).visible_shadow = False
+        _hold_sock(cs, [(1, 0.0), (fp - 6, 0.5), (fp + 16, 0.0)])
+        _rings(ctx, (0, 0, 1.45), fp, color=TEAL, count=3, gap=6, r1=1.4, life=14, name="tl_ping", parent=hero)
+        am, _ = L.add_mat("tl_ans_m", AMBER, 6.0)
+        bm = bmesh.new()
+        bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.22)
+        ans = S.obj("tl_ans", S.mesh_from_bm("tl_ans", bm, [am], smooth=True))
+        p0 = (gx - 0.5, ry + TL_LANES[1], 1.4)
+        _mover(ctx, ans, p0, (gx - 0.62, ry + TL_LANES[1], 5.6), fp + 4, fp + 14)
+        c0, t0, c1, t1, lens = ((gx - 26.0, ry + 18.0, 14.0), (gx, ry - 3.0, 2.5), (gx - 24.0, ry + 17.0, 13.5), (gx, ry - 3.0, 2.5), 30)
+    elif view == "charge":
+        fs = ctx.word_time(p.get("send_cue", "matched"), 0.3)
+        pm, _ = L.add_mat("tl_cable", TEAL, 0.8)
+        _beam("tl_cab1", (gx + 0.3, ry - 10.6, 6.6), (gx + 0.3, ry - 10.6, 0.3), 0.04, pm)
+        _beam("tl_cab2", (gx + 0.3, ry - 11.6, 0.12), (gx + 3.5, ry - 11.6, 0.12), 0.04, pm)
+        am, _ = L.add_mat("tl_data_m", AMBER, 6.0)
+        for k in range(3):
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.16)
+            s = S.obj("tl_data%d" % k, S.mesh_from_bm("tl_data%d" % k, bm, [am], smooth=True))
+            f0 = fs + k * 9
+            kf(s, "location", 1, Vector((gx + 0.3, ry - 10.6, 6.6)))
+            kf(s, "location", f0, Vector((gx + 0.3, ry - 10.6, 6.6)))
+            kf(s, "location", f0 + 10, Vector((gx + 0.3, ry - 10.6, 0.3)))
+            kf(s, "location", f0 + 16, Vector((gx + 3.5, ry - 12.6, 1.2)))
+            _hold_obj(s, "scale", [(1, (0.001,) * 3), (f0, (1, 1, 1)), (f0 + 17, (0.001,) * 3)])
+        _rings(ctx, (gx + 4.0, ry - 13.0, 1.8), fs + 18, color=TEAL, count=3, gap=8, r1=1.6, life=18, name="tl_ok")
+        c0, t0, c1, t1, lens = ((gx + 14.0, ry + 10.0, 10.0), (gx + 1.0, ry - 11.0, 1.5), (gx + 13.0, ry + 9.0, 9.6),
+                                (gx + 1.0, ry - 11.0, 1.5), 28)
+    elif view == "cams":
+        ff = f_mid - 2
+        cmo = cams[1]
+        fm = S.emis("tl_flash_w", hexc("fff3d6"), 0.0)
+        fl = S.obj("tl_flash", _mesh("tl_flash", lambda bm: _cyl(bm, (0, 0, 0), 0.09, 0.02, "X", 16), [fm]),
+                   (gx - 0.88, ry + TL_LANES[1] + 1.0, 5.86), (0, math.radians(-20), 0))
+        es, _ = _em_socks("tl_flash_w")
+        _hold_sock(es, [(1, 0.0), (ff, 40.0), (ff + 3, 0.0), (ff + 6, 40.0), (ff + 9, 0.0)])
+        _rings(ctx, (0, 2.06, 0.45), ff, color=AMBER, count=3, gap=5, r1=0.7, life=14, name="tl_plate_r",
+               parent=hero, rot=(math.radians(90), 0, 0), width=0.06)
+        c0, t0, c1, t1, lens = ((gx + 18.0, ry + 14.0, 11.0), (gx - 3.0, ry + TL_LANES[1], 2.0), (gx + 17.0, ry + 13.0, 10.6),
+                                (gx - 3.0, ry + TL_LANES[1], 2.0), 30)
+        S.anchor(ctx, "cam", cmo, (0, 0, 0))
+    else:   # hook | outro
+        if view == "hook":
+            c0, t0, c1, t1, lens = ((gx - 45.0, ry + 14.0, 4.0), (gx, ry - 6.0, 5.0), (gx - 40.0, ry + 13.0, 4.0), (gx, ry - 6.0, 5.0), 30)
+        else:
+            c0, t0, c1, t1, lens = ((gx + 30.0, ry + 20.0, 18.0), (gx, ry - 4.0, 2.0), (gx + 80.0, ry + 60.0, 45.0), (gx - 20.0, ry - 20.0, 0.0), 30)
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=0.3, far=40000.0)
+    S.anchor(ctx, "reader", rd, (0, 0, 0))
+    S.anchor(ctx, "cabinet", cabinet, (gx + 4.0, ry - 13.0, 1.8))
+    S.anchor(ctx, "gantry", _empty("tl_g_a", (gx, ry, 7.2)), (0, 0, 0))
+
+
+def b_toll_tag_v2(ctx, p):
+    """Electronic toll at highway speed. REUSES the scene_lib_v2_tower city (+ hero tower); the y = -60 avenue becomes
+    a 4-lane one-way road (+X) with lane dashes and an overhead gantry at x = -150 (box truss, white reader panels and
+    dark plate cameras over every lane, roadside cabinet). view hook | tag | read | charge | sticker | cams | outro.
+    tag/sticker: driver's-eye rig moving with the traffic (dash, pillars, mirror, tag behind the mirror; no glass); sticker: flat tag
+    with an antenna coil that lights teal on power_cue; read: teal read zone + rings on the hero car (ping_cue), amber
+    answer pulse up to the reader; charge: amber data pulses down the gantry to the cabinet (send_cue); cams: flash +
+    amber rings on the front plate (flash_cue). Anchors: tag, reader, cabinet, cam, gantry."""
+    _v_toll(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- glove_touch_v2 (REUSES the living-room set)
+GL_PH = (-0.1, -0.5, 0.44)
+GL_TILT = -14.0
+GL_TOUCH = (0.006, -PH_T / 2 - 0.0012, 0.088)     # touch point, phone-local
+
+
+def _home_img(name="ed_home"):
+    a = _cv(256, 512, "1f4e6b")
+    import numpy as np
+    X, Y = _grid(a)
+    g = (Y / 512.0)[..., None]
+    a[..., :3] = a[..., :3] * (0.7 + 0.5 * g)
+    cols = ["ffb000", "19d3c0", "e2584a", "6c8cff", "8fd16a", "f2f2f2", "c58cff", "ff8a3d"]
+    k = 0
+    for row in range(5):
+        for col in range(4):
+            x0 = 22 + col * 58
+            y0 = 400 - row * 72
+            _rr(a, x0, y0, x0 + 40, y0 + 40, 10, cols[k % len(cols)])
+            k += 3
+    _rr(a, 14, 18, 242, 74, 22, "f2f2f2", 0.25)
+    for col in range(4):
+        _rr(a, 26 + col * 56, 26, 66 + col * 56, 66, 10, cols[(col * 2 + 1) % len(cols)])
+    return _np_img(name, a)
+
+
+def _hand_mesh(name, mats, pad=0.0, patch=False):
+    """Pointing hand, index fingertip at the origin pointing +Y; three curled fingers, thumb, wrist + sweater cuff.
+    mats [hand (skin or knit), cuff, tip patch]. pad thickens everything (glove)."""
+    bm = bmesh.new()
+    rf = 0.0085 + pad
+    _cyl(bm, (0, -0.042, 0), rf, 0.066, "Y", 16, 0)
+    S._ellipsoid(bm, (0, -0.009, 0), (rf, rf, rf), 2 if patch else 0, 16, 10)
+    S._ellipsoid(bm, (0, -0.075, 0), (rf * 1.1, rf * 1.1, rf * 1.1), 0, 16, 10)
+    _rbox(bm, (0.026, -0.118, -0.006), (0.078 + 2 * pad, 0.075, 0.03 + 2 * pad), 0.013, 3, 0)
+    for k in range(3):
+        _rbox(bm, (0.019 + 0.02 * k, -0.077 + 0.003 * k, -0.017), (0.019 + pad, 0.034 + pad, 0.03 + pad), 0.009, 3, 0)
+    tv = Vector((0.006, 0.05, -0.006)).normalized()
+    for t in range(4):
+        q = Vector((-0.019, -0.128, -0.01)) + tv * (0.015 * t)
+        S._ellipsoid(bm, tuple(q), (0.0098 + pad,) * 3, 0, 14, 8)
+    _cyl(bm, (0.026, -0.205, -0.006), 0.026 + pad, 0.1, "Y", 20, 0)
+    _cyl(bm, (0.026, -0.33, -0.006), 0.038, 0.18, "Y", 24, 1)
+    return S.mesh_from_bm(name, bm, mats, smooth=True)
+
+
+def _v_glove(ctx, p, view):
+    T = ctx.frames
+    _living_room(ctx, p, None, p.get("tv_strength", 0.55))
+    hm = _home_img()
+    scr = _screen_mat("gl_scr", [hm], strength=p.get("screen", 0.9))
+    ph = make_phone("phone", scr, GL_PH, (math.radians(GL_TILT), 0, 0))
+    root = ph["root"]
+    # sensor grid (teal bars just above the screen)
+    gm, gs = L.add_mat("gl_grid_m", TEAL, 0.0)
+    sw, sh, sz = PH_W - 0.007, PH_H - 0.024, PH_H / 2 - 0.002
+    yg = -PH_T / 2 - 0.0009
+
+    def grid(bm):
+        for i in range(10):
+            x = -sw / 2 + sw * (i + 0.5) / 10
+            S.bm_box(bm, (x, yg, sz), (0.0006, 0.0002, sh))
+        for j in range(20):
+            z = sz - sh / 2 + sh * (j + 0.5) / 20
+            S.bm_box(bm, (0, yg, z), (sw, 0.0002, 0.0006))
+    g = S.obj("gl_grid", _mesh("gl_grid", grid, [gm]), parent=root)
+    g.visible_shadow = False
+    fg = ctx.word_time(p.get("grid_cue", "grid"), 0.4)
+    if view == "grid":
+        _ramp_sock(gs, fg, 0.0, 2.2, 12)
+    elif view in ("touch", "glove", "thread"):
+        gs.default_value = 0.7
+    tx, ty, tz = GL_TOUCH
+    # hand
+    bare = view in ("touch",)
+    skin = S.pbr("gl_skin", hexc("c48a64"), 0.55, var=0.04, var_scale=20.0)
+    knit = S.pbr("gl_knit", hexc("2e4a6e"), 0.95, var=0.12, var_scale=180.0, bump=0.4)
+    cuff = S.pbr("gl_cuff", hexc("b5523b"), 0.95, var=0.1, var_scale=120.0, bump=0.3)
+    silver = S.pbr("gl_thread", hexc("a9adb2"), 0.45, 0.7, var=0.15, var_scale=400.0, bump=0.5)
+    if view != "grid":
+        if bare:
+            me = _hand_mesh("gl_hand", [skin, cuff, skin], 0.0, False)
+        else:
+            me = _hand_mesh("gl_hand", [knit, cuff, silver if view == "thread" else knit], 0.0028, view == "thread")
+        hand = S.obj("gl_hand", me, parent=root)
+        hand.rotation_euler = (math.radians(p.get("hand_pitch", 28.0)), 0, math.radians(p.get("hand_yaw", -22.0)))
+        tip = Vector((tx, ty - (0.0028 if not bare else 0.0) - 0.0002, tz))
+        away = tip + Vector((0.0, -0.035, -0.012))
+        if view in ("hook",):
+            ks = [(1, away), (int(T * 0.3), away), (int(T * 0.4), tip), (int(T * 0.5), away), (int(T * 0.6), tip),
+                  (int(T * 0.7), tip)]
+        elif view == "outro":
+            ks = [(1, away), (T, away)]
+        else:
+            ft = ctx.word_time(p.get("touch_cue", "changes"), 0.5)
+            ks = [(1, away), (max(2, ft - 12), away), (ft, tip)]
+        for f, v in ks:
+            kf(hand, "location", f, v)
+        if view in ("touch", "thread"):
+            ft = ctx.word_time(p.get("touch_cue", "changes"), 0.5)
+            dm, ds = L.add_mat("gl_dot_m", AMBER, 0.0)
+            _annulus("gl_dot", 0.0035, 0.007, dm, 32, (tx, ty - 0.0003, tz), (math.radians(90), 0, 0), root)
+            _ramp_sock(ds, ft, 0.0, 5.0, 4)
+            hm_, hs_ = L.add_mat("gl_hit_m", AMBER, 0.0)
+            hb = S.obj("gl_hit", _mesh("gl_hit", lambda bm: [S.bm_box(bm, (tx, yg - 0.0002, sz), (0.0011, 0.0003, sh)),
+                                                               S.bm_box(bm, (0, yg - 0.0002, tz), (sw, 0.0003, 0.0011))],
+                                       [hm_]), parent=root)
+            hb.visible_shadow = False
+            _ramp_sock(hs_, ft + 2, 0.0, 4.0, 4)
+            _rings(ctx, (tx, ty - 0.0005, tz), ft + 2, color=AMBER, count=3, gap=8, r1=0.03, life=18, name="gl_rg",
+                   parent=root, rot=(math.radians(90), 0, 0))
+        S.anchor(ctx, "tip", _empty("gl_tip_a", (tx, ty, tz), root), (0, 0, 0))
+    S.anchor(ctx, "grid", _empty("gl_grid_a", (-0.018, yg, sz + 0.03), root), (0, 0, 0))
+    S.anchor(ctx, "phone", root, (0, 0, PH_H))
+    px, py, pz = GL_PH
+    cams = {
+        "hook": ((px + 0.3, py - 0.42, pz + 0.24), (px + 0.0, py, pz + 0.08), (px + 0.27, py - 0.39, pz + 0.23), (px, py, pz + 0.08), 32),
+        "grid": ((px + 0.03, py - 0.3, pz + 0.12), (px, py, pz + 0.075), (px + 0.025, py - 0.27, pz + 0.12), (px, py, pz + 0.075), 40),
+        "touch": ((px + 0.2, py - 0.26, pz + 0.16), (px, py, pz + 0.085), (px + 0.18, py - 0.24, pz + 0.155), (px, py, pz + 0.085), 36),
+        "outro": ((px + 0.35, py - 0.5, pz + 0.28), (px - 0.05, py, pz + 0.1), (px + 0.5, py - 0.8, pz + 0.4), (px - 0.1, py + 0.4, pz + 0.3), 30),
+    }
+    c0, t0, c1, t1, lens = cams.get(view, cams["touch"])
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=0.005, far=60.0)
+    ctx.cam.data.dof.use_dof = True
+    ctx.cam.data.dof.focus_object = ph["screen"]
+    ctx.cam.data.dof.aperture_fstop = p.get("fstop", 4.0)
+
+
+def b_glove_touch_v2(ctx, p):
+    """Why a phone can't feel a glove. REUSES the living-room set (_living_room); phone on a stand on the coffee table
+    (home-screen art: wallpaper + colour app tiles, no text), teal sensor grid just above the screen (ramps up on
+    grid_cue), pointing hand (bare skin | knit glove | knit glove with a silver conductive-thread tip) that touches on
+    touch_cue; touch/thread: amber dot + crossing grid lines + rings at the touch point. view hook | grid | touch |
+    glove | thread | outro. Anchors: tip, grid, phone. Params hand_pitch, hand_yaw, cam0/1, tgt0/1, lens, fstop."""
+    _v_glove(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- qr_code_v2 (REUSES the supermarket set)
+QR_C = (-14.82, 2.0, 1.5)              # QR centre on the poster (store side wall x = -14.85, facing +X)
+QR_S = 0.42                            # QR side (m)
+QR_N = 25                              # modules (version 2), quiet zone 2
+
+
+def _qr_modules(seed=7):
+    """Non-decodable QR-like matrix: three finder patterns + separators, timing lines, one alignment pattern,
+    random data modules. Returns set of dark (i, j) module coordinates (i = column from left, j = row from top)."""
+    rng = random.Random(seed)
+    dark = set()
+    fixed = set()
+
+    def finder(ci, cj):
+        for i in range(-1, 8):
+            for j in range(-1, 8):
+                ii, jj = ci + i, cj + j
+                if 0 <= ii < QR_N and 0 <= jj < QR_N:
+                    fixed.add((ii, jj))
+                    if 0 <= i <= 6 and 0 <= j <= 6 and (i in (0, 6) or j in (0, 6) or (2 <= i <= 4 and 2 <= j <= 4)):
+                        dark.add((ii, jj))
+    finder(0, 0)
+    finder(QR_N - 7, 0)
+    finder(0, QR_N - 7)
+    for k in range(8, QR_N - 8):
+        fixed.add((k, 6))
+        fixed.add((6, k))
+        if k % 2 == 0:
+            dark.add((k, 6))
+            dark.add((6, k))
+    for i in range(-2, 3):
+        for j in range(-2, 3):
+            fixed.add((18 + i, 18 + j))
+            if max(abs(i), abs(j)) != 1:
+                dark.add((18 + i, 18 + j))
+    for i in range(QR_N):
+        for j in range(QR_N):
+            if (i, j) not in fixed and rng.random() < 0.5:
+                dark.add((i, j))
+    return dark
+
+
+def _qr_img(name, tint_rows=None, px=16):
+    """QR art (no text): navy modules on white; tint_rows (j0, j1) paints those data rows teal (recovery data)."""
+    q = QR_N + 4
+    a = _cv(q * px, q * px, "ffffff")
+    import numpy as np
+    dark = _qr_modules()
+    for (i, j) in dark:
+        x0, y1 = (i + 2) * px, (q - (j + 2)) * px
+        col = "1b1f24"
+        if tint_rows and tint_rows[0] <= j <= tint_rows[1] and not (i < 8 and j > QR_N - 9):
+            col = "0f8f84"
+        a[y1 - px:y1, x0:x0 + px, :3] = _rgb(col)
+    return _np_img(name, a)
+
+
+def _qr_cam_img(name, state):
+    """Phone camera view of the poster: state 'scan' (amber brackets), 'ok' (teal brackets + check badge),
+    'fail' (grey brackets, coral cross badge). No text."""
+    a = _cv(256, 512, "e9e3d6")
+    _rr(a, 0, 400, 256, 512, 0, "ffb000")
+    _rr(a, 0, 0, 256, 90, 0, "2f6f8f")
+    _rr(a, 38, 136, 218, 316, 4, "ffffff")
+    rng = random.Random(7)
+    dark = _qr_modules()
+    ps = 6
+    for (i, j) in dark:
+        x0, y0 = 53 + i * ps, 301 - (j + 1) * ps
+        a[y0:y0 + ps, x0:x0 + ps, :3] = _rgb("1b1f24")
+    if state in ("ok", "scan", "fail"):
+        a[150:210, 140:200, :3] = _rgb("e9dcc0") if state != "scan" else a[150:210, 140:200, :3]
+    if state == "fail":
+        a[250:300, 50:100, :3] = _rgb("e9dcc0")
+    col = {"scan": "ffb000", "ok": "19d3c0", "fail": "9aa0a6"}[state]
+    for (x, y, dx, dy) in ((30, 324, 1, -1), (226, 324, -1, -1), (30, 128, 1, 1), (226, 128, -1, 1)):
+        _rr(a, min(x, x + dx * 40), min(y, y + dy * 8), max(x, x + dx * 40), max(y, y + dy * 8), 3, col)
+        _rr(a, min(x, x + dx * 8), min(y, y + dy * 40), max(x, x + dx * 8), max(y, y + dy * 40), 3, col)
+    if state == "ok":
+        _dsc(a, 128, 60, 30, "19d3c0")
+        for t in range(14):
+            _dsc(a, 112 + t, 60 - t * 0.9 if t < 8 else 53 + (t - 8) * 2.2, 3.2, "ffffff")
+        for t in range(16):
+            _dsc(a, 112 - 6 + t * 0.4, 60 + 6 - t * 0.9, 3.2, "ffffff")
+    elif state == "fail":
+        _dsc(a, 128, 60, 30, "e2584a")
+        for t in range(-12, 13):
+            _dsc(a, 128 + t, 60 + t, 3.0, "ffffff")
+            _dsc(a, 128 + t, 60 - t, 3.0, "ffffff")
+    return _np_img(name, a)
+
+
+def _qr_patch(name, center, w, h, seed=2, col="e9dcc0", parent=None):
+    """Torn paper / sticker patch on the poster plane (faces +X), jagged outline."""
+    rng = random.Random(seed)
+    bm = bmesh.new()
+    n = 22
+    c = bm.verts.new((0, 0, 0))
+    ring = []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        rr = 1.0 + rng.uniform(-0.18, 0.12)
+        ring.append(bm.verts.new((0, math.cos(a) * w / 2 * rr, math.sin(a) * h / 2 * rr)))
+    for k in range(n):
+        bm.faces.new((c, ring[k], ring[(k + 1) % n]))
+    m = S.pbr("qr_patch_%s" % col, hexc(col), 0.85, var=0.08, var_scale=40.0, bump=0.2)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [m]), center, parent=parent)
+    return o
+
+
+def _qr_mod_pos(i, j):
+    q = QR_N + 4
+    ms = QR_S / q
+    return Vector((QR_C[0] + 0.004, QR_C[1] - QR_S / 2 + (i + 2.5) * ms, QR_C[2] + QR_S / 2 - (j + 2.5) * ms))
+
+
+def _v_qr(ctx, p, view):
+    T = ctx.frames
+    p2 = dict(p)
+    p2.setdefault("exposure", -0.5)
+    _store(ctx, p2)
+    for k in range(3):
+        A._area("qr_key%d" % k, (-12.6, 1.4 + 0.6 * k, 2.6), 1.0, 70.0, (1.0, 0.97, 0.92),
+                rot=(0, math.radians(-60), 0))
+    X, Y, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))
+    # poster: frame + colour blocks (no text) + QR quad
+    px_ = QR_C[0]
+    _quad("qr_backing", (px_ - 0.026, 2.0, 1.75), Y, Z, 3.2, 2.6, S.pbr("qr_backing", hexc("5f6f7c"), 0.85, var=0.02))
+    pc = S.pbr("qr_frame", hexc("2b2f36"), 0.4, 0.5, var=0)
+    S.obj("qr_frame", _mesh("qr_frame", lambda bm: S.bm_box(bm, (px_ - 0.013, 2.0, 1.55), (0.02, 0.78, 1.12)), [pc]))
+    blocks = [(2.0, 1.98, 0.72, 0.18, "ffb000"), (2.0, 1.52, 0.72, 0.74, "6f8190"), (2.0, 1.08, 0.72, 0.12, "2f6f8f"),
+              (1.75, 1.08, 0.2, 0.06, "19d3c0")]
+    for k, (yy, zz, ww, hh, col) in enumerate(blocks):
+        _quad("qr_blk%d" % k, (px_ + 0.001 + 0.0005 * (k == 3), yy, zz), Y, Z, ww, hh,
+              S.pbr("qr_blk_%s" % col, hexc(col), 0.7, var=0.01))
+    S.obj("qr_hdr_dots", _mesh("qr_hdr_dots", lambda bm: [_cyl(bm, (px_ + 0.004, 1.75 + 0.1 * k, 1.98), 0.035, 0.004, "X", 20)
+                                                          for k in range(3)], [S.pbr("qr_dot", hexc("1b1f24"), 0.6, var=0)]))
+    if view == "data":
+        imgs = [_qr_img("qr_plain"), _qr_img("qr_tint", (12, 24))]
+        fr = ctx.word_time(p.get("data_cue", "recovery"), 0.5)
+        qm = _qr_diffuse("qr_md", imgs, fr)
+    else:
+        qm = _qr_diffuse("qr_md", [_qr_img("qr_plain")], None)
+    qr = _quad("qr_code", (QR_C[0] + 0.003, QR_C[1], QR_C[2]), Y, Z, QR_S, QR_S, qm)
+    # damage patch (centre-right data area, clear of the finder squares)
+    pcen = _qr_mod_pos(15, 14) + Vector((0.004, 0, 0))
+    patch = None
+    if view in ("hook", "damage", "level", "corners", "tip", "outro"):
+        patch = _qr_patch("qr_patch", tuple(pcen), 0.13, 0.11)
+        if view == "damage":
+            fd = ctx.word_time(p.get("damage_cue", "tear"), 0.3)
+            _hold_obj(patch, "scale", [(1, (0.001,) * 3), (fd, (1, 1, 1))])
+    cover = None
+    if view == "tip":
+        fc = ctx.word_time(p.get("cover_cue", "cover"), 0.3)
+        cc = _qr_mod_pos(3, 3) + Vector((0.006, 0, 0))
+        cover = _qr_patch("qr_cover", tuple(cc), 0.12, 0.12, seed=5, col="d9c7a0")
+        _hold_obj(cover, "scale", [(1, (0.001,) * 3), (fc, (1, 1, 1))])
+    if view == "corners":
+        ff = ctx.word_time(p.get("finder_cue", "corner"), 0.4)
+        for k, (ci, cj) in enumerate(((3, 3), (QR_N - 4, 3), (3, QR_N - 4))):
+            fm, fs = L.add_mat("qr_fr_m%d" % k, AMBER, 0.0)
+            c = _qr_mod_pos(ci, cj) + Vector((0.003, 0, 0))
+            ms = QR_S / (QR_N + 4)
+            hw = 4.6 * ms
+
+            def frame(bm, c=c, hw=hw):
+                for dy, dz, sy, sz in ((0, hw, 2 * hw + 0.01, 0.01), (0, -hw, 2 * hw + 0.01, 0.01),
+                                       (hw, 0, 0.01, 2 * hw), (-hw, 0, 0.01, 2 * hw)):
+                    S.bm_box(bm, (c.x, c.y + dy, c.z + dz), (0.002, sy, sz))
+            o = S.obj("qr_fr%d" % k, _mesh("qr_fr%d" % k, frame, [fm]))
+            o.visible_shadow = False
+            _ramp_sock(fs, ff + 5 * k, 0.0, 5.0, 6)
+    # phone in the foreground showing the camera view
+    states = {"hook": ("scan", "ok", 0.55), "damage": ("scan", "ok", None), "tip": ("ok", "fail", None),
+              "outro": ("ok", "ok", None), "level": ("ok", "ok", None), "corners": ("scan", "ok", 0.75),
+              "data": ("scan", "ok", 0.8)}
+    s0, s1, fr_ = states.get(view, ("scan", "ok", 0.6))
+    if view == "damage":
+        fsw = ctx.word_time(p.get("scan_cue", "fill"), 0.7)
+    elif view == "tip":
+        fsw = ctx.word_time(p.get("cover_cue", "cover"), 0.3) + 12
+    else:
+        fsw = int(T * fr_) if fr_ else 1
+    sm = _screen_mat("qr_phone_scr", [_qr_cam_img("qr_cam_%s" % s0, s0), _qr_cam_img("qr_cam_%s2" % s1, s1)],
+                     [(1, 0.0), (fsw, 1.0)] if s0 != s1 else None, 1.0)
+    ph = make_phone("qr_phone", sm, p.get("phone_loc", (-14.25, 2.16, 1.22)),
+                    (math.radians(p.get("phone_tilt", -4.0)), 0, math.radians(90 + p.get("phone_yaw", -8.0))), stand=False)
+    if view in ("level",):
+        _rings(ctx, tuple(pcen + Vector((0.004, 0, 0))), int(T * 0.35), color=TEAL, count=3, gap=10, r1=0.14, life=20,
+               name="qr_lv", rot=(0, math.radians(90), 0))
+    cams = {
+        "hook": ((-13.15, 2.3, 1.5), (-14.85, 2.02, 1.5), (-13.3, 2.25, 1.5), (-14.85, 2.02, 1.5), 32),
+        "data": ((-13.7, 2.08, 1.62), (-14.85, 2.0, 1.6), (-13.78, 2.07, 1.62), (-14.85, 2.0, 1.6), 34),
+        "damage": ((-13.55, 2.15, 1.6), (-14.85, 2.03, 1.57), (-13.62, 2.13, 1.6), (-14.85, 2.03, 1.57), 32),
+        "level": ((-13.75, 1.95, 1.62), (-14.85, 2.03, 1.58), (-13.82, 1.97, 1.62), (-14.85, 2.03, 1.58), 34),
+        "corners": ((-13.7, 2.05, 1.63), (-14.85, 2.0, 1.6), (-13.78, 2.04, 1.63), (-14.85, 2.0, 1.6), 34),
+        "tip": ((-13.6, 2.12, 1.62), (-14.85, 2.0, 1.6), (-13.66, 2.1, 1.62), (-14.85, 2.0, 1.6), 32),
+        "outro": ((-13.4, 2.3, 1.5), (-14.85, 2.05, 1.5), (-12.4, 3.0, 1.6), (-14.85, 2.2, 1.5), 32),
+    }
+    c0, t0, c1, t1, lens = cams[view]
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=0.02, far=100.0)
+    S.anchor(ctx, "code", qr, (0, 0, 0))
+    S.anchor(ctx, "patch", cover if cover is not None else (patch or qr), (0, 0, 0))
+    S.anchor(ctx, "finder", _empty("qr_finder_a", tuple(_qr_mod_pos(3, 3) + Vector((0, 0, 0.055)))), (0, 0, 0))
+    S.anchor(ctx, "phone", ph["root"], (0, 0, PH_H))
+
+
+def _qr_diffuse(name, imgs, f_mix):
+    """Matte printed material from one image or an A -> B keyed image swap (hold keys)."""
+    m = bpy.data.materials.new(name)
+    nt = m.node_tree
+    bsdf = nt.nodes.get("Principled BSDF")
+    t0 = _img_node(nt.nodes, imgs[0])
+    t0.interpolation = "Closest"
+    col = t0.outputs["Color"]
+    if len(imgs) > 1:
+        t1 = _img_node(nt.nodes, imgs[1])
+        t1.interpolation = "Closest"
+        mx = nt.nodes.new("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        nt.links.new(t0.outputs["Color"], mx.inputs[6])
+        nt.links.new(t1.outputs["Color"], mx.inputs[7])
+        _hold_sock(mx.inputs[0], [(1, 0.0), (f_mix, 1.0)])
+        col = mx.outputs[2]
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.6
+    return m
+
+
+def b_qr_code_v2(ctx, p):
+    """Why a QR code scans with part missing. REUSES the supermarket set (_store) + a framed poster on the store's
+    side wall (colour blocks, QR-like code: three finder squares, timing lines, random non-decodable modules, no
+    text) and a phone in the foreground showing its camera view (brackets; scan -> teal check badge, or a coral cross
+    when a corner is covered). view hook | data | damage | level | corners | tip | outro. data: lower rows tint teal
+    (recovery data, data_cue); damage: torn patch pops on damage_cue, phone succeeds on scan_cue; corners: amber
+    frames light around the three finder squares (finder_cue); tip: a second patch covers a finder square
+    (cover_cue) and the phone shows the cross. Anchors: code, patch, finder, phone."""
+    _v_qr(ctx, p, p.get("view", "hook"))
+
+
+S.V2_BUILDERS.update({
+    "cabin_lights_v2": b_cabin_lights_v2,
+    "banana_ripen_v2": b_banana_ripen_v2,
+    "toll_tag_v2": b_toll_tag_v2,
+    "glove_touch_v2": b_glove_touch_v2,
+    "qr_code_v2": b_qr_code_v2,
 })

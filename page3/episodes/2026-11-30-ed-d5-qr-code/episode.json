@@ -1,0 +1,238 @@
+{
+ "id": "2026-11-30-ed-d5-qr-code",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "qr code",
+ "slug": "qr-code",
+ "title": "A QR Code Can Still Scan With Part of It Missing",
+ "fb_caption": "Scratched, smudged, or torn, a QR code often still works. Those little squares hold your link plus extra recovery data worked out with clever math, so if part of the code is covered your phone fills in the gaps. At the highest setting, up to about 30 percent can be restored. The three big corner squares help your camera find the code and line it up, even upside down, so cover one of those and the scan can fail. Do you scan QR codes, or type the link yourself?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#QRCode",
+  "#Tech",
+  "#Smartphone"
+ ],
+ "engagement_comment": "Do you scan QR codes, or type the link yourself? 1 = I scan everything, 2 = I type the link, 3 = only restaurant menus.",
+ "sources": [
+  "Keyence, What is a QR code? (Reed-Solomon code restores data when part of the code is missing or damaged; levels L/M/Q/H, H up to about 30%; position detection patterns at three corners let the reader read it from any angle): https://www.keyence.com/ss/products/auto_id/codereader/basic_2d/qr.jsp",
+  "Seagull Scientific BarTender Barcode Guide, QR Code (finder patterns in three corners allow scanning at any orientation; error correction levels up to about 30%): https://barcodeguide.seagullscientific.com/Content/Symbologies/QR_Code.htm",
+  "Make Tech Easier, How QR Codes Survive Damage (levels restore about 7/15/25/30% of codewords; the three corner squares are landmarks that must survive for the reader to locate the grid, so covering one is riskier): https://maketecheasier.com/how-qr-codes-survive-damage/"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, brisk pace, short pause before the twist.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "A QR code can still scan with a chunk of it missing. Here's how.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "MISSING A PIECE?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "data",
+   "text": "Those little squares hold your link, plus extra recovery data worked out with clever math.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "data",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "LINK + RECOVERY DATA",
+      "anchor": "code",
+      "cue": "recovery",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "BUILT-IN BACKUP"
+      ],
+      "cues": [
+       "extra"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "damage",
+   "text": "If a smudge or a tear covers part of it, your phone uses that data to fill in the gaps.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "damage",
+     "damage_cue": "tear",
+     "scan_cue": "fill",
+     "_still": 0.9
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "TORN PATCH",
+      "anchor": "patch",
+      "cue": "tear",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "STILL SCANS"
+      ],
+      "cues": [
+       "fill"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. At the highest setting, up to about thirty percent can be restored.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "level",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "UP TO ABOUT 30%",
+      "cue": "thirty"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "HIGHEST SETTING"
+      ],
+      "cues": [
+       "highest"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "corners",
+   "text": "Those three big corner squares help your camera find the code and line it up, even upside down.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "corners",
+     "finder_cue": "corner",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "FINDER SQUARES",
+      "anchor": "finder",
+      "cue": "corner",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "FIND IT",
+       "LINE IT UP"
+      ],
+      "cues": [
+       "find",
+       "line"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "tip",
+   "text": "But cover one of those corners, and the scan can fail.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "tip",
+     "cover_cue": "cover",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "CORNER COVERED",
+      "anchor": "patch",
+      "cue": "cover",
+      "color": "amber"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Do you scan QR codes, or type the link yourself? Tell us below.",
+   "shot": {
+    "builder": "qr_code_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "SCAN IT OR TYPE IT?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

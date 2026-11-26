@@ -1,0 +1,216 @@
+{
+ "id": "2026-11-30-ed-d1-cabin-lights",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "cabin lights",
+ "slug": "cabin-lights",
+ "title": "Why the Cabin Lights Dim When Your Plane Lands",
+ "fb_caption": "Right before landing, the cabin lights go down, and it isn't to help you nap. Your eyes need minutes to adjust to the dark, so dimming early gives them a head start. If everyone ever had to leave in a hurry, the floor lights and exit signs would already stand out. Many airlines also ask for window shades up so the crew can see outside and choose a safe exit. And to be certified, big airliners must show everyone can get out in 90 seconds, in the dark, using only half the exits. Window seat or aisle seat: which do you pick?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Aviation",
+  "#TravelTips",
+  "#FlyingFacts"
+ ],
+ "engagement_comment": "Window seat or aisle seat: which do you pick? 1 = window, always, 2 = aisle, always, 3 = whatever's open.",
+ "sources": [
+  "AFAR, Why Do Airplanes Dim the Cabin Lights During Takeoff and Landing? (eyes adjust in advance for an evacuation; exit and floor path lights easier to see; shades and dimming work together): https://www.afar.com/magazine/why-airplanes-dim-cabin-lights-for-takeoff-and-landing",
+  "Mental Floss, Why Planes Dim Lights During Takeoff and Landing (dark adaptation before a possible evacuation; seeing outside): https://mentalfloss.com/transportation/planes-and-airports/why-planes-dim-lights-during-takeoff-and-landing",
+  "AFAR, Why Do Window Shades Have to Be Open for Takeoff and Landing? (FAA does not regulate shade position; airline policy; crew can see hazards outside; IATA/EASA guidance): https://www.afar.com/magazine/why-do-window-shades-have-to-be-open-for-takeoff-and-landing",
+  "14 CFR 25.803 (airplanes with more than 44 passenger seats: everyone evacuated to the ground within 90 seconds under simulated emergency conditions): https://www.law.cornell.edu/cfr/text/14/25.803",
+  "14 CFR Appendix J to Part 25 (demonstration in darkness, only emergency lighting; exits used = one exit from each exit pair, i.e. half): https://www.law.cornell.edu/cfr/text/14/appendix-J_to_part_25"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, brisk pace, short pause before the twist.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Your plane is about to land, and the cabin lights go dim. That's on purpose.",
+   "shot": {
+    "builder": "cabin_lights_v2",
+    "params": {
+     "view": "hook",
+     "dim_cue": "dim",
+     "_still": 0.5
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "LIGHTS DOWN FOR LANDING",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "eyes",
+   "text": "Your eyes need minutes to adjust to the dark. Dimming early gives them a head start.",
+   "shot": {
+    "builder": "cabin_lights_v2",
+    "params": {
+     "view": "dim",
+     "dim_cue": "dimming",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "CABIN DIMMED",
+      "anchor": "aisle",
+      "cue": "dimming",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "EYES ADJUST TO THE DARK"
+      ],
+      "cues": [
+       "adjust"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "path",
+   "text": "So if you ever had to leave in a hurry, the floor lights and exit signs would already stand out.",
+   "shot": {
+    "builder": "cabin_lights_v2",
+    "params": {
+     "view": "path",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "FLOOR PATH LIGHTS",
+      "anchor": "floor",
+      "cue": "floor",
+      "color": "amber"
+     },
+     {
+      "type": "label",
+      "text": "EXIT SIGN",
+      "anchor": "exit",
+      "cue": "exit",
+      "color": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "id": "shades",
+   "text": "Many airlines also ask for window shades up, so the crew can see outside and choose a safe exit.",
+   "shot": {
+    "builder": "cabin_lights_v2",
+    "params": {
+     "view": "shades",
+     "shade_cue": "shades",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "SHADES UP",
+      "anchor": "shade",
+      "cue": "shades",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "CREW CAN SEE OUTSIDE"
+      ],
+      "cues": [
+       "outside"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. To be certified, big airliners must show everyone can get out in ninety seconds, in the dark, using only half the exits.",
+   "shot": {
+    "builder": "cabin_lights_v2",
+    "params": {
+     "view": "twist",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "OUT IN 90 SECONDS",
+      "cue": "ninety"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "IN THE DARK",
+       "ONLY HALF THE EXITS"
+      ],
+      "cues": [
+       "dark",
+       "half"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Window seat or aisle seat: which do you pick? Tell us below.",
+   "shot": {
+    "builder": "cabin_lights_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "WINDOW OR AISLE?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

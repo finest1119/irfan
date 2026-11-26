@@ -513,3 +513,72 @@ Regression: batch 02 `mw_kitchen_v2` magnetron re-rendered after the append (bui
   10 km/day figure); text-to-911 "in many areas" (no national figure opened; FCC FAQ 2016 says "limited areas");
   "Many newer phones also send their own location automatically" (Android ELS page; Apple HELO not opened);
   front-camera tip (Carolina Biological, "many phones").
+
+## Session: Track A batch 04 (26 Nov 2026, for 30 Nov; posting times not assigned)
+
+Script: `page3/scripts/TRACK-A-BATCH-04.md` (beats, facts + sources, 2 cover hooks each). Episodes (v2, libs
+`scene_lib_v2_ed`; `style`, `tts` (Sadaltager + the one-line ED director notes), `music`, `render`, `qc` blocks copied
+verbatim from c1), synthetic 175 wpm durations:
+- `page3/episodes/2026-11-30-ed-d1-cabin-lights/` (keyword "cabin lights", slug `cabin-lights`, 40.4 s, 6 beats)
+- `page3/episodes/2026-11-30-ed-d2-bananas/` (keyword "bananas", slug `bananas`, 39.6 s, 7 beats)
+- `page3/episodes/2026-11-30-ed-d3-toll-tag/` (keyword "toll tag", slug `toll-tag`, 39.8 s, 7 beats)
+- `page3/episodes/2026-11-30-ed-d4-glove-screen/` (keyword "glove screen", slug `glove-screen`, 34.9 s, 6 beats)
+- `page3/episodes/2026-11-30-ed-d5-qr-code/` (keyword "qr code", slug `qr-code`, 40.2 s, 7 beats)
+Checked by script: every cue / cues / sub_cue / *_cue is a word prefix in its own beat (none on a numeral), chips items =
+cues, caption ends with the engagement question, 6 hashtags incl. #EverydayDecoded, hooks <= 6 + 1-3 words (<= 8).
+
+### Builders (appended to `page3/blender/scene_lib_v2_ed.py`, fourth `V2_BUILDERS.update` block; earlier ones untouched)
+- Shared: `_ramp` / `_ramp_sock` / `_ramp_attr` (flat key at frame 1 and at the cue, then a fade: BEZIER-safe),
+  `_em_socks`, `_quad` (oriented UV quad), `_puffs` (translucent emissive gas puffs). No WIREFRAME, no CONSTANT keys.
+- `cabin_lights_v2` (hook|dim|path|shades|twist|outro): REUSES `scene_lib_v2_air.b_cabin_v2`, then re-lit in memory
+  by material / light name (dusk windows, ceiling + LED cove + area lights fade on dim_cue), floor path strips, green
+  exit sign with door + arrow pictogram, window shades (left rows 3-8 slide up on shade_cue). Anchors aisle, floor,
+  exit, shade.
+- `banana_ripen_v2` (hook|box|ship|room|twist|yellow|outro): banana-hand mesh (8-sided curved fingers, crown, peel
+  green -> yellow mix), REUSED `_store` + tiered produce display, reefer container, ripening room (panels, roll door,
+  duct + fans, nozzle, gas puffs on gas_cue), close-up hands on a carton lid. Anchors bunch, boxes, room.
+- `toll_tag_v2` (hook|tag|read|charge|sticker|cams|outro): REUSED tower city + hero tower; own asphalt strip over the
+  park plane at y = -60 (the city road is hidden by park0 there), lane dashes, gantry at x = -150 with reader panels +
+  plate cameras, cabinet, Kenney traffic at 26 m/s (city cars near the road removed); driver's-eye rig (no glass);
+  sticker tag image swaps to a lit coil on power_cue; read zone cone + rings + amber answer; data pulses; flash +
+  plate rings. Anchors tag, reader, cabinet, cam, gantry.
+- `glove_touch_v2` (hook|grid|touch|glove|thread|outro): REUSED `_living_room`; phone (home-screen art), teal
+  electrode grid, pointing-hand mesh (skin / knit glove / silver thread tip), amber dot + cross lines + rings.
+  Anchors tip, grid, phone.
+- `qr_code_v2` (hook|data|damage|level|corners|tip|outro): REUSED `_store`, framed poster on the x = -14.85 side wall,
+  QR-like code (finders, timing, alignment, random modules: NOT decodable), torn patches, amber finder frames, teal
+  recovery rows, phone with camera-view art (scan -> teal check, or coral cross). Anchors code, patch, finder, phone.
+
+### Stills (0.5 scale, 12 samples; synthetic timings in `output/<slug>/preview_synth/`, the only writes outside page3/)
+Sheets `page3/_preview/2026-11-30-ed-d1-cabin-lights-stills.jpg` ... `-d5-qr-code-stills.jpg`; overlay layout check
+`page3/_preview/track-a-batch04-overlay-check.jpg` (overlay_v2 `--preview` at the end of every beat with
+`EPISODE_WORKDIR=output/<slug>/preview_synth`; labels absent, no tracks). All band asserts pass. Renders per beat:
+- cabin: 2 each (dim views too dark / white ceiling in the band at first); shades 5 (camera inside seat backs).
+- bananas: hook / green / room / twist / yellow 3 (fat black tips, close-up camera, solid gas balls), cool / outro 2.
+- toll: hook / tag / twist 2; read / charge / cams / outro 3 (city road hidden under the park plane; towers in the
+  band -> raised cameras looking down over the park).
+- glove: 1 each.  qr: 4 each (poster art inside the frame box; QR modules, then the pale poster / wall in the band ->
+  QR lowered, mid-tone poster body + blue-grey backing panel).
+Build time: cabin 1-2 s, living room 0.3 s, store 10-20 s (store + banana objects), city 9-13 s.
+
+### Fact pass (same session, after the advisor review)
+Pages opened 26 Nov: eCFR 25.803 + Appendix J (Cornell), Wikipedia SunPass / RFID / E-ZPass / Touchscreen / Ethylene
+as a plant hormone, Geography of Transport Systems banana room, Nelson Miller, Gear Patrol, Keyence, Seagull, Make Tech
+Easier. Changes: d2 "around fifty-seven degrees" -> "around fifty-five degrees" (reefers ~13 C), chip ABOUT 55°F;
+d4 twist "connecting your skin to the screen" -> "so it acts like bare skin" (Gear Patrol wording); cover hooks
+"Airliners must empty in / 90 SECONDS", "QR codes can scan while / MISSING A CHUNK". UC Davis (403), AFAR / Mental
+Floss (shades, dimming), Bestpass (toll by mail) and PCWorld are search-summary only (marked in the script).
+
+### Known issues / leftovers
+- cabin: dimmed views are dark grey (moody, readable); blue LED cove lines cross the caption band; shades still shows
+  shades already up (rise starts on "shades"); seatbelt-sign panel large in the shades shot.
+- bananas: room gas puffs faint, mostly at the right edge; twist wisps not visible in the still (twist tile looks like
+  yellow); stylised fingers.
+- toll: hook has clouds behind the captions; outro end frame has towers in the band; the tag box reads as a white wedge
+  by the mirror (label must carry it); read-zone cone / answer pulse / camera flash not caught in the stills.
+- glove: phone top bezel sits in the caption band on close-ups (dark, calm).
+- qr: phone leaves frame in the close views; the phone screen art always shows a patch.
+- Facts for the Fable fact-check: shades "many airlines ask" (FAA does not regulate; AFAR, summary); "big airliners
+  ... only half the exits" (App. J = one exit from each pair); "Many sticker tags have no battery" (SunPass Mini;
+  "powers them" from the RFID article, not SunPass); "up to about thirty percent" (codewords; Keyence says area);
+  "cover one of those corners, and the scan can fail" (Make Tech Easier: riskier); "the bill comes by mail".

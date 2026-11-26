@@ -1,0 +1,243 @@
+{
+ "id": "2026-11-30-ed-d2-bananas",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "bananas",
+ "slug": "bananas",
+ "title": "The Bananas at Your Store Were Picked Green, Then Ripened on Purpose",
+ "fb_caption": "Those yellow bananas started out hard and green. Growers cut them early so they survive the long trip, and they ride in cool containers, around 55 degrees, so they don't ripen on the way. Near your city they go into sealed ripening rooms, where a little ethylene gas is added. Ethylene is a natural plant hormone that bananas make themselves; the room just starts a whole load at once. A few days later they turn yellow together and head to the shelf. Green, yellow, or spotty: how do you like yours?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Bananas",
+  "#FoodFacts",
+  "#Science"
+ ],
+ "engagement_comment": "Green, yellow, or spotty: how do you like yours? 1 = a little green, 2 = perfectly yellow, 3 = spotty and sweet.",
+ "sources": [
+  "The Geography of Transport Systems, Banana Ripening Room (picked and shipped green in reefers at about 13 C / 55 F; sealed ripening room at about 17 C filled with ethylene, a natural ripening agent, then vented; ripe in three to four days): https://transportgeography.org/contents/applications/cold-chain-logistics/banana-ripening-room/",
+  "Wikipedia, Ethylene as a plant hormone (a naturally occurring plant hormone that drives fruit ripening; bananas release it; commercial ripening rooms generate ethylene gas): https://en.wikipedia.org/wiki/Ethylene_as_a_plant_hormone",
+  "UC Davis Postharvest Center, Banana (mature-green harvest; shipping 13-14 C / 56-58 F) - search summary only, page returned 403 on 26 Nov: https://postharvest.ucdavis.edu/node/5196"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, brisk pace, short pause before the twist.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Those yellow bananas at your store were picked green, on purpose.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "PICKED GREEN",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "green",
+   "text": "Growers cut them while they're still hard and green, so they survive the long trip.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "box",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "STILL GREEN",
+      "anchor": "bunch",
+      "cue": "green",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "SURVIVES THE TRIP"
+      ],
+      "cues": [
+       "survive"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "cool",
+   "text": "They ride in cool containers, around fifty-five degrees, so they don't ripen on the way.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "ship",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "COOL CONTAINER",
+      "anchor": "boxes",
+      "cue": "cool",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ABOUT 55°F"
+      ],
+      "cues": [
+       "degrees"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "room",
+   "text": "Near your city, they go into sealed ripening rooms, and a little ethylene gas is added.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "room",
+     "gas_cue": "ethylene",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "RIPENING ROOM",
+      "anchor": "room",
+      "cue": "ripening",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ETHYLENE GAS"
+      ],
+      "cues": [
+       "ethylene"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. Ethylene is a natural plant hormone. Bananas make it themselves, and the room just starts them all at once.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "twist",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "BANANAS MAKE IT TOO",
+      "cue": "make"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "NATURAL PLANT HORMONE"
+      ],
+      "cues": [
+       "natural"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "yellow",
+   "text": "A few days later, they turn yellow together and head to the shelf.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "yellow",
+     "ripen_cue": "yellow",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "READY FOR THE SHELF",
+      "anchor": "bunch",
+      "cue": "shelf",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "A FEW DAYS"
+      ],
+      "cues": [
+       "days"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Green, yellow, or spotty: how do you like yours? Tell us below.",
+   "shot": {
+    "builder": "banana_ripen_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "GREEN, YELLOW OR SPOTTY?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}
