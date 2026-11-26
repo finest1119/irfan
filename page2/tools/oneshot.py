@@ -4,6 +4,13 @@
   python page2/tools/oneshot.py still  EPISODE WORKDIR --frames 40,700 [--scale 0.35] [--samples 8] [--parts ...]
   python page2/tools/oneshot.py render EPISODE WORKDIR [--range A-B] [--scale 0.35] [--samples 16] [--dry-run]
   python page2/tools/oneshot.py link   EPISODE WORKDIR                 # frames_oneshot -> frames_v2/NN_<beat>/ (overlay_v2)
+  python page2/tools/oneshot.py bench  EPISODE WORKDIR [--profile default|fast] [--engine cycles|eevee] [--scale 1.0]
+  python page2/tools/oneshot.py post   EPISODE WORKDIR [--range A-B] [--scale 1.0] [--force]   # fast profile only
+
+Render profiles (s13, page2/blender/render_profiles.py): --profile on still/render/bench, else episode
+render.profile, else "default" (unchanged behaviour). "fast" renders 0.75 scale into frames_oneshot_fast/ (16 samples,
+lower bounces, Cycles motion blur off, cheaper kitchen) and page2/tools/fast_post.py writes the full-res, 2D-blurred
+frames into frames_oneshot/ after every job, so `link` / make_episode are unchanged.
 
 WORKDIR needs audio/timings.json + captions.json (real ones from the v2 tts/captions steps, or synthetic ones from
 page2/tools/synth_timings.py). Outputs (all under WORKDIR):
@@ -35,8 +42,14 @@ import mh_paths as M  # noqa: E402
 M.add_import_paths()
 import camera_plan as C  # noqa: E402
 import worlds as WR  # noqa: E402
+import render_profiles as RP  # noqa: E402
 
 RENDER_PY = PAGE2 / "blender" / "render_oneshot.py"
+# s13 benchmark frames (build-01 plan, 2,571 frames): hook dusk wide, day wide with grass (tower_low), Bolts medium
+# pointing (tailgate_plan hold), mid-snap 3D-blur frame (tailgate snap 440-448), kitchen-window hold, callback dusk
+BENCH_FRAMES = [("hook_dusk_wide", 60), ("day_wide_grass", 907), ("bolts_point_medium", 473),
+                ("snap_mblur", 444), ("kitchen_window", 2127), ("callback_street_dusk", 2240)]
+PROFILE_MARK = ".profile.json"          # frames_oneshot/<mark>: which profile wrote the frames (fast only)
 ALLOW_LONG_HOLDS = False
 MAX_JOB = 150
 
@@ -76,6 +89,27 @@ def load_inputs(episode, workdir):
     cp = wd / "captions.json"
     words = M.load_json(cp)["words"] if cp.exists() else []
     return ep, wd, tm, words
+
+
+def resolve_profile(a):
+    """--profile > episode render.profile > default; --samples None -> the profile's or the old default."""
+    name = getattr(a, "profile", None) or M.load_json(a.episode).get("render", {}).get("profile") or "default"
+    prof = RP.get(name)
+    samples = a.samples
+    if samples is None:
+        samples = prof.get("samples") or (8 if a.cmd == "still" else 16)
+    return name, prof, samples
+
+
+def render_extra(a, name, prof, samples):
+    """Blender args shared by still/render/bench. The default profile gives exactly the pre-s13 arguments."""
+    extra = ["--scale", str(a.scale), "--samples", str(samples), "--engine", a.engine,
+             "--mblur", prof.get("mblur", a.mblur)]
+    if a.parts:
+        extra += ["--parts", a.parts]
+    if name != "default":
+        extra += ["--profile", name]
+    return extra
 
 
 def make_plan(episode, workdir, quiet=False):
@@ -148,8 +182,8 @@ def _run(cmd, log, dry):
     return r.returncode
 
 
-def job_done(wd, plan, a, b):
-    fr = wd / "frames_oneshot"
+def job_done(wd, plan, a, b, frames_dir="frames_oneshot"):
+    fr = wd / frames_dir
     if not all((fr / ("%04d.jpg" % f)).exists() for f in range(a, b + 1)):
         return False
     beat = C.frame_to_beat(plan["beats"], a)
@@ -158,35 +192,87 @@ def job_done(wd, plan, a, b):
     return (tdir / ("%02d_%s_%04d-%04d.json" % (beat["idx"], beat["id"], la, lb))).exists() or not tdir.exists()
 
 
+def check_profile_mark(wd, name, scale, force):
+    """Fast frames must not be mixed with default frames in frames_oneshot/ (job_done would skip them)."""
+    out = wd / "frames_oneshot"
+    mark = out / PROFILE_MARK
+    have = sorted(out.glob("[0-9][0-9][0-9][0-9].jpg")) if out.exists() else []
+    cur = M.load_json(mark) if mark.exists() else None
+    if name == "default":
+        if cur and have:
+            print("[oneshot] WARNING: frames_oneshot/ holds %s-profile frames (%s); default jobs whose frames exist "
+                  "are skipped" % (cur.get("profile"), mark))
+        return
+    want = {"profile": name, "scale": scale}
+    if have and cur != want and not force:
+        raise SystemExit("[oneshot] frames_oneshot/ already holds %d frames from %s; move them away (or --force to "
+                         "re-render every job with profile %s)" % (len(have), cur or "the default profile", name))
+    raw = wd / RP.get(name)["raw_dir"]                     # raw frames from another scale must not be re-posted
+    rmark = raw / PROFILE_MARK
+    rhave = sorted(raw.glob("[0-9][0-9][0-9][0-9].jpg")) if raw.exists() else []
+    rcur = M.load_json(rmark) if rmark.exists() else None
+    if rhave and rcur != want and not force:
+        raise SystemExit("[oneshot] %s/ holds %d raw frames from %s, not %s; move them away (or --force)" % (
+            raw.name, len(rhave), rcur or "an unknown run", want))
+    for d, m in ((out, mark), (raw, rmark)):
+        d.mkdir(parents=True, exist_ok=True)
+        m.write_text(json.dumps(want), encoding="utf-8")
+
+
 def cmd_render(a):
+    name, prof, samples = resolve_profile(a)
     plan, jobs = make_plan(a.episode, a.workdir)
     wd = Path(a.workdir)
     if a.range:
         lo, hi = [int(x) for x in a.range.split("-")]
         jobs = [[max(j0, lo), min(j1, hi)] for j0, j1 in jobs if j1 >= lo and j0 <= hi]
-    extra = ["--scale", str(a.scale), "--samples", str(a.samples), "--engine", a.engine, "--mblur", a.mblur]
-    if a.parts:
-        extra += ["--parts", a.parts]
+    extra = render_extra(a, name, prof, samples)
+    fast = name == "fast"
+    if fast and not a.dry_run:
+        check_profile_mark(wd, name, a.scale, a.force)
+        print("[oneshot] profile fast: raw %s/ at %.2f x scale, post -> frames_oneshot/" % (prof["raw_dir"],
+                                                                                      prof["res_factor"]))
+    elif not a.dry_run:
+        check_profile_mark(wd, name, a.scale, a.force)
     failed = 0
     for j0, j1 in jobs:
         if job_done(wd, plan, j0, j1) and not a.force:
             print("[oneshot] job %d-%d done, skipped" % (j0, j1))
             continue
-        if not a.dry_run:
-            wait_free(a.no_wait)
-        rc = _run(_blender_cmd(a.episode, a.workdir, ["--range", "%d-%d" % (j0, j1)] + extra),
-                  wd / "oneshot" / "logs" / ("job_%04d-%04d.log" % (j0, j1)), a.dry_run)
+        if fast and job_done(wd, plan, j0, j1, prof["raw_dir"]) and not a.force:
+            rc = 0                                  # raw frames already rendered: post only
+        else:
+            if not a.dry_run:
+                wait_free(a.no_wait)
+            rc = _run(_blender_cmd(a.episode, a.workdir, ["--range", "%d-%d" % (j0, j1)] + extra),
+                      wd / "oneshot" / "logs" / ("job_%04d-%04d.log" % (j0, j1)), a.dry_run)
+        if fast and rc == 0 and not a.dry_run:
+            import fast_post as FP
+            FP.post_range(a.episode, wd, j0, j1, a.scale, force=a.force)
         failed += rc != 0
     if failed:
         raise SystemExit("%d job(s) failed (see oneshot/logs)" % failed)
 
 
+def post_stills(a, stdir, frames, tag):
+    """fast profile: the low-res PNG stills -> final size + 2D blur, in place (a still run always re-renders)."""
+    import fast_post as FP
+    size = FP.final_size(a.episode, a.scale)
+    table = FP.blur_table(a.workdir)[0]
+    out = {}
+    for f in frames:
+        p = Path(stdir) / ("f%04d%s.png" % (f, tag))
+        if p.exists():
+            out[f] = round(FP.process_file(p, p, size, table.get(f)), 2)
+            print("[oneshot] fast post f%d -> %dx%d%s %.2fs" % (f, size[0], size[1],
+                  " + %s blur %.0fpx" % (table[f]["mode"], table[f]["px"]) if f in table else "", out[f]))
+    return out
+
+
 def cmd_still(a):
+    name, prof, samples = resolve_profile(a)
     make_plan(a.episode, a.workdir)
-    extra = ["--still", a.frames, "--scale", str(a.scale), "--samples", str(a.samples), "--engine", a.engine,
-             "--mblur", a.mblur]
-    if a.parts:
-        extra += ["--parts", a.parts]
+    extra = ["--still", a.frames] + render_extra(a, name, prof, samples)
     if a.save_blend:
         extra += ["--save-blend"]
     if a.views:
@@ -198,6 +284,83 @@ def cmd_still(a):
     rc = _run(_blender_cmd(a.episode, a.workdir, extra), Path(a.workdir) / "oneshot" / "logs" / "still.log", a.dry_run)
     if rc:
         raise SystemExit("still render failed (exit %d), see oneshot/logs/still.log" % rc)
+    if name == "fast" and not a.dry_run:
+        post_stills(a, Path(a.workdir) / "stills_oneshot", [int(x) for x in a.frames.split(",")], a.tag)
+
+
+def cmd_post(a):
+    import fast_post as FP
+    wd = Path(a.workdir)
+    if a.range:
+        lo, hi = [int(x) for x in a.range.split("-")]
+    else:
+        nums = sorted(int(p.stem) for p in (wd / FP.RAW_DIR).glob("[0-9][0-9][0-9][0-9].jpg"))
+        if not nums:
+            raise SystemExit("no raw fast frames in %s" % (wd / FP.RAW_DIR))
+        lo, hi = nums[0], nums[-1]
+    make_plan(a.episode, a.workdir, quiet=True)          # camera_speed.json current
+    FP.post_range(a.episode, wd, lo, hi, a.scale, force=a.force)
+
+
+def cmd_bench(a):
+    """Render BENCH_FRAMES as stills with one profile/engine; per-frame seconds (inside Blender, after a 1-sample
+    warm-up that syncs the scene to the device) -> WORKDIR/bench/<profile>_<engine>/bench.json + console."""
+    import re
+    name, prof, samples = resolve_profile(a)
+    if a.samples is None and name == "default":
+        samples = int(M.load_json(a.episode).get("render", {}).get("samples", 32))     # the final-quality setup
+    make_plan(a.episode, a.workdir)
+    wd = Path(a.workdir)
+    sel = [x for x in BENCH_FRAMES if not a.frames or str(x[1]) in a.frames.split(",")]
+    frames = [f for _n, f in sel]
+    tag = "%s_%s%s" % (name, a.engine, a.tag)
+    bdir = wd / "bench" / tag
+    bdir.mkdir(parents=True, exist_ok=True)
+    log = bdir / "bench.log"
+    extra = ["--still", ",".join(str(f) for f in frames)] + render_extra(a, name, prof, samples) + [
+        "--still-dir", str(bdir.resolve()), "--warmup"]
+    if not a.dry_run:
+        wait_free(a.no_wait)
+    t0 = time.time()
+    rc = _run(_blender_cmd(a.episode, a.workdir, extra), log, a.dry_run)
+    if a.dry_run:
+        return
+    wall = time.time() - t0
+    txt = log.read_text(encoding="utf-8", errors="replace")
+    per = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r"\[oneshot\] still f(\d+) ([\d.]+)s", txt)}
+    mb = re.search(r"\[oneshot\] built in ([\d.]+)s", txt)
+    mw = re.search(r"\[oneshot\] warmup f\d+ ([\d.]+)s", txt)
+    st = wd / "oneshot" / ("stats_%04d-%04d.json" % (min(frames), max(frames)))
+    stats = {}
+    if st.exists():
+        stats = M.load_json(st)
+        os.replace(str(st), str(bdir / "stats.json"))
+    post = post_stills(a, bdir, frames, "") if name == "fast" and rc == 0 else {}
+    rows = []
+    for n, f in sel:
+        r = {"frame": f, "shot": n, "render_s": per.get(f)}
+        if post:
+            r["post_s"] = post.get(f)
+        rows.append(r)
+    got = [r["render_s"] for r in rows if r["render_s"] is not None]
+    res = {"profile": name, "engine": a.engine, "scale": a.scale, "samples": samples,
+           "device": stats.get("device"), "render_res": stats.get("render_res"), "exit": rc,
+           "build_s": float(mb.group(1)) if mb else None, "warmup_s": float(mw.group(1)) if mw else None,
+           "wall_s": round(wall, 1), "frames": rows,
+           "mean_render_s": round(sum(got) / len(got), 2) if got else None,
+           "mean_post_s": round(sum(post.values()) / len(post), 2) if post else None,
+           "note": "render_s = Blender render time per still (after a 1-sample warm-up); post_s = fast_post "
+                   "upscale + 2D blur (CPU, runs after each job in a real render)"}
+    (bdir / "bench.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
+    print("[bench] %s / %s  scale %.2f  samples %d  device %s  build %ss" % (
+        name, a.engine, a.scale, samples, res["device"], res["build_s"]))
+    for r in rows:
+        print("  f%-5d %-22s render %7s s%s" % (r["frame"], r["shot"], r["render_s"],
+              "   post %.2f s" % r["post_s"] if r.get("post_s") is not None else ""))
+    print("  mean render %s s/frame%s -> %s" % (res["mean_render_s"], "  (+ post %s s)" % res["mean_post_s"]
+                                                 if post else "", bdir / "bench.json"))
+    if rc:
+        raise SystemExit("bench render failed (exit %d), see %s" % (rc, log))
 
 
 def cmd_link(a):
@@ -223,20 +386,31 @@ def cmd_link(a):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("plan", "still", "render", "link"):
+    for name in ("plan", "still", "render", "link", "bench", "post"):
         p = sp.add_parser(name)
         p.add_argument("episode")
         p.add_argument("workdir")
         p.add_argument("--allow-long-holds", action="store_true", help="do not fail on holds over 10 s")
-        if name in ("still", "render"):
-            p.add_argument("--scale", type=float, default=0.35)
-            p.add_argument("--samples", type=int, default=8 if name == "still" else 16)
+        if name in ("still", "render", "bench"):
+            p.add_argument("--scale", type=float, default=1.0 if name == "bench" else 0.35,
+                           help="FINAL scale of 1080x1920 (the fast profile renders 0.75 of it and upscales)")
+            p.add_argument("--samples", type=int, default=None,
+                           help="default: profile fast 16; else still 8 / render 16 / bench episode render.samples")
+            p.add_argument("--profile", default=None, choices=RP.NAMES,
+                           help="render profile (default: episode render.profile, else 'default')")
             p.add_argument("--engine", default="cycles", choices=("cycles", "eevee"))
             p.add_argument("--parts", default="", help="comma list to build only some parts (see render_oneshot.py)")
             p.add_argument("--dry-run", action="store_true")
             p.add_argument("--mblur", default="3d", choices=("3d", "2d", "off"),
                            help="3d = render motion blur in snap windows (default until overlay_v2 has 2D blur)")
             p.add_argument("--no-wait", action="store_true", help="fail instead of waiting for another Blender")
+        if name == "bench":
+            p.add_argument("--frames", default="", help="subset of the bench frames, e.g. 60,2127")
+            p.add_argument("--tag", default="", help="suffix for the bench folder name")
+        if name == "post":
+            p.add_argument("--range", default="", help="global frames A-B (default: every raw fast frame)")
+            p.add_argument("--scale", type=float, default=1.0, help="FINAL scale used by the render")
+            p.add_argument("--force", action="store_true")
         if name == "still":
             p.add_argument("--frames", required=True, help="global frame numbers, e.g. 40,700")
             p.add_argument("--save-blend", action="store_true")
@@ -254,6 +428,10 @@ def main():
         cmd_still(a)
     elif a.cmd == "render":
         cmd_render(a)
+    elif a.cmd == "bench":
+        cmd_bench(a)
+    elif a.cmd == "post":
+        cmd_post(a)
     else:
         cmd_link(a)
 

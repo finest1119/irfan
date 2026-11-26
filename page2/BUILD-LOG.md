@@ -905,3 +905,92 @@ Untested end to end: WJH only checked the imports. If you call overlay_v2 direct
 - Log: 2 missing UBC normal maps (`T_Hair_1_Normal_png.png`, `T_Eye_Normal_png.png`), the known kit issue.
 - First run: f1600 (push-in to `tail_hinge__detail`, day preset) was washed out. Cause: `assets/polyhaven/` (gitignored) had not been fetched, so the log said "[mh] no HDRI ... procedural sky". Fixed with `tools/fetch_assets.py` (`--check` clean).
 - Re-run with the HDRI: exit 0 in 39.4 s for both frames. f1600 is now normal (green field, grey tower). bolts_impl s9_quaternius. **Peak VRAM with HDRI: 2,909 MiB of 4,096** (inside the 3 GB target, about 160 MiB of headroom).
+
+---
+
+# Session 13 (26 Nov 2026, Opus): fast render profile
+Goal: cut the Dell full render (7.7 h; 2,571 frames at 10.8 s/frame) toward 2 h. Opt-in only: **the default profile is unchanged**. Proof: the `still`/`render --dry-run` Blender command lines are byte-identical before and after, and the diff shows that render_oneshot runs no new code for `default` (the resolution is ×1.0, the output dir is the same, mblur comes from the CLI). No before/after pixel comparison was kept. Nothing outside `page2/` was edited. No commits.
+
+## What changed
+- **`blender/render_profiles.py` (new).** `PROFILES` holds `default` (empty) and `fast`. `apply_fast()` runs in Blender after the world and characters are built, before the world events are keyed. Fast settings:
+  - 16 samples (unless `--samples` is given) and adaptive threshold 0.06; OptiX denoise (OIDN on Metal) as before.
+  - Bounces max/diffuse/glossy/transmission **4/2/2/2**. **Transparent stays 8**: grass and leaf cards are alpha cut-outs, so a cap of 4 risks dark grass.
+  - Indirect clamp 6 (default 8).
+  - Cycles motion blur OFF.
+  - Render at **0.75 × the final scale** (810×1440 for 1080×1920) into `WORKDIR/frames_oneshot_fast/`.
+  - **Kitchen** (`world_mercer._kitchen_backdrop` + `mercer_cc0.kitchen_props`; `interiors.py` is not used by build-01):
+    - The 140 W ceiling area light is removed (hide_render, keyed on-value 0) and its power folded into the existing emissive ceiling panel through the keyed `lights["kitchen"]` on-values: +P/(πA) × 1.2, i.e. 1.2 → about 6.7.
+    - The props are rougher with no clear coat: steel/enamel 0.5, oak/walnut 0.55, tile 0.4, dark glass 0.35, fridge 0.45, butcher block 0.6.
+    - On the Mac, the f2127 window-crop mean RGB is 171/159/144 for fast vs 171/158/143 for default (measured on the `mac050` bench PNGs).
+  - Grass and leaves are untouched.
+- **`blender/render_oneshot.py`.**
+  - New `--profile` option; fast uses the 0.75 resolution, raw dir, `apply_fast` and forced mblur off.
+  - `--warmup` (stills): one 1-sample render first, so frame 1 of a bench is comparable.
+  - `--still-dir`: a still output folder.
+- **`tools/fast_post.py` (new, PIL + numpy, pathlib only).** For each raw frame:
+  - Lanczos upscale to the final size, then UnsharpMask (r 1.2, 45 %, threshold 2).
+  - Then the 2D blur from `oneshot_blur.blur_spec()`, **recomputed from the current `camera_speed.json`** (the `blur_2d.json` on disk can be stale): radial for snap/portal, directional otherwise, px clamped at 60, scaled to the output width, holds and join frames never blurred.
+  - The blur is computed in linear light with edge clamping.
+  - **Deviation from blur_spec's mode:** a radial (snap/portal) frame whose mean screen motion is mostly one direction (|dx,dy|/px ≥ 0.5) is blurred **directionally**. The build-01 snaps are whip pans (f444 ratio 0.88), and a centred zoom blur read clearly wrong next to the Cycles 3D blur. 44 true push-in frames stay radial; 37 snap frames switch. `oneshot_blur.py` (shared with Page 3) is unchanged.
+  - Output: `frames_oneshot/####.jpg` (q95, 4:4:4) via a temp file and `os.replace`. It is idempotent; the raw frames are never modified.
+- **`tools/oneshot.py`.**
+  - `--profile` on still/render/bench. Precedence: CLI, then episode `render.profile`, then `default`. `--samples` defaults to the profile's value, else the old 8 (still) / 16 (render).
+  - `render --profile fast` runs `fast_post` after every job. Resume: a job whose final frames exist is skipped; if only its raw frames exist, only post is run.
+  - `.profile.json` (profile + scale) is written to both `frames_oneshot/` and `frames_oneshot_fast/`. **A fast render refuses to start if either folder holds frames from another profile or scale** (e.g. the default render, or raw frames from a 0.35 test that would otherwise be re-posted): move them away, or use `--force`, which re-renders every job.
+  - `still --profile fast` post-processes the PNG stills in place.
+  - New `post` command (re-run the post step).
+  - New `bench` command. It renders 6 fixed frames as stills after a warm-up and writes `WORKDIR/bench/<profile>_<engine><tag>/` with `f####.png`, `bench.log`, `stats.json` and `bench.json` (per-frame render seconds and, for fast, post seconds). Bench defaults: scale 1.0; samples come from the episode `render.samples` (32) for default and 16 for fast; mblur 3d.
+  - Bench frames: f60 hook dusk wide, f907 day wide grass (tower_low), f473 Bolts pointing medium (tailgate_plan), f444 mid-snap 3D blur (tailgate snap 440–448), f2127 kitchen window hold, f2240 callback street dusk.
+- **`tools/bench_sheet.py` (new).** A contact sheet with one row per frame and one column per bench run.
+- **EEVEE:** `--engine eevee` works for stills of this episode with the same cameras. No fixes were needed. It is not tuned: the dusk frames are slow on Metal and the kitchen reads flatter.
+
+## Commands
+```
+.venv/bin/python page2/tools/oneshot.py render page2/episodes/build-01/episode.json page2/episodes/build-01/work --scale 1.0 --profile fast
+.venv/bin/python page2/tools/oneshot.py post   page2/episodes/build-01/episode.json page2/episodes/build-01/work --scale 1.0 [--range A-B] [--force]
+.venv/bin/python page2/tools/oneshot.py link   page2/episodes/build-01/episode.json page2/episodes/build-01/work   # unchanged
+```
+Or set `"profile": "fast"` in episode.json `render`.
+
+## Mac timings (M2 Pro, Metal, bench scale 0.5, indicative only)
+| Frame | default 32 spp, 3D blur | fast (405×720 → 540×960) | EEVEE default (32 TAA) | fast, 1 spp (overhead) |
+|---|---|---|---|---|
+| f60 hook dusk | 5.3 | 2.7 | 67.5 | 2.1 |
+| f907 day grass | 10.3 | 7.5 | 9.3 | 4.3 |
+| f473 Bolts point | 16.5 | 9.6 | 14.9 | 5.6 |
+| f444 snap | 15.7 | 10.2 | 13.0 | 6.2 |
+| f2127 kitchen | 22.9 | 11.8 | 4.2 | 6.6 |
+| f2240 callback dusk | 7.0 | 4.0 | 51.7 | 1.8 |
+| **mean s/frame** | **12.95** | **7.63** (+0.09 post) | **26.77** | **4.43** |
+
+- At this small scale, fast is only **about 1.7× faster** (a second fast run gave 8.38 s mean, so the Mac run-to-run spread is roughly ±10 %).
+  - About 4.4 s/frame is fixed per-frame cost that samples and resolution do not change (scene re-sync, BVH update, denoise).
+  - This is **not just a still artefact**: a consecutive fast animation job at 202×360 also ran at 4.7–5.0 s/frame.
+  - On the sampling part alone, fast is about 2.5× faster.
+- **Expectation:** fast alone probably will not take the Dell from 7.7 h to 2 h unless its fixed per-frame cost is small. The `_s1` Dell run below answers that.
+- Kitchen: one warm ablation gave fast 9.2 s vs fast without the kitchen changes 14.5 s (default 23.2 s). But f907, which has no kitchen in view, swung from 6.6 to 8.9 s between those same runs, and later fast runs gave f2127 at 9.5, 13.6 and 11.8 s. So the kitchen saving is **probably real but not cleanly measured**.
+- Sheet: `episodes/build-01/work/bench_mac_sheet.jpg` (columns default / fast / EEVEE). Bench data: `work/bench/{default_cycles,fast_cycles,default_eevee,fast_cycles}_mac050*/`.
+- `test_oneshot.py`: ALL PASS.
+
+## Look (Mac sheet)
+- Dusk, day grass, Bolts, kitchen and callback: fast reads the same as default. It is slightly softer from the upscale, and the kitchen brightness and colour hold.
+- **Snap frames: the blur is weaker.**
+  - With the whip-pan override above, f444 now streaks in the right direction. Radial had given a zoom with a sharp centre, which looked wrong.
+  - It is still much weaker than the Cycles 3D blur. The raw motion is 850–4000 px/frame, and the 2D blur is clamped at 60 px.
+  - If it reads too crisp in motion, raise the cap for fast_post only (`blur_spec(cs, cap=...)`). Judge it on a played clip.
+- **Not verified:**
+  - Temporal flicker at 16 spp with threshold 0.06 (only stills were checked).
+  - Bloom from the brighter ceiling panel on the kitchen approach (f2032–2076); f2127 showed no ceiling in frame.
+
+## Dell benchmark (run on the Dell, repo root, one Blender at a time)
+```
+.venv\Scripts\python page2\tools\oneshot.py bench page2\episodes\build-01\episode.json page2\episodes\build-01\work --profile default --engine cycles
+.venv\Scripts\python page2\tools\oneshot.py bench page2\episodes\build-01\episode.json page2\episodes\build-01\work --profile fast --engine cycles
+.venv\Scripts\python page2\tools\oneshot.py bench page2\episodes\build-01\episode.json page2\episodes\build-01\work --profile default --engine eevee
+.venv\Scripts\python page2\tools\oneshot.py bench page2\episodes\build-01\episode.json page2\episodes\build-01\work --profile fast --engine cycles --samples 1 --tag _s1
+.venv\Scripts\python page2\tools\bench_sheet.py page2\episodes\build-01\work default_cycles fast_cycles default_eevee --out page2\episodes\build-01\work\bench_dell_sheet.jpg
+```
+- Profile defaults: scale 1.0 for all runs; default = 32 spp + 3D blur, fast = 16 spp at 810×1440 + post, EEVEE = 32 TAA.
+- The `_s1` run measures the per-frame overhead on OptiX. If it is a large share of the 10.8 s, samples and resolution cannot reach 2 h. The next lever would then be the per-frame re-sync (keyed material/world values), not sampling.
+- A real check: `render --profile fast --range 1-150` and compare its s/frame with job 1 of the default render.
+- Before a full fast render, move the default frames out of `frames_oneshot/` (the guard refuses otherwise).

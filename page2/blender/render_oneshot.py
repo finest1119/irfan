@@ -6,7 +6,9 @@ Usually run through the driver (one Blender process at a time, resumable, <= 150
 Direct:
   BLENDER -b --factory-startup -P page2/blender/render_oneshot.py -- EPISODE WORKDIR
         [--range A-B | --still F[,F...]] [--scale 0.35] [--samples 16] [--engine cycles|eevee]
-        [--parts terrain,house,...] [--mblur 2d|3d|off] [--save-blend]
+        [--parts terrain,house,...] [--mblur 2d|3d|off] [--save-blend] [--profile default|fast] [--warmup]
+--profile fast (s13, render_profiles.py): 0.75 render scale into WORKDIR/frames_oneshot_fast/, 16 samples, lower
+bounces, Cycles motion blur off, cheaper kitchen; page2/tools/fast_post.py makes the full-res frames_oneshot/.
 
 Reads  WORKDIR/oneshot/plan.json (written by the driver; recomputed here if missing), episode.json, world_state.json.
 Writes WORKDIR/frames_oneshot/####.jpg (GLOBAL frame numbers; existing frames are skipped),
@@ -31,6 +33,7 @@ import mh_blender as B  # noqa: E402
 from mh_blender import S, L  # noqa: E402
 import camera_plan as CP  # noqa: E402
 import worlds as WR  # noqa: E402
+import render_profiles as RP  # noqa: E402
 
 
 def args():
@@ -367,6 +370,26 @@ def write_anchor_cache(ctx, workdir, world_id, frame):
     return len(anc)
 
 
+def warmup(scene, stdir, f, engine):
+    scene.frame_set(f)
+    if engine == "eevee":
+        keep, scene.eevee.taa_render_samples = scene.eevee.taa_render_samples, 1
+    else:
+        keep, scene.cycles.samples = scene.cycles.samples, 1
+    scene.render.filepath = str(stdir / "_warmup.png")
+    t1 = time.time()
+    bpy.ops.render.render(write_still=True)
+    if engine == "eevee":
+        scene.eevee.taa_render_samples = keep
+    else:
+        scene.cycles.samples = keep
+    try:
+        os.remove(str(stdir / "_warmup.png"))
+    except OSError:
+        pass
+    print("[oneshot] warmup f%d %.1fs" % (f, time.time() - t1))
+
+
 def main():
     argv, opt = args()
     ep_path, workdir = argv[0], argv[1]
@@ -383,6 +406,9 @@ def main():
     scale = float(opt("--scale", 1.0))
     samples = int(opt("--samples", rcfg.get("samples", 16)))
     engine = opt("--engine", rcfg.get("engine", "cycles"))
+    profile = opt("--profile", "default")
+    prof = RP.get(profile)
+    fast = profile == "fast"
     parts = [p for p in opt("--parts", "").split(",") if p] or None
     still = opt("--still")
     if still:
@@ -398,13 +424,16 @@ def main():
     t0 = time.time()
     scene = L.reset_scene()
     B.reset_caches()
-    out_dir = str(Path(workdir) / "frames_oneshot")
-    dev = setup_render(scene, (int(res[0] * scale), int(res[1] * scale)), fps, plan["frames"], samples, engine, out_dir)
+    out_dir = str(Path(workdir) / prof.get("raw_dir", "frames_oneshot"))
+    rf = scale * prof.get("res_factor", 1.0)
+    dev = setup_render(scene, (int(res[0] * rf), int(res[1] * rf)), fps, plan["frames"], samples, engine, out_dir)
     ctx = L.Ctx(scene, plan["frames"], fps, [], 0.0)
     ctx.anchors = {}
     ctx.plan, ctx.fps, ctx.frame_range = plan, fps, (a, b)
     ctx.build_events = build_events(plan, episode)
     stats = {"range": [a, b], "device": dev, "engine": engine, "scale": scale, "samples": samples}
+    if fast:
+        stats.update({"profile": profile, "render_res": [int(res[0] * rf), int(res[1] * rf)]})
 
     # episode static anchors first (builds/characters override names they also define)
     B.part_collection("anchors")
@@ -467,6 +496,8 @@ def main():
     make_camera(ctx, plan, lo, hi)
     if page2_world:
         stats["fog_relinked_after_chars"] = B.relink_fog_to_group()     # characters' materials join the keyed haze
+    if fast:                                   # before the world events: they key the (fast) light on-values
+        RP.apply_fast(scene, world, stats, engine)
     B.normalize_anchors(ctx)
     for w in plan["windows"]:              # <stop>__detail/__alt the world did not register: ANC_ at the stop's anchor
         base, var = CP.split_variant(w.get("to"))
@@ -484,7 +515,8 @@ def main():
             apply_world_events(world, plan, lo, hi)
     for label, fn in (("world events", world_events),
                       ("spark", lambda: make_spark(ctx, plan, lo, hi)),
-                      ("motion blur", lambda: key_motion_blur(scene, plan, lo, hi, opt("--mblur", "2d")))):
+                      ("motion blur", lambda: key_motion_blur(scene, plan, lo, hi,
+                                                              prof.get("mblur") or opt("--mblur", "2d")))):
         try:
             fn()
         except Exception:
@@ -499,9 +531,11 @@ def main():
     (sdir / ("stats_%04d-%04d.json" % (a, b))).write_text(json.dumps(stats, indent=1), encoding="utf-8")
 
     if still:
-        stdir = Path(workdir) / "stills_oneshot"
+        stdir = Path(opt("--still-dir")) if opt("--still-dir") else Path(workdir) / "stills_oneshot"
         stdir.mkdir(parents=True, exist_ok=True)
         scene.render.image_settings.file_format = "PNG"
+        if "--warmup" in argv:                 # bench: sync the scene to the device once so frame 1 is comparable
+            warmup(scene, stdir, frames[0], engine)
         for f in frames:
             scene.frame_set(f)
             scene.render.filepath = str(stdir / ("f%04d%s.png" % (f, opt("--tag", ""))))
