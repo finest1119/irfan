@@ -1,0 +1,9 @@
+# QC notes: 2026-11-30-ed-d1-cabin-lights (Asus render)
+
+- Duration 34.03 s, 1080x1920 30 fps. FB copy 9.24 MB. LUFS -14.2, true peak -1.4 dB, WER 0.009. TTS passed first time.
+- qc_full auto: PASS. qc_v2: PASS.
+- Manual sheet review (17 frames). For Fable to decide (possible MUST-FIX, not fixable here without a scene change):
+  - 0:17-0:21 "shades" beat: a glowing yellow-white block shape floats behind the seat rows (top right) - looks like light-panel / reading-light geometry clipping into the shot; reads as a glitch. Full-size frame at 19.5 s included as sheet "zz_glitch_0019.jpg".
+- Minor, not fixed (SKIP): the window shades are flat blue ovals (stylised), fine.
+- Covers: A = 02_path f0060 (dimmed aisle with floor path lights) "Why planes dim the lights:" / "YOUR EYES"; B = 04_twist f0180 (full aisle) "Airliners must empty in" / "90 SECONDS".
+- No fixes applied, nothing re-rendered.
