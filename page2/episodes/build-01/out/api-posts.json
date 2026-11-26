@@ -1,0 +1,22 @@
+[
+ {
+  "video_id": "3016020985429659",
+  "file": "backyard wind turbine fb.mp4",
+  "when_myt": "2026-11-28 08:30",
+  "scheduled_ts": 1795825800,
+  "finish": {
+   "success": true,
+   "message": "Video is Processing. To check the status of the video, please follow the instructions listed at https://developers.facebook.com/docs/video-api/guides/reels-publishing#get-the-upload-status.",
+   "post_id": "122095583853569081"
+  },
+  "post_id": "122095583853569081",
+  "label_result": {
+   "ERR": 400,
+   "msg": "(#100) This app does not have the required permission for this endpoint"
+  },
+  "thumb": "thumb_a.jpg",
+  "thumb_result": {
+   "success": true
+  }
+ }
+]
