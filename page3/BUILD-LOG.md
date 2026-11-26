@@ -267,3 +267,90 @@ validator target leaves about 1 s of slack.
 - Logged, not fixed (cosmetic per the QC rule): white caption text on the amber highlight has lower contrast than
   on red; twist-card text sits 6 px right of centre (room for the accent bar, which the twist card doesn't draw).
 - Not committed: WJH still has uncommitted changes in the tree.
+
+## Session: Track A batch 01 builders (26 Nov 2026, Opus 5.5 sub-agent)
+New: `page3/blender/scene_lib_v2_ed.py`, which registers 4 builders into `S.V2_BUILDERS`. Episodes load it through
+`"render": {"libs": ["scene_lib_v2_ed"]}`, and the stock `render_episode_v2.py` (commit 55a92c3) loaded it fine.
+Also new: `page3/blender/ed_preview.py` (still preview without TTS) and two episodes,
+`page3/episodes/2026-11-27-ed-a1-autoland/` and `page3/episodes/2026-11-27-ed-a2-checked-bag/`.
+No existing file was edited.
+
+### Builders
+- `ed_airport_fog_v2` `view` hook|outro; `fog` (density/m, hook 0.007), `fog_start`, `exposure`, `cam0/1`, `tgt0/1`;
+  outro: `lift_cue` (default "trust"), `lift_s` 3, `lift_ratio` 0.06.
+  - Hook: an airliner on the 3° approach seen from behind. The runway is barely visible; its lights glow through.
+  - Outro: the stock `airport_outro` in fog. On `lift_cue`, every fogged material's density node and the world's
+    fog mix are keyframed down.
+  - The fog is cheap shader distance fog: `scene_lib._fog_wrap`, with `L.fog` swapped by the `Fog` context manager
+    because `build_world` calls `L.fog` itself. **No volumetrics.**
+  - `fog_world()` mixes a bright overcast background (#cdd5dc + a slight gradient) over the HDRI and adds a soft
+    25° sun.
+  - `runway_lights()` adds edge, centerline, TDZ, green threshold, red end and 390 m of approach lights. They use
+    `L.emissive` with fog_scale 0.15, so they pierce the fog.
+- `ed_cockpit_fog_v2` `view` approach|close: `cockpit_workload_v2` (its `cues`) in fog.
+  - approach: adds faint ILS sheets (teal vertical localizer sheet, amber glideslope sheet, white core line), shown
+    from `beams_cue`.
+  - close: the camera moves to the nose and cockpit.
+- `ils_beams_v2` `view` top|side|touchdown.
+  - top: an elevated rear view. A teal localizer fan comes from the antenna array beyond the far end of the runway;
+    the airliner slides from 55 m right onto the centerline (`beam_cue`). Anchors `beam`, `plane`.
+  - side: a rear-quarter view. An amber 3.2° wedge with a bright centre line and a translucent "drop curtain" down
+    to the TDZ; the plane rides it. Anchors `slope`, `plane`.
+  - touchdown: fog 0.011; flare, touchdown on `touch_cue`, rollout on the centerline lights.
+    Anchors `wheels`, `centerline`, `plane`.
+- `bag_belt_v2` `view` counter|tag|scan_arch|screen|sort|makeup|apron.
+  - Interiors share `_hall()`: light concrete, a blue dado, ceiling lightbox panels, 4 area lights and a flat
+    world (never a void).
+  - `belt()` builds the scrolling rubber texture, guards, return rollers, drums and legs. `make_bag()` builds a
+    rounded shell, zip, handle, wheels and a barcode tag. The tag art is a 256×512 image made in memory, with no
+    digits.
+  - Other parts: `curtain()` (strips swing as a bag passes), `_scan_arch` (sweeping red lasers, teal RFID rings on
+    `rfid_cue`), `_eds` (CT machine, glowing tunnel and cyan ring), `_diverter` (yellow paddle swings 45° on
+    `push_cue`, the hero bag takes the branch), the makeup carousel with carts, and apron (parked airliner, belt
+    loader to the forward hold, tug + cart train).
+  - Params: `drop_cue`/`gone_cue`, `rfid_cue`, `enter_cue`, `push_cue`, `cam0/1`, `tgt0/1`, `lens`.
+  - Anchors: `bag`, `tag`, `arch`, `tunnel`, `diverter`, `pile`, `cart`, `hold`.
+  - `makeup` is built and previewed (`page3/_preview/bag_belt_v2-makeup-test.png`) but not used: beat "load" uses
+    `apron` (cart + belly).
+
+### Stills (0.5 scale, 12 samples, synthetic 175 wpm timings in `output/<slug>/preview_synth/`, never `audio/`)
+Sheets: `page3/_preview/2026-11-27-ed-a1-autoland-stills.jpg` and `…-ed-a2-checked-bag-stills.jpg`. Overlay layout
+check: `page3/_preview/track-a-batch01-overlay-check.jpg` (labels absent there because no tracks were rendered).
+Iterations:
+- hook: 2 (plane cropped; approach-light poles among the houses)
+- localizer: 2 (fan flooded the frame)
+- glideslope: 3 (the camera missed the plane twice)
+- autopilot: 2 (beam sheets too heavy)
+- bag counter: 2 (still frame was after the bag had gone)
+- screen: 2 (wireframe ring had no faces; dark tunnel)
+- sort: 2 (busy elevated belt in the caption band)
+- apron: 2 (loader hidden)
+- makeup: 3 (cart blocking; camera outside the wall)
+- All others: 1.
+
+World build time per beat (Blender log, "built … in"):
+- Airport-world beats: 38–43 s when the Mac was idle. One batch showed 73–98 s for cat3, pilots and outro; it was
+  most likely CPU contention, since no other Blender was running.
+- Bag interiors: 0.1–0.6 s. Apron: 40–58 s.
+
+### Known issues / leftovers
+- The bag hook is a bit bare (white hall, one red bag).
+- The pilots close-up cockpit windows read as dark panes with a grey blob (the stock airliner has no cockpit
+  interior).
+- The glideslope drop curtain is a large amber area on the right; alpha 0.13 could go to ~0.08.
+- Approach lights stop at 390 m because the airport world has houses under the approach.
+- Outro (both): the stock crane-up shows suburb and terminal detail in the caption band, as in WJH.
+- 12-sample stills show floor grain; at 24 samples this should be fine.
+- Fog density is baked per material. The outro lift keyframes about 100+ material nodes, which is cheap.
+- The `tts` block is copied from WJH as briefed. Its director notes still carry the Cirrus/NTSB/Hawkins
+  pronunciation lines and a news-explainer voice; the ED voice choice should replace it before TTS.
+- Twist-card wording "ALL WITHOUT A HUMAN READING THE TAG" still needs fact-check sign-off.
+
+### Windows RTX 3050 4 GB / EEVEE notes
+- No volume shaders anywhere; fog is a per-material emission mix.
+- Transparent beams/fans use DITHERED alpha-emission (cheap) and `add_mat` BLENDED rings (few).
+- Images: the 2K HDRI, 1K Poly Haven textures, PIL runway textures, one 256×512 tag texture.
+- The airport-world beats are the same scene size as the WJH plane-crash beats, which already render on that
+  laptop, so expect similar VRAM (≲ 2.5 GB at 1080×1920). Interiors are tiny (≤ ~120 objects, a few area lights).
+- One risk: the outro fog lift animates a world mix, so EEVEE re-bakes world lighting every frame (slower frames,
+  not more VRAM).

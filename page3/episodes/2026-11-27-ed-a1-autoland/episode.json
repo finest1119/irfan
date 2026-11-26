@@ -1,0 +1,256 @@
+{
+ "id": "2026-11-27-ed-a1-autoland",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "autoland",
+ "slug": "autoland",
+ "title": "How Planes Land When Pilots Can't See the Runway",
+ "fb_caption": "Thick fog, zero view of the runway, and the plane still lands. Here's how: two invisible radio beams (the localizer and the glideslope) guide it to the centerline on a gentle slope of about three degrees, and on the strictest approaches the autopilot can even touch down with visibility as low as about 300 feet, with the pilots watching every second. Would you trust the autopilot to land you in fog?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Aviation",
+  "#Autoland",
+  "#ILS"
+ ],
+ "engagement_comment": "Would you trust autoland in fog? 1 = yes, 2 = only with the pilots watching, 3 = I'd take the train.",
+ "sources": [
+  "SKYbrary, Precision Approach (ILS = localizer + glideslope, typically 3 degrees): https://skybrary.aero/index.php/Precision_Approach",
+  "Transport Canada TP 1490, CAT III operations (CAT IIIb RVR not less than 150 ft; aircraft, crew and runway approval): https://tc.canada.ca/node/29739",
+  "AOPA, 'How Low Can You Go?' (Oct 1997; CAT IIIb autolands before the runway is seen): https://www.aopa.org/news-and-media/all-news/1997/october/01/how-low-can-you-go",
+  "Wikipedia, Instrument landing system: https://en.wikipedia.org/wiki/Instrument_landing_system",
+  "FAA Notice N 8900.443 (CAT III lowest US authorization ~300 ft RVR): https://www.faa.gov/documentlibrary/media/notice/n_8900.443.pdf"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, knowledgeable American male explainer for a short science/how-it-works social video. Curious and warm, clear and fairly brisk (about 165-180 words per minute), conversational, a short pause before the twist fact, never salesy or dramatic news tone. US English.\nPronunciation: ILS = I L S (letters). Localizer = LOH-kuh-lie-zer. Glideslope = GLIDE-slope.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Thick fog. The pilots can't see the runway. The plane lands anyway. Here's how.",
+   "shot": {
+    "builder": "ed_airport_fog_v2",
+    "params": {
+     "view": "hook",
+     "fog": 0.007
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "LANDING BLIND?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "localizer",
+   "text": "Two invisible radio beams come up from the airport. The first, the localizer, tells the plane if it's left or right of the runway centerline.",
+   "shot": {
+    "builder": "ils_beams_v2",
+    "params": {
+     "view": "top",
+     "beam_cue": "invisible"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "TWO RADIO BEAMS",
+      "cue": "two"
+     },
+     {
+      "type": "label",
+      "text": "LOCALIZER: LEFT / RIGHT",
+      "anchor": "beam",
+      "cue": "localizer",
+      "color": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "id": "glideslope",
+   "text": "The second, the glideslope, tells it if it's too high or too low, on a gentle slope of about three degrees down to the touchdown zone.",
+   "shot": {
+    "builder": "ils_beams_v2",
+    "params": {
+     "view": "side"
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "GLIDESLOPE: UP / DOWN",
+      "anchor": "slope",
+      "cue": "glideslope",
+      "color": "amber"
+     },
+     {
+      "type": "big",
+      "text": "≈ 3°",
+      "sub": "a gentle slope",
+      "cue": "three",
+      "y": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "autopilot",
+   "text": "The autopilot locks onto both beams and flies the plane down them, correcting all the way.",
+   "shot": {
+    "builder": "ed_cockpit_fog_v2",
+    "params": {
+     "view": "approach",
+     "fog": 0.0035,
+     "beams_cue": "locks",
+     "cues": [
+      "autopilot",
+      "flies",
+      "down",
+      "locks"
+     ]
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "AUTOPILOT LOCKS ON",
+      "cue": "autopilot"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "LOCALIZER",
+       "GLIDESLOPE"
+      ],
+      "cues": [
+       "locks",
+       "both"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "cat3",
+   "text": "On the strictest approaches, called Category Three, it can even touch down and hold the centerline, with visibility as low as about 300 feet.",
+   "shot": {
+    "builder": "ils_beams_v2",
+    "params": {
+     "view": "touchdown",
+     "fog": 0.011,
+     "touch_cue": "touch"
+    },
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "CATEGORY III"
+      ],
+      "cues": [
+       "category"
+      ]
+     },
+     {
+      "type": "label",
+      "text": "ON THE CENTERLINE",
+      "anchor": "wheels",
+      "cue": "centerline",
+      "color": "teal"
+     },
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "VISIBILITY: ~300 FT",
+      "cue": "visibility"
+     }
+    ]
+   }
+  },
+  {
+   "id": "pilots",
+   "text": "But the pilots aren't passengers. They watch every second, ready to take over, and the plane, the crew and the runway all need special approval.",
+   "shot": {
+    "builder": "ed_cockpit_fog_v2",
+    "params": {
+     "view": "close",
+     "fog": 0.0045,
+     "cues": [
+      "pilots",
+      "watch",
+      "ready",
+      "approval"
+     ]
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "READY TO TAKE OVER",
+      "cue": "watch"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "PLANE",
+       "CREW",
+       "RUNWAY"
+      ],
+      "cues": [
+       "plane",
+       "crew",
+       "runway"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Would you trust the autopilot to land you in fog? Tell us below.",
+   "shot": {
+    "builder": "ed_airport_fog_v2",
+    "params": {
+     "view": "outro",
+     "fog": 0.003,
+     "lift_cue": "tell"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "TRUST AUTOLAND IN FOG?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ]
+}
