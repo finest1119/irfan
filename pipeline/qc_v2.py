@@ -47,7 +47,8 @@ def main():
     fps = ep.get("render", {}).get("fps", 30)
     res = {"probe": probe(final)}
     p = res["probe"]
-    ok = 70 <= p["duration"] <= 120 and (p["width"], p["height"]) == (1080, 1920) and p["audio"] is not None
+    lo, hi = (ep.get("qc", {}) or {}).get("duration_s", [70, 120])  # per-episode override, e.g. ED [30, 60]
+    ok = lo <= p["duration"] <= hi and (p["width"], p["height"]) == (1080, 1920) and p["audio"] is not None
     res["probe_ok"] = ok
     # flicker. Region A-B-A on the final mp4 is dominated by real 3D camera motion (moving texture keeps the region
     # mean while pixels change), so the check is split:

@@ -80,7 +80,8 @@ def main(ep_path, mp4, outdir=None):
     if (v["width"], v["height"]) != (1080, 1920): issues.append("resolution is not 1080x1920")
     if v["r_frame_rate"] not in ("30/1",): issues.append("fps is not 30")
     if not has_a: issues.append("no audio stream")
-    if not 70 <= dur <= 120: issues.append("duration %.1f s outside 70-120 s" % dur)
+    lo, hi = (ep.get("qc", {}) or {}).get("duration_s", [70, 120])  # per-episode override, e.g. ED [30, 60]
+    if not lo <= dur <= hi: issues.append("duration %.1f s outside %g-%g s" % (dur, lo, hi))
     fb = mp4[:-4] + " fb.mp4"
     if os.path.exists(fb):
         info["fb_mb"] = round(os.path.getsize(fb) / 1e6, 2)
