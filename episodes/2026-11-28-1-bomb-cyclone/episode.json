@@ -1,0 +1,376 @@
+{
+  "id": "2026-11-28-1-bomb-cyclone",
+  "keyword": "bomb cyclone",
+  "slug": "bomb-cyclone",
+  "title": "What Is a Bomb Cyclone? Here's What It Feels Like",
+  "narration_style": "if you were there",
+  "fb_caption": "This Thanksgiving, a powerful storm swept up America's East Coast, strong enough to push New York's giant parade to Saturday, and forecasters warned it could deepen fast enough to earn the name \"bomb cyclone\". So what is one? Cold air from the land meets warm, wet air over the ocean, the jet stream pulls air away from the top, and the pressure at the centre drops. When it falls far enough in 24 hours, forecasters call it bombogenesis. Nothing explodes: the storm is simply growing at full speed, and the wind and the sea follow. Have you ever been through a bomb cyclone? Tell us where below.",
+  "hashtags": [
+    "#bombcyclone",
+    "#noreaster",
+    "#Thanksgiving",
+    "#EastCoast",
+    "#weather",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Which is worse where you live: 1 = the wind, 2 = the flooding, 3 = the power going out? Reply with a number and your state!",
+  "sources": [
+    "A strong storm moved up the US East Coast over Thanksgiving 2026 (forecast by NOAA's Weather Prediction Center to form off the Southeast coast on 25 Nov and track north through 26 Nov) [Verified, 3+ sources]: USA TODAY via AOL, 24 Nov: https://www.aol.com/articles/noreaster-bring-thanksgiving-weather-misery-160628000.html · NBC News live blog, 25 Nov: https://www.nbcnews.com/weather/storms/live-blog/thanksgiving-travel-weather-storms-forecast-wednesday-rcna611082 · Savannah Morning News via Yahoo, 24 Nov: https://www.yahoo.com/news/weather-news/articles/bomb-cyclone-weather-impact-georgia-153605421.html",
+    "Forecasters said it COULD become a bomb cyclone (not an official classification) [Verified, 2 opened sources]: USA TODAY via AOL (above) · Asbury Park Press / USA TODAY Network via Yahoo, 25 Nov (NWS Mount Holly: expected to \"rapidly deepen\"): https://www.yahoo.com/news/weather-news/articles/thanksgiving-storm-king-tides-nj-143652981.html",
+    "The storm pushed the 100th Macy's Thanksgiving Day Parade to Sat 28 Nov [Verified, 3+ sources]: NBC Insider: https://www.nbc.com/nbc-insider/2026-macys-thanksgiving-day-parade-moves-to-saturday-november-28 · WYFF: https://www.wyff4.com/article/macys-thanksgiving-day-parade-postponed-saturday-storm/74535021 · NBC News live blog (above)",
+    "Bombogenesis definition (rapid pressure fall in 24 hours; benchmark 24 mb at 60° latitude, varies with latitude) [General, NOAA]: https://oceanservice.noaa.gov/facts/bombogenesis.html",
+    "Posting-day re-check: The script was written BEFORE the storm peaked. Check whether it verified as a bomb cyclone (hook says only \"forecasters warned it could\"), whether anything serious happened that changes the tone, and that the parade is still on for Saturday."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Fenrir",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Energetic, confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: bombogenesis = BOM-boh-JEN-uh-sis.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "This Thanksgiving, a powerful storm swept up America's East Coast, strong enough to push New York's giant parade to Saturday. Forecasters warned it could deepen so fast, it might earn a dramatic name: bomb cyclone.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "US EAST COAST · THANKSGIVING 2026",
+            "at": 0.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION",
+              "NEW YORK'S PARADE MOVED TO SATURDAY",
+              "FORECASTERS: IT COULD BECOME",
+              "A BOMB CYCLONE"
+            ],
+            "cues": [
+              "this",
+              "parade",
+              "forecasters",
+              "bomb"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "So what does a bomb cyclone actually feel like? Let's put you on the coast, in a storm like that.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "IF YOU WERE THERE:\nBOMB CYCLONE",
+            "at": 0.25
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION · A TYPICAL STORM"
+            ],
+            "cues": [
+              "lets"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "you_morning",
+      "text": "You're in a house by the sea. It's morning. Grey sky, light rain, nothing special. But the barometer on your wall is falling. Fast. Here's what you can't see.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "MORNING: GREY SKY, LIGHT RAIN",
+            "cue": "morning"
+          },
+          {
+            "type": "label",
+            "text": "BAROMETER",
+            "anchor": "baro",
+            "cue": "barometer",
+            "dx": -150,
+            "dy": -120,
+            "color": "teal",
+            "until": 8.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "YOU'RE IN A HOUSE BY THE SEA",
+              "PRESSURE FALLING FAST"
+            ],
+            "cues": [
+              "youre",
+              "falling"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "you_engine",
+      "text": "Offshore, cold air from the land is crashing into warm, wet air over the ocean. That clash is fuel. And high above, the jet stream is pulling air up and away, like a vacuum over the storm.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHAT YOU CAN'T SEE",
+            "at": 0.05
+          },
+          {
+            "type": "label",
+            "text": "COLD AIR",
+            "anchor": "cold",
+            "cue": "cold",
+            "dx": -90,
+            "dy": -110,
+            "color": "teal",
+            "until": "jet"
+          },
+          {
+            "type": "label",
+            "text": "WARM OCEAN AIR",
+            "anchor": "warm",
+            "cue": "warm",
+            "dx": 90,
+            "dy": -110,
+            "color": "amber",
+            "until": "jet"
+          },
+          {
+            "type": "label",
+            "text": "JET STREAM",
+            "anchor": "jet",
+            "cue": "jet",
+            "dx": 0,
+            "dy": -110,
+            "color": "teal",
+            "until": 9.3
+          },
+          {
+            "type": "chips",
+            "items": [
+              "COLD AIR FROM THE LAND",
+              "WARM, WET OCEAN AIR",
+              "THE CLASH IS FUEL",
+              "JET STREAM PULLS AIR AWAY"
+            ],
+            "cues": [
+              "cold",
+              "warm",
+              "clash",
+              "jet"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "you_pressure",
+      "text": "Air leaves the top faster than it can fill in below. So the pressure drops. When it falls far enough in just twenty-four hours, forecasters call it bombogenesis. Nothing explodes. It's simply a storm growing at full speed.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THE PRESSURE DROPS",
+            "cue": "air",
+            "until": "forecasters"
+          },
+          {
+            "type": "card",
+            "text": "BOMBOGENESIS",
+            "cue": "forecasters"
+          },
+          {
+            "type": "label",
+            "text": "LOW PRESSURE",
+            "anchor": "eye",
+            "cue": "pressure",
+            "dx": 110,
+            "dy": -120,
+            "color": "red",
+            "until": 9.5
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FALLS FAR ENOUGH IN 24 HOURS",
+              "ROUGHLY 24 MILLIBARS",
+              "(VARIES WITH LATITUDE)",
+              "NOTHING EXPLODES"
+            ],
+            "cues": [
+              "twenty",
+              "bombogenesis",
+              "bombogenesis",
+              "nothing"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "you_wind",
+      "text": "Now you feel it. Air races toward that low. The wind doubles. Rain goes sideways. A storm like this could gust as hard as a hurricane, and it usually shoves the sea toward the shore.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "NOW YOU FEEL IT",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WIND RUSHES TO THE LOW",
+              "RAIN GOES SIDEWAYS",
+              "COULD GUST LIKE A HURRICANE",
+              "SEA PUSHED TOWARD THE SHORE"
+            ],
+            "cues": [
+              "races",
+              "rain",
+              "gust",
+              "shoves"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "you_cold",
+      "text": "Then the wind swings around. Cold air pours in behind the storm, and that rain could turn to snow.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "THEN THE WIND SWINGS AROUND",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "COLD AIR POURS IN BEHIND",
+              "RAIN COULD TURN TO SNOW"
+            ],
+            "cues": [
+              "cold",
+              "snow"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: before a storm like this, charge your phone, tie down anything loose, and stay off the beach and out of flooded roads.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TAKEAWAY",
+            "cue": "takeaway"
+          },
+          {
+            "type": "label",
+            "text": "ROAD FLOODED",
+            "anchor": "sign",
+            "cue": "stay",
+            "dx": -80,
+            "dy": -110,
+            "color": "amber",
+            "until": 5.9,
+            "delay": 0.3
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "CHARGE YOUR PHONE",
+              "TIE DOWN LOOSE ITEMS",
+              "STAY OFF THE BEACH AND FLOODED ROADS"
+            ],
+            "cues": [
+              "charge",
+              "tie",
+              "stay"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Have you ever been through a bomb cyclone? Tell us where in the comments, and send this to someone on the East Coast. Because this Thanksgiving, forecasters were watching the pressure fall, and wondering if this storm would bomb.",
+      "shot": {
+        "builder": "bomb_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "EVER BEEN THROUGH\nA BOMB CYCLONE?",
+            "at": 0.45,
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US WHERE IN THE COMMENTS",
+              "SEND THIS TO SOMEONE ON THE EAST COAST"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ],
+            "until": "because"
+          },
+          {
+            "type": "card",
+            "text": "US EAST COAST · THANKSGIVING 2026",
+            "cue": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

@@ -25,5 +25,8 @@ Narration style (from the Fri 27 Nov set): log each video's style in the Style c
 | Fri 27 #1 | parade balloons | scheduled (API, thumb A) | 26 Nov 21:00 | video 2062469807634539 / post 122095539021568035 | question ladder |
 | Fri 27 #2 | king tides | scheduled (API, thumb B) | 27 Nov 01:30 | video 29419709774347093 / post 122095572441568035 | myth vs reality |
 | Fri 27 #3 | airline outage | scheduled (API, thumb A) | 27 Nov 08:00 | video 891098987393098 / post 122095609659568035 | domino |
+| Sat 28 #1 | bomb cyclone | scheduled (API, thumb A); Fable QC approved 26 Nov after chip fix; re-check bomb-cyclone wording before post | 27 Nov 21:00 | video 1163311602759248 / post 122095780857568035 | if you were there |
+| Sat 28 #2 | controlled detonation (replaces hurricane, already posted) | scheduled (API, thumb A); Fable QC approved 26 Nov 23:45; re-check Army soil/surface results before post | 28 Nov 01:30 | video 1817541319573861 / post 122095864011568035 | minute by minute |
+| Sat 28 #3 | space docking (replaces Europe windstorm) | scheduled (API, thumb B); Fable QC approved 27 Nov 04:40 | 28 Nov 08:00 | video 2710535746087023 / post 122096022111568035 | rewind |
 
 Note 24 Nov: the post-level `is_ai_generated` edit returns (#100) permission on every API post, but Irfan confirmed in the FB app that "AI info" shows on the API-posted hurricane reel (label applied on the upload-finish call). The (#100) error is harmless; Graph API stays the main posting route.

@@ -26,6 +26,7 @@ Layout bands (fractions of the height, asserted): card 0.12-0.20, captions 0.22-
 0.32-0.64, chips/meter 0.64-0.80. Everything stays inside the 12 %-80 % safe area.
 """
 import json
+import math
 import os
 import subprocess
 import sys
@@ -865,8 +866,186 @@ class Board(Item):
         return [Sprite(sp.img, sp.x, sp.y + round(16 * (1 - ease((t - self.t0) / self.anim))))]
 
 
+class Clock(Item):
+    """Minute-by-minute clock / date strip in the card band (added 26 Nov 2026 for "controlled detonation").
+    spec {"type": "clock", "states": [[cue|seconds, "TEXT"], ...]}: a navy pill with a red dot at the top centre;
+    the text rolls to the next state at each cue (0.3 s). A state at 0 is shown from frame 1 with no fade-in, so the
+    strip carries over beat cuts without a blink. Opt-in: episodes without a clock item are unchanged."""
+    band = "card"
+    anim = 0.3
+
+    def __init__(self, bc, spec):
+        super().__init__(bc, spec)
+        self.st = []
+        for c, txt in spec["states"]:
+            ts = 0.0 if (isinstance(c, (int, float)) and c <= 0) else bc.cue(c, 0.0)
+            self.st.append((ts, txt))
+        self.st.sort(key=lambda x: x[0])
+        self.t0 = self.st[0][0]
+        self.cy = (SAFE[0] + 0.006) * H + 40      # pill top just under the 12 % line, bottom ~0.168 (captions 0.215)
+
+    def events(self):
+        fps = self.bc.fps
+        ev = set()
+        for i, (ts, _) in enumerate(self.st):
+            if i == 0 and ts <= 0:
+                continue
+            ev.update(range(int(ts * fps), int((ts + self.anim) * fps) + 3))
+        return ev
+
+    def pill(self, txt_in):
+        f = font(44, 8)
+        icon = txt_in[:2] if txt_in[:3] in ("<< ", ">> ") else None
+        txt = txt_in[3:] if icon else txt_in
+
+        def mk():
+            tw = f.getlength(txt)
+            pw, ph = tw + 110, 80
+            cy, x0 = self.cy, W / 2 - (tw + 110) / 2
+
+            def draw(d, ox, oy):
+                d.rounded_rectangle((x0 + ox, cy - ph / 2 + oy, x0 + pw + ox, cy + ph / 2 + oy), 40,
+                                    fill=NAVY + (222,))
+                if icon:     # opt-in "<< " / ">> " prefix: two small rewind / fast-forward triangles
+                    for k in range(2):
+                        bx = x0 + 22 + ox + k * 15
+                        if icon == "<<":
+                            pts = [(bx, cy + oy), (bx + 15, cy - 11 + oy), (bx + 15, cy + 11 + oy)]
+                        else:
+                            pts = [(bx + 15, cy + oy), (bx, cy - 11 + oy), (bx, cy + 11 + oy)]
+                        d.polygon(pts, fill=RED + (255,))
+                else:
+                    d.ellipse((x0 + 30 + ox, cy - 10 + oy, x0 + 50 + ox, cy + 10 + oy), fill=RED + (255,))
+                d.text((x0 + 68 + tw / 2 + ox, cy + 2 + oy), txt, font=f, fill=WHITE + (255,), anchor="mm")
+            assert cy - ph / 2 >= SAFE[0] * H and cy + ph / 2 + 8 <= CAP_BAND[0] * H, "clock strip outside card band"
+            return sprite_from(draw, (x0, cy - ph / 2, x0 + pw, cy + ph / 2), blur=8, alpha=0.4, glow=12,
+                               glow_alpha=0.15)
+        return self.cached(txt_in, mk)
+
+    def sprites(self, t, f):
+        cur = None
+        for i, (ts, txt) in enumerate(self.st):
+            if t >= ts:
+                cur = i
+        if cur is None:
+            return []
+        ts, txt = self.st[cur]
+        k = 1.0 if (cur == 0 and ts <= 0) else ease((t - ts) / self.anim)
+        out = []
+        if k < 0.999 and cur > 0:
+            old = self.pill(self.st[cur - 1][1])
+            out.append(Sprite(fade(old.img, 1 - k), old.x, old.y - round(18 * k)))
+        sp = self.pill(txt)
+        out.append(Sprite(fade(sp.img, k), sp.x, sp.y + round(18 * (1 - k))))
+        return out
+
+
+class Spotter(Item):
+    """Inset "spot the station" sketch in the mid band (added 26 Nov 2026 for "space docking"; opt-in):
+    a dusk-sky panel with a dark hilltop and a tiny person looking up, and a bright steady dot gliding across.
+    spec {"type": "spotter", [cue|at], [until], [y], [cross] (seconds per crossing, default 6.5)}."""
+    band = "mid"
+    anim = 0.4
+    PW, PH = 760, 430
+
+    def __init__(self, bc, spec):
+        super().__init__(bc, spec)
+        self.cy = spec.get("y", 0.468) * H
+        assert self.cy - self.PH / 2 >= (CAP_BAND[1] + 0.015) * H and self.cy + self.PH / 2 <= (CHIP_Y - 0.03) * H, \
+            "spotter outside the mid band"
+        self.x0, self.y0 = W / 2 - self.PW / 2, self.cy - self.PH / 2
+
+    def panel(self):
+        def mk():
+            pw, ph, x0, y0 = self.PW, self.PH, self.x0, self.y0
+            im = Image.new("RGBA", (pw, ph), (0, 0, 0, 0))
+            grad = Image.new("RGBA", (pw, ph))
+            gd = ImageDraw.Draw(grad)
+            stops = [(0.0, (16, 26, 66)), (0.55, (44, 74, 146)), (0.80, (110, 120, 178)), (0.92, (236, 150, 96)),
+                     (1.0, (250, 196, 120))]
+            for yy in range(ph):
+                u = yy / (ph - 1)
+                for (u0, c0), (u1, c1) in zip(stops, stops[1:]):
+                    if u <= u1:
+                        k = (u - u0) / (u1 - u0)
+                        col = tuple(int(c0[j] + (c1[j] - c0[j]) * k) for j in range(3))
+                        break
+                gd.line([(0, yy), (pw, yy)], fill=col + (255,))
+            mask = Image.new("L", (pw, ph), 0)
+            ImageDraw.Draw(mask).rounded_rectangle((0, 0, pw - 1, ph - 1), 28, fill=235)
+            im.paste(grad, (0, 0), mask)
+            d = ImageDraw.Draw(im)
+            import random as _r
+            rg = _r.Random(5)
+            for _ in range(38):
+                sx, sy = rg.uniform(20, pw - 20), rg.uniform(14, ph * 0.5)
+                r = rg.choice((1.2, 1.6, 2.2))
+                d.ellipse((sx - r, sy - r, sx + r, sy + r), fill=(255, 255, 255, rg.randint(110, 220)))
+            # hilltop (dark silhouette) along the bottom, clipped to the rounded panel
+            hill = Image.new("RGBA", (pw, ph), (0, 0, 0, 0))
+            hd = ImageDraw.Draw(hill)
+            pts = [(0, ph)]
+            for i in range(41):
+                xx = pw * i / 40.0
+                yy = ph * 0.86 - 46 * math.exp(-((xx - pw * 0.30) / (pw * 0.22)) ** 2) + 6 * math.sin(i * 0.9)
+                pts.append((xx, yy))
+            pts.append((pw, ph))
+            hd.polygon(pts, fill=(10, 14, 26, 255))
+            # the person on the hill, head tilted up, one arm pointing at the sky
+            px, gy = pw * 0.30, ph * 0.86 - 46
+            hd.ellipse((px - 9, gy - 64, px + 9, gy - 46), fill=(10, 14, 26, 255))
+            hd.polygon([(px - 11, gy - 44), (px + 11, gy - 44), (px + 8, gy - 14), (px - 8, gy - 14)], fill=(10, 14, 26, 255))
+            hd.line([(px - 5, gy - 14), (px - 8, gy + 2)], fill=(10, 14, 26, 255), width=7)
+            hd.line([(px + 5, gy - 14), (px + 8, gy + 2)], fill=(10, 14, 26, 255), width=7)
+            hd.line([(px + 8, gy - 40), (px + 34, gy - 78)], fill=(10, 14, 26, 255), width=6)
+            hd.line([(px - 8, gy - 40), (px - 18, gy - 18)], fill=(10, 14, 26, 255), width=6)
+            im.alpha_composite(Image.composite(hill, Image.new("RGBA", (pw, ph), (0, 0, 0, 0)), mask))
+            d = ImageDraw.Draw(im)
+            d.rounded_rectangle((0, 0, pw - 1, ph - 1), 28, outline=(255, 255, 255, 200), width=3)
+            big = Image.new("RGBA", (pw + 80, ph + 80), (0, 0, 0, 0))
+            big.alpha_composite(im, (40, 40))
+            return Sprite(shadowed(big, blur=8, alpha=0.4, glow=12, glow_alpha=0.15), x0 - 40, y0 - 40)
+        return self.cached("panel", mk)
+
+    def dot_pos(self, u):
+        xx = self.PW * (0.08 + 0.84 * u)
+        yy = self.PH * (0.40 - 0.26 * math.sin(math.pi * u))
+        return self.x0 + xx, self.y0 + yy
+
+    def sprites(self, t, f):
+        a = self.alpha(t)
+        if a <= 0.004:
+            return []
+        sp = self.panel()
+        out = [Sprite(fade(sp.img, a), sp.x, sp.y)]
+        cross = float(self.s.get("cross", 6.5))
+        u = max(0.0, (t - self.t0 - 0.3)) / cross
+        u = u % 1.0
+        da = a * min(1.0, u / 0.08, (1.0 - u) / 0.08)
+        if da > 0.01:
+            cx, cy = self.dot_pos(u)
+            box = (int(cx - 150), int(cy - 60), int(cx + 30), int(cy + 60))
+            im = Image.new("RGBA", (box[2] - box[0], box[3] - box[1]), (0, 0, 0, 0))
+            d = ImageDraw.Draw(im)
+            for k in range(1, 9):      # faint dotted trail behind the dot
+                tx, ty = self.dot_pos(max(0.0, u - 0.012 * k))
+                r = 2.6
+                d.ellipse((tx - r - box[0], ty - r - box[1], tx + r - box[0], ty + r - box[1]),
+                          fill=(255, 255, 255, int(150 * da * (1 - k / 9.0))))
+            glow = Image.new("RGBA", im.size, (0, 0, 0, 0))
+            ImageDraw.Draw(glow).ellipse((cx - 16 - box[0], cy - 16 - box[1], cx + 16 - box[0], cy + 16 - box[1]),
+                                         fill=(255, 250, 220, int(160 * da)))
+            glow = glow.filter(ImageFilter.GaussianBlur(7))
+            im.alpha_composite(glow)
+            ImageDraw.Draw(im).ellipse((cx - 6 - box[0], cy - 6 - box[1], cx + 6 - box[0], cy + 6 - box[1]),
+                                       fill=(255, 255, 255, int(255 * da)))
+            out.append(Sprite(im, box[0], box[1]))
+        return out
+
+
 ITEM_TYPES = {"card": Card, "chips": Chips, "label": Label, "bar": Bar, "big": Big, "meter": Meter,
-              "profile": Profile, "history": History, "board": Board}
+              "profile": Profile, "history": History, "board": Board, "clock": Clock,
+              "spotter": Spotter}
 
 
 # ================================================================ per-beat compositing

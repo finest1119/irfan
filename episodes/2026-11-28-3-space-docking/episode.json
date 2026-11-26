@@ -1,0 +1,177 @@
+{
+  "id": "2026-11-28-3-space-docking",
+  "keyword": "space docking",
+  "slug": "space-docking",
+  "title": "How a Spacecraft Catches a Space Station in 3.5 Hours",
+  "narration_style": "rewind",
+  "fb_caption": "This week, a Chinese spacecraft docked with the Tiangong space station, carrying the first foreign astronaut ever to board it, an astronaut from Pakistan, and it got there about three and a half hours after liftoff. So how do you catch a target moving at about 17,000 miles an hour? Rewind the flight: a gentle nudge at docking, a chase from a lower and faster orbit, about ten minutes of rocket ride, and a liftoff timed for the moment the station's path passes overhead. Miss that window and the chase could take days instead of hours. Would you ride a rocket to a space station if you had the chance? Tell us below.",
+  "hashtags": [
+    "#space",
+    "#spacestation",
+    "#Tiangong",
+    "#rocketlaunch",
+    "#astronaut",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Have you ever spotted a space station crossing the sky? Reply YES or NOT YET, and tell us where you were!",
+  "sources": [
+    "China's Shenzhou-24 launched from Jiuquan on 25 Nov 2026 (Beijing time) and docked with the Tiangong space station [Verified, 3+ sources]: AP via ABC News: https://abcnews.com/Technology/wireStory/china-launches-shenzhou-24-spacecraft-carrying-2-chinese-138427131 · SpacePolicyOnline: https://spacepolicyonline.com/news/first-pakistani-astronaut-enroute-to-tiangong/ · Dawn: https://www.dawn.com/news/2046753",
+    "It carried the first foreign astronaut to board China's space station, an astronaut from Pakistan [Verified, 3+ sources]: AP via ABC News; Dawn; SpacePolicyOnline; Al Jazeera: https://aljazeera.com/features/2026/11/25/from-stargazing-to-space-pakistan-watches-its-first-astronaut-take-flight",
+    "Docking came about three and a half hours after liftoff [Verified, 2 sources]: Dawn (3 h 38 min, per the China Manned Space Agency); SpacePolicyOnline",
+    "How rendezvous works (lower orbit is faster, phasing burns, launch windows, slow final approach) [General]: NASA: https://www.nasa.gov/reference/jsc-rendezvous-proximity-operations-docking-subsystems/ · Aviation Week on the 3.5-hour fast profile: https://aviationweek.com/space/space-exploration/shenzhou-21-achieves-chinas-fastest-manned-space-docking",
+    "Spotting a station by eye [General]: NASA Spot the Station: https://spotthestation.nasa.gov/",
+    "Posting-day re-check: Confirm the crew is safely aboard and nothing has gone wrong with the mission since docking."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm, knowledgeable and confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Tiangong = tyen-GONG.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "This week, a Chinese spacecraft docked with the Tiangong space station, carrying the first foreign astronaut ever to board it, an astronaut from Pakistan. And it got there about three and a half hours after liftoff.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "card", "text": "TIANGONG SPACE STATION", "sub": "NOVEMBER 2026", "cue": "tiangong"},
+          {"type": "chips", "items": ["FIRST FOREIGN ASTRONAUT ABOARD", "LIFTOFF TO DOCKING: ABOUT 3.5 HOURS"],
+           "cues": ["first", "three"]}
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "Three and a half hours, to catch a target moving at about seventeen thousand miles an hour. How? Rewind.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "card", "text": "HOW DO YOU CATCH", "sub": "A SPACE STATION?", "at": 0.2, "until": "rewind"},
+          {"type": "label", "text": "ABOUT 17,000 MPH", "anchor": "station", "cue": "seventeen", "until": "how",
+           "dx": -60, "dy": -170, "color": "red"},
+          {"type": "clock", "states": [["rewind", "<< REWIND"]]}
+        ]
+      }
+    },
+    {
+      "id": "rewind_contact",
+      "text": "Seconds before contact, the two are lined up nose to port, and the gap is closing slower than you walk. A docking is usually a gentle nudge. Then latches grab hold, and pull the two together until they seal. Rewind again.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, "<< REWIND"], ["seconds", "SECONDS BEFORE CONTACT"], ["rewind", "<< REWIND"]]},
+          {"type": "label", "text": "DOCKING PORT", "anchor": "port", "cue": "port", "until": "rewind",
+           "dx": 60, "dy": -160, "color": "teal"},
+          {"type": "chips", "items": ["ILLUSTRATION", "SLOWER THAN WALKING PACE", "A GENTLE NUDGE", "LATCHES GRAB, PULL, SEAL"],
+           "cues": ["seconds", "slower", "nudge", "latches"], "y": 0.62, "until": "rewind"}
+        ]
+      }
+    },
+    {
+      "id": "rewind_chase",
+      "text": "An hour or so earlier, the capsule is behind the station, and below it. Here's the trick: a lower orbit is a faster lap. So a chasing spacecraft usually stays low to catch up, then fires its engines to climb. Rewind further.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, "<< REWIND"], ["hour", "AN HOUR OR SO EARLIER"], ["rewind", "<< REWIND"]]},
+          {"type": "label", "text": "STATION", "anchor": "station", "cue": "station", "until": "heres",
+           "dx": 40, "dy": -150, "color": "amber"},
+          {"type": "label", "text": "CAPSULE", "anchor": "capsule", "cue": "capsule", "until": "heres",
+           "dx": -60, "dy": -150, "color": "teal"},
+          {"type": "chips", "items": ["ILLUSTRATION", "LOWER ORBIT = FASTER LAP", "ENGINE BURN, THEN CLIMB"],
+           "cues": ["hour", "lower", "fires"], "until": "rewind"}
+        ]
+      }
+    },
+    {
+      "id": "rewind_orbit",
+      "text": "Roughly ten minutes after liftoff, the rocket's work is done. The capsule is in orbit, on its own.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, "<< REWIND"], ["roughly", "ABOUT 10 MINUTES AFTER LIFTOFF"]]},
+          {"type": "label", "text": "LAST ROCKET STAGE", "anchor": "stage", "cue": "rockets", "until": "capsule",
+           "dx": -40, "dy": 170, "color": "amber"},
+          {"type": "chips", "items": ["ROCKET'S WORK: DONE", "CAPSULE ON ITS OWN"], "cues": ["done", "own"]}
+        ]
+      }
+    },
+    {
+      "id": "rewind_pad",
+      "text": "And all the way back, to the launch pad. Because the real secret happens before the engines even light. Liftoff is timed for the moment the station's path passes overhead.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, "ABOUT 10 MINUTES AFTER LIFTOFF"], ["all", "<< REWIND"], ["launch", "LIFTOFF"]]},
+          {"type": "label", "text": "STATION'S PATH", "anchor": "path", "cue": "path",
+           "dx": -80, "dy": 150, "color": "amber"},
+          {"type": "chips", "items": ["LAUNCH WINDOW"], "cues": ["timed"]}
+        ]
+      }
+    },
+    {
+      "id": "forward",
+      "text": "Miss that window, and the chase could take days instead of hours. Hit it, and computers can fly almost the whole pursuit on their own.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, "LIFTOFF"], ["miss", ">> FAST FORWARD"]]},
+          {"type": "chips", "items": ["MISSED WINDOW: DAYS", "ON TIME: HOURS", "AUTOMATED RENDEZVOUS"],
+           "cues": ["miss", "hit", "computers"]}
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: you can watch a space station yourself. Look for a bright, steady light, gliding across the sky just after sunset or before sunrise. Free tracking sites will tell you when.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, ">> FAST FORWARD"], ["takeaway", "TAKEAWAY"]]},
+          {"type": "spotter", "cue": "watch"},
+          {"type": "chips", "items": ["BRIGHT", "STEADY, NO BLINKING", "JUST AFTER SUNSET OR BEFORE SUNRISE"],
+           "cues": ["bright", "steady", "sunset"], "style": "check"}
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Would you ride a rocket to a space station if you had the chance? Tell us in the comments, and send this to someone who loves space. Because this week, a three-and-a-half-hour chase ended with a gentle nudge, and a first.",
+      "shot": {
+        "builder": "docking_oneshot",
+        "params": {},
+        "overlays": [
+          {"type": "clock", "states": [[0, "TAKEAWAY"], ["would", "YOUR TURN"], ["because", "THIS WEEK"]]},
+          {"type": "chips", "items": ["WOULD YOU RIDE ONE?"], "cues": ["would"], "until": "because"},
+          {"type": "chips", "items": ["TELL US IN THE COMMENTS", "SEND THIS TO A SPACE FAN"], "cues": ["tell", "send"],
+           "y": 0.703, "until": "because"},
+          {"type": "chips", "items": ["A FIRST"], "cues": ["first"]}
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

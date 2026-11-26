@@ -31,19 +31,19 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 | Thu 26 | 1 | 🇺🇸 Thanksgiving = top day for US cooking fires | Why turkey fryers explode | turkey fryer fire |
 | Thu 26 | 2 | 🇺🇸 Tanker hits riverboat, New Orleans (Nov 13) | How big ships collide on rivers | ship collision |
 | Thu 26 | 3 | 🇨🇳 High-rise fire in Taiyuan, Shanxi (Nov 8) (RESEARCH PICK 2026-11-24, replaces Typhoon Champi — Champi was an October storm, hook stale) | Why fire spreads so fast in tall buildings | high rise fire |
-| Fri 27 | 1 | 🇺🇸 Black Friday crowds | How crowd crushes happen and how to survive one | crowd crush |
-| Fri 27 | 2 | 🇷🇺🇪🇺 Russia–Estonia border tension | Why the Baltic border is Europe's tensest line | Russia Estonia |
-| Fri 27 | 3 | 🇺🇸 Pentagon warns Ukraine on deep drone strikes | How long-range attack drones work | attack drones |
-| Sat 28 | 1 | 🇺🇸 US winter storm season | What a bomb cyclone is | bomb cyclone |
-| Sat 28 | 2 | 🇺🇸 Atlantic hurricane season ends Nov 30 | How a hurricane is born | hurricane |
-| Sat 28 | 3 | 🇬🇧🇪🇺 2026–27 European windstorm season | How windstorms form and get their names | Europe windstorm |
+| Fri 27 | 1 | 🇺🇸 100th Macy's Thanksgiving Day Parade moved to Sat 28 Nov because of a storm (announced Nov 25) (RESEARCH PICK 2026-11-26, replaces: crowd crush) | Why wind can ground giant parade balloons | parade balloons |
+| Fri 27 | 2 | 🇺🇸 Record or near-record water levels at West Coast tide gauges (Nov 23–26) (RESEARCH PICK 2026-11-26, replaces: Russia Estonia) | King tides, myth vs reality (moon + El Niño + storm) | king tides |
+| Fri 27 | 3 | 🇺🇸 Busiest US flying day in 16 years (Nov 24); a major airline's weight-and-balance system failed (Nov 22) (RESEARCH PICK 2026-11-26, replaces: attack drones) | How one glitch cascades through an airline | airline outage |
+| Sat 28 | 1 | 🇺🇸 Thanksgiving East Coast storm that moved the Macy's parade; forecasters said it could become a bomb cyclone (Nov 24–26) (RESEARCH PICK 2026-11-26: planned topic kept, fresh hook) | What a bomb cyclone is and what it feels like | bomb cyclone |
+| Sat 28 | 2 | 🇺🇸 US Army detonates about five tons of unstable lead azide at the Iowa Army Ammunition Plant (Nov 25, 9:00 AM CT) (RESEARCH PICK 2026-11-26, replaces: hurricane, already posted 24 Nov) | Why explosives too unstable to move are destroyed in place | controlled detonation |
+| Sat 28 | 3 | 🇨🇳 Shenzhou-24 docks with Tiangong about 3.5 h after liftoff, carrying the first foreign astronaut to board the station (Nov 25) (RESEARCH PICK 2026-11-26, replaces: Europe windstorm, no fresh named storm) | How a spacecraft catches and docks with a space station | space docking |
 | Sun 29 | 1 | 🇺🇸 Turbulence injuries on US flights | Why turbulence is getting worse | turbulence |
 | Sun 29 | 2 | 🇺🇸 First winter freeze | Why bridges freeze before roads (black ice) | black ice |
 | Sun 29 | 3 | Week recap (US/UK/EU/RU/JP/CN only) | 5 biggest events this week, explained | world news this week |
 
 ## Notes
 - Florida Learjet crash (Nov 1) skipped for now (likely the example you mentioned); can be used later with a new angle.
-- War topics (Tue 24 #2, Fri 27 #2–3): Meta may limit monetization. Keep them technical/educational; swap for evergreen if reach drops.
+- War topics (Tue 24 #2; the old Fri 27 #2–3 rows are now in Backlog): Meta may limit monetization. Keep them technical/educational; swap for evergreen if reach drops.
 - If bigger news breaks, replace the weakest slot that day.
 - Sources: Wikipedia Current events Nov 2026, NPR, Democracy Now, WAPT, Aviation Safety Network, Japan Times, SCMP, UKNIP.
 
@@ -52,3 +52,7 @@ Post times (US Eastern / Malaysia): **8:00 AM ET (9 PM MYT)**, **12:30 PM ET (1:
 |---|---|---|---|
 | Thu 26 #3 (swapped 2026-11-24) | 🇨🇳🇯🇵 Typhoon Champi (October storm; hook stale, use with the next late-season typhoon) | Why typhoons still hit China and Japan late in the year | typhoon |
 | Wed 25 #3 (swapped 2026-11-24) | 🇬🇧 Met Office heavy rain warning (Nov 17); use with the next named UK storm | Why the UK floods so often | UK flooding |
+| Fri 27 #1 (swapped 2026-11-26) | 🇺🇸 Black Friday crowds (seasonal; next use: Boxing Day / New Year crowds or a fresh crowd event) | How crowd crushes happen and how to survive one | crowd crush |
+| Fri 27 #2 (swapped 2026-11-26) | 🇷🇺🇪🇺 Russia–Estonia border tension (needs a fresh verified hook) | Why the Baltic border is Europe's tensest line | Russia Estonia |
+| Fri 27 #3 (swapped 2026-11-26) | 🇺🇸 Pentagon warns Ukraine on deep drone strikes (needs a fresh verified hook) | How long-range attack drones work | attack drones |
+| Sat 28 #3 (swapped 2026-11-26) | 🇬🇧🇪🇺 2026–27 European windstorm season (last storm Talia ended Nov 21; use with the next named storm, next western-list name is Chloe) | How windstorms form and get their names | Europe windstorm |

@@ -1,0 +1,476 @@
+{
+  "id": "2026-11-28-2-controlled-detonation",
+  "keyword": "controlled detonation",
+  "slug": "controlled-detonation",
+  "title": "Why the Army Blew Up Five Tons of Its Own Explosives",
+  "narration_style": "minute by minute",
+  "fb_caption": "On Wednesday at 9 a.m., in southeast Iowa, the US Army blew up about five tons of its own explosives, on purpose. The material was lead azide, a primary explosive normally used in tiny amounts inside detonators, and the Army said it had begun to crystallize in its drums. Crystals can make it even more sensitive, so explosives like this could go off just from being moved. That is why disposal teams usually destroy them where they sit, behind barriers, foam and water. The EPA said its air monitors showed no lead in the air afterward; soil and surface tests were still to come. Would you watch a controlled blast from a safe distance, or stay far away? Tell us below.",
+  "hashtags": [
+    "#Iowa",
+    "#USArmy",
+    "#explosives",
+    "#controlleddetonation",
+    "#science",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll: would you watch a controlled detonation from a safe distance? Reply WATCH or NO THANKS!",
+  "sources": [
+    "On Wed 25 Nov 2026 at about 9:00 am Central, the US Army carried out a controlled detonation of about five tons of lead azide at the Iowa Army Ammunition Plant, Middletown, Iowa [Verified, 3+ sources]: CBS News: https://www.cbsnews.com/news/iowa-army-ammunition-plant-unstable-explosives-detonation/ · NBC News: https://www.nbcnews.com/news/us-news/iowa-lead-azide-explosion-dust-army-rcna611182 · PBS NewsHour: https://www.pbs.org/newshour/nation/live-updates-army-expected-to-detonate-stockpile-of-lead-azide-in-iowa · ABC News: https://abcnews.com/US/iowa-detonation-lead-azide-army/story?id=138425051",
+    "The Army said the material had crystallized in its drums (found at a routine inspection in March), making it more sensitive and unsafe to move [Verified, 3 sources]: PBS; NBC; CBS (above)",
+    "Barriers, foam and large water tanks were set up around the bunkers; officials said the blast was driven into the ground [Verified, 2+ sources]: CBS; NBC; PBS",
+    "About 9:15 am the EPA said its air monitors showed no lead in the air, and said the same more than an hour later; soil, water and surface sampling still to come [Verified, 2+ sources; early readings]: CBS; PBS; NBC",
+    "Lead azide is a primary explosive used in small amounts in detonators [General]: PBS (above)",
+    "Public advice on found munitions (don't touch, back away, report) [General, US Army 3Rs]: https://3rs.mil/",
+    "Posting-day re-check: Look for soil / surface sampling results or any contamination, injury or damage report since 25 Nov; update the 9:15 beat or hold the reel if the picture has changed."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Orus",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Firm, authoritative and confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: azide = AY-zide (lead AY-zide); say \"nine A M\" and \"nine fifteen\" clearly.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "Wednesday. Nine A M. Southeast Iowa. The US Army blew up about five tons of its own explosives. On purpose.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "WED 25 NOV · 9:00 AM CT"
+              ]
+            ]
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION",
+              "SOUTHEAST IOWA, USA",
+              "ABOUT FIVE TONS",
+              "CONTROLLED DETONATION"
+            ],
+            "cues": [
+              "wednesday",
+              "southeast",
+              "five",
+              "purpose"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "Why would an army destroy its own stockpile? Follow the clock.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "WED 25 NOV · 9:00 AM CT"
+              ],
+              [
+                "follow",
+                "REWIND"
+              ]
+            ]
+          },
+          {
+            "type": "big",
+            "text": "WHY BLOW UP",
+            "sub": "YOUR OWN EXPLOSIVES?",
+            "at": 0.25,
+            "until": "follow",
+            "y": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "id": "clock_march",
+      "text": "March. A routine inspection. The material is lead azide, and the Army said it had begun to crystallize inside its drums.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "REWIND"
+              ],
+              [
+                "march",
+                "MARCH 2026"
+              ]
+            ]
+          },
+          {
+            "type": "label",
+            "text": "LEAD AZIDE",
+            "anchor": "drum",
+            "cue": "lead",
+            "dx": -140,
+            "dy": -170,
+            "color": "red",
+            "until": 5.9
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ROUTINE INSPECTION",
+              "LEAD AZIDE",
+              "ARMY: IT HAD CRYSTALLIZED"
+            ],
+            "cues": [
+              "routine",
+              "azide",
+              "crystal"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "what_it_is",
+      "text": "Lead azide is a primary explosive. Usually, a tiny pinch sits inside a detonator, and its job is to set off a much bigger charge. So it is built to be sensitive. Crystals can make it more sensitive still: to friction, to shock, even to cold. That creates a trap.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "MARCH 2026"
+              ]
+            ]
+          },
+          {
+            "type": "label",
+            "text": "PRIMARY EXPLOSIVE",
+            "anchor": "pellet",
+            "cue": "primary",
+            "dx": -60,
+            "dy": -190,
+            "color": "red",
+            "until": 8.4
+          },
+          {
+            "type": "label",
+            "text": "MAIN CHARGE",
+            "anchor": "main",
+            "cue": "bigger",
+            "dx": -170,
+            "dy": -150,
+            "color": "teal",
+            "until": 8.4
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION",
+              "FRICTION",
+              "SHOCK",
+              "COLD"
+            ],
+            "cues": [
+              "lead",
+              "friction",
+              "shock",
+              "cold"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "the_trap",
+      "text": "Explosives this touchy could go off just from being moved. So disposal teams usually stop trying to carry them away. They destroy them where they sit, at a moment they choose.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "MARCH 2026"
+              ]
+            ]
+          },
+          {
+            "type": "label",
+            "text": "DO NOT MOVE",
+            "anchor": "forklift",
+            "cue": "moved",
+            "dx": 80,
+            "dy": -170,
+            "color": "red",
+            "until": 4.7
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TOO SENSITIVE TO MOVE",
+              "DESTROY IN PLACE",
+              "AT A MOMENT THEY CHOOSE"
+            ],
+            "cues": [
+              "touchy",
+              "destroy",
+              "moment"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "clock_days_before",
+      "text": "The days before. Crews raise barriers around the bunkers, and bring in foam and giant tanks of water, meant to soak up the blast and its dust.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "MARCH 2026"
+              ],
+              [
+                "days",
+                "THE DAYS BEFORE"
+              ]
+            ]
+          },
+          {
+            "type": "chips",
+            "items": [
+              "BARRIERS",
+              "FOAM",
+              "WATER TANKS"
+            ],
+            "cues": [
+              "barriers",
+              "foam",
+              "tanks"
+            ],
+            "style": "check"
+          }
+        ]
+      }
+    },
+    {
+      "id": "clock_0900",
+      "text": "Nine A M. Detonation. Officials said the blast was driven down, into the ground.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "THE DAYS BEFORE"
+              ],
+              [
+                "nine",
+                "WED 25 NOV · 9:00 AM CT"
+              ]
+            ]
+          },
+          {
+            "type": "chips",
+            "items": [
+              "CONTROLLED DETONATION",
+              "OFFICIALS: BLAST DRIVEN DOWN"
+            ],
+            "cues": [
+              "detonation",
+              "officials"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "clock_0915",
+      "text": "Nine fifteen. The Environmental Protection Agency said its air monitors showed no lead in the air. More than an hour later, it said the same. Soil and surface tests were still to come.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "WED 25 NOV · 9:00 AM CT"
+              ],
+              [
+                "nine",
+                "WED 25 NOV · 9:15 AM CT"
+              ],
+              [
+                "more",
+                "MORE THAN AN HOUR LATER"
+              ]
+            ]
+          },
+          {
+            "type": "label",
+            "text": "AIR MONITOR",
+            "anchor": "mast",
+            "cue": "air",
+            "dx": -120,
+            "dy": -150,
+            "color": "teal",
+            "until": 4.1
+          },
+          {
+            "type": "chips",
+            "items": [
+              "EPA: NO LEAD IN THE AIR",
+              "EARLY READINGS · SAME LATER",
+              "SOIL + SURFACE TESTS: STILL TO COME"
+            ],
+            "cues": [
+              "showed",
+              "more",
+              "soil"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: if you ever find an old shell, old ammunition, or damaged fireworks, don't touch it and don't move it. Back away, and call the authorities.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "MORE THAN AN HOUR LATER"
+              ],
+              [
+                "takeaway",
+                "TAKEAWAY"
+              ]
+            ]
+          },
+          {
+            "type": "label",
+            "text": "OLD SHELL?",
+            "anchor": "shell",
+            "cue": "shell",
+            "dx": 60,
+            "dy": -170,
+            "color": "red",
+            "until": 5.0
+          },
+          {
+            "type": "chips",
+            "items": [
+              "DON'T TOUCH IT",
+              "DON'T MOVE IT",
+              "BACK AWAY AND CALL"
+            ],
+            "cues": [
+              "touch",
+              "move",
+              "back"
+            ],
+            "style": "check"
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Would you watch a controlled blast from a safe distance, or stay far away? Tell us in the comments, and send this to someone who loves knowing how things work. Because on Wednesday at nine A M, the Army decided the safest way to move five tons of explosives was not to move them at all.",
+      "shot": {
+        "builder": "detonation_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "clock",
+            "states": [
+              [
+                0,
+                "TAKEAWAY"
+              ],
+              [
+                "would",
+                "YOUR TURN"
+              ],
+              [
+                "because",
+                "WED 25 NOV · 9:00 AM CT"
+              ]
+            ]
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WATCH IT, OR STAY FAR AWAY?"
+            ],
+            "cues": [
+              "would"
+            ],
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS",
+              "SEND THIS TO A HOW-IT-WORKS FAN"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ],
+            "y": 0.703,
+            "until": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}
