@@ -994,3 +994,8 @@ Or set `"profile": "fast"` in episode.json `render`.
 - The `_s1` run measures the per-frame overhead on OptiX. If it is a large share of the 10.8 s, samples and resolution cannot reach 2 h. The next lever would then be the per-frame re-sync (keyed material/world values), not sampling.
 - A real check: `render --profile fast --range 1-150` and compare its s/frame with job 1 of the default render.
 - Before a full fast render, move the default frames out of `frames_oneshot/` (the guard refuses otherwise).
+
+## Session 14 (27 Nov 2026): fast is the default profile
+Irfan approved it via the chief. `oneshot.py` now falls back to `fast` when neither `--profile` nor episode `render.profile` is set. Use `--profile default` for the old 32-spp full-res setup.
+Dell bench (Best performance mode), s/frame: default 10.65 | fast 4.30 + 0.60 post (about 3.5 h per 86 s episode) | EEVEE 12.9 (rejected) | fast 1 spp 2.15 + 0.64 (fixed per-frame cost).
+Next, after the 29 Nov reset: cut the per-frame scene re-sync to get to about 2 h.

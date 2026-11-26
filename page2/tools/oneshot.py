@@ -8,7 +8,7 @@
   python page2/tools/oneshot.py post   EPISODE WORKDIR [--range A-B] [--scale 1.0] [--force]   # fast profile only
 
 Render profiles (s13, page2/blender/render_profiles.py): --profile on still/render/bench, else episode
-render.profile, else "default" (unchanged behaviour). "fast" renders 0.75 scale into frames_oneshot_fast/ (16 samples,
+render.profile, else "fast" (default since 27 Nov 2026, Irfan OK; use --profile default for the old full-res setup). "fast" renders 0.75 scale into frames_oneshot_fast/ (16 samples,
 lower bounces, Cycles motion blur off, cheaper kitchen) and page2/tools/fast_post.py writes the full-res, 2D-blurred
 frames into frames_oneshot/ after every job, so `link` / make_episode are unchanged.
 
@@ -92,8 +92,8 @@ def load_inputs(episode, workdir):
 
 
 def resolve_profile(a):
-    """--profile > episode render.profile > default; --samples None -> the profile's or the old default."""
-    name = getattr(a, "profile", None) or M.load_json(a.episode).get("render", {}).get("profile") or "default"
+    """--profile > episode render.profile > fast; --samples None -> the profile's or the old default."""
+    name = getattr(a, "profile", None) or M.load_json(a.episode).get("render", {}).get("profile") or "fast"
     prof = RP.get(name)
     samples = a.samples
     if samples is None:
