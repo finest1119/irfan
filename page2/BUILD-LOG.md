@@ -894,3 +894,14 @@ Once the full render is done (Windows laptop, `oneshot.py render` + `link`):
 .venv/bin/python pipeline/make_episode.py page2/episodes/build-01/episode.json --workdir page2/episodes/build-01/work --out-root page2/episodes/build-01/out --steps assemble,fb,post,qc
 ```
 Untested end to end: WJH only checked the imports. If you call overlay_v2 directly, set `EPISODE_WORKDIR=page2/episodes/build-01/work`.
+
+## Windows render box: first NVIDIA measurement (Dell G15 5520, 26 Nov 2026)
+- Setup: NVIDIA Studio Driver 621.40, Blender 5.3.0, Cycles **OPTIX** (RTX 3050 Ti Laptop, 4 GB), Python 3.12.10 venv. Repo at `C:\Users\fines\irfan` (outside OneDrive).
+- `fetch_cc0.py --check`: all present (Quaternius zips sha256 OK). `cc0_lib.py build`: OK (`mercer_cc0_lib.blend` 91.6 MB).
+- `test_oneshot.py`: **ALL PASS (0 failures)**.
+- `oneshot.py plan` with the real timings (commit e7c9668): 2,571 frames (85.7 s), 24 moves, 16 events, 23 jobs, longest hold 4.6 s.
+- `oneshot.py still --frames 300,1600 --scale 1.0 --samples 32` (1080x1920, `--mblur 3d`): exit 0 in **37.6 s for both frames** (about 22 s of world build). Stats: `device` OPTIX, `bolts_impl` s9_quaternius, est. images 538 MB + geometry 290 MB.
+- **Peak VRAM: 2,735 MiB of 4,096** (nvidia-smi every 250 ms; 0 MiB at idle because the desktop runs on the Intel iGPU). That is inside the 3 GB target.
+- Log: 2 missing UBC normal maps (`T_Hair_1_Normal_png.png`, `T_Eye_Normal_png.png`), the known kit issue.
+- First run: f1600 (push-in to `tail_hinge__detail`, day preset) was washed out. Cause: `assets/polyhaven/` (gitignored) had not been fetched, so the log said "[mh] no HDRI ... procedural sky". Fixed with `tools/fetch_assets.py` (`--check` clean).
+- Re-run with the HDRI: exit 0 in 39.4 s for both frames. f1600 is now normal (green field, grey tower). bolts_impl s9_quaternius. **Peak VRAM with HDRI: 2,909 MiB of 4,096** (inside the 3 GB target, about 160 MiB of headroom).
