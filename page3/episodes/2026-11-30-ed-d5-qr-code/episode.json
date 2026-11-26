@@ -32,7 +32,7 @@
   "model": "gemini-3.8-flash-tts",
   "fallback_model": "gemini-3.1-flash-tts-preview",
   "voice": "Sadaltager",
-  "director_notes": "Calm, curious American male explainer, warm and clear, brisk pace, short pause before the twist.",
+  "director_notes": "Calm, warm American male narrator.",
   "pause_between_beats": 0.3
  },
  "music": null,
@@ -190,7 +190,7 @@
   },
   {
    "id": "tip",
-   "text": "But cover one of those corners, and the scan can fail.",
+   "text": "But if you cover one of those three corner squares, your phone may not find the code at all, and the scan can fail.",
    "shot": {
     "builder": "qr_code_v2",
     "params": {
