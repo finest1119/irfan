@@ -76,7 +76,7 @@ Tanda ☐ → ☑ bila siap.
 
    Claude akan buat:
    - `python -m venv .venv` dan install pakej (google-genai 1.47.0, faster-whisper 1.2.1, python-dotenv 1.2.1,
-     pillow 11.3.0, numpy 2.0.2)
+     pillow 11.3.0, numpy 2.0.2) + **pin `av==16.1.*`** (PyAV 19 breaks faster-whisper; found on the Asus 26 Nov)
    - `python tools/fetch_cc0.py` (aset CC0 dalam assets/cc0/manifest.json)
    - download aset Poly Haven `assets/polyhaven/` (HDRI kloofendal 2K + 3 tekstur 1K, senarai dalam README Mac; belum ada dalam manifest fetch_cc0)
    - semak Blender, ffmpeg (encoder `hevc_nvenc`) dan Codex dari Python
