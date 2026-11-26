@@ -4034,6 +4034,11 @@ def _v_cabin(ctx, p, view):
     _cabin_dim(ctx, f_dim)
     shade_f = ctx.word_time(p.get("shade_cue", "shades"), 0.3) if view == "shades" else None
     ex, shades = _cabin_extras(ctx, p, shade_f)
+    if view == "shades":   # QC 26 Nov: the seatbelt-sign icon panel, seen this close, read as a glowing glitch block
+        for nm in ("cab_icons", "cab_psu"):
+            ob = bpy.data.objects.get(nm)
+            if ob is not None:
+                ob.hide_render = True
     y0 = CB_Y0
     cams = {
         "hook": ((0.0, y0 + 0.5, 1.2), (0.0, y0 + 9.0, 1.2), (0.0, y0 + 2.0, 1.18), (0.0, y0 + 9.5, 1.2), 18),
