@@ -25,8 +25,17 @@ import platform_cfg as PC  # noqa: E402
 
 
 def blender_busy():
+    # Match only real Blender executables (macOS app binary or a "blender" exe), never shells/tools whose
+    # command line merely mentions "Blender" (that used to block every hero render).
     r = subprocess.run(["pgrep", "-fl", "Blender"], capture_output=True, text=True)
-    return [ln for ln in r.stdout.splitlines() if ln.strip()]
+    out = []
+    for ln in r.stdout.splitlines():
+        parts = ln.split(None, 1)
+        cmd = parts[1] if len(parts) > 1 else ""
+        exe = cmd.split(" -", 1)[0].strip()
+        if exe.endswith("/MacOS/Blender") or os.path.basename(exe).lower() in ("blender", "blender.exe"):
+            out.append(ln)
+    return out
 
 
 def main():

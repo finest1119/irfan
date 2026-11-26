@@ -1,0 +1,392 @@
+{
+  "id": "2026-11-27-2-king-tides",
+  "keyword": "king tides",
+  "slug": "king-tides",
+  "title": "King Tides: Why the Pacific Ocean Climbed Onto West Coast Streets",
+  "narration_style": "myth vs reality",
+  "fb_caption": "This week, the Pacific Ocean climbed onto streets along America's West Coast, and tide gauges from Oregon to Southern California logged record or near-record water levels. It's called a king tide, and it's not a giant wave. It's the highest high tide of the year, set by the moon and sun and known years ahead. Forecasters say this one stacked on a strong El Niño, with warm water lifting the ocean along the coast, plus Pacific storms on top. More king tides are expected around Christmas week and in late January. Have you ever seen the ocean come over the wall? Tell us where below.",
+  "hashtags": [
+    "#kingtide",
+    "#California",
+    "#WestCoast",
+    "#ElNino",
+    "#flooding",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Which myth did you believe? 1 = it's a giant wave, 2 = the storm causes it, 3 = the tide alone floods cities, 4 = it's over after the storm. Reply with a number!",
+  "sources": [
+    "This week (from about 23 Nov 2026) coastal flooding hit streets and low-lying communities along the US West Coast during king tides [Verified, 3+ sources]: The Weather Channel, 25 Nov 2026 (roads swamped near San Francisco's Embarcadero and in Marin County): https://weather.com/2026/11/25/forecast/regional/king-tides-record-coastal-flooding-west-coast · AP via PBS NewsHour, 24 Nov 2026 (buildings flooded in a Humboldt County community; Washington State Ferries cancelled sailings): https://www.pbs.org/newshour/nation/west-coast-king-tides-could-break-decades-old-records-and-flood-communities · CNN, 23 Nov 2026: https://www.cnn.com/2026/11/23/weather/san-francisco-tide-storm-flooding-thanksgiving · KUOW, 24 Nov 2026: https://www.kuow.org/environment/2026-11-24/extreme-tides-start-to-land-on-washington-coast",
+    "Tide gauges from Oregon to Southern California logged record or near-record water levels [Verified, 3 sources]: The Weather Channel 25 Nov (Charleston, Oregon all-time record; Santa Barbara record; La Jolla record; Los Angeles tied last month's high; San Diego and Humboldt Bay second-highest) · Yale Climate Connections, Nov 2026 (top-10 all-time marks at San Diego and Los Angeles on 23 Nov): https://yaleclimateconnections.org/2026/11/whats-causing-major-coastal-flooding-in-california/ · NBC News live blog 25 Nov (San Francisco: a November record, below the 1983 all-time mark): https://www.nbcnews.com/weather/storms/live-blog/thanksgiving-travel-weather-storms-forecast-wednesday-rcna611082",
+    "A king tide is the highest high tide of the year, when the moon, sun and Earth line up and the moon is close to Earth [Verified, 3 sources]: AP via PBS (\"when the gravitational pull of the moon and sun aligns\"); The Weather Channel (alignment of moon, sun and Earth; this week's full moon); Yale (\"when the full moon is closest to the Earth in its elliptical orbit\")",
+    "Forecasters say a strong El Niño amplified it: warm water raised sea level along the coast [Verified, 3 sources]: AP via PBS (\"amplified by the ongoing super El Niño\", warmer ocean, more seawater volume); Yale (El Niño warm water listed as the top factor; San Francisco sea level averaged about 1.3–1.7 ft above expected over the past week); The Weather Channel (El Niño-driven warm water raised sea levels)",
+    "Storms add to it: low pressure and onshore wind push water higher [Verified, 2 sources]: AP via PBS (NWS meteorologist: sustained southerly winds push storm surge higher); Yale (rule of thumb about 1 cm of sea level per 1 mb pressure drop)",
+    "More king tides are expected around Christmas week and again in late January [Verified, 2 sources]: The Weather Channel 25 Nov and 19 Nov (https://weather.com/2026/11/19/forecast/regional/king-tides-storms-may-bring-major-flooding-to-east-west-coasts); Yale (23–25 Dec and 21–22 Jan)",
+    "Posting-day re-check: Two more Pacific storms were forecast for Thu 26 and Sun 29 Nov. Check that nothing serious (casualties, major damage) has happened that would make the tone wrong, and that \"this week\" still fits."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Fenrir",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Energetic, confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: El Niño = el NEEN-yo.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "This week, the Pacific Ocean climbed onto streets along America's West Coast. From Oregon to Southern California, tide gauges logged record or near-record water levels.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "US WEST COAST · NOV 2026",
+            "at": 0.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION",
+              "OREGON TO SOUTHERN CALIFORNIA",
+              "RECORD OR NEAR-RECORD WATER LEVELS"
+            ],
+            "cues": [
+              "this",
+              "oregon",
+              "record"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "It's called a king tide. And most of what people believe about it is wrong.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "KING TIDE:\nMYTH VS REALITY",
+            "cue": "king"
+          },
+          {
+            "type": "label",
+            "text": "SEA LEVEL WITH THE WALL",
+            "anchor": "wall",
+            "at": 0.6,
+            "dx": 0,
+            "dy": -120,
+            "color": "teal",
+            "until": 3.45
+          }
+        ]
+      }
+    },
+    {
+      "id": "myth_wave",
+      "text": "Myth one: it's a giant wave. Reality: a king tide is slow. It is simply the highest high tide of the year, rising quietly over hours, when the moon, the sun and the Earth line up, and the moon swings in close.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "MYTH 1: A GIANT WAVE",
+            "cue": "myth",
+            "until": "reality"
+          },
+          {
+            "type": "card",
+            "text": "REALITY: A SLOW, HIGH TIDE",
+            "cue": "reality"
+          },
+          {
+            "type": "label",
+            "text": "TIDE GAUGE",
+            "anchor": "gauge",
+            "cue": "slow",
+            "until": 8.1,
+            "dx": 90,
+            "dy": -90,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "HIGHEST HIGH TIDE OF THE YEAR",
+              "RISES QUIETLY OVER HOURS",
+              "MOON, SUN AND EARTH LINE UP",
+              "THE MOON SWINGS IN CLOSE"
+            ],
+            "cues": [
+              "highest",
+              "rising",
+              "line",
+              "swings"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "myth_storm",
+      "text": "Myth two: the storm causes it. Reality: the tide is the moon's work, and it's on the calendar years ahead. A storm only adds to it. Low pressure lets the sea bulge upward, and onshore wind piles water against the coast.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "MYTH 2: THE STORM CAUSES IT",
+            "cue": "myth",
+            "until": "reality"
+          },
+          {
+            "type": "card",
+            "text": "REALITY: THE MOON SETS THE TIDE",
+            "cue": "reality"
+          },
+          {
+            "type": "label",
+            "text": "STORM",
+            "anchor": "storm",
+            "at": 0.5,
+            "until": 7.05,
+            "dx": -80,
+            "dy": 90,
+            "color": "amber"
+          },
+          {
+            "type": "label",
+            "text": "ILLUSTRATION",
+            "anchor": "dome",
+            "cue": "low",
+            "delay": 0.4,
+            "dx": -60,
+            "dy": -110,
+            "color": "teal",
+            "until": 12.1
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ON THE CALENDAR YEARS AHEAD",
+              "A STORM ONLY ADDS TO IT",
+              "LOW PRESSURE: THE SEA BULGES UP",
+              "ONSHORE WIND PILES WATER UP"
+            ],
+            "cues": [
+              "calendar",
+              "only",
+              "low",
+              "onshore"
+            ],
+            "y": 0.62
+          }
+        ]
+      }
+    },
+    {
+      "id": "myth_alone",
+      "text": "Myth three: the tide alone floods cities. Usually, it's just a nuisance. This time, forecasters say it stacked on top of a strong El Niño. Warm water takes up more room, so the ocean along the coast was already sitting higher.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "MYTH 3: THE TIDE ALONE\nFLOODS CITIES",
+            "cue": "myth",
+            "until": "usually"
+          },
+          {
+            "type": "card",
+            "text": "REALITY: USUALLY\nJUST A NUISANCE",
+            "cue": "usually",
+            "until": "this"
+          },
+          {
+            "type": "card",
+            "text": "THIS TIME:\nA STRONG EL NIÑO",
+            "cue": "this"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FORECASTERS SAY",
+              "WARM WATER TAKES UP MORE ROOM",
+              "THE OCEAN WAS ALREADY HIGHER"
+            ],
+            "cues": [
+              "forecasters",
+              "warm",
+              "already"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stack",
+      "text": "Warm ocean. King tide. Storm. Each one adds a little. Together, they go over the wall.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY IT WENT OVER THE WALL",
+            "at": 0.15
+          },
+          {
+            "type": "meter",
+            "label": "WATER LEVEL",
+            "segments": 3,
+            "cues": [
+              "warm",
+              "king",
+              "storm"
+            ],
+            "y": 0.555
+          },
+          {
+            "type": "chips",
+            "items": [
+              "WARM OCEAN (EL NIÑO)",
+              "KING TIDE",
+              "STORM"
+            ],
+            "cues": [
+              "warm",
+              "king",
+              "storm"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "myth_over",
+      "text": "Myth four: once the storm passes, it's over. Reality: king tides come back. Forecasters expect another round around Christmas week, and again in late January.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "MYTH 4: IT'S OVER\nWHEN THE STORM PASSES",
+            "cue": "myth",
+            "until": "reality"
+          },
+          {
+            "type": "card",
+            "text": "REALITY: KING TIDES COME BACK",
+            "cue": "reality"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FORECASTERS EXPECT MORE",
+              "AROUND CHRISTMAS WEEK",
+              "AGAIN IN LATE JANUARY"
+            ],
+            "cues": [
+              "forecasters",
+              "christmas",
+              "late"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: if you live or park near the water, check the tide tables, move your car to higher ground, and never drive through salt water on the road.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TAKEAWAY",
+            "cue": "takeaway"
+          },
+          {
+            "type": "label",
+            "text": "ROAD FLOODED",
+            "anchor": "sign",
+            "cue": "never",
+            "delay": 0.4,
+            "dx": 60,
+            "dy": -100,
+            "color": "amber",
+            "until": 7.0
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "CHECK THE TIDE TABLES",
+              "MOVE YOUR CAR TO HIGHER GROUND",
+              "NEVER DRIVE THROUGH SALT WATER"
+            ],
+            "cues": [
+              "check",
+              "move",
+              "never"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Have you ever seen the ocean come over the wall? Tell us where in the comments, and send this to someone who lives by the sea. Because this week, the Pacific came up the street, and it didn't need a giant wave.",
+      "shot": {
+        "builder": "tides_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "SEEN THE OCEAN\nCOME OVER THE WALL?",
+            "at": 0.45,
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US WHERE IN THE COMMENTS",
+              "SEND THIS TO SOMEONE BY THE SEA"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ]
+          },
+          {
+            "type": "card",
+            "text": "US WEST COAST · NOV 2026",
+            "cue": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

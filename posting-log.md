@@ -22,5 +22,8 @@ Narration style (from the Fri 27 Nov set): log each video's style in the Style c
 | Thu 26 #1 | turkey fryer fire | scheduled via Graph API (video 1127712233487174, post 122094293643568035); Fable QC approved 24 Nov; AI label sent on finish (confirmed method) | 25 Nov 21:00 | — | numbered (old) |
 | Thu 26 #2 | ship collision | scheduled via Graph API (video 2148577172409170, post 122094568149568035); Fable QC approved 24 Nov 23:40 | 26 Nov 01:30 | — | numbered (old) |
 | Thu 26 #3 | high rise fire | scheduled via Graph API (video 1158737403556221, post 122094569241568035); Fable QC approved 24 Nov 23:40; pending Irfan listen-check of "Taiyuan" in outro (~1:21) | 26 Nov 08:00 | — | numbered (old) |
+| Fri 27 #1 | parade balloons | scheduled (API, thumb A) | 26 Nov 21:00 | video 2062469807634539 / post 122095539021568035 | question ladder |
+| Fri 27 #2 | king tides | scheduled (API, thumb B) | 27 Nov 01:30 | video 29419709774347093 / post 122095572441568035 | myth vs reality |
+| Fri 27 #3 | airline outage | scheduled (API, thumb A) | 27 Nov 08:00 | video 891098987393098 / post 122095609659568035 | domino |
 
 Note 24 Nov: the post-level `is_ai_generated` edit returns (#100) permission on every API post, but Irfan confirmed in the FB app that "AI info" shows on the API-posted hurricane reel (label applied on the upload-finish call). The (#100) error is harmless; Graph API stays the main posting route.

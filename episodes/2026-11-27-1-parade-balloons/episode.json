@@ -1,0 +1,372 @@
+{
+  "id": "2026-11-27-1-parade-balloons",
+  "keyword": "parade balloons",
+  "slug": "parade-balloons",
+  "title": "Why Can Wind Ground the Giant Thanksgiving Parade Balloons?",
+  "narration_style": "question ladder",
+  "fb_caption": "This Thanksgiving, the giant balloons are not flying over New York. The 100th Macy's Thanksgiving Day Parade has been moved to Saturday because of a storm. So why would wind stop a parade that usually marches through rain and cold? A giant balloon is several stories tall and acts like a sail, wind force grows about four times when wind speed doubles, and tall buildings can funnel sudden gusts around corners. New York City's limits for the big balloons are 23 mph sustained and 34 mph in gusts. Which balloon is your all-time favorite? Tell us below.",
+  "hashtags": [
+    "#MacysParade",
+    "#Thanksgiving",
+    "#NewYork",
+    "#balloons",
+    "#wind",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Would you hold a line on a giant balloon in a 30 mph gust? Reply YES or NO WAY, and tell us which balloon you'd want to fly!",
+  "sources": [
+    "The Macy's Thanksgiving Day Parade (Thu 26 Nov 2026) was moved to Saturday 28 Nov, 8:30 am, because of a storm; decided by the City of New York, Macy's and NBC \"in the interest of safety for both the participants and spectators\" [Verified, 3+ sources]: NBC Insider: https://www.nbc.com/nbc-insider/2026-macys-thanksgiving-day-parade-moves-to-saturday-november-28 · NBC News live blog, 25 Nov (Macy's statement 4:05 pm EST): https://www.nbcnews.com/weather/storms/live-blog/thanksgiving-travel-weather-storms-forecast-wednesday-rcna611082 · WYFF/AP-style report, updated 5:19 pm EST 25 Nov: https://www.wyff4.com/article/macys-thanksgiving-day-parade-postponed-saturday-storm/74535021 · ABC7 New York, 26 Nov: https://abc7ny.com/story/will-macys-parade-balloons-fly-storm-wind-rain-puts-doubt/20078423/",
+    "It is the 100th parade [Verified, 2+ sources]: WYFF (\"Macy's 100th annual Thanksgiving Day Parade\"); ABC7 (Macy's statement: \"the 100th Macy's Thanksgiving Day Parade will be postponed\")",
+    "Large-balloon wind limits in New York City: sustained winds over 23 mph, gusts over 34 mph [Verified: 1 opened source (NBC News 2026) + 2019 reports seen as search summaries]: NBC News live blog 25 Nov 2026 (\"sustained winds over 23 mph or gusts above 34 mph for large balloons\"); AP 2019 as carried by Fortune (search summary only, pages not opened): https://fortune.com/2019/11/28/macys-thanksgiving-day-parade-2019-balloons and CBS New York 2019: https://www.cbsnews.com/newyork/news/macys-thanksgiving-day-parade-2019-balloons (older reports word it \"and\", NBC 2026 \"or\": the script only names the two numbers)",
+    "Forecast gusts were beyond what the balloons are allowed; National Weather Service high wind warning [Verified, 2+ sources (the exact gust figure differs: 30–45 mph NBC News, 50–60 mph WYFF, 60 mph ABC7)]: ABC7 (\"well in excess of what is permissible for the balloons\"); WYFF; NBC News. **No gust number is used in the script.**",
+    "The balloons were already being inflated when the move was announced; officials said they would be deflated and prepared again for Saturday [Inflating: 2 sources (WYFF \"well on the way to being inflated\"; ABC7). Deflating + back to New Jersey: ABC7 only, so worded as \"officials said\"]: ABC7; WYFF",
+    "About 80 to 100 handlers per giant balloon; filled with helium [Verified (NBC, 2024; AP 2019 via search summary)]: https://www.nbc.com/nbc-insider/why-dont-macys-thanksgiving-day-parade-balloons-fly-away",
+    "Weather grounded the balloons only once before, in 1971 [1 opened source (NBC News 2026) + 1 search summary]: NBC News live blog 25 Nov 2026 (balloons grounded in 1971 due to fierce winds and rain); AP 2019 (search summary only, not opened: \"grounded only once for weather-related reasons, in 1971\")",
+    "In windy years the balloons have flown lower than usual [2 sources]: WYFF 25 Nov 2026; Fox 5 NY 2019: https://www.fox5ny.com/news/macys-thanksgiving-day-parade-2019-balloons-fly-just-lower-than-usual",
+    "Posting-day re-check: Confirm the parade is still set for Saturday 28 Nov 8:30 am ET and that Thursday's parade did not go ahead in any form. The reel posts 8:00 am ET on Thanksgiving, when the parade would have been starting."
+  ],
+  "tts": {
+    "model": "gemini-3.8-flash-tts",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm, knowledgeable and clear, but confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: Macy's = MAY-seez.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "This Thanksgiving, the giant balloons are not flying over New York. The one hundredth Macy's Thanksgiving Day Parade has been moved to Saturday, because of a storm.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "NEW YORK · THANKSGIVING 2026",
+            "sub": "PARADE MOVED TO SATURDAY 28 NOV",
+            "sub_cue": "moved",
+            "at": 0.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION",
+              "THE 100TH MACY'S PARADE",
+              "BECAUSE OF A STORM"
+            ],
+            "cues": [
+              "giant",
+              "hundredth",
+              "storm"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "This parade usually marches on through rain and cold. So why would wind stop it? Follow the questions.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY WOULD WIND\nSTOP A PARADE?",
+            "cue": "so"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "RAIN AND COLD: IT USUALLY MARCHES ON"
+            ],
+            "cues": [
+              "usually"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "why_balloons",
+      "text": "First question. Why not just march? Because of the balloons. A giant parade balloon is filled with helium and stands several stories tall. To the wind, that is not a toy. It is a sail.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY NOT JUST MARCH?",
+            "at": 0.2
+          },
+          {
+            "type": "bar",
+            "top": "balloon_top",
+            "bottom": "balloon_bottom",
+            "label": "SEVERAL STORIES TALL",
+            "cue": "several",
+            "side": "left",
+            "color": "teal",
+            "until": "wind",
+            "bx": -260
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FILLED WITH HELIUM",
+              "TO THE WIND, IT IS A SAIL"
+            ],
+            "cues": [
+              "helium",
+              "sail"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "why_not_hold",
+      "text": "But why can't the handlers just hold on? Each giant balloon has around eighty to a hundred of them. The trouble is the math. Double the wind speed, and the push is about four times stronger.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY CAN'T THEY HOLD ON?",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "HANDLERS",
+            "anchor": "handlers",
+            "cue": "handlers",
+            "dx": -80,
+            "dy": -140,
+            "color": "teal",
+            "until": "trouble"
+          },
+          {
+            "type": "big",
+            "text": "80–100 HANDLERS",
+            "sub": "PER GIANT BALLOON",
+            "cue": "eighty",
+            "until": "trouble",
+            "y": 0.45
+          },
+          {
+            "type": "big",
+            "text": "WIND ×2 = PUSH ×4",
+            "sub": "ABOUT FOUR TIMES STRONGER",
+            "cue": "double",
+            "y": 0.45
+          }
+        ]
+      }
+    },
+    {
+      "id": "why_not_lower",
+      "text": "So why not fly them lower? In windy years, they have. But a city makes its own gusts. Tall buildings can squeeze the wind and fire it around corners.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHY NOT FLY LOWER?",
+            "at": 0.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "IN WINDY YEARS, THEY HAVE",
+              "ILLUSTRATION: CITY GUSTS",
+              "TALL BUILDINGS SQUEEZE THE WIND"
+            ],
+            "cues": [
+              "windy",
+              "city",
+              "squeeze"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "where_is_the_line",
+      "text": "So where is the line? New York City draws it. For the big balloons, the limits are twenty-three miles an hour sustained, and thirty-four in gusts. Officials said this storm's forecast gusts were well beyond that.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHERE IS THE LINE?",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "23 MPH SUSTAINED",
+            "anchor": "tick23",
+            "cue": "twenty",
+            "dx": -200,
+            "dy": -150,
+            "color": "amber",
+            "until": "beyond"
+          },
+          {
+            "type": "label",
+            "text": "34 MPH GUSTS",
+            "anchor": "tick34",
+            "cue": "thirty",
+            "dx": 150,
+            "dy": -230,
+            "color": "red",
+            "until": "beyond"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "NEW YORK CITY LIMITS, BIG BALLOONS",
+              "FORECAST GUSTS: WELL BEYOND (OFFICIALS)"
+            ],
+            "cues": [
+              "new",
+              "officials"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "what_now",
+      "text": "Only once before, in nineteen seventy-one, did weather keep the balloons down. This time, they were already being inflated. Officials said they would be let down, and readied again for Saturday.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "ONLY ONCE BEFORE",
+            "at": 0.2
+          },
+          {
+            "type": "chips",
+            "items": [
+              "1971: BALLOONS KEPT DOWN BY WEATHER",
+              "LET DOWN, READIED FOR SATURDAY",
+              "NEXT: SAT 28 NOV · 8:30 AM"
+            ],
+            "cues": [
+              "nineteen",
+              "officials",
+              "saturday"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: if wind can push around a balloon the size of a building, it can launch your trampoline, your patio umbrella and your yard inflatables. Tie them down before the storm.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TAKEAWAY",
+            "at": 0.2
+          },
+          {
+            "type": "label",
+            "text": "TRAMPOLINE",
+            "anchor": "trampoline",
+            "cue": "trampoline",
+            "dx": 60,
+            "dy": -95,
+            "color": "teal",
+            "until": "before"
+          },
+          {
+            "type": "label",
+            "text": "PATIO UMBRELLA",
+            "anchor": "umbrella",
+            "cue": "patio",
+            "dx": -60,
+            "dy": -95,
+            "color": "teal",
+            "until": "before"
+          },
+          {
+            "type": "label",
+            "text": "YARD INFLATABLE",
+            "anchor": "turkey",
+            "cue": "yard",
+            "dx": -40,
+            "dy": -95,
+            "color": "teal",
+            "until": "before"
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "TIE THEM DOWN BEFORE THE STORM"
+            ],
+            "cues": [
+              "tie"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "Which balloon is your all-time favorite? Tell us in the comments, and send this to someone who never misses the parade. Because this Thanksgiving, the wind decided: the giant balloons stay down.",
+      "shot": {
+        "builder": "parade_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "WHICH BALLOON IS\nYOUR FAVORITE?",
+            "at": 0.3,
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS",
+              "SEND THIS TO A PARADE FAN"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ]
+          },
+          {
+            "type": "card",
+            "text": "NEW YORK · THANKSGIVING 2026",
+            "sub": "THE GIANT BALLOONS STAY DOWN",
+            "cue": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}

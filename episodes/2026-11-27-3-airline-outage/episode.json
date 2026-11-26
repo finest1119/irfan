@@ -1,0 +1,480 @@
+{
+  "id": "2026-11-27-3-airline-outage",
+  "keyword": "airline outage",
+  "slug": "airline-outage",
+  "title": "How One Computer Glitch Can Stall a Whole Airline",
+  "narration_style": "domino",
+  "fb_caption": "On Tuesday, US skies had their busiest day in 16 years, about 52,000 flights, officials said. Two days earlier, one computer system failed at one of the country's biggest airlines, and roughly 2,000 of its flights were delayed that day. Nothing was wrong with the planes. What was missing was the weight and balance math every airliner needs before takeoff. From there the dominoes can fall: slow hand calculations, full gates, arriving planes stuck on the taxiway, flights held at other airports, and crews running out of legal working hours. The system was back by Sunday afternoon, and the airline has not said what caused it. What's the longest you've ever been stuck at an airport? Tell us below.",
+  "hashtags": [
+    "#flightdelays",
+    "#airlines",
+    "#airtravel",
+    "#aviation",
+    "#Thanksgivingtravel",
+    "#howitworks",
+    "#newsexplained",
+    "#whatjusthappened"
+  ],
+  "engagement_comment": "Quick poll: what's worse? 1 = stuck at the gate, 2 = stuck on the taxiway, 3 = stuck in the rebooking line. Reply with a number and your record wait!",
+  "sources": [
+    "On Sunday 22 Nov 2026 a major US airline's weight-and-balance automation system failed (FAA: \"Delta is working to resolve issues with the airline's weight and balance automation system\") [Verified, 2 fetched + 2 corroborating]: AirlineGeeks, 23 Nov 2026: https://airlinegeeks.com/2026/11/23/delta-outage-delays-hundreds-of-flights/ · TravelHost via Yahoo Travel, 24 Nov 2026: https://travel.yahoo.com/news/articles/delta-outage-delays-2-000-020300409.html · corroborating (headlines / search summaries, not opened or 403): Quartz, 23 Nov: https://qz.com/delta-flight-system-outage-delays-thanksgiving-112326 · PBS NewsHour News Wrap (\"airlines rebound from tech failures\"): https://www.pbs.org/newshour/show/news-wrap-storms-threaten-thanksgiving-travel-as-airlines-rebound-from-tech-failures · CNN live, 24 Nov (lingering disruption from a Delta system outage): https://www.cnn.com/2026/11/24/us/live-news/thanksgiving-travel",
+    "Roughly two thousand of its flights were delayed that day [Verified, 2 sources (FlightAware figures: \"over 2,100\" AirlineGeeks; \"about 2,000\", \"more than 1,900 by 6 pm ET\" TravelHost/CBS)]: AirlineGeeks; TravelHost via Yahoo",
+    "The system was restored by Sunday afternoon; delays rippled on afterwards [Verified, 2 sources]: AirlineGeeks (\"resolved Sunday afternoon\"); TravelHost (restored by Sunday afternoon; ripple effects past midnight)",
+    "The airline has not said what caused it; the FAA said it was not an air-traffic-control problem [Verified, 2 sources]: TravelHost (\"has not disclosed what caused the system to fail\"); AirlineGeeks (no root cause given; FAA: specific to the airline, nothing to do with ATC)",
+    "Staff fell back on manual work (counting bags by hand, manual load reports) [Verified, 2 sources]: TravelHost; AirlineGeeks (\"manual workarounds for baggage processing\")",
+    "Flights to the airline's main hub were briefly held on the ground at the airline's request (ground stop) [1 fetched source + search summaries (TravelHost citing CNN; MiGFlug headline) → used only as a general \"can be held\" line]: TravelHost via Yahoo; https://migflug.com/afterburner/delta-weight-and-balance-outage-atlanta-ground-stop-november-2026/",
+    "The airline said most of the day's disruption (about 70%) traced to the automation problem, the rest to weather / air traffic programs [1 fetched source (TravelHost) + search summary → used softly (\"the planes were fine\")]: TravelHost via Yahoo",
+    "Tuesday 24 Nov 2026 was the busiest US flying day in 16 years, more than 52,000 flights, per Transportation Secretary Sean Duffy [Verified, 2 sources]: NBC News live blog, 25 Nov 2026 (12:59 pm EST entry): https://www.nbcnews.com/weather/storms/live-blog/thanksgiving-travel-weather-storms-forecast-wednesday-rcna611082 · CNN live, 24 Nov 2026 (search summary: \"more than 52,000 flights operated nationwide on Tuesday, November 24, the most in a single day in 16 years\"): https://www.cnn.com/2026/11/24/us/live-news/thanksgiving-travel",
+    "Posting-day re-check: The outage is from 22 Nov (the lead fact, the 52,000-flight day, is 24 Nov). Check whether the airline or FAA has since named a cause; if so, keep \"has not said\" out or update. Check for a fresher airline tech failure to lead with."
+  ],
+  "tts": {
+    "model": "gemini-3.1-flash-tts-preview",
+    "fallback_model": "gemini-3.1-flash-tts-preview",
+    "voice": "Sadaltager",
+    "director_notes": "Male documentary-style news explainer for a US/UK social video. Calm, knowledgeable and clear, strictly neutral, but confident, punchy and fast (about 170-185 words per minute), conversational but serious. Short sentences, a brief dramatic pause before key facts, lively intonation, never monotone or salesy.\nPronunciation: no special names; say \"two thousand\" clearly.",
+    "pause_between_beats": 0.2,
+    "trim_pauses": true
+  },
+  "music": null,
+  "render": {
+    "resolution": [
+      1080,
+      1920
+    ],
+    "fps": 30,
+    "samples": 24,
+    "parallel": 3
+  },
+  "beats": [
+    {
+      "id": "hook",
+      "text": "On Tuesday, America's skies had their busiest day in sixteen years: about fifty-two thousand flights, officials said. Two days earlier, one computer system failed at one of the country's biggest airlines, and roughly two thousand of its flights were delayed that day.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "USA · THANKSGIVING WEEK 2026",
+            "at": 0.2,
+            "until": "days"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ILLUSTRATION",
+              "TUESDAY: ABOUT 52,000 FLIGHTS",
+              "BUSIEST DAY IN 16 YEARS"
+            ],
+            "cues": [
+              "on",
+              "tuesday",
+              "busiest"
+            ],
+            "until": "days"
+          },
+          {
+            "type": "card",
+            "text": "TWO DAYS EARLIER: SUNDAY",
+            "cue": "days"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "ONE AIRLINE, ONE SYSTEM DOWN",
+              "ABOUT 2,000 OF ITS FLIGHTS DELAYED"
+            ],
+            "cues": [
+              "computer",
+              "roughly"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "question",
+      "text": "Nothing was wrong with the planes. The airline said most of the trouble traced to that one system, and what it does is math. So how can one glitch stall an airline? Watch the dominoes.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "chips",
+            "items": [
+              "THE PLANES WERE FINE",
+              "THE AIRLINE: MOST OF THE TROUBLE"
+            ],
+            "cues": [
+              "nothing",
+              "airline"
+            ],
+            "until": "so"
+          },
+          {
+            "type": "board",
+            "title": "LOAD SHEET",
+            "rows": [
+              [
+                "",
+                "WEIGHT",
+                "MISSING"
+              ],
+              [
+                "",
+                "BALANCE",
+                "MISSING"
+              ]
+            ],
+            "cue": "math",
+            "until": "so"
+          },
+          {
+            "type": "card",
+            "text": "HOW ONE GLITCH CAN\nSTALL AN AIRLINE",
+            "cue": "so"
+          }
+        ]
+      }
+    },
+    {
+      "id": "domino_numbers",
+      "text": "Domino one: no numbers. Before any airliner takes off, the crew needs its exact weight and its balance point. Those numbers set the takeoff speed and the engine power. No numbers, no takeoff.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DOMINO 1: NO NUMBERS",
+            "cue": "domino"
+          },
+          {
+            "type": "meter",
+            "label": "DOMINOES",
+            "segments": 5,
+            "cues": [
+              "domino"
+            ]
+          },
+          {
+            "type": "chips",
+            "items": [
+              "EXACT WEIGHT",
+              "BALANCE POINT",
+              "TAKEOFF SPEED + ENGINE POWER"
+            ],
+            "cues": [
+              "weight",
+              "balance",
+              "those"
+            ]
+          },
+          {
+            "type": "label",
+            "text": "THE FIRST DOMINO",
+            "anchor": "dom1",
+            "cue": "domino",
+            "dx": -60,
+            "dy": -110,
+            "color": "amber",
+            "until": 6.9
+          }
+        ]
+      }
+    },
+    {
+      "id": "domino_by_hand",
+      "text": "Domino two: the slow way. The math can be done by hand. But that can mean counting bags one by one, at every single gate.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DOMINO 2: THE SLOW WAY",
+            "cue": "domino"
+          },
+          {
+            "type": "meter",
+            "label": "DOMINOES",
+            "segments": 5,
+            "cues": [
+              0.0,
+              "domino"
+            ]
+          },
+          {
+            "type": "label",
+            "text": "COUNTED BY HAND",
+            "anchor": "bags",
+            "cue": "counting",
+            "dx": 70,
+            "dy": -110,
+            "color": "amber",
+            "until": 8.4
+          },
+          {
+            "type": "chips",
+            "items": [
+              "MATH DONE BY HAND",
+              "BAGS COUNTED ONE BY ONE",
+              "AT EVERY SINGLE GATE"
+            ],
+            "cues": [
+              "hand",
+              "counting",
+              "every"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "domino_gates",
+      "text": "Domino three: the gates. A plane that can't leave is still parked. So the next arriving plane has nowhere to go, and it waits on the taxiway.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DOMINO 3: THE GATES",
+            "cue": "domino"
+          },
+          {
+            "type": "meter",
+            "label": "DOMINOES",
+            "segments": 5,
+            "cues": [
+              0.0,
+              0.0,
+              "domino"
+            ]
+          },
+          {
+            "type": "label",
+            "text": "GATE FULL",
+            "anchor": "gate6",
+            "cue": "gates",
+            "until": 4.3,
+            "dx": -170,
+            "dy": -130,
+            "color": "red"
+          },
+          {
+            "type": "label",
+            "text": "GATE FULL",
+            "anchor": "gate8",
+            "cue": "plane",
+            "until": 4.3,
+            "dx": 110,
+            "dy": -50,
+            "color": "red"
+          },
+          {
+            "type": "label",
+            "text": "WAITING",
+            "anchor": "queue",
+            "cue": "nowhere",
+            "dx": 70,
+            "dy": -110,
+            "color": "amber",
+            "until": 8.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "CAN'T LEAVE = STILL PARKED",
+              "NEXT PLANE: NOWHERE TO GO"
+            ],
+            "cues": [
+              "leave",
+              "nowhere"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "domino_hub",
+      "text": "Domino four: the hub. To stop the pile-up, flights heading there can be held at their departure airports. That is called a ground stop.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DOMINO 4: THE HUB",
+            "cue": "domino"
+          },
+          {
+            "type": "meter",
+            "label": "DOMINOES",
+            "segments": 5,
+            "cues": [
+              0.0,
+              0.0,
+              0.0,
+              "domino"
+            ]
+          },
+          {
+            "type": "big",
+            "text": "GROUND STOP",
+            "cue": "ground"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "FLIGHTS HEADING TO THE HUB",
+              "HELD AT THEIR DEPARTURE AIRPORTS"
+            ],
+            "cues": [
+              "flights",
+              "held"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "domino_crews",
+      "text": "Domino five: the clock. Pilots and flight attendants can only work a limited number of hours. When planes run late, crews can time out, and delays roll on long after the computer is fixed.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "DOMINO 5: THE CLOCK",
+            "cue": "domino"
+          },
+          {
+            "type": "meter",
+            "label": "DOMINOES",
+            "segments": 5,
+            "cues": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              "domino"
+            ]
+          },
+          {
+            "type": "label",
+            "text": "CREW",
+            "anchor": "crew",
+            "cue": "pilots",
+            "until": 5.7,
+            "dx": 70,
+            "dy": -110,
+            "color": "teal"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "LIMITED WORKING HOURS",
+              "CREWS CAN TIME OUT",
+              "DELAYS ROLL ON"
+            ],
+            "cues": [
+              "limited",
+              "crews",
+              "delays"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "resolution",
+      "text": "In this case, the system was back by Sunday afternoon. The airline has not said what caused it.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "IN THIS CASE",
+            "at": 0.15
+          },
+          {
+            "type": "chips",
+            "items": [
+              "BACK BY SUNDAY AFTERNOON",
+              "CAUSE: NOT ANNOUNCED"
+            ],
+            "cues": [
+              "back",
+              "has"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "text": "Takeaway: check the app before you leave home, rebook in the app instead of the line, and keep essentials in your carry-on.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "TAKEAWAY",
+            "cue": "takeaway"
+          },
+          {
+            "type": "chips",
+            "style": "check",
+            "items": [
+              "CHECK THE APP BEFORE YOU LEAVE",
+              "REBOOK IN THE APP, NOT THE LINE",
+              "ESSENTIALS IN YOUR CARRY-ON"
+            ],
+            "cues": [
+              "check",
+              "rebook",
+              "keep"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "outro",
+      "text": "What's the longest you've ever been stuck at an airport? Tell us in the comments, and send this to someone flying home this weekend. Because sometimes, a whole airline waits on one math problem.",
+      "shot": {
+        "builder": "airport_oneshot",
+        "params": {},
+        "overlays": [
+          {
+            "type": "card",
+            "text": "LONGEST YOU'VE BEEN\nSTUCK AT AN AIRPORT?",
+            "at": 0.45,
+            "until": "because"
+          },
+          {
+            "type": "chips",
+            "items": [
+              "TELL US IN THE COMMENTS",
+              "SEND THIS TO SOMEONE FLYING HOME"
+            ],
+            "cues": [
+              "tell",
+              "send"
+            ]
+          },
+          {
+            "type": "card",
+            "text": "ONE MISSING NUMBER",
+            "cue": "because"
+          }
+        ]
+      }
+    }
+  ],
+  "pipeline": "v2"
+}
