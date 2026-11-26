@@ -38,7 +38,11 @@ VRAM figure is the same for every frame. No individual scene stands out. Risks t
 6. **Secrets:** copy `.env` and `.env.page2` from the Mac by USB or AirDrop. **Never** through git or chat.
 7. **Quaternius kits:** copy `assets/cc0/quaternius/UBC_Standard.zip` and `UAL_Standard.zip` (plus their extracted
    folders) from the Mac by hand. There's no anonymous URL.
-8. **CC0 assets:** run `.venv\Scripts\python tools\fetch_cc0.py`. It fetches `tree_small_02` and the rest, and checks sha256.
+8. **Poly Haven HDRI + textures (gitignored):** run `.venv\Scripts\python tools\fetch_assets.py`, then
+   `tools\fetch_assets.py --check`, which must report nothing missing. **Without the HDRI every day-preset frame blows out to near-white.**
+   The world falls back to a procedural sky lit at full HDRI strength; dusk still looks fine because it swaps in its own sky.
+   After rendering, the still log must NOT contain `[mh] no HDRI`.
+   **CC0 assets:** run `.venv\Scripts\python tools\fetch_cc0.py`. It fetches `tree_small_02` and the rest, and checks sha256.
    Then rebuild the library:
    `blender -b --factory-startup -P page2/blender/cc0_lib.py -- build`.
 9. **Fonts:** `assets/fonts/Oswald-Bold.ttf` and `Oswald-SemiBold.ttf` arrive with git and are used by the thumbnail tool.

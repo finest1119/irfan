@@ -34,14 +34,28 @@ week of building plus benchmarking. Instead:
 - **Track B, in parallel (lower priority):** build the hometown one-shot world in small steps. Switch its episodes in
   once M1 passes the benchmark (≤ 1.5 s/frame, ≤ 3.0 GB VRAM).
 
+**Volume (Irfan via chief, 26 Nov): ramp to 5/day by ~30 Nov.** Render is not the limit (Asus EEVEE 0.90 s/frame,
+2 processes: a 25–45 s reel ≈ 15–20 min). The limits are new builders per topic (reuse worlds hard: batch topics
+per world) and Claude quota. Model split: Fable only for fact-check + final QC; Opus for scripts, builders, render
+driving. Watch the weekly quota after the first 3 reels; if it binds, cut builder iterations, not QC.
+
+**Operating mode (Irfan via chief, 26 Nov 2026): FULL AUTO.** Push of page3/ files + reviewed builders to
+`claude/optimistic-hawking-lkruq9` approved (secret scan first). Slots 12:00 / 17:00 / 20:00 ET approved. No personal
+approval per reel: once the Fable QC MUST-FIX tier is clean, the Asus schedules it (Public, AI label ON, ED cover,
+hashtags, engagement comment as the Page), the dashboard row is updated, and the chief gets a one-line note. Flow:
+Mac (scripts, fact-check, builders, QC) → git → Asus Remote Control session (render, qc_full, cover, schedule).
+Report to the chief if the Asus Remote Control drops or anything blocks.
+
 **Timeline**
 | When | What |
 |---|---|
 | D0–1 (25–26 Nov) | Asus setup done (WINDOWS-SETUP.md), `.env` with the Beyond Measure → ED Page token, 10 s v2 benchmark on the Asus. Write + fact-check the first 6 Track A scripts. |
 | D2 (27 Nov, Thanksgiving) | **First reel posts** if the benchmark passes and pilot QC is clean (target: 2 reels). Fallback if the Asus isn't ready: no post that day (the Mac belongs to WJH). |
-| D3–D7 | **2 reels/day**, rising to **3/day** once render time per reel is known (<~1.5 h each). |
-| Week 2–4 | **3/day steady** (a 4th on days with a free render slot); first Track B one-shot reels once M1 passes. Double down on the topic/format of whatever beats 20k views in 48 h (sequels, "part 2"). |
-Posting slots (ET): about 12:00, 17:00 and 20:00 (section 3.7). Every post: Public, AI label ON, hashtags, ED cover,
+| D3 (28 Nov) | **3/day** (12:00, 17:00, 20:00 ET). |
+| D4 (29 Nov) | **4/day** (+22:30 ET). |
+| D5 (30 Nov) → 19 Dec | **5/day** (+07:30 ET), the PLAN target (line 5), as long as every reel passes the MUST-FIX tier; a reel that fails slips a slot, it never posts with errors. Double down on whatever beats 20k views in 48 h (sequels, "part 2"); switch Track B one-shot reels in once M1 passes. |
+Posting slots (ET, from section 3.7; ramp order): **12:00, 17:00, 20:00** (approved), then **22:30** (late / West-coast
+evening) and **07:30** (morning commute). MYT = ET + 13 h in winter. Every post: Public, AI label ON, hashtags, ED cover,
 engagement comment as the Page (posting checklist).
 
 **Topic list ranked for US virality (Track A = buildable now with existing worlds/simple scenes)**
