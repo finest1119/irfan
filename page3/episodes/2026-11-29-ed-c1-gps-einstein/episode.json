@@ -1,0 +1,262 @@
+{
+ "id": "2026-11-29-ed-c1-gps-einstein",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "gps einstein",
+ "slug": "gps-einstein",
+ "title": "Your Phone's GPS Would Be Off by Miles a Day Without Einstein",
+ "fb_caption": "The blue dot on your map depends on clocks more than twelve thousand miles up. Your phone times signals from at least four GPS satellites to work out where you are, but up there weaker gravity makes clocks tick faster, and even after their speed slows them a bit they gain about 38 millionths of a second a day. Signals move at light speed, so left uncorrected that tiny gap would add up to miles of error in a single day. That's why the satellite clocks are tuned to tick slightly slow before launch. Blue dot or street signs: which do you trust?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#GPS",
+  "#Einstein",
+  "#Science"
+ ],
+ "engagement_comment": "Blue dot or street signs: which do you trust? 1 = the blue dot, always, 2 = street signs, 3 = both, just in case.",
+ "sources": [
+  "GPS.gov, Space Segment (medium Earth orbit about 20,200 km / 12,550 miles; each satellite circles the Earth twice a day; at least four satellites in view from virtually anywhere): https://archive.gps.gov/systems/gps/space/",
+  "Ohio State University (R. Pogge), Real-World Relativity: The GPS Navigation System (atomic clocks; at least 4 satellites; special relativity -7 and general relativity +45 microseconds/day, net about +38; uncorrected errors would accumulate about 10 km a day; clocks built to run slower before launch): https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+  "Wikipedia, Error analysis for the Global Positioning System (relativity corrections, about 38 microseconds/day; clock frequency offset): https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, about 170 words per minute, short pause before the twist. Read only the script text.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Your phone's blue dot stays on your street thanks to Albert Einstein.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "YOUR DOT NEEDS EINSTEIN",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "sats",
+   "text": "It listens to GPS satellites over twelve thousand miles up, each with an atomic clock.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "sats",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "ABOUT 12,550 MILES UP",
+      "anchor": "sat",
+      "cue": "miles",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ATOMIC CLOCK ON BOARD"
+      ],
+      "cues": [
+       "atomic"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "timing",
+   "text": "It times signals from at least four of them to work out where you are.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "timing",
+     "beam_cue": "signals",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "YOU ARE HERE",
+      "anchor": "you",
+      "cue": "where",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "4+ SATELLITES",
+       "TRAVEL TIME"
+      ],
+      "cues": [
+       "least",
+       "times"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. Up there, weaker gravity makes clocks run fast. Speed slows them slightly, but they gain about thirty-eight millionths of a second a day.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "clock",
+     "fast_cue": "fast",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "SATELLITE CLOCK",
+      "anchor": "clock",
+      "cue": "clocks",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "GRAVITY: FASTER",
+       "SPEED: SLOWER"
+      ],
+      "cues": [
+       "gravity",
+       "speed"
+      ]
+     },
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "THEY GAIN TIME EVERY DAY",
+      "cue": "gain"
+     }
+    ]
+   }
+  },
+  {
+   "id": "drift",
+   "text": "Signals move at light speed, so that adds up. Uncorrected, your dot could drift miles in a day.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "drift",
+     "drift_cue": "drift",
+     "_still": 0.9
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "WHERE YOU REALLY ARE",
+      "anchor": "true",
+      "cue": "uncorrected",
+      "color": "teal"
+     },
+     {
+      "type": "label",
+      "text": "MILES OFF IN A DAY",
+      "anchor": "dot",
+      "cue": "drift",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ROUGHLY 6 MILES A DAY"
+      ],
+      "cues": [
+       "day"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "fix",
+   "text": "So the clocks are tuned to tick slightly slow before launch, and your dot stays put.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "fix",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "DOT STAYS PUT",
+      "anchor": "dot",
+      "cue": "stays",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "TUNED BEFORE LAUNCH"
+      ],
+      "cues": [
+       "tuned"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Blue dot or street signs: which do you trust? Tell us below.",
+   "shot": {
+    "builder": "gps_sky_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "BLUE DOT OR STREET SIGNS?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

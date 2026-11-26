@@ -39,6 +39,13 @@ week of building plus benchmarking. Instead:
 per world) and Claude quota. Model split: Fable only for fact-check + final QC; Opus for scripts, builders, render
 driving. Watch the weekly quota after the first 3 reels; if it binds, cut builder iterations, not QC.
 
+**Token-saving rules (Irfan via chief, 26 Nov):** max **3 reels per ET day** until the weekly quota resets
+(29 Nov 22:00 MYT), then ramp to 5/day; build only what 3/day needs. Fact-check = Opus (2+ sources); Fable = final
+QC only. Screenshots only when layout matters. Message the chief only for: reel scheduled (one line), decision
+needed, problem/block. Story sharing paused (page3/output/api-posts.json kept for records only).
+Next-free-slot rule (26 Nov): a reel goes out at the next free ET slot (07:30/12:00/17:00/20:00/22:30, ≥2.5 h
+apart) once it passes QC, within the daily cap.
+
 **Operating mode (Irfan via chief, 26 Nov 2026): FULL AUTO.** Push of page3/ files + reviewed builders to
 `claude/optimistic-hawking-lkruq9` approved (secret scan first). Slots 12:00 / 17:00 / 20:00 ET approved. No personal
 approval per reel: once the Fable QC MUST-FIX tier is clean, the Asus schedules it (Public, AI label ON, ED cover,

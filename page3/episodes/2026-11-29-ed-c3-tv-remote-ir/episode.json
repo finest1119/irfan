@@ -1,0 +1,247 @@
+{
+ "id": "2026-11-29-ed-c3-tv-remote-ir",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "tv remote",
+ "slug": "tv-remote",
+ "title": "Your TV Remote Flashes a Light You Can't See, but Your Phone Camera Can",
+ "fb_caption": "Every time you press a button, your TV remote flashes an infrared LED, a light just past red that your eyes can't see. Each button sends its own pattern of super-fast flashes, and a small sensor on the TV reads it. Many phone cameras can pick up that light, so it shows up on screen as a purple-white flash. Point the remote at your phone's camera and press a button; if nothing shows, try the selfie camera. Did you see the flash?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#TVRemote",
+  "#Science",
+  "#TryThisAtHome"
+ ],
+ "engagement_comment": "Did you see the flash? 1 = yes, on my main camera, 2 = only on the selfie camera, 3 = nothing showed up.",
+ "sources": [
+  "Wikipedia, Remote control (940 nm LED typical; each button sends its own pattern of infrared pulses; the receiver recognizes the pattern; invisible to the eye but visible to digital and phone cameras, often as purple light): https://en.wikipedia.org/wiki/Remote_control",
+  "Adafruit, IR Sensor (remotes pulse an IR LED; receivers peak at 940 nm and 38 kHz): https://learn.adafruit.com/ir-sensor/overview",
+  "Carolina Biological, Seeing infrared with a phone camera (many phones have IR filters on the rear camera and little or none on the front camera; a light appears on the front camera screen): https://knowledge.carolina.com/?p=189"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, about 170 words per minute, short pause before the twist. Read only the script text.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Your TV remote flashes a light every time you press a button. You just can't see it.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "AN INVISIBLE LIGHT?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "led",
+   "text": "That little bulb up front is an infrared LED. Its light sits just past red, beyond what eyes can see.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "led",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "INFRARED LED",
+      "anchor": "led",
+      "cue": "infrared",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "INVISIBLE TO YOUR EYES",
+       "JUST PAST RED"
+      ],
+      "cues": [
+       "light",
+       "past"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "code",
+   "text": "Each button sends its own pattern of super-fast flashes, like Morse code made of light.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "code",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "FAST FLASHES",
+      "anchor": "pulses",
+      "cue": "flashes",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ONE PATTERN PER BUTTON"
+      ],
+      "cues": [
+       "pattern"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "sensor",
+   "text": "A small sensor on the TV catches that pattern and does what you asked.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "sensor",
+     "change_cue": "does",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "IR SENSOR",
+      "anchor": "sensor",
+      "cue": "sensor",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "READS THE PATTERN"
+      ],
+      "cues": [
+       "catches"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the trick. Many phone cameras can see that light, so it shows up as a purple-white flash.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "phone",
+     "flash_cue": "see",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "ON YOUR PHONE SCREEN",
+      "anchor": "screen",
+      "cue": "shows",
+      "color": "amber"
+     },
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "YOUR CAMERA CAN SEE IT",
+      "cue": "flash"
+     }
+    ]
+   }
+  },
+  {
+   "id": "try",
+   "text": "Try it tonight. Point the remote at your phone's camera and press a button. Nothing? Try the selfie camera.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "try",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "SELFIE CAMERA",
+      "anchor": "front",
+      "cue": "selfie",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "POINT",
+       "PRESS",
+       "TRY THE SELFIE CAMERA"
+      ],
+      "cues": [
+       "point",
+       "press",
+       "selfie"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Did you see the flash? Tell us below.",
+   "shot": {
+    "builder": "remote_ir_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "DID YOU SEE THE FLASH?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

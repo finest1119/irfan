@@ -22,6 +22,19 @@ Builders (Track A batch 02, 26 Nov 2026, for 28 Nov):
                                              with the lift shaft cut open: car with riders, counterweight (top plates
                                              glow amber on load_cue), ropes over a yellow sheave, machine room,
                                              safety wedges clamp the rail on clamp_cue.
+Builders (Track A batch 03, 26 Nov 2026, for 29 Nov):
+  gps_sky_v2          view hook | sats | timing | clock | drift | fix | outro   scene_lib_v2_tower city (REUSED) + cafe
+                                             plaza on the explainer plot: phone on a stand (map + blue dot screen),
+                                             stylised satellites on teal orbit arcs, 4 beams converging, satellite
+                                             with a dial whose hands speed up, blue dot drifting off over the park.
+  e911_v2             view hook | route | sector | hybrid | desk | text | outro   same city + plaza (+ kiosk):
+                                             monopole cell tower, low 911 center, pulses phone -> tower -> center,
+                                             amber 120-degree sector, teal small fix circle + GPS beam + Wi-Fi rings,
+                                             dispatch-desk set (dark map monitors, dot appears), in-call / chat screens.
+  remote_ir_v2        view hook | led | code | sensor | phone | try | outro   living-room set: TV (picture swaps on
+                                             change_cue), remote with IR LED, spectrum strip with an infrared zone,
+                                             pale-violet IR dashes travelling to the TV sensor, phone camera screen
+                                             showing the purple-white flash bursts (flash_cue).
 No 3D text (barcode bars are graphics, no digits); non-graphic; textures generated in memory (<= 512 px).
 """
 import math
@@ -2558,4 +2571,1286 @@ S.V2_BUILDERS.update({
     "mw_kitchen_v2": b_mw_kitchen_v2,
     "checkout_v2": b_checkout_v2,
     "lift_v2": b_lift_v2,
+})
+
+
+# ======================================================================================================================
+# Track A batch 03 (26 Nov 2026, for 29 Nov): gps_sky_v2, e911_v2, remote_ir_v2
+# Shared: in-memory screen / TV / spectrum images (numpy, sRGB floats, <= 512 px, NO digits or letters), make_phone,
+# _screen_mat (emission image, optional keyed A/B mix), _uv_quad, make_gps_sat, _beam, make_clock.
+# ======================================================================================================================
+def _rgb(h):
+    h = h.lstrip("#")
+    return [int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+
+
+def _cv(w, h, col):
+    import numpy as np
+    a = np.zeros((h, w, 4), np.float32)
+    a[..., :3] = _rgb(col)
+    a[..., 3] = 1.0
+    return a
+
+
+def _grid(a):
+    import numpy as np
+    h, w = a.shape[:2]
+    Y, X = np.mgrid[0:h, 0:w]
+    return X + 0.5, Y + 0.5            # row 0 = bottom (Blender image origin)
+
+
+def _paint(a, m, col, alpha=1.0):
+    c = _rgb(col) if isinstance(col, str) else col
+    import numpy as np
+    al = (m.astype(np.float32) if m.dtype == bool else m) * alpha
+    for k in range(3):
+        a[..., k] = a[..., k] * (1 - al) + c[k] * al
+
+
+def _rr(a, x0, y0, x1, y1, r, col, alpha=1.0):
+    """Rounded rect in pixel coords (y from the bottom)."""
+    import numpy as np
+    X, Y = _grid(a)
+    cx = np.clip(X, x0 + r, x1 - r)
+    cy = np.clip(Y, y0 + r, y1 - r)
+    d = np.hypot(X - cx, Y - cy)
+    m = np.clip(r + 0.5 - d, 0, 1) * ((X >= x0) & (X <= x1) & (Y >= y0) & (Y <= y1))
+    _paint(a, m, col, alpha)
+
+
+def _dsc(a, cx, cy, r, col, alpha=1.0, soft=1.0, ring=0.0):
+    import numpy as np
+    X, Y = _grid(a)
+    d = np.hypot(X - cx, Y - cy)
+    m = np.clip((r - d) / max(soft, 0.5) + 0.5, 0, 1)
+    if ring:
+        m = m * np.clip((d - (r - ring)) / 1.0 + 0.5, 0, 1)
+    _paint(a, m, col, alpha)
+
+
+def _np_img(name, a):
+    if name in bpy.data.images:
+        return bpy.data.images[name]
+    h, w = a.shape[:2]
+    im = bpy.data.images.new(name, w, h, alpha=False)
+    im.pixels.foreach_set(a.ravel())
+    im.pack()
+    return im
+
+
+def map_img(name="ed_map", dark=False, dot=True, w=256, h=512, dot_uv=(0.5, 0.46), scale=1.0):
+    """Street map art (no labels): blocks, white/dark streets, a park, a river; blue location dot with halo."""
+    import numpy as np
+    a = _cv(w, h, "1d2a3a" if dark else "ece6da")
+    X, Y = _grid(a)
+    road = "3c5068" if dark else "ffffff"
+    blk = "243548" if dark else "e2dccd"
+    step = 64 * scale
+    for gx in np.arange(-step, w + step, step):
+        _rr(a, gx + 6, 0, gx + step - 6, h, 3, blk)
+    _paint(a, (np.abs(((X + 7) % step) - step / 2) > step / 2 - 6), road)
+    _paint(a, (np.abs(((Y + 23) % (step * 1.3)) - step * 0.65) > step * 0.65 - 6), road)
+    _paint(a, np.abs((Y - 0.9 * X) - 40) < 7, "4a6280" if dark else "f6d77a")              # avenue
+    _rr(a, w * 0.62, h * 0.66, w * 0.92, h * 0.86, 8, "2e5a46" if dark else "bfe0b0")          # park
+    rv = np.abs(Y - (h * 0.18 + 18 * np.sin(X / 30.0))) < 12
+    _paint(a, rv, "2a4f78" if dark else "a9d3f0")
+    if dot:
+        cx, cy = dot_uv[0] * w, dot_uv[1] * h
+        _dsc(a, cx, cy, 34, "1a73e8", 0.18, soft=2)
+        _dsc(a, cx, cy, 13, "ffffff", 1.0)
+        _dsc(a, cx, cy, 9.5, "1a73e8", 1.0)
+    return _np_img(name, a)
+
+
+def call_img(name="ed_call"):
+    """In-call screen: dark gradient, contact circle, two rows of round buttons, red end-call pill. No text."""
+    import numpy as np
+    w, h = 256, 512
+    a = _cv(w, h, "0f1520")
+    X, Y = _grid(a)
+    t = (Y / h)[..., None]
+    a[..., :3] = a[..., :3] * (1 - t) + np.array(_rgb("26324a")) * t
+    _dsc(a, w / 2, h * 0.74, 44, "6b7a92")
+    _dsc(a, w / 2, h * 0.765, 16, "aab6c8")
+    _rr(a, w / 2 - 26, h * 0.68, w / 2 + 26, h * 0.715, 18, "aab6c8")
+    for yy in (0.42, 0.30):
+        for xx in (0.25, 0.5, 0.75):
+            _dsc(a, w * xx, h * yy, 24, "3a465a")
+            _dsc(a, w * xx, h * yy, 7, "c9d2de")
+    _rr(a, w / 2 - 38, h * 0.10, w / 2 + 38, h * 0.10 + 40, 20, "e5484d")
+    return _np_img(name, a)
+
+
+def chat_img(name="ed_chat"):
+    """Messaging screen: header bar, grey (left) and blue (right) bubbles, input bar. No text."""
+    w, h = 256, 512
+    a = _cv(w, h, "f2f3f5")
+    _rr(a, 0, h - 56, w, h, 0, "dfe3e8")
+    _dsc(a, 30, h - 28, 14, "9aa4b2")
+    y = h - 92
+    for side, wd, ht in (("r", 150, 46), ("l", 120, 34), ("r", 176, 62), ("l", 96, 34), ("r", 130, 46)):
+        if side == "r":
+            _rr(a, w - 14 - wd, y - ht, w - 14, y, 16, "2f7cf6")
+        else:
+            _rr(a, 14, y - ht, 14 + wd, y, 16, "d9dde3")
+        y -= ht + 16
+    _rr(a, 12, 14, w - 56, 50, 18, "ffffff")
+    _dsc(a, w - 32, 32, 18, "2f7cf6")
+    return _np_img(name, a)
+
+
+def camview_img(name, flash=False):
+    """Phone camera viewfinder looking at a TV remote's tip; flash=True adds the purple-white IR flash. No text."""
+    import numpy as np
+    w, h = 256, 512
+    a = _cv(w, h, "3b342e")
+    X, Y = _grid(a)
+    t = (Y / h)[..., None]
+    a[..., :3] = a[..., :3] * (1 - t) + np.array(_rgb("6d5f52")) * t
+    _rr(a, 0, 0, w, h * 0.22, 0, "5a4d42")                                      # table edge
+    _rr(a, w * 0.36, -20, w * 0.64, h * 0.6, 26, "1e2125")                    # remote body (foreshortened)
+    for yy in (0.18, 0.28, 0.38):
+        for xx in (0.43, 0.5, 0.57):
+            _dsc(a, w * xx, h * yy, 6, "4a4f57")
+    _dsc(a, w * 0.5, h * 0.5, 9, "c0392b")
+    _dsc(a, w * 0.5, h * 0.585, 7, "141414")                                   # LED
+    if flash:
+        _dsc(a, w * 0.5, h * 0.585, 70, "a46bff", 0.35, soft=30)
+        _dsc(a, w * 0.5, h * 0.585, 34, "c9a6ff", 0.8, soft=10)
+        _dsc(a, w * 0.5, h * 0.585, 14, "ffffff", 1.0, soft=4)
+    _rr(a, 0, h - 40, w, h, 0, "000000")
+    _rr(a, 0, 0, w, 64, 0, "000000", 0.85)
+    _dsc(a, w / 2, 32, 22, "ffffff")
+    _dsc(a, w / 2, 32, 17, "1a1a1a", ring=3.0)
+    return _np_img(name, a)
+
+
+def tv_img(name, warm=False):
+    """TV picture (no text): sky gradient, sun, rolling hills, a lake."""
+    import numpy as np
+    w, h = 512, 288
+    a = _cv(w, h, "000000")
+    X, Y = _grid(a)
+    t = (Y / h)[..., None]
+    top, bot = (("f28a5b", "ffd28a") if warm else ("4f8fd6", "bfe0f6"))
+    a[..., :3] = np.array(_rgb(bot)) * (1 - t) + np.array(_rgb(top)) * t
+    _dsc(a, w * (0.72 if warm else 0.84), h * (0.55 if warm else 0.52), 18, "ffe3a0" if warm else "ffe9a8", soft=3)
+    for k, (amp, base, col) in enumerate(((22, 0.46, "6f9a5a" if not warm else "8a6a5a"),
+                                         (16, 0.34, "4f7f45" if not warm else "6a4c4a"))):
+        m = Y < h * base + amp * np.sin(X / (60.0 + 20 * k) + k)
+        _paint(a, m, col)
+    _paint(a, (Y < h * 0.16), "3f78a8" if not warm else "b0607a")
+    return _np_img(name, a)
+
+
+def spectrum_img(name="ed_spectrum"):
+    """Rainbow strip violet -> red, then a hatched dark-magenta 'invisible' zone (infrared) with an amber frame."""
+    import numpy as np
+    import colorsys
+    w, h = 512, 64
+    a = _cv(w, h, "000000")
+    X, Y = _grid(a)
+    u = X / w
+    vis = u < 0.72
+    hue = np.clip(0.78 - (u / 0.72) * 0.78, 0, 0.78)
+    for i in range(w):
+        if u[0, i] < 0.72:
+            r, g, b = colorsys.hsv_to_rgb(float(hue[0, i]), 0.85, 0.95)
+            a[:, i, 0], a[:, i, 1], a[:, i, 2] = r, g, b
+    ir = ~vis
+    hatch = ((X + Y) // 10) % 2 == 0
+    _paint(a, ir & hatch, "3d2033")
+    _paint(a, ir & ~hatch, "2a1726")
+    fr = ir & ((u < 0.735) | (u > 0.985) | (Y < 4) | (Y > h - 4))
+    _paint(a, fr, "ffb000")
+    return _np_img(name, a)
+
+
+def _img_node(N, img):
+    t = N.new("ShaderNodeTexImage")
+    t.image = img
+    t.interpolation = "Cubic"
+    t.extension = "EXTEND"
+    return t
+
+
+def _screen_mat(name, imgs, keys=None, strength=1.2, gloss=True):
+    """Emissive screen. imgs = [A] or [A, B]; keys [(frame, fac)] mix A -> B. Strength key list allowed as
+    strength=[(frame, value)]."""
+    m = bpy.data.materials.new(name)
+    nt = m.node_tree
+    N, Lk = nt.nodes, nt.links
+    for n in list(N):
+        if n.type != "OUTPUT_MATERIAL":
+            N.remove(n)
+    out = N.get("Material Output")
+    t0 = _img_node(N, imgs[0])
+    col = t0.outputs["Color"]
+    if len(imgs) > 1:
+        t1 = _img_node(N, imgs[1])
+        mx = N.new("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        Lk.new(t0.outputs["Color"], mx.inputs[6])
+        Lk.new(t1.outputs["Color"], mx.inputs[7])
+        mx.inputs[0].default_value = 0.0
+        if keys:
+            _hold_sock(mx.inputs[0], keys)
+        col = mx.outputs[2]
+    em = N.new("ShaderNodeEmission")
+    Lk.new(col, em.inputs["Color"])
+    if isinstance(strength, (list, tuple)):
+        for f, v in strength:
+            L.kf_socket(em.inputs["Strength"], max(1, int(f)), v, "LINEAR")
+    else:
+        em.inputs["Strength"].default_value = strength
+    if not gloss:
+        Lk.new(em.outputs[0], out.inputs["Surface"])
+        return m
+    # a little gloss on top of the glass
+    gl = N.new("ShaderNodeBsdfGlossy")
+    gl.inputs["Roughness"].default_value = 0.12
+    gl.inputs["Color"].default_value = (0.06, 0.06, 0.07, 1)
+    ad = N.new("ShaderNodeAddShader")
+    Lk.new(em.outputs[0], ad.inputs[0])
+    Lk.new(gl.outputs[0], ad.inputs[1])
+    Lk.new(ad.outputs[0], out.inputs["Surface"])
+    return m
+
+
+def _uv_quad(name, w, h, mat, loc=(0, 0, 0), parent=None):
+    """UV-mapped quad in local XZ facing -Y, centred on loc."""
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("uv")
+    x, y, z = loc
+    vs = [bm.verts.new(v) for v in ((x - w / 2, y, z - h / 2), (x + w / 2, y, z - h / 2), (x + w / 2, y, z + h / 2),
+                                    (x - w / 2, y, z + h / 2))]
+    f = bm.faces.new(vs)
+    for lp, uv in zip(f.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
+        lp[uvl].uv = uv
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]), parent=parent)
+    o.visible_shadow = False
+    return o
+
+
+def _hold_keys(keyfn, keys):
+    """Step-safe keys: Blender 5.3 ignores the interpolation pref, so new keys are BEZIER. Insert a hold key one frame
+    before every change so values never ramp from frame 1. keyfn(frame, value); keys [(frame, value)] (any order)."""
+    ks = sorted((max(1, int(f)), v) for f, v in keys)
+    prev = None
+    for f, v in ks:
+        if prev is not None and f - 1 > prev[0]:
+            keyfn(f - 1, prev[1])
+        keyfn(f, v)
+        prev = (f, v)
+
+
+def _hold_obj(o, path, keys):
+    _hold_keys(lambda f, v: kf(o, path, f, Vector(v) if isinstance(v, (tuple, list, Vector)) else v), keys)
+
+
+def _hold_sock(sock, keys):
+    _hold_keys(lambda f, v: L.kf_socket(sock, f, v), keys)
+
+
+def _annulus(name, R, w, mat, seg=64, loc=(0, 0, 0), rot=(0, 0, 0), parent=None):
+    """Flat ring band (faces, so it renders; an edges-only circle + WIREFRAME renders nothing)."""
+    bm = bmesh.new()
+    inner, outer = [], []
+    for k in range(seg):
+        a = 2 * math.pi * k / seg
+        inner.append(bm.verts.new(((R - w / 2) * math.cos(a), (R - w / 2) * math.sin(a), 0)))
+        outer.append(bm.verts.new(((R + w / 2) * math.cos(a), (R + w / 2) * math.sin(a), 0)))
+    for k in range(seg):
+        bm.faces.new((inner[k], inner[(k + 1) % seg], outer[(k + 1) % seg], outer[k]))
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]), loc, rot, parent=parent)
+    o.visible_shadow = False
+    return o
+
+
+def _rings(ctx, center, start, color=TEAL, count=3, gap=8, r1=12.0, life=24, name="rg", parent=None,
+           rot=(0.0, 0.0, 0.0), width=0.08):
+    """Expanding fading rings (like scene_lib_v2_air.ring_pulses, but face-based so they render)."""
+    objs = []
+    for k in range(count):
+        m, sock = L.add_mat("%s_m%d" % (name, k), color, 0.0)
+        o = _annulus("%s%d" % (name, k), 1.0, width, m, 64, center, rot, parent)
+        f0 = max(2, int(start + k * gap))
+        _hold_obj(o, "scale", [(1, (0.001,) * 3), (f0, (r1 * 0.12,) * 3), (f0 + life, (r1,) * 3)])
+        _hold_sock(sock, [(1, 0.0), (f0, 4.0), (f0 + life, 0.0)])
+        objs.append(o)
+    return objs
+
+
+PH_W, PH_T, PH_H = 0.072, 0.0085, 0.152
+
+
+def make_phone(name, screen_mat, loc, rot=(0, 0, 0), stand=True, parent=None):
+    """Smartphone standing in local XZ, screen facing local -Y (front camera dot near the top, rear camera bump on
+    +Y). Optional desk stand. Returns dict(root, screen, front_cam)."""
+    root = _empty(name, loc, parent)
+    root.rotation_euler = rot
+    body = S.pbr("ph_body", hexc("2a2d33"), 0.35, 0.3, coat=0.5, var=0)
+    black = S.pbr("ph_black", hexc("0b0c0e"), 0.15, coat=0.8, var=0)
+    lens = S.pbr("ph_lens", hexc("15181d"), 0.08, 0.5, coat=1.0, var=0)
+
+    def b(bm):
+        _rbox(bm, (0, 0, PH_H / 2), (PH_W, PH_T, PH_H), r=0.007, seg=3, mi=0)
+        _rbox(bm, (0, -PH_T / 2 + 0.0004, PH_H / 2), (PH_W - 0.002, 0.0012, PH_H - 0.002), r=0.006, seg=2, mi=1)
+        _rbox(bm, (-PH_W / 2 + 0.017, PH_T / 2 + 0.0012, PH_H - 0.019), (0.026, 0.0025, 0.026), r=0.005, seg=2, mi=0)
+        for dx, dz in ((-0.006, 0.006), (0.006, -0.006)):
+            _cyl(bm, (-PH_W / 2 + 0.017 + dx, PH_T / 2 + 0.003, PH_H - 0.019 + dz), 0.0042, 0.002, "Y", 16, 2)
+        _cyl(bm, (0, -PH_T / 2 - 0.0006, PH_H - 0.0095), 0.0022, 0.0012, "Y", 16, 2)
+    S.obj(name + "_body", _mesh(name + "_body", b, [body, black, lens], smooth=False), parent=root)
+    scr = _uv_quad(name + "_scr", PH_W - 0.007, PH_H - 0.024, screen_mat, (0, -PH_T / 2 - 0.0005, PH_H / 2 - 0.002),
+                   parent=root)
+    fc = _empty(name + "_fcam", (0, -PH_T / 2 - 0.001, PH_H - 0.0095), root)
+    if stand:
+        st = S.pbr("ph_stand", hexc("8d949c"), 0.35, 0.8, var=0)
+
+        def sb(bm):
+            S.bm_box(bm, (0, 0.012, 0.004), (0.07, 0.06, 0.008), 0)
+            S.bm_box(bm, (0, -0.012, 0.012), (0.07, 0.008, 0.016), 0)
+        s = S.obj(name + "_stand", _mesh(name + "_stand", sb, [st]), parent=root)
+        s.location = (0, 0.0, -0.004)
+    return {"root": root, "screen": scr, "fcam": fc}
+
+
+def _beam(name, p0, p1, r, mat, seg=8):
+    p0, p1 = Vector(p0), Vector(p1)
+    d = p1 - p0
+    bm = bmesh.new()
+    _cyl(bm, (0, 0, d.length / 2), r, d.length, "Z", seg)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]))
+    o.location = p0
+    o.rotation_euler = Vector((0, 0, 1)).rotation_difference(d.normalized()).to_euler()
+    o.visible_shadow = False
+    return o
+
+
+def _mover(ctx, o, p0, p1, f0, f1, show=True):
+    kf(o, "location", 1, Vector(p0))
+    kf(o, "location", max(1, f0), Vector(p0))
+    kf(o, "location", max(f0 + 1, f1), Vector(p1))
+    _interp(o, "LINEAR")
+    if show:
+        _hold_obj(o, "scale", [(1, (0.001,) * 3), (max(2, f0), (1, 1, 1)), (max(f0 + 2, f1), (0.001,) * 3)])
+
+
+def make_gps_sat(name, loc, s=1.0, yaw=0.0):
+    """Stylised navigation satellite: gold-foil bus, two long blue solar wings on booms, antenna array on the
+    Earth-facing (-Z) side. Unit size ~ 1.6 m bus, 12 m span; s scales."""
+    root = _empty(name, loc)
+    root.rotation_euler = (0, 0, yaw)
+    root.scale = (s, s, s)
+    gold = S.pbr("sat_gold", hexc("c99a3c"), 0.32, 0.9, var=0.18, var_scale=6.0, haze=False)
+    cell = S.pbr("sat_cell", hexc("1c3a78"), 0.22, 0.5, coat=0.6, var=0.05, var_scale=3.0, haze=False)
+    silv = S.pbr("sat_silver", hexc("c9ced4"), 0.3, 0.9, var=0, haze=False)
+    wht = S.pbr("sat_white", hexc("e8e8e2"), 0.5, var=0, haze=False)
+
+    def b(bm):
+        _rbox(bm, (0, 0, 0), (1.6, 1.6, 2.0), r=0.08, seg=2, mi=0)
+        for sx in (-1, 1):
+            _cyl(bm, (sx * 1.5, 0, 0.1), 0.06, 1.4, "X", 8, 2)
+            for k in range(3):
+                S.bm_box(bm, (sx * (2.9 + k * 1.75), 0, 0.1), (1.6, 0.05, 2.2), 1)
+                S.bm_box(bm, (sx * (2.9 + k * 1.75) + sx * 0.82, 0, 0.1), (0.05, 0.08, 2.3), 2)
+        _cyl(bm, (0, 0, -1.08), 0.75, 0.12, "Z", 24, 3)
+        for k in range(10):
+            a = 2 * math.pi * k / 10
+            _cyl(bm, (0.5 * math.cos(a), 0.5 * math.sin(a), -1.38), 0.07, 0.5, "Z", 8, 3)
+        _cyl(bm, (0, 0, -1.38), 0.09, 0.5, "Z", 8, 3)
+    S.obj(name + "_m", _mesh(name + "_m", b, [gold, cell, silv, wht]), parent=root)
+    return root
+
+
+def make_clock(name, loc, R, rot=(0, 0, 0), face="e7efed", rim=TEAL, ink="1f262e"):
+    """Clock dial facing local -Y with 12 tick bars (no digits) and two hands (returns root, minute, hour)."""
+    root = _empty(name, loc)
+    root.rotation_euler = rot
+    fm = S.pbr(name + "_face", hexc(face), 0.5, var=0, haze=False)
+    dk = S.pbr(name + "_ink", hexc(ink), 0.4, var=0, haze=False)
+    rm, _ = L.add_mat(name + "_rim", rim, 3.0)
+
+    def b(bm):
+        _cyl(bm, (0, 0, 0), R, R * 0.08, "Y", 48, 0)
+        for k in range(12):
+            a = 2 * math.pi * k / 12
+            ln = R * (0.16 if k % 3 == 0 else 0.09)
+            c = ((R * 0.86 - ln / 2) * math.sin(a), -R * 0.045, (R * 0.86 - ln / 2) * math.cos(a))
+            vs = bmesh.ops.create_cube(bm, size=1.0)["verts"]
+            for v in vs:
+                v.co = Vector((v.co.x * R * 0.05, v.co.y * R * 0.01, v.co.z * ln))
+            bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(-a, 3, "Y"))
+            bmesh.ops.translate(bm, verts=vs, vec=Vector(c))
+            for f in {f for v in vs for f in v.link_faces}:
+                f.material_index = 1
+        _cyl(bm, (0, -R * 0.06, 0), R * 0.06, R * 0.02, "Y", 16, 1)
+    S.obj(name + "_dial", _mesh(name + "_dial", b, [fm, dk]), parent=root)
+    _annulus(name + "_ring", R * 1.03, R * 0.05, rm, 64, (0, -R * 0.045, 0), (math.radians(90), 0, 0), root)
+    hands = []
+    for k, (ln, wd) in enumerate(((R * 0.78, R * 0.05), (R * 0.5, R * 0.08))):
+        piv = _empty(name + "_piv%d" % k, (0, -R * 0.055 - k * R * 0.005, 0), root)
+        S.obj(name + "_hand%d" % k, _mesh(name + "_hand%d" % k, lambda bm, ln=ln, wd=wd: S.bm_box(
+            bm, (0, 0, ln / 2 - R * 0.06), (wd, R * 0.01, ln), 0), [dk]), parent=piv)
+        hands.append(piv)
+    return root, hands[0], hands[1]
+
+
+def _spin_keys(o, keys, axis=1):
+    """keys [(frame, angle_deg)] rotation about local axis (default Y = dial normal)."""
+    for f, ang in keys:
+        r = [0.0, 0.0, 0.0]
+        r[axis] = math.radians(ang)
+        kf(o, "rotation_euler", max(1, int(f)), Vector(r))
+    _interp(o, "LINEAR")
+
+
+# ---------------------------------------------------------------- living room + TV remote (remote_ir_v2)
+LR_TV = (0.0, 2.45, 1.06)            # TV centre (front face y = 2.425)
+LR_SENSOR = (0.38, 2.418, 0.648)     # IR receiver window on the TV's bottom bezel
+LR_REMOTE = (0.12, -0.42, 0.452)     # remote centre on the coffee table (LED end towards +Y)
+IR_COL = hexc("c58cff")
+
+
+def _living_room(ctx, p, tv_keys=None, tv_strength=1.1):
+    """Own lit living-room set (never a void): mid-tone walls (calm behind captions), oak floor, rug, navy sofa,
+    walnut coffee table, media console + wall TV (picture = tv_img; tv_keys swaps day -> sunset picture), window
+    with daylight panel on the left wall, floor lamp, shelf, plant, framed colour-block art. No text."""
+    sc = ctx.scene
+    w = bpy.data.worlds.new("lr_world")
+    sc.world = w
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.6, 0.58, 0.55, 1.0)
+    bg.inputs["Strength"].default_value = 0.4
+    sc.view_settings.exposure = p.get("exposure", -0.5)
+    L.fog(0.001, hexc("d8d2c8"), start=10.0)
+    wall = S.pbr("lr_wall", hexc(p.get("wall", "8b9aa3")), 0.85, var=0.02)
+    side = S.pbr("lr_side", hexc("a89a8a"), 0.85, var=0.02)
+    ceil = S.pbr("lr_ceil", hexc("e9e4dc"), 0.9, var=0)
+    floor = S.pbr("lr_floor", hexc("a87b52"), 0.5, var=0.12, var_scale=3.0, bump=0.01)
+    rug = S.pbr("lr_rug", hexc("6d7f73"), 0.95, var=0.06, var_scale=8.0, bump=0.02)
+    S.plane_obj("lr_floor", 8.0, 8.0, (0, -0.5, 0.0), floor)
+    S.plane_obj("lr_rug", 2.8, 2.0, (0, -0.6, 0.006), rug)
+
+    def room(bm):
+        S.bm_box(bm, (0, 2.7, 1.4), (6.4, 0.2, 2.8), 0)                      # TV wall
+        S.bm_box(bm, (0, -3.6, 1.4), (6.4, 0.2, 2.8), 1)
+        S.bm_box(bm, (3.1, -0.45, 1.4), (0.2, 6.5, 2.8), 1)
+        for (y0, y1, z0, z1) in ((-3.6, -1.4, 0, 2.8), (0.4, 2.7, 0, 2.8), (-1.4, 0.4, 0, 0.8), (-1.4, 0.4, 2.2, 2.8)):
+            S.bm_box(bm, (-3.1, (y0 + y1) / 2, (z0 + z1) / 2), (0.2, y1 - y0, z1 - z0), 1)   # window wall
+        S.bm_box(bm, (0, -0.45, 2.85), (6.4, 6.5, 0.1), 2)
+        S.bm_box(bm, (0, 2.585, 0.05), (6.2, 0.03, 0.1), 2)                  # skirting
+    S.obj("lr_room", _mesh("lr_room", room, [wall, side, ceil]))
+    sky = S.emis("lr_sky", hexc("cfe3f2"), 2.0)
+    S.obj("lr_sky", _mesh("lr_sky", lambda bm: S.bm_box(bm, (-3.25, -0.5, 1.5), (0.02, 1.8, 1.4)), [sky]))
+    frame = S.pbr("lr_wframe", hexc("f3f0ea"), 0.4, var=0)
+    S.obj("lr_wframe", _mesh("lr_wframe", lambda bm: [S.bm_box(bm, c, s) for c, s in (
+        ((-3.0, -0.5, 0.8), (0.12, 1.9, 0.05)), ((-3.0, -0.5, 2.2), (0.12, 1.9, 0.05)),
+        ((-3.0, -1.42, 1.5), (0.12, 0.05, 1.45)), ((-3.0, 0.42, 1.5), (0.12, 0.05, 1.45)),
+        ((-3.0, -0.5, 1.5), (0.08, 0.03, 1.4)))], [frame]))
+    # media console + TV
+    walnut = S.pbr("lr_walnut", hexc("6b4a32"), 0.5, coat=0.2, var=0.08, var_scale=6.0)
+    oak = S.pbr("lr_oak", hexc("b58a5a"), 0.45, coat=0.25, var=0.08, var_scale=6.0)
+    tvb = S.pbr("lr_tvbody", hexc("15171a"), 0.3, 0.2, coat=0.6, var=0)
+    S.obj("lr_console", _mesh("lr_console", lambda bm: [
+        _rbox(bm, (0, 2.38, 0.3), (2.0, 0.42, 0.42), 0.02, 2, 0),
+        S.bm_box(bm, (-0.5, 2.165, 0.3), (0.006, 0.01, 0.36), 0), S.bm_box(bm, (0.5, 2.165, 0.3), (0.006, 0.01, 0.36), 0)],
+        [walnut]))
+    tx, ty, tz = LR_TV
+    S.obj("lr_tv", _mesh("lr_tv", lambda bm: [
+        _rbox(bm, (tx, ty, tz), (1.47, 0.05, 0.86), 0.008, 2, 0),
+        S.bm_box(bm, (tx, 2.5, 0.56), (0.3, 0.12, 0.02), 0), S.bm_box(bm, (tx, 2.5, 0.53), (0.04, 0.04, 0.06), 0)], [tvb]))
+    imgs = [tv_img("ed_tv_day"), tv_img("ed_tv_warm", warm=True)]
+    scr = _screen_mat("lr_tvscreen", imgs, tv_keys, tv_strength, gloss=False)
+    _uv_quad("lr_tvscr", 1.42, 0.79, scr, (tx, 2.4243, tz + 0.02))
+    sens = S.pbr("lr_sensor", hexc("3a0d14"), 0.08, coat=1.0, var=0)
+    S.obj("lr_sensor", _mesh("lr_sensor", lambda bm: _rbox(bm, LR_SENSOR, (0.04, 0.008, 0.014), 0.003, 1, 0), [sens]))
+    # sofa
+    navy = S.pbr("lr_sofa", hexc("2f4766"), 0.9, var=0.05, var_scale=10.0, bump=0.02)
+    cush = S.pbr("lr_cush", hexc("c98c3b"), 0.9, var=0.05, var_scale=10.0, bump=0.02)
+
+    def sofa(bm):
+        _rbox(bm, (0, -2.05, 0.24), (2.3, 0.95, 0.36), 0.05, 2, 0)
+        _rbox(bm, (0, -2.43, 0.62), (2.3, 0.22, 0.62), 0.06, 2, 0)
+        for sx in (-1, 1):
+            _rbox(bm, (sx * 1.08, -2.05, 0.5), (0.2, 0.95, 0.34), 0.06, 2, 0)
+            _rbox(bm, (sx * 0.48, -1.98, 0.48), (0.9, 0.78, 0.14), 0.05, 2, 0)
+        _rbox(bm, (-0.62, -2.25, 0.7), (0.42, 0.14, 0.38), 0.06, 2, 1)
+        _rbox(bm, (0.68, -2.25, 0.7), (0.42, 0.14, 0.38), 0.06, 2, 1)
+    S.obj("lr_sofa", _mesh("lr_sofa", sofa, [navy, cush]))
+    # coffee table
+    S.obj("lr_table", _mesh("lr_table", lambda bm: [
+        _rbox(bm, (0, -0.45, 0.42), (1.15, 0.62, 0.04), 0.012, 2, 0)] + [
+        S.bm_box(bm, (sx * 0.5, -0.45 + sy * 0.24, 0.2), (0.04, 0.04, 0.4), 0) for sx in (-1, 1) for sy in (-1, 1)],
+        [oak]))
+    # props: books on the table, mug, plant, lamp, shelf, art
+    bk = [S.pbr("lr_bk%d" % i, hexc(c), 0.7, var=0.03) for i, c in enumerate(("b8433a", "2f6f8f", "d9b45a", "4f7a4a"))]
+    S.obj("lr_books", _mesh("lr_books", lambda bm: [
+        _rbox(bm, (-0.36, -0.36, 0.455 + 0.028 * k), (0.24 - 0.02 * k, 0.17, 0.026), 0.004, 1, k) for k in range(3)],
+        bk))
+    mug = S.pbr("lr_mug", hexc("e07a5f"), 0.35, coat=0.5, var=0)
+    S.obj("lr_mug", _mesh("lr_mug", lambda bm: _cyl(bm, (0.42, -0.6, 0.49), 0.04, 0.1, "Z", 20), [mug]))
+    pot = S.pbr("lr_pot", hexc("d9774f"), 0.6, var=0.03)
+    leaf = S.pbr("lr_leaf", hexc("4f8a45"), 0.6, var=0.08, var_scale=8.0)
+    S.obj("lr_pot", _mesh("lr_pot", lambda bm: _cyl(bm, (-2.5, 2.1, 0.22), 0.2, 0.44, "Z", 20), [pot]))
+    bm = bmesh.new()
+    rng = random.Random(5)
+    for k in range(16):
+        r = bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=rng.uniform(0.14, 0.22))
+        bmesh.ops.translate(bm, vec=(-2.5 + rng.uniform(-0.2, 0.2), 2.1 + rng.uniform(-0.2, 0.2), 0.7 + rng.uniform(0, 0.8)),
+                            verts=r["verts"])
+    S.obj("lr_plant", S.mesh_from_bm("lr_plant", bm, [leaf], smooth=True))
+    brass = S.pbr("lr_brass", hexc("b8913f"), 0.3, 0.9, var=0)
+    shade = S.emis("lr_shade", hexc("ffe2b0"), 2.5)
+    S.obj("lr_lamp", _mesh("lr_lamp", lambda bm: [_cyl(bm, (2.45, 1.9, 0.75), 0.015, 1.5, "Z", 8, 0),
+                                                   _cyl(bm, (2.45, 1.9, 0.02), 0.16, 0.03, "Z", 16, 0),
+                                                   _cyl(bm, (2.45, 1.9, 1.58), 0.2, 0.3, "Z", 20, 1)], [brass, shade]))
+    _point("lr_lamp_l", (2.45, 1.9, 1.5), 40.0, (1.0, 0.82, 0.6), 0.15)
+    shelf = S.pbr("lr_shelf", hexc("d8cfc2"), 0.6, var=0.02)
+    S.obj("lr_shelf", _mesh("lr_shelf", lambda bm: [S.bm_box(bm, (2.85, -1.0, 0.9), (0.35, 1.2, 1.8), 0)] + [
+        _rbox(bm, (2.66, -1.4 + 0.12 * k, 0.35 + 0.45 * (k % 3)), (0.04, 0.09, 0.28), 0.005, 1, 1 + k % 4)
+        for k in range(7)], [shelf] + bk))
+    art = [S.pbr("lr_art%d" % i, hexc(c), 0.8, var=0) for i, c in enumerate(("e2d6bd", "c8553d", "2f6f8f", "e3b448"))]
+    S.obj("lr_art", _mesh("lr_art", lambda bm: [
+        S.bm_box(bm, (2.99, 0.9, 1.6), (0.03, 0.9, 0.7), 0), S.bm_box(bm, (2.97, 0.72, 1.68), (0.02, 0.36, 0.4), 1),
+        S.bm_box(bm, (2.97, 1.08, 1.5), (0.02, 0.3, 0.3), 2), _cyl(bm, (2.97, 1.12, 1.78), 0.09, 0.02, "X", 20, 3)], art))
+    # lights
+    for k, (x, y) in enumerate(((-1.2, -0.6), (1.2, -0.6), (0.0, 1.4))):
+        A._area("lr_a%d" % k, (x, y, 2.7), 1.4, p.get("ceil_w", 120.0), (1.0, 0.95, 0.88), size_y=1.4)
+    win = A._area("lr_win", (-2.8, -0.5, 1.5), 1.6, p.get("win_w", 160.0), (0.9, 0.95, 1.0), size_y=1.3)
+    win.rotation_euler = (0, math.radians(-90), 0)
+
+
+def make_remote(name, loc, yaw=0.0, parent=None):
+    """TV remote (graphite body, grey round buttons, red power button, dark IR LED dome on the +Y end). No text.
+    Returns (root, led_empty)."""
+    root = _empty(name, loc, parent)
+    root.rotation_euler = (0, 0, yaw)
+    body = S.pbr("rm_body", hexc("2b2e33"), 0.4, coat=0.4, var=0.02)
+    btn = S.pbr("rm_btn", hexc("737a83"), 0.5, var=0)
+    red = S.pbr("rm_red", hexc("c8402f"), 0.4, coat=0.3, var=0)
+    led = S.pbr("rm_led", hexc("1c1416"), 0.05, coat=1.0, var=0)
+
+    def b(bm):
+        _rbox(bm, (0, 0, 0), (0.05, 0.195, 0.02), 0.008, 3, 0)
+        for i in range(3):
+            for j in range(4):
+                _cyl(bm, (-0.013 + 0.013 * i, -0.06 + 0.02 * j, 0.0105), 0.0045, 0.003, "Z", 12, 1)
+        _rbox(bm, (0, 0.035, 0.0105), (0.03, 0.022, 0.004), 0.004, 1, 1)
+        _cyl(bm, (0.014, 0.075, 0.0105), 0.005, 0.003, "Z", 12, 2)
+        _cyl(bm, (0, 0.0985, 0.002), 0.0042, 0.004, "Y", 16, 3)
+    S.obj(name + "_m", _mesh(name + "_m", b, [body, btn, red, led]), parent=root)
+    le = _empty(name + "_led", (0, 0.101, 0.002), root)
+    return root, le
+
+
+def _ir_pulses(ctx, p0, p1, f0, speed=2.2, pattern=(1, 0, 0, 1, 0, 1, 1, 0, 1, 0), reps=2, name="irp", show_frac=1.0):
+    """IR 'flashes' made visible: short and long pale-violet dashes travelling from p0 to p1 (pattern 1 = long)."""
+    p0, p1 = Vector(p0), Vector(p1)
+    d = p1 - p0
+    ln = d.length
+    u = d.normalized()
+    m, sock = L.add_mat(name + "_m", IR_COL, 3.5)
+    rot = Vector((1, 0, 0)).rotation_difference(u).to_euler()
+    fps = ctx.fps
+    t_trav = ln / speed * fps
+    objs = []
+    gap_f = 3.0
+    k = 0
+    f = f0
+    for r in range(reps):
+        for bit in pattern:
+            L_ = 0.2 if bit else 0.08
+            bm = bmesh.new()
+            _cyl(bm, (0, 0, 0), 0.018, L_, "X", 8)
+            o = S.obj("%s%d" % (name, k), S.mesh_from_bm("%s%d" % (name, k), bm, [m]), rot=rot)
+            o.visible_shadow = False
+            _mover(ctx, o, p0, p1, int(f), int(f + t_trav))
+            objs.append(o)
+            f += (L_ / speed) * fps + gap_f
+            k += 1
+        f += 14
+    return objs, f0 + t_trav
+
+
+def _v_remote(ctx, p, view):
+    T = ctx.frames
+    tv_keys = None
+    fch = None
+    if view == "sensor":
+        fch = ctx.word_time(p.get("change_cue", "does"), 0.6)
+        tv_keys = [(1, 0.0), (fch, 1.0)]
+    tvs = p.get("tv_strength", 0.55 if view in ("phone", "try") else (0.5 if view == "sensor" else 1.0))
+    _living_room(ctx, p, tv_keys, tvs)
+    yaw = math.radians(p.get("remote_yaw", 6.0))
+    lx, ly, lz = LR_REMOTE
+    led_w = (lx - 0.101 * math.sin(yaw), ly + 0.101 * math.cos(yaw), lz + 0.002)
+    if view in ("hook", "led", "code", "sensor"):
+        rem, led = make_remote("remote", LR_REMOTE, yaw)
+    if view == "hook":
+        _cam_keys2(ctx, [(1, p.get("cam0", (0.3, -1.18, 0.66)), p.get("tgt0", (0.05, 1.4, 0.62))),
+                         (1.0, p.get("cam1", (0.28, -1.1, 0.65)), p.get("tgt1", (0.05, 1.4, 0.62)))],
+                   lens=p.get("lens", 30), clip=0.02)
+        S.anchor(ctx, "remote", rem, (0, 0, 0.02))
+        S.anchor(ctx, "tv", bpy.data.objects["lr_tvscr"], (0, 0, 0))
+    elif view == "led":
+        sp = _screen_mat("ir_spec", [spectrum_img()], strength=1.4)
+        c0 = Vector(p.get("cam0", (led_w[0] + 0.09, led_w[1] + 0.2, lz + 0.05)))
+        q = _uv_quad("ir_spec", 0.075, 0.0095, sp, (0, 0, 0))
+        q.location = p.get("spec_loc", (led_w[0] + 0.045, led_w[1] + 0.05, lz - 0.005))
+        dq = c0 - Vector(q.location)
+        q.rotation_euler = (math.atan2(dq.z, math.hypot(dq.x, dq.y)) * 0.0, 0, math.atan2(dq.x, -dq.y))
+        _cam_keys2(ctx, [(1, tuple(c0), p.get("tgt0", (led_w[0] + 0.012, led_w[1], lz + 0.022))),
+                         (1.0, p.get("cam1", tuple(c0 + Vector((-0.012, -0.02, -0.004)))), p.get("tgt1", (led_w[0] + 0.012, led_w[1], lz + 0.022)))],
+                   lens=p.get("lens", 40), clip=0.005)
+        ctx.cam.data.dof.use_dof = True
+        ctx.cam.data.dof.focus_object = led
+        ctx.cam.data.dof.aperture_fstop = p.get("fstop", 5.6)
+        S.anchor(ctx, "led", led, (0, 0.002, 0.002))
+        S.anchor(ctx, "ir", q, (0.07, 0, 0))
+    elif view in ("code", "sensor"):
+        f0 = 4 if view == "code" else max(1, (fch or 30) - int(3.1 / 2.2 * ctx.fps) - 40)
+        objs, f_arr = _ir_pulses(ctx, led_w, LR_SENSOR, f0, reps=3 if view == "code" else 2)
+        gm, _ = L.add_mat("ir_path", IR_COL, 0.25)
+        _beam("ir_path", led_w, LR_SENSOR, 0.008, gm)
+        mid = Vector(led_w).lerp(Vector(LR_SENSOR), 0.38)
+        e = _empty("ir_mid", tuple(mid))
+        S.anchor(ctx, "pulses", e, (0, 0, 0.02))
+        if view == "code":
+            _cam_keys2(ctx, [(1, p.get("cam0", (0.32, -1.15, 0.8)), p.get("tgt0", (0.1, 1.6, 0.58))),
+                             (1.0, p.get("cam1", (0.3, -1.08, 0.79)), p.get("tgt1", (0.1, 1.6, 0.58)))],
+                       lens=p.get("lens", 26), clip=0.02)
+        else:
+            _rings(ctx, (LR_SENSOR[0], LR_SENSOR[1] - 0.01, LR_SENSOR[2]), int(f_arr), color=IR_COL, count=3,
+                          gap=7, r1=0.08, life=18, rot=(math.radians(90), 0, 0), name="sens")
+            sx, sy, sz = LR_SENSOR
+            _cam_keys2(ctx, [(1, p.get("cam0", (sx + 0.95, sy - 1.15, sz + 0.3)), p.get("tgt0", (sx - 0.05, sy, sz + 0.05))),
+                             (1.0, p.get("cam1", (sx + 0.85, sy - 1.05, sz + 0.28)), p.get("tgt1", (sx - 0.05, sy, sz + 0.05)))],
+                       lens=p.get("lens", 30), clip=0.02)
+            S.anchor(ctx, "sensor", bpy.data.objects["lr_sensor"], (sx, sy - 0.005, sz + 0.004))
+    elif view in ("phone", "try", "outro"):
+        ff = ctx.word_time(p.get("flash_cue", "see" if view == "phone" else "press"), 0.45)
+        keys = [(1, 0.0)]
+        if view != "outro":
+            f = ff
+            for _ in range(4):                       # burst of flashes, repeated
+                for k in range(6):
+                    keys.append((f + k * 3, 1.0 if k % 2 == 0 else 0.0))
+                f += 30
+            keys.append((f, 0.0))
+        scr = _screen_mat("ph_cam", [camview_img("ed_cam_off"), camview_img("ed_cam_ir", flash=True)], keys, 1.0)
+        if view == "try":
+            ph = make_phone("phone", scr, (-0.25, -0.62, 0.44), (math.radians(-12), 0, math.radians(-18)))
+            make_remote("remote2", p.get("remote2", (-0.38, -0.76, 0.452)), math.radians(p.get("remote2_yaw", -40.0)))
+            fcw = ph["fcam"]
+            _cam_keys2(ctx, [(1, p.get("cam0", (-0.55, -1.0, 0.75)), p.get("tgt0", (-0.26, -0.62, 0.55))),
+                             (1.0, p.get("cam1", (-0.52, -0.96, 0.74)), p.get("tgt1", (-0.26, -0.62, 0.55)))],
+                       lens=p.get("lens", 32), clip=0.01)
+            S.anchor(ctx, "front", fcw, (0, 0, 0))
+            S.anchor(ctx, "screen", ph["screen"], (0, -0.001, 0.07))
+        else:
+            ph = make_phone("phone", scr, (-0.25, -0.62, 0.44), (math.radians(-12), 0, 0))
+            S.obj("lr_bookstack", _mesh("lr_bookstack", lambda bm: [
+                _rbox(bm, (-0.24, -0.25, 0.46 + 0.03 * k), (0.2, 0.15, 0.028), 0.004, 1, k) for k in range(3)],
+                [S.pbr("lr_bk%d" % i, hexc("b8433a")) for i in range(3)]))
+            r2, _ = make_remote("remote2", (-0.24, -0.27, 0.56), math.radians(180))
+            r2.rotation_euler = (math.radians(-6), 0, math.radians(180))
+            if view == "phone":
+                _cam_keys2(ctx, [(1, p.get("cam0", (-0.33, -1.06, 0.66)), p.get("tgt0", (-0.25, -0.5, 0.6))),
+                                 (1.0, p.get("cam1", (-0.32, -1.0, 0.65)), p.get("tgt1", (-0.25, -0.5, 0.6)))],
+                           lens=p.get("lens", 32), clip=0.01)
+            else:
+                _cam_keys2(ctx, [(1, p.get("cam0", (-0.6, -1.25, 0.8)), p.get("tgt0", (-0.15, 0.2, 0.75))),
+                                 (1.0, p.get("cam1", (1.9, -2.6, 1.5)), p.get("tgt1", (-0.2, 0.6, 0.85)))],
+                           lens=p.get("lens", 28), clip=0.02)
+            S.anchor(ctx, "screen", ph["screen"], (0, -0.001, 0.07))
+        S.anchor(ctx, "phone", ph["root"], (0, 0, PH_H))
+
+
+def b_remote_ir_v2(ctx, p):
+    """TV remote infrared explainer in a lit living-room set. view hook | led | code | sensor | phone | try | outro.
+    Anchors: remote, tv (hook); led, ir (led: spectrum strip with the infrared zone); pulses (code/sensor); sensor;
+    screen, phone (phone/try/outro); front (try: the selfie camera). Params: change_cue (sensor: TV picture changes),
+    flash_cue (phone/try: purple-white flash bursts on the phone screen), cam0/1, tgt0/1, lens, exposure, wall."""
+    _v_remote(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- tower city plaza (gps_sky_v2 + e911_v2)
+SPOT = (260.0, 36.0)                 # cafe table on the explainer plot (park to the south, road y = 60 to the north)
+TBL_Z = 0.745                        # table top
+CELL = (322.0, -38.0)                # e911 cell tower
+PSAP = (205.0, -235.0)               # e911 local 911 center (low building in the park)
+
+
+def _plaza_world(ctx, p, kiosk=False):
+    """scene_lib_v2_tower city + hero tower (REUSED world, as lift_v2) with a small cafe plaza on the explainer plot:
+    paving, cafe tables + chairs, planters with trees, benches. City cars on the y = 60 road are removed."""
+    import scene_lib_v2_tower as TW
+    TW.build_city(ctx, p, golden=p.get("golden", False))
+    TW.build_hero(ctx)
+    drop = [o.name for o in bpy.data.objects
+            if o.name.startswith("tc") and o.parent is None and abs(o.location.y - TW.EXP[1]) < 10]
+    for nm in drop:
+        o = bpy.data.objects.get(nm)
+        if o is None:
+            continue
+        kids = [c.name for c in o.children_recursive]
+        bpy.data.objects.remove(o, do_unlink=True)
+        for c in kids:
+            if bpy.data.objects.get(c) is not None:
+                bpy.data.objects.remove(bpy.data.objects[c], do_unlink=True)
+    sx, sy = SPOT
+    S.plane_obj("pz_pave", 70, 46, (sx, sy + 2.0, 0.045), S.pbr("pz_paving", hexc("c9bfae"), 0.8, var=0.08, var_scale=0.8))
+    teak = S.pbr("pz_teak", hexc("9a6a3f"), 0.5, coat=0.2, var=0.08, var_scale=8.0)
+    iron = S.pbr("pz_iron", hexc("2f3438"), 0.4, 0.7, var=0)
+    green = S.pbr("pz_chair", hexc("2f6f5e"), 0.45, 0.3, var=0.02)
+    tables = [(0.0, 0.0), (-3.2, 1.8), (3.4, 2.2), (-2.6, -3.0), (2.9, -3.4), (6.6, -0.6), (-6.4, -0.8)]
+
+    def furn(bm):
+        for k, (dx, dy) in enumerate(tables):
+            x, y = sx + dx, sy + dy
+            _cyl(bm, (x, y, TBL_Z - 0.015), 0.36, 0.03, "Z", 28, 0)
+            _cyl(bm, (x, y, TBL_Z / 2), 0.03, TBL_Z - 0.03, "Z", 8, 1)
+            _cyl(bm, (x, y, 0.06), 0.22, 0.03, "Z", 16, 1)
+            for a in ((0.6, 2.2) if k == 0 else (0.4, 2.0, 3.6)):
+                cx, cy = x + 0.62 * math.cos(a), y + 0.62 * math.sin(a)
+                _rbox(bm, (cx, cy, 0.45), (0.42, 0.42, 0.04), 0.02, 1, 2)
+                bx, by = x + 0.82 * math.cos(a), y + 0.82 * math.sin(a)
+                vs = bmesh.ops.create_cube(bm, size=1.0)["verts"]
+                for v in vs:
+                    v.co = Vector((v.co.x * 0.42, v.co.y * 0.04, v.co.z * 0.42))
+                bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(a + math.pi / 2, 3, "Z"))
+                bmesh.ops.translate(bm, verts=vs, vec=Vector((bx, by, 0.68)))
+                for f in {f for v in vs for f in v.link_faces}:
+                    f.material_index = 2
+                for lx_, ly_ in ((0.17, 0.17), (-0.17, 0.17), (0.17, -0.17), (-0.17, -0.17)):
+                    _cyl(bm, (cx + lx_, cy + ly_, 0.22), 0.012, 0.44, "Z", 6, 1)
+        for dx in (-12.0, 12.0):                                    # benches
+            S.bm_box(bm, (sx + dx, sy + 7.0, 0.45), (2.2, 0.5, 0.06), 0)
+            S.bm_box(bm, (sx + dx, sy + 7.0, 0.22), (2.0, 0.08, 0.44), 1)
+    S.obj("pz_furn", _mesh("pz_furn", furn, [teak, iron, green]))
+    planter = S.pbr("pz_planter", hexc("8e9aa3"), 0.8, var=0.04)
+    pts = [(sx + dx, sy + dy) for dx, dy in ((-14, 9), (14, 9), (-20, -6), (20, -6), (-9, -14), (9, -14), (0, 12))]
+    S.obj("pz_planters", _mesh("pz_planters", lambda bm: [S.bm_box(bm, (x, y, 0.3), (2.0, 2.0, 0.6), 0) for x, y in pts],
+                                 [planter]))
+    rng = random.Random(p.get("seed2", 9))
+    tt = S.tree_templates(rng)
+    S.scatter(tt[:6], pts, rng, (0.7, 0.9), prefix="pztree")
+    if kiosk:
+        kw = S.pbr("pz_kiosk", hexc("d7c9b0"), 0.7, var=0.04)
+        aw = S.pbr("pz_awning", hexc("2f6f8f"), 0.7, var=0.02)
+        gl = S.glass_mat()
+        S.obj("pz_kiosk", _mesh("pz_kiosk", lambda bm: [
+            S.bm_box(bm, (sx + 14.0, sy + 3.0, 1.6), (6.0, 4.0, 3.2), 0),
+            S.bm_box(bm, (sx + 14.0, sy + 0.6, 2.8), (6.4, 1.6, 0.12), 1),
+            S.bm_box(bm, (sx + 14.0, sy + 0.98, 1.4), (4.6, 0.05, 1.6), 2)], [kw, aw, gl]))
+    return TW
+
+
+def _sat_sky(ctx, n_orbits=2, sats_per=2, s=6.0, drift=4.0, arcs=True, aim=None):
+    """Satellites on two tilted orbit circles high over the park south of the plaza (stylised: big, ~600 m up), with
+    thin teal orbit arcs. Returns list of satellite roots (slowly moving along their orbit)."""
+    T = ctx.frames
+    sx, sy = SPOT
+    out = []
+    for o in range(n_orbits):
+        c = Vector((sx + (-60 if o == 0 else 90), sy - 1100 - 60 * o, -1600.0))
+        Rr = 2250.0 + 40 * o
+        yaw = math.radians(-18 if o == 0 else 24)
+        u = Vector((math.cos(yaw), math.sin(yaw), 0))
+        v = Vector((-0.3 * math.sin(yaw), 0.3 * math.cos(yaw), 0.954)).normalized()
+        v = (v - u * v.dot(u)).normalized()
+        nrm = u.cross(v)
+        if arcs:
+            m, _ = L.add_mat("orbit_m%d" % o, TEAL, 1.6)
+            ring = _annulus("orbit%d" % o, Rr, 7.0, m, 360, c)
+            ring.rotation_euler = Vector((0, 0, 1)).rotation_difference(nrm).to_euler()
+            # align ring local X with u (rotation_difference keeps an arbitrary twist; circles are symmetric)
+        want = None
+        if aim is not None:
+            want = aim[o] if o < len(aim) else []
+        for k in range(sats_per if want is None else len(want)):
+            a0 = math.radians(82 + 16 * k + 7 * o)
+            if want is not None:
+                # pick the orbit angle whose azimuth (seen from the cafe table, degrees from -Y towards +X) is closest
+                best = None
+                for i in range(400, 1400):
+                    a = math.radians(i / 10.0)
+                    q = c + Rr * (math.cos(a) * u + math.sin(a) * v)
+                    if q.z < 250:
+                        continue
+                    az_ = math.degrees(math.atan2(q.x - sx, -(q.y - sy)))
+                    el_ = math.degrees(math.atan2(q.z, math.hypot(q.x - sx, q.y - sy)))
+                    wa, we = (want[k], None) if not isinstance(want[k], (list, tuple)) else want[k]
+                    err = abs(az_ - wa) + (abs(el_ - we) if we is not None else 0.0)
+                    if best is None or err < best[0]:
+                        best = (err, a)
+                a0 = best[1]
+            sat = make_gps_sat("sat%d%d" % (o, k), (0, 0, 0), s, yaw=yaw)
+            for f in (1, T):
+                a = a0 + math.radians(drift) * (f - 1) / max(1, T - 1)
+                pos = c + Rr * (math.cos(a) * u + math.sin(a) * v)
+                kf(sat, "location", f, pos)
+            _interp(sat, "LINEAR")
+            out.append(sat)
+    return out
+
+
+def _table_phone(ctx, scr, yaw_deg=180.0, tilt=-14.0, dx=0.0):
+    sx, sy = SPOT
+    ph = make_phone("phone", scr, (sx + dx, sy - 0.02, TBL_Z + 0.004), (math.radians(tilt), 0, math.radians(yaw_deg)))
+    cup = S.pbr("pz_cup", hexc("e9e4da"), 0.3, coat=0.5, var=0)
+    S.obj("pz_cup", _mesh("pz_cup", lambda bm: [_cyl(bm, (sx + dx + 0.17, sy + 0.05, TBL_Z + 0.045), 0.04, 0.09, "Z", 20),
+                                                _cyl(bm, (sx + dx + 0.17, sy + 0.05, TBL_Z + 0.004), 0.075, 0.008, "Z", 24)],
+                          [cup]))
+    return ph
+
+
+def _phone_cam(ctx, p, ph, near=0.42, side=0.05, up=0.0, lens=35, fstop=2.0):
+    """Camera north of the table looking south at the phone screen (park + sky behind, DOF)."""
+    sx, sy = SPOT
+    zc = TBL_Z + 0.08
+    _cam_keys2(ctx, [(1, p.get("cam0", (sx + side, sy + near, zc - 0.03 + up)), p.get("tgt0", (sx, sy - 0.02, zc + 0.045))),
+                     (1.0, p.get("cam1", (sx + side * 0.6, sy + near * 0.9, zc - 0.03 + up)), p.get("tgt1", (sx, sy - 0.02, zc + 0.045)))],
+               lens=p.get("lens", lens), clip=0.02, far=40000.0)
+    ctx.cam.data.dof.use_dof = True
+    ctx.cam.data.dof.focus_object = ph["screen"]
+    ctx.cam.data.dof.aperture_fstop = p.get("fstop", fstop)
+
+
+def _v_gps(ctx, p, view):
+    T = ctx.frames
+    TW = _plaza_world(ctx, p)
+    sx, sy = SPOT
+    dz = (PH_H / 2 - 0.002) + (0.46 - 0.5) * (PH_H - 0.024)
+    if view in ("hook", "fix", "outro"):
+        scr = _screen_mat("ph_map", [map_img("ed_map_dot")], strength=1.1)
+        ph = _table_phone(ctx, scr)
+        if view in ("hook", "fix"):
+            _phone_cam(ctx, p, ph, side=(0.12 if view == "hook" else -0.12), up=-0.02)
+            if view == "fix":
+                # teal rings pulse around the dot on the screen; the dot sits at uv (0.5, 0.46)
+                pass
+                for k in range(3):
+                    _rings(ctx, (0, -0.0065, dz), ctx.word_time(p.get("ring_cue", "stays"), 0.6) + k * 26,
+                                  color=TEAL, count=2, gap=9, r1=0.022, life=16, rot=(math.radians(90), 0, 0),
+                                  name="dring%d" % k, parent=ph["root"])
+            S.anchor(ctx, "dot", ph["root"], (0, -0.006, dz))
+            S.anchor(ctx, "phone", ph["root"], (0, 0, PH_H))
+        else:
+            _sat_sky(ctx, s=5.0, aim=[[(-33.0, 27.0), (-14.0, 35.0)], [(-24.0, 21.0)]])
+            _cam_keys2(ctx, [(1, p.get("cam0", (sx + 0.05, sy + 0.5, TBL_Z + 0.05)), p.get("tgt0", (sx, sy - 0.02, TBL_Z + 0.15))),
+                             (1.0, p.get("cam1", (sx + 3.0, sy + 16.0, 9.0)), p.get("tgt1", (sx - 230.0, sy - 540.0, 470.0)))],
+                       lens=p.get("lens", 30), clip=0.02, far=40000.0)
+            S.anchor(ctx, "phone", ph["root"], (0, 0, PH_H))
+    elif view == "sats":
+        sats = _sat_sky(ctx, s=p.get("sat_scale", 9.0), aim=p.get("aim", [[(-33.0, 27.0), (-14.0, 35.0)], [(-24.0, 21.0)]]))
+        _table_phone(ctx, _screen_mat("ph_map", [map_img("ed_map_dot")], strength=1.1))
+        _cam_keys2(ctx, [(1, p.get("cam0", (sx + 2.0, sy + 3.0, 1.5)), p.get("tgt0", (sx - 280.0, sy - 660.0, 560.0))),
+                         (1.0, p.get("cam1", (sx + 2.0, sy + 3.0, 1.5)), p.get("tgt1", (sx - 285.0, sy - 660.0, 585.0)))],
+                   lens=p.get("lens", 22), clip=0.1, far=40000.0)
+        S.anchor(ctx, "sat", sats[1], (0, 0, 2.0))
+    elif view == "timing":
+        fb = ctx.word_time(p.get("beam_cue", "signals"), 0.25)
+        you = _empty("you", (sx, sy, 1.0))
+        m, _ = L.add_mat("beam_m", TEAL, 2.2)
+        pm = S.emis("beam_pulse", hexc("bff7ef"), 8.0)
+        dirs = [(-0.35, -0.75, 0.9), (0.45, -0.6, 0.8), (-0.1, -0.95, 0.5), (0.7, -0.2, 0.75)]
+        for k, d in enumerate(dirs):
+            dv = Vector(d).normalized()
+            top = Vector((sx, sy, 0.8)) + dv * 1400.0
+            _beam("beam%d" % k, (sx, sy, 0.8), tuple(top), 0.45, m)
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=2.2)
+            for r in range(3):
+                o = S.obj("bp%d_%d" % (k, r), S.mesh_from_bm("bp%d_%d" % (k, r), bm.copy(), [pm]))
+                o.visible_shadow = False
+                f0 = fb + r * 22 + k * 3
+                _mover(ctx, o, tuple(Vector((sx, sy, 0.8)) + dv * 420.0), (sx, sy, 0.9), f0, f0 + 20)
+            bm.free()
+        _rings(ctx, (sx, sy, 0.3), fb + 20, color=AMBER, count=4, gap=12, r1=9.0, life=26, name="you_r")
+        _table_phone(ctx, _screen_mat("ph_map", [map_img("ed_map_dot")], strength=1.1))
+        _cam_keys2(ctx, [(1, p.get("cam0", (sx + 70.0, sy + 120.0, 75.0)), p.get("tgt0", (sx - 4.0, sy - 14.0, 0.0))),
+                         (1.0, p.get("cam1", (sx + 58.0, sy + 100.0, 64.0)), p.get("tgt1", (sx - 4.0, sy - 14.0, 0.0)))],
+                   lens=p.get("lens", 30), clip=0.3, far=40000.0)
+        S.anchor(ctx, "you", you, (0, 0, 1.5))
+    elif view == "clock":
+        ff = ctx.word_time(p.get("fast_cue", "fast"), 0.4)
+        ps = Vector((sx - 40.0, sy - 700.0, 620.0))
+        sat = make_gps_sat("satc", tuple(ps), 3.2, yaw=math.radians(15))
+        kf(sat, "location", 1, ps)
+        kf(sat, "location", T, ps + Vector((14.0, 0, 0)))
+        _interp(sat, "LINEAR")
+        cam0 = ps + Vector((20.0, 46.0, -24.0))
+        dirc = (cam0 - ps)
+        yawc = math.atan2(-dirc.x, dirc.y)
+        cl, mh, hh = make_clock("clk", tuple(ps + Vector((11.0, 10.0, -9.0))), 4.6, rot=(0, 0, yawc + math.pi),
+                                face="22303d", ink="eef2f3")
+        kf(cl, "location", 1, cl.location.copy())
+        kf(cl, "location", T, cl.location + Vector((14.0, 0, 0)))
+        _interp(cl, "LINEAR")
+        _spin_keys(mh, [(1, 0), (ff, 60), (T, 60 + 360 * 3.0 * (T - ff) / 60.0)])
+        _spin_keys(hh, [(1, 100), (ff, 105), (T, 105 + 360 * 0.25 * (T - ff) / 60.0)])
+        _rings(ctx, (0, 0, 0), ff, color=AMBER, count=3, gap=10, r1=6.5, life=24, rot=(math.radians(90), 0, 0),
+                      name="clkr", parent=cl)
+        _cam_keys2(ctx, [(1, p.get("cam0", tuple(cam0)), p.get("tgt0", tuple(ps + Vector((4.0, 0, 1.5))))),
+                         (1.0, p.get("cam1", tuple(cam0 + Vector((6.0, -6.0, 0.0)))), p.get("tgt1", tuple(ps + Vector((12.0, 0, 1.5)))))],
+                   lens=p.get("lens", 30), clip=0.5, far=40000.0)
+        S.anchor(ctx, "clock", cl, (0, -1.0, 0))
+        S.anchor(ctx, "sat", sat, (0, 0, 1.5))
+    elif view == "drift":
+        fd = ctx.word_time(p.get("drift_cue", "drift"), 0.5)
+        tm, _ = L.add_mat("true_m", TEAL, 2.5)
+        _annulus("true_ring", 9.0, 2.0, tm, 64, (sx, sy, 3.0))
+        tdm, _ = L.add_mat("true_disc", TEAL, 0.7)
+        _fan("true_disc", (sx, sy), 9.0, 0, 360, tdm, z=2.9, seg=48)
+        _rings(ctx, (sx, sy, 0.6), 6, color=TEAL, count=4, gap=22, r1=16.0, life=30, name="true_p")
+        te = _empty("true_e", (sx, sy, 1.0))
+        dot = _empty("dot", (sx, sy, 14.0))
+        blue = S.emis("dot_blue", hexc("1a73e8"), 3.0)
+        white = S.emis("dot_white", hexc("ffffff"), 2.0)
+        S.obj("dot_c", _mesh("dot_c", lambda bm: _cyl(bm, (0, 0, 0.3), 7.0, 0.6, "Z", 40), [blue]), parent=dot)
+        S.obj("dot_w", _mesh("dot_w", lambda bm: _cyl(bm, (0, 0, 0.0), 9.0, 0.6, "Z", 40), [white]), parent=dot)
+        hm, _ = L.add_mat("dot_halo", hexc("1a73e8"), 0.6)
+        S.obj("dot_h", _mesh("dot_h", lambda bm: _cyl(bm, (0, 0, -0.3), 22.0, 0.2, "Z", 48), [hm]), parent=dot)
+        path = [(sx, sy), (sx + 40.0, sy - 70.0), (sx + 95.0, sy - 150.0), (sx + 135.0, sy - 250.0)]
+        segs = [(Vector(a), Vector(b)) for a, b in zip(path[:-1], path[1:])]
+        tot = sum((b - a).length for a, b in segs)
+        am = S.emis("trail_m", AMBER, 3.0)
+        n = 26
+        for i in range(n + 1):
+            dd = tot * i / n
+            for a, b in segs:
+                ln = (b - a).length
+                if dd <= ln + 1e-6:
+                    q = a + (b - a) * (dd / ln)
+                    break
+                dd -= ln
+            f = int(fd + (T - 6 - fd) * i / n)
+            kf(dot, "location", max(1, f), Vector((q.x, q.y, 14.0)))
+            if 0 < i < n:
+                o = S.obj("trail%d" % i, _mesh("trail%d" % i, lambda bm, q=q: _cyl(bm, (q.x, q.y, 6.0), 2.2, 0.4, "Z", 16), [am]))
+                o.visible_shadow = False
+                _show(o, max(2, f))
+        _interp(dot, "LINEAR")
+        _cam_keys2(ctx, [(1, p.get("cam0", (sx + 40.0, sy + 250.0, 330.0)), p.get("tgt0", (sx + 55.0, sy - 110.0, 0.0))),
+                         (1.0, p.get("cam1", (sx + 50.0, sy + 220.0, 300.0)), p.get("tgt1", (sx + 65.0, sy - 120.0, 0.0)))],
+                   lens=p.get("lens", 30), clip=1.0, far=40000.0)
+        S.anchor(ctx, "true", te, (0, 0, 8.0))
+        S.anchor(ctx, "dot", dot, (0, 0, 2.0))
+
+
+def b_gps_sky_v2(ctx, p):
+    """GPS + relativity in the scene_lib_v2_tower city (REUSED world) with a cafe plaza on the explainer plot.
+    view hook | sats | timing | clock | drift | fix | outro. hook/fix: phone on a stand on the cafe table, map with the
+    blue dot (DOF over the park); sats: looking up at stylised satellites on teal orbit arcs; timing: four teal beams
+    with light pulses converge on the table (beam_cue), amber rings; clock: one satellite at altitude with a dial
+    whose hands speed up on fast_cue; drift: the blue location dot slides off over the park on drift_cue with an amber
+    trail, teal ring on the true spot; outro: pull back + up to the sky. Anchors: dot, phone, sat, you, clock, true."""
+    _v_gps(ctx, p, p.get("view", "hook"))
+
+
+def make_cell_tower(name, x, y, h=32.0, az=128.0):
+    """Monopole cell tower: tapered grey pole, triangular head frame, 3 sectors x 3 white panel antennas (sector 0
+    faces azimuth `az`, degrees from +X), equipment cabinets + low fence at the base."""
+    grey = S.pbr("ct_grey", hexc("9aa2aa"), 0.45, 0.7, var=0.03)
+    white = S.pbr("ct_white", hexc("dfe3e6"), 0.5, var=0)
+    cab = S.pbr("ct_cab", hexc("c7cbc4"), 0.6, var=0.03)
+    gravel = S.pbr("ct_gravel", hexc("8f8a80"), 0.95, var=0.1, var_scale=4.0)
+
+    def b(bm):
+        rr = bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=0.65, radius2=0.32, depth=h)
+        bmesh.ops.translate(bm, vec=Vector((x, y, h / 2)), verts=rr["verts"])
+        for k in range(3):
+            a = math.radians(az + 120 * k)
+            ca, sa = math.cos(a), math.sin(a)
+            for j in (-1, 0, 1):
+                px = x + 1.6 * ca - 0.9 * j * sa
+                py = y + 1.6 * sa + 0.9 * j * ca
+                vs = bmesh.ops.create_cube(bm, size=1.0)["verts"]
+                for v in vs:
+                    v.co = Vector((v.co.x * 0.18, v.co.y * 0.45, v.co.z * 2.2))
+                bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(a, 3, "Z"))
+                bmesh.ops.translate(bm, verts=vs, vec=Vector((px, py, h - 1.6)))
+                for f in {f for v in vs for f in v.link_faces}:
+                    f.material_index = 1
+            S.bm_box(bm, (x + 0.9 * ca, y + 0.9 * sa, h - 0.4), (0.12, 0.12, 0.12), 0)
+        for k in range(3):
+            a0 = math.radians(az + 60 + 120 * k)
+            a1 = math.radians(az + 180 + 120 * k)
+            p0 = Vector((x + 1.85 * math.cos(a0), y + 1.85 * math.sin(a0), h - 0.3))
+            p1 = Vector((x + 1.85 * math.cos(a1), y + 1.85 * math.sin(a1), h - 0.3))
+            d = p1 - p0
+            rr = bmesh.ops.create_cone(bm, cap_ends=True, segments=6, radius1=0.08, radius2=0.08, depth=d.length)
+            bmesh.ops.rotate(bm, verts=rr["verts"], cent=(0, 0, 0), matrix=Vector((0, 0, 1)).rotation_difference(d).to_matrix())
+            bmesh.ops.translate(bm, verts=rr["verts"], vec=(p0 + p1) / 2)
+        for dx, dy in ((2.5, 1.0), (2.5, -1.0)):
+            S.bm_box(bm, (x + dx, y + dy, 0.9), (1.2, 1.0, 1.8), 2)
+    S.obj(name, _mesh(name, b, [grey, white, cab]))
+    S.plane_obj(name + "_pad", 10, 8, (x + 1.0, y, 0.07), gravel)
+    S.obj(name + "_fence", _mesh(name + "_fence", lambda bm: [
+        S.bm_box(bm, (x + 1.0 + dx, y + dy, 0.9), (sw, sh, 1.8), 0) for dx, dy, sw, sh in (
+            (0, 4.0, 10.0, 0.05), (0, -4.0, 10.0, 0.05), (5.0, 0, 0.05, 8.0), (-5.0, 0, 0.05, 8.0))],
+        [S.pbr("ct_fence", hexc("7d858c"), 0.5, 0.6, var=0)]))
+    return Vector((x, y, h - 1.6))
+
+
+def make_psap(name, x, y):
+    """Low local 911 center: pale two-storey block with window bands, entrance canopy, roof dish + mast, parking with
+    a few cars. No signage, no text."""
+    fac = S.facade_mat("psap_fac", hexc("d9d2c4"), hexc("3b5268"), 3.0, 3.8, 0.55)
+    roof = S.pbr("psap_roof", hexc("8f9398"), 0.8, var=0.05)
+    wht = S.pbr("psap_white", hexc("e4e6e8"), 0.45, var=0)
+    lot = S.pbr("psap_lot", hexc("55595e"), 0.85, var=0.06)
+
+    def b(bm):
+        S.bm_box(bm, (x, y, 3.8), (30.0, 18.0, 7.6), 0)
+        S.bm_box(bm, (x, y, 7.75), (30.6, 18.6, 0.3), 1)
+        S.bm_box(bm, (x - 6.0, y + 9.6, 3.2), (6.0, 1.8, 0.25), 1)
+        _cyl(bm, (x + 8.0, y - 2.0, 9.6), 0.12, 3.6, "Z", 8, 2)
+        rr = bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=8, radius=1.3)
+        for v in rr["verts"]:
+            v.co.z = max(v.co.z, 0.0) * 0.45
+        bmesh.ops.rotate(bm, verts=rr["verts"], cent=(0, 0, 0), matrix=Matrix.Rotation(math.radians(-55), 3, "X"))
+        bmesh.ops.translate(bm, verts=rr["verts"], vec=Vector((x - 6.0, y - 3.0, 8.9)))
+        for f in {f for v in rr["verts"] for f in v.link_faces}:
+            f.material_index = 2
+        S.bm_box(bm, (x - 6.0, y - 3.0, 8.1), (0.5, 0.5, 0.6), 2)
+    S.obj(name, _mesh(name, b, [fac, roof, wht]))
+    S.plane_obj(name + "_lot", 34, 16, (x, y + 18.0, 0.06), lot)
+    cols = [hexc(c) for c in ("b8bec4", "2c3e57", "8c1c1c", "f2f2f2")]
+    for k in range(4):
+        L.make_car("%s_car%d" % (name, k), color=cols[k], loc=(x - 10.0 + 6.0 * k, y + 18.0, 0.07), rot_z=math.pi / 2,
+                   headlights=False, glow=False)
+    return Vector((x, y, 8.0))
+
+
+def _fan(name, c, r, a0, a1, mat, z=0.5, seg=40):
+    bm = bmesh.new()
+    vs = [bm.verts.new((c[0], c[1], z))]
+    for k in range(seg + 1):
+        a = math.radians(a0 + (a1 - a0) * k / seg)
+        vs.append(bm.verts.new((c[0] + r * math.cos(a), c[1] + r * math.sin(a), z)))
+    for k in range(seg):
+        bm.faces.new((vs[0], vs[k + 1], vs[k + 2]))
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]))
+    o.visible_shadow = False
+    return o
+
+
+def _dispatch_room(ctx, p, dot_frame=None):
+    """Own lit 911 dispatch-desk set: blue-grey acoustic walls, carpet, long console desk, three monitors (centre one
+    = dark street map; the caller's dot appears on it at dot_frame), a big dark wall map, headset, keyboard, chair,
+    plant, window band with daylight on the left. No people, no text."""
+    sc = ctx.scene
+    w = bpy.data.worlds.new("dc_world")
+    sc.world = w
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.55, 0.58, 0.62, 1.0)
+    bg.inputs["Strength"].default_value = 0.4
+    sc.view_settings.exposure = p.get("exposure", -0.5)
+    L.fog(0.001, hexc("c9ced4"), start=10.0)
+    wall = S.pbr("dc_wall", hexc("6f8796"), 0.9, var=0.03, var_scale=3.0)
+    panel = S.pbr("dc_panel", hexc("5d7382"), 0.95, var=0.03)
+    ceil = S.pbr("dc_ceil", hexc("dfe2e4"), 0.9, var=0)
+    carpet = S.pbr("dc_carpet", hexc("4a5560"), 0.95, var=0.08, var_scale=12.0, bump=0.02)
+    desk = S.pbr("dc_desk", hexc("c4a57c"), 0.45, coat=0.2, var=0.06, var_scale=6.0)
+    blk = S.pbr("dc_black", hexc("1a1d21"), 0.35, 0.2, coat=0.4, var=0)
+    S.plane_obj("dc_floor", 9.0, 8.0, (0, -0.5, 0.0), carpet)
+
+    def room(bm):
+        S.bm_box(bm, (0, 2.2, 1.45), (7.0, 0.2, 2.9), 0)
+        S.bm_box(bm, (3.4, -0.5, 1.45), (0.2, 5.6, 2.9), 0)
+        S.bm_box(bm, (0, -3.2, 1.45), (7.0, 0.2, 2.9), 0)
+        for (y0, y1, z0, z1) in ((-3.2, -2.0, 0, 2.9), (1.0, 2.2, 0, 2.9), (-2.0, 1.0, 0, 1.0), (-2.0, 1.0, 2.1, 2.9)):
+            S.bm_box(bm, (-3.4, (y0 + y1) / 2, (z0 + z1) / 2), (0.2, y1 - y0, z1 - z0), 0)
+        S.bm_box(bm, (0, -0.5, 2.95), (7.0, 5.6, 0.1), 2)
+        for k in range(6):
+            S.bm_box(bm, (-2.6 + 1.04 * k, 2.09, 0.62), (0.98, 0.03, 0.9), 1)
+    S.obj("dc_room", _mesh("dc_room", room, [wall, panel, ceil]))
+    sky = S.emis("dc_sky", hexc("cfe3f2"), 1.8)
+    S.obj("dc_sky", _mesh("dc_sky", lambda bm: S.bm_box(bm, (-3.55, -0.5, 1.55), (0.02, 3.0, 1.1)), [sky]))
+    # big wall map (dark) above the desk
+    wm = _screen_mat("dc_wallmap", [map_img("ed_map_wall", dark=True, dot=False, w=512, h=256, scale=0.8)], strength=0.55)
+    q = _uv_quad("dc_wallmap", 3.2, 1.6, wm, (0, 0, 0))
+    q.location = (0.0, 2.08, 1.9)
+    S.obj("dc_wmframe", _mesh("dc_wmframe", lambda bm: S.bm_box(bm, (0, 2.1, 1.9), (3.3, 0.04, 1.7)), [blk]))
+    # desk + monitors
+    S.obj("dc_desk", _mesh("dc_desk", lambda bm: [
+        _rbox(bm, (0, 0.85, 0.74), (3.2, 0.85, 0.04), 0.01, 2, 0),
+        S.bm_box(bm, (0, 1.2, 0.37), (3.1, 0.1, 0.72), 1),
+        S.bm_box(bm, (-1.5, 0.85, 0.37), (0.06, 0.75, 0.72), 1), S.bm_box(bm, (1.5, 0.85, 0.37), (0.06, 0.75, 0.72), 1)],
+        [desk, blk]))
+    mon = []
+    sa = _cv(256, 160, "18202b")
+    for k, (x0, wd, col) in enumerate(((16, 150, "2f6f8f"), (16, 110, "3f8f6f"), (16, 180, "8f6f3f"), (16, 90, "2f6f8f"))):
+        _rr(sa, x0, 120 - 26 * k, x0 + wd, 120 - 26 * k + 14, 4, col)
+    _rr(sa, 200, 20, 244, 140, 6, "243042")
+    side_img = _np_img("ed_dash", sa)
+    for k, (x, yaw) in enumerate(((-0.78, 18.0), (0.0, 0.0), (0.78, -18.0))):
+        r = _empty("mon%d" % k, (x, 1.02, 1.13))
+        r.rotation_euler = (0, 0, math.radians(yaw))
+        S.obj("mon%d_b" % k, _mesh("mon%d_b" % k, lambda bm: [_rbox(bm, (0, 0.02, 0), (0.74, 0.03, 0.44), 0.006, 1, 0),
+                                                              S.bm_box(bm, (0, 0.06, -0.3), (0.05, 0.04, 0.2), 0),
+                                                              S.bm_box(bm, (0, 0.04, -0.385), (0.26, 0.18, 0.02), 0)],
+                                   [blk]), parent=r)
+        if k == 1:
+            # map image is portrait 256x512: use the middle of it by stretching a landscape quad (stylised)
+            mm = _screen_mat("mon_map", [map_img("ed_map_mon", dark=True, dot=False, w=512, h=300, scale=0.9)], strength=1.0)
+            _uv_quad("mon1_s", 0.7, 0.4, mm, (0, 0.0, 0), parent=r)
+        else:
+            _uv_quad("mon%d_s" % k, 0.7, 0.4, _screen_mat("mon%d_m" % k, [side_img], strength=0.9), (0, 0.0, 0), parent=r)
+        mon.append(r)
+    # caller dot on the centre monitor
+    dm = S.emis("dc_dot", hexc("19d3c0"), 6.0)
+    dot = S.obj("dc_dot", _mesh("dc_dot", lambda bm: _cyl(bm, (0.05, -0.004, 0.02), 0.014, 0.002, "Y", 24), [dm]),
+                parent=mon[1])
+    if dot_frame:
+        _show(dot, dot_frame)
+        _rings(ctx, (0.05, -0.006, 0.02), dot_frame, color=TEAL, count=3, gap=10, r1=0.05, life=22,
+                      rot=(math.radians(90), 0, 0), name="dcr", parent=mon[1])
+    # keyboard, mouse, headset, mug, plant, chair
+    grey = S.pbr("dc_grey", hexc("3a3f46"), 0.5, var=0)
+    S.obj("dc_kb", _mesh("dc_kb", lambda bm: [_rbox(bm, (0, 0.62, 0.77), (0.46, 0.15, 0.02), 0.005, 1, 0),
+                                              _rbox(bm, (0.36, 0.62, 0.77), (0.06, 0.1, 0.025), 0.01, 2, 0)], [grey]))
+    hs = S.pbr("dc_headset", hexc("23272c"), 0.4, var=0)
+    _annulus("dc_hs_band", 0.085, 0.016, hs, 32, (-0.55, 0.6, 0.79), (math.radians(90), 0, math.radians(30)))
+    S.obj("dc_hs_cups", _mesh("dc_hs_cups", lambda bm: [_cyl(bm, (-0.55 + 0.078 * sx_, 0.6 + 0.045 * sx_, 0.79), 0.04, 0.03, "Z", 16)
+                                                        for sx_ in (-1, 1)], [hs]))
+    mug = S.pbr("dc_mug", hexc("2f6f8f"), 0.35, coat=0.5, var=0)
+    S.obj("dc_mug", _mesh("dc_mug", lambda bm: _cyl(bm, (0.9, 0.7, 0.81), 0.04, 0.1, "Z", 20), [mug]))
+    pot = S.pbr("lr_pot", hexc("d9774f"), 0.6, var=0.03)
+    leaf = S.pbr("lr_leaf", hexc("4f8a45"), 0.6, var=0.08, var_scale=8.0)
+    S.obj("dc_pot", _mesh("dc_pot", lambda bm: _cyl(bm, (2.8, 1.6, 0.25), 0.22, 0.5, "Z", 20), [pot]))
+    bm = bmesh.new()
+    rng = random.Random(3)
+    for k in range(14):
+        rr = bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=rng.uniform(0.15, 0.22))
+        bmesh.ops.translate(bm, vec=(2.8 + rng.uniform(-0.2, 0.2), 1.6 + rng.uniform(-0.2, 0.2), 0.8 + rng.uniform(0, 0.8)),
+                            verts=rr["verts"])
+    S.obj("dc_plant", S.mesh_from_bm("dc_plant", bm, [leaf], smooth=True))
+    chair = S.pbr("dc_chair", hexc("2b3440"), 0.8, var=0.03)
+    S.obj("dc_chair", _mesh("dc_chair", lambda bm: [_rbox(bm, (0.05, -0.05, 0.5), (0.55, 0.52, 0.09), 0.04, 2, 0),
+                                                    _rbox(bm, (0.05, -0.33, 0.9), (0.52, 0.08, 0.62), 0.05, 2, 0),
+                                                    _cyl(bm, (0.05, -0.05, 0.25), 0.03, 0.45, "Z", 8, 0),
+                                                    _cyl(bm, (0.05, -0.05, 0.05), 0.3, 0.03, "Z", 5, 0)], [chair]))
+    for k, (x, y) in enumerate(((-1.2, -0.4), (1.2, -0.4), (0.0, 1.2))):
+        A._area("dc_a%d" % k, (x, y, 2.8), 1.4, p.get("ceil_w", 110.0), (1.0, 0.96, 0.9), size_y=1.4)
+    win = A._area("dc_win", (-3.0, -0.5, 1.55), 2.0, 140.0, (0.9, 0.95, 1.0), size_y=1.0)
+    win.rotation_euler = (0, math.radians(-90), 0)
+    return mon, dot
+
+
+def _v_911(ctx, p, view):
+    T = ctx.frames
+    sx, sy = SPOT
+    if view == "desk":
+        fd = ctx.word_time(p.get("dot_cue", "show"), 0.3)
+        mon, dot = _dispatch_room(ctx, p, fd)
+        _cam_keys2(ctx, [(1, p.get("cam0", (0.55, -0.6, 1.48)), p.get("tgt0", (0.0, 1.02, 1.08))),
+                         (1.0, p.get("cam1", (0.45, -0.45, 1.45)), p.get("tgt1", (0.0, 1.02, 1.08)))],
+                   lens=p.get("lens", 32), clip=0.02)
+        S.anchor(ctx, "map", dot, (0.05, -0.006, 0.02))
+        return
+    _plaza_world(ctx, p, kiosk=True)
+    top = make_cell_tower("cell", CELL[0], CELL[1], az=math.degrees(math.atan2(SPOT[1] - CELL[1], SPOT[0] - CELL[0])))
+    roof = make_psap("psap", PSAP[0], PSAP[1])
+    te = _empty("tower_top", tuple(top))
+    ce = _empty("center_roof", tuple(roof))
+    you = _empty("you", (sx, sy, 1.0))
+    if view in ("hook", "text"):
+        img = [call_img()] if view == "hook" else [chat_img()]
+        ph = _table_phone(ctx, _screen_mat("ph_scr", img, strength=1.1))
+        _phone_cam(ctx, p, ph, side=(0.12 if view == "hook" else -0.12), up=-0.02)
+        S.anchor(ctx, "phone", ph["root"], (0, -0.006, PH_H * 0.85))
+        return
+    _table_phone(ctx, _screen_mat("ph_scr", [call_img()], strength=1.1))
+    az = math.degrees(math.atan2(sy - CELL[1], sx - CELL[0]))
+    if view == "route":
+        fs = ctx.word_time(p.get("send_cue", "network"), 0.55)
+        pm = S.emis("rt_teal", hexc("bff7ef"), 8.0)
+        am = S.emis("rt_amber", AMBER, 8.0)
+        bm = bmesh.new()
+        bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.9)
+        for r in range(3):
+            o = S.obj("up%d" % r, S.mesh_from_bm("up%d" % r, bm.copy(), [pm]))
+            o.visible_shadow = False
+            f0 = max(2, fs - 46 + r * 10)
+            _mover(ctx, o, (sx, sy, 1.2), tuple(top), f0, f0 + 22)
+        # arc tower -> 911 center
+        arc = [Vector(top).lerp(Vector(roof), t) + Vector((0, 0, 30.0 * math.sin(math.pi * t))) for t in
+               [i / 24.0 for i in range(25)]]
+        lm, _ = L.add_mat("rt_line", AMBER, 1.4)
+        for i in range(24):
+            o = _beam("arc%d" % i, tuple(arc[i]), tuple(arc[i + 1]), 0.25, lm, seg=6)
+            _show(o, max(2, fs + i))
+        for r in range(3):
+            o = S.obj("dn%d" % r, S.mesh_from_bm("dn%d" % r, bm.copy(), [am]))
+            o.visible_shadow = False
+            for i, q in enumerate(arc):
+                kf(o, "location", max(1, fs + r * 12 + i), q)
+            _interp(o, "LINEAR")
+            _hold_obj(o, "scale", [(1, (0.001,) * 3), (max(2, fs + r * 12), (1.6,) * 3), (fs + r * 12 + 25, (0.001,) * 3)])
+        _rings(ctx, tuple(roof + Vector((0, 0, 1.0))), fs + 26, color=AMBER, count=3, gap=10, r1=10.0, life=24,
+                      name="psap_r")
+        bm.free()
+        _cam_keys2(ctx, [(1, p.get("cam0", (sx + 120.0, sy + 85.0, 62.0)), p.get("tgt0", (sx - 5.0, sy - 125.0, 4.0))),
+                         (1.0, p.get("cam1", (sx + 110.0, sy + 76.0, 57.0)), p.get("tgt1", (sx - 5.0, sy - 125.0, 4.0)))],
+                   lens=p.get("lens", 30), clip=0.5, far=40000.0)
+        S.anchor(ctx, "tower", te, (0, 0, 1.5))
+        S.anchor(ctx, "center", ce, (0, 0, 2.0))
+    else:
+        fw = ctx.word_time(p.get("wedge_cue", "side"), 0.4)
+        wm, ws = L.add_mat("wedge_m", AMBER, 0.0)
+        _fan("wedge", CELL, 230.0, az - 60.0, az + 60.0, wm, z=0.6)
+        if view == "sector":
+            L.kf_socket(ws, 1, 0.0)
+            L.kf_socket(ws, max(2, fw), 0.0)
+            L.kf_socket(ws, fw + 12, 0.55)
+        elif view == "hybrid":
+            ff = ctx.word_time(p.get("fix_cue", "own"), 0.4)
+            L.kf_socket(ws, 1, 0.55)
+            L.kf_socket(ws, max(2, ff), 0.55)
+            L.kf_socket(ws, ff + 15, 0.18)
+            cm, cs = L.add_mat("fix_m", TEAL, 0.0)
+            _fan("fix", (sx, sy), 14.0, 0, 360, cm, z=0.9, seg=48)
+            L.kf_socket(cs, 1, 0.0)
+            L.kf_socket(cs, max(2, ff), 0.0)
+            L.kf_socket(cs, ff + 10, 1.4)
+            _rings(ctx, (sx, sy, 1.0), ff, color=TEAL, count=4, gap=12, r1=14.0, life=24, name="fix_r")
+            bmm, _ = L.add_mat("gps_beam", TEAL, 2.0)
+            _beam("gpsb", (sx, sy, 0.9), (sx - 300.0, sy - 600.0, 1400.0), 0.35, bmm)
+            _rings(ctx, (sx + 14.0, sy + 3.0, 3.4), ff + 18, color=hexc("bff7ef"), count=4, gap=9, r1=6.0, life=22,
+                          name="wifi_r")
+        else:   # outro
+            L.kf_socket(ws, 1, 0.3)
+        if view == "outro":
+            _cam_keys2(ctx, [(1, p.get("cam0", (sx + 3.0, sy + 18.0, 6.0)), p.get("tgt0", (sx + 20.0, sy - 120.0, 12.0))),
+                             (1.0, p.get("cam1", (sx + 90.0, sy + 170.0, 140.0)), p.get("tgt1", (sx + 10.0, sy - 120.0, 0.0)))],
+                       lens=p.get("lens", 30), clip=0.3, far=40000.0)
+        else:
+            _cam_keys2(ctx, [(1, p.get("cam0", (sx + 120.0, sy + 190.0, 230.0)), p.get("tgt0", (sx + 10.0, sy - 90.0, 0.0))),
+                             (1.0, p.get("cam1", (sx + 110.0, sy + 172.0, 212.0)), p.get("tgt1", (sx + 10.0, sy - 90.0, 0.0)))],
+                       lens=p.get("lens", 30), clip=0.5, far=40000.0)
+        mid = Vector(CELL).to_3d() + Vector((math.cos(math.radians(az)), math.sin(math.radians(az)), 0)) * 120.0
+        S.anchor(ctx, "sector", _empty("sector_e", (mid.x, mid.y, 1.0)), (0, 0, 0))
+        S.anchor(ctx, "tower", te, (0, 0, 1.5))
+        S.anchor(ctx, "you", you, (0, 0, 2.0))
+
+
+def b_e911_v2(ctx, p):
+    """How 911 finds a caller (calm, non-graphic: a phone, a cell tower, a dispatch desk). REUSES the
+    scene_lib_v2_tower city + the gps_sky_v2 cafe plaza (+ a kiosk). view hook | route | sector | hybrid | desk |
+    text | outro. hook/text: phone on the cafe table (in-call screen / chat bubbles, no text); route: pulses phone ->
+    monopole tower -> amber arc to a low 911 center (send_cue); sector: amber 120-degree tower sector fades in
+    (wedge_cue); hybrid: teal small circle + rings on the caller, GPS beam, Wi-Fi rings from the kiosk (fix_cue), sector
+    dims; desk: dispatch desk set, teal dot appears on the centre monitor map (dot_cue). Anchors: phone, tower, center,
+    sector, you, map."""
+    _v_911(ctx, p, p.get("view", "hook"))
+
+
+S.V2_BUILDERS.update({
+    "gps_sky_v2": b_gps_sky_v2,
+    "e911_v2": b_e911_v2,
+    "remote_ir_v2": b_remote_ir_v2,
 })

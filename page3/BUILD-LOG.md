@@ -333,6 +333,18 @@ World build time per beat (Blender log, "built … in"):
   most likely CPU contention, since no other Blender was running.
 - Bag interiors: 0.1–0.6 s. Apron: 40–58 s.
 
+### Script change after review
+- c2 sector beat: "Right away, they see which tower..." -> "The 911 center can typically see which tower, and which
+  side of it, took your call." (Phase I is provided on request within minutes; FCC FAQ says "typically").
+  c2 text beat: "you can also text 911" -> "you can text 911" (length). Sources re-fetched this session:
+  archive.gps.gov Space Segment, Wikipedia GPS error analysis (+45.8 / -7.2 / +38.6 us/day, 10.22999999543 MHz,
+  ~11.4 km/day), OSU Pogge, Wikipedia Enhanced 9-1-1, FCC Text-to-911 FAQ PDF, Android ELS, Wikipedia Remote control,
+  Adafruit IR sensor, Carolina Biological.
+
+### Windows RTX 3050 4 GB / EEVEE notes
+- No volumes; beams / rings / IR dashes are emission or `add_mat`; screens are emission images <= 512 px made in memory.
+- City beats reuse the tower-city world that already renders on that laptop (~2,000 objects); interiors < 60 objects.
+
 ### Known issues / leftovers
 - The bag hook is a bit bare (white hall, one red bag).
 - The pilots close-up cockpit windows read as dark panes with a grey blob (the stock airliner has no cockpit
@@ -437,3 +449,67 @@ Regression: batch 01 `bag_belt_v2` scan_arch re-rendered after the append (build
   fit.
 - Numeral cues: "twelve" (bars), "ten" (first chip), "forty" (balance chip) sit on spoken numbers, like batch 01's
   "ten". If whisper writes digits, `word_time` falls back silently to the default fraction: check after TTS.
+
+## Session: Track A batch 03 (26 Nov 2026, for 29 Nov 12:00 / 17:00 / 20:00 ET)
+
+Script: `page3/scripts/TRACK-A-BATCH-03.md`. Episodes (v2, libs `scene_lib_v2_ed`, voice Sadaltager + the one-line ED
+director notes; `style`, `tts`, `music`, `render`, `qc` blocks copied verbatim from b1):
+- `page3/episodes/2026-11-29-ed-c1-gps-einstein/` (keyword "gps einstein", slug `gps-einstein`, synthetic 43.2 s)
+- `page3/episodes/2026-11-29-ed-c2-911-location/` (keyword "911 location", slug `911-location`, 43.8 s)
+- `page3/episodes/2026-11-29-ed-c3-tv-remote-ir/` (keyword "tv remote", slug `tv-remote`, 43.0 s)
+Checked by script: every `cue` / `cues` / `sub_cue` / `*_cue` is a word prefix in its own beat, chips items = cues,
+caption ends with the engagement question, 6 hashtags incl. #EverydayDecoded, blocks equal to b1. No cue sits on a
+numeral or a hyphenated word.
+
+### Builders (appended to `page3/blender/scene_lib_v2_ed.py`, third `V2_BUILDERS.update` block; batches 01-02 untouched)
+- Shared: numpy screen art (sRGB, <= 512 px, no digits/letters): `map_img` (light/dark street map + blue dot),
+  `call_img`, `chat_img`, `camview_img` (remote tip, optional purple-white IR flash), `tv_img` (day / sunset),
+  `spectrum_img`; `_screen_mat` (emission image, optional keyed A/B mix, optional gloss), `_uv_quad`, `make_phone`
+  (+ desk stand, front-camera empty), `make_gps_sat`, `make_clock` (tick bars, hands), `_beam`, `_mover`, `_fan`,
+  `_annulus` + `_rings`, `_hold_keys` / `_hold_obj` / `_hold_sock`. NOTE: edges-only circles + a WIREFRAME modifier
+  (the clock rim and orbit arcs in the first pass, built like `scene_lib_v2_air.ring_pulses`) did not appear in the
+  batch 03 stills; batch 03 uses the face-based `_annulus` / `_rings` instead. `A.ring_pulses` in older builders is
+  untested here (not changed).
+  NOTE 2: Blender 5.3 ignores the `interp` argument of `kf` / `kf_socket` (new keys are BEZIER), so a "CONSTANT" pop
+  ramps from frame 1. Batch 03 pops (rings, IR dashes, beam pulses, route spheres, TV / phone-flash image swaps) use
+  `_hold_*` (a hold key one frame before each change). Older builders that rely on `interp=` were not changed.
+- `gps_sky_v2` view hook|sats|timing|clock|drift|fix|outro. REUSES the scene_lib_v2_tower city (`build_city` +
+  `build_hero`) + new cafe plaza on the explainer plot (`_plaza_world`; cars on the y = 60 road removed). Satellites on
+  two tilted teal orbit circles (`_sat_sky(aim=[(az, el)])` picks orbit angles so they land in shot). Anchors dot,
+  phone, sat, you, clock, true.
+- `e911_v2` view hook|route|sector|hybrid|desk|text|outro. Same city + plaza (+ kiosk), `make_cell_tower` (sector 0
+  faces the cafe), `make_psap` (no signage), `_dispatch_room` (interior set). Anchors phone, tower, center, sector,
+  you, map. Non-graphic: phone, tower, desk only; no people, no emergency.
+- `remote_ir_v2` view hook|led|code|sensor|phone|try|outro. `_living_room` lightbox set, `make_remote`, `_ir_pulses`
+  (long/short pale-violet dashes on a faint path). Anchors remote, tv, led, ir, pulses, sensor, screen, phone, front.
+
+### Stills (0.5 scale, 12 samples, synthetic timings in `output/<slug>/preview_synth/`)
+Sheets: `page3/_preview/2026-11-29-ed-c1-gps-einstein-stills.jpg`, `…-c2-911-location-stills.jpg`,
+`…-c3-tv-remote-ir-stills.jpg`. Overlay layout: `page3/_preview/track-a-batch03-overlay-check.jpg` (cards / chips /
+captions on the placeholder plate at the end of every beat; labels need rendered tracks). All band asserts pass.
+Iterations (renders per beat):
+- tv-remote: hook 3 (remote off-frame), led 2 (spectrum strip filled the caption band), code 3 (remote off-frame,
+  pulses too small), sensor 4 (screen gloss blew out white; camera), try 3 (remote off-frame / phone top in the band),
+  twist / outro 1 (+1 re-render for the TV sun moved out of the band).
+- gps-einstein: sats 5 (satellites off-frame, orbit arcs invisible = WIREFRAME bug, clouds in the band), outro 4,
+  clock 3 (white dial in the band -> dark dial, camera below the satellite = blue sky band), hook/fix 3 (clouds in the
+  band; fix ring scale bug), drift 2, timing 1.
+- 911-location: hook / text 2 (cloud in the band), route 2 (tower off-frame), map 2 (chair back blocked the view),
+  sector / hybrid / outro 1.
+Build time per beat: tower city + plaza ~6 s (14 s while another session rendered); living room / dispatch room 0.3 s.
+Regression: batch 02 `mw_kitchen_v2` magnetron re-rendered after the append (build 0.1 s, OK).
+
+### Known issues / leftovers
+- gps sats: satellites sit at the lower edge of the caption band with cloud edges above them (HDRI clouds); outro end
+  frame similar. Satellites are stylised and huge (not to scale); clock-dial teal rim faint.
+- gps timing: the beams come from out of frame; the cafe table is tiny in that wide shot (the label marks it).
+- 911 route / outro: city towers (window grids) behind the caption band; the cell tower is small in sector / hybrid.
+  Wi-Fi rings from the kiosk are hard to see.
+- tv-remote sensor: the warm TV picture fills the top half (calm gradient, no white); IR receiver is a small dark-red
+  window, the label must carry it.
+- Phone stand base hides the lower edge of the phone screens (cosmetic).
+- Synthetic captions show single-word chunks at some beat starts (preview only).
+- Facts to confirm in the Fable fact-check: "drift miles in a day" / chip "ROUGHLY 6 MILES A DAY" (back-of-envelope
+  10 km/day figure); text-to-911 "in many areas" (no national figure opened; FCC FAQ 2016 says "limited areas");
+  "Many newer phones also send their own location automatically" (Android ELS page; Apple HELO not opened);
+  front-camera tip (Carolina Biological, "many phones").

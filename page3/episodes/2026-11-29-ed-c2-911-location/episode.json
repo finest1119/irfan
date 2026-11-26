@@ -1,0 +1,254 @@
+{
+ "id": "2026-11-29-ed-c2-911-location",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "911 location",
+ "slug": "911-location",
+ "title": "You Call 911 and Can't Speak. Here's How They Find You",
+ "fb_caption": "When you call 911 from a cell phone, the call reaches a nearby cell tower and the network sends it to your local 911 center, along with which tower and which side of it picked up the call: a rough area. Many newer phones also send their own location automatically, built from GPS, Wi-Fi and other signals, which can often put you much closer on the dispatcher's map (it depends on your phone, carrier and 911 center). In many areas you can also text 911: give your address in the text, and remember the rule, call if you can, text if you can't. Did you know you could text 911?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#911",
+  "#PhoneTips",
+  "#GoodToKnow"
+ ],
+ "engagement_comment": "Did you know you could text 911? 1 = yes, I knew, 2 = no idea, 3 = not sure if my area has it.",
+ "sources": [
+  "Wikipedia, Enhanced 9-1-1 (wireless calls routed to a PSAP based on the cell tower; Phase I = the tower/antenna that took the call; Phase II = caller latitude/longitude; handset GPS / assisted GPS location): https://en.wikipedia.org/wiki/Enhanced_9-1-1",
+  "FCC Consumer Guide, Text-To-911 Quick Facts & FAQs (wireless carriers must send 911 voice calls to PSAPs with your number and approximate location; text only where the 911 center accepts it, otherwise a bounce-back; texts usually do not carry automatic location, so give your address; use a voice call when you can): https://desmoinescounty.iowa.gov/files/descom/text_911_faq_14828.pdf",
+  "Android, Emergency Location Service: how it works (location from cell towers, GPS, Wi-Fi and sensors sent automatically when you call or text an emergency number, where supported): https://www.android.com/safety/emergency-help/emergency-location-service/how-it-works/"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, curious American male explainer, warm and clear, about 170 words per minute, short pause before the twist. Read only the script text.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "You call 911 and can't speak. Here's how they can still find you.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "CAN'T TALK?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "route",
+   "text": "Your call reaches a nearby cell tower, and the network sends it to your local 911 center.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "route",
+     "send_cue": "network",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "CELL TOWER",
+      "anchor": "tower",
+      "cue": "tower",
+      "color": "teal"
+     },
+     {
+      "type": "label",
+      "text": "LOCAL 911 CENTER",
+      "anchor": "center",
+      "cue": "local",
+      "color": "amber"
+     }
+    ]
+   }
+  },
+  {
+   "id": "sector",
+   "text": "The 911 center can typically see which tower, and which side of it, took your call. That's a rough area.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "sector",
+     "wedge_cue": "side",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "TOWER SECTOR",
+      "anchor": "sector",
+      "cue": "side",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "ROUGH AREA"
+      ],
+      "cues": [
+       "rough"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's what most people miss. Many newer phones also send their own location automatically, from GPS and nearby Wi-Fi.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "hybrid",
+     "fix_cue": "own",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "MUCH CLOSER",
+      "anchor": "you",
+      "cue": "own",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "GPS",
+       "WI-FI"
+      ],
+      "cues": [
+       "from",
+       "nearby"
+      ]
+     },
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "YOUR PHONE CAN SEND ITS LOCATION",
+      "cue": "automatically"
+     }
+    ]
+   }
+  },
+  {
+   "id": "map",
+   "text": "That can show up on the dispatcher's map, often much closer than the tower alone.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "desk",
+     "dot_cue": "show",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "DISPATCHER'S MAP",
+      "anchor": "map",
+      "cue": "map",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "OFTEN MUCH CLOSER"
+      ],
+      "cues": [
+       "closer"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "text",
+   "text": "In many areas you can text 911. Put your address in it, and remember: call if you can, text if you can't.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "text",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "TEXT 911",
+      "anchor": "phone",
+      "cue": "text",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "GIVE YOUR ADDRESS",
+       "CALL IF YOU CAN"
+      ],
+      "cues": [
+       "address",
+       "call"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Did you know you could text 911? Tell us below.",
+   "shot": {
+    "builder": "e911_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "DID YOU KNOW?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}
