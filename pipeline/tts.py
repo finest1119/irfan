@@ -154,7 +154,10 @@ def synth(client, model, voice, prompt):
 def build_prompt(t, text):
     """Director-notes format: the model speaks only the TRANSCRIPT section.
     (A plain 'Say in a ... tone:' prefix gets read aloud by gemini-3.8-flash-tts.)"""
-    return "### DIRECTOR'S NOTES\n%s\n\n### TRANSCRIPT\n%s" % (t["director_notes"].strip(), text.strip())
+    notes = (t.get("director_notes") or "").strip()
+    if not notes:  # e.g. ED sets "" because 3.8-flash-tts sometimes reads notes aloud; send the transcript only
+        return text.strip()
+    return "### DIRECTOR'S NOTES\n%s\n\n### TRANSCRIPT\n%s" % (notes, text.strip())
 
 
 MIN_INTERVAL = 7.0     # gemini-3.8-flash-tts allows 10 requests/min: pace every call (whisper retries included)
