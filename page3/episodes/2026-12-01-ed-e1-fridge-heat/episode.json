@@ -33,7 +33,7 @@
   "model": "gemini-3.8-flash-tts",
   "fallback_model": "gemini-3.1-flash-tts-preview",
   "voice": "Sadaltager",
-  "director_notes": "Calm, warm American male narrator.",
+  "director_notes": "",
   "pause_between_beats": 0.3
  },
  "music": null,
