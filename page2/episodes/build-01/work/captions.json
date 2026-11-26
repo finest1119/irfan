@@ -1,0 +1,2974 @@
+{
+ "words": [
+  {
+   "word": "Storm",
+   "norm": "storm",
+   "start": 0.15,
+   "end": 0.49,
+   "beat": "hook"
+  },
+  {
+   "word": "rolls",
+   "norm": "rolls",
+   "start": 0.49,
+   "end": 0.69,
+   "beat": "hook"
+  },
+  {
+   "word": "through,",
+   "norm": "through",
+   "start": 0.69,
+   "end": 1.01,
+   "beat": "hook"
+  },
+  {
+   "word": "and",
+   "norm": "and",
+   "start": 1.35,
+   "end": 1.45,
+   "beat": "hook"
+  },
+  {
+   "word": "boom,",
+   "norm": "boom",
+   "start": 1.45,
+   "end": 1.71,
+   "beat": "hook"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 2.03,
+   "end": 2.07,
+   "beat": "hook"
+  },
+  {
+   "word": "whole",
+   "norm": "whole",
+   "start": 2.07,
+   "end": 2.23,
+   "beat": "hook"
+  },
+  {
+   "word": "street",
+   "norm": "street",
+   "start": 2.23,
+   "end": 2.47,
+   "beat": "hook"
+  },
+  {
+   "word": "goes",
+   "norm": "goes",
+   "start": 2.47,
+   "end": 2.69,
+   "beat": "hook"
+  },
+  {
+   "word": "dark.",
+   "norm": "dark",
+   "start": 2.69,
+   "end": 2.91,
+   "beat": "hook"
+  },
+  {
+   "word": "Again.",
+   "norm": "again",
+   "start": 3.69,
+   "end": 3.69,
+   "beat": "hook"
+  },
+  {
+   "word": "Last",
+   "norm": "last",
+   "start": 3.99,
+   "end": 4.41,
+   "beat": "hook"
+  },
+  {
+   "word": "year",
+   "norm": "year",
+   "start": 4.41,
+   "end": 4.63,
+   "beat": "hook"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 4.63,
+   "end": 4.77,
+   "beat": "hook"
+  },
+  {
+   "word": "average",
+   "norm": "average",
+   "start": 4.77,
+   "end": 5.03,
+   "beat": "hook"
+  },
+  {
+   "word": "American",
+   "norm": "american",
+   "start": 5.03,
+   "end": 5.49,
+   "beat": "hook"
+  },
+  {
+   "word": "home",
+   "norm": "home",
+   "start": 5.49,
+   "end": 5.67,
+   "beat": "hook"
+  },
+  {
+   "word": "sat",
+   "norm": "sat",
+   "start": 5.67,
+   "end": 5.97,
+   "beat": "hook"
+  },
+  {
+   "word": "without",
+   "norm": "without",
+   "start": 5.97,
+   "end": 6.13,
+   "beat": "hook"
+  },
+  {
+   "word": "power",
+   "norm": "power",
+   "start": 6.13,
+   "end": 6.45,
+   "beat": "hook"
+  },
+  {
+   "word": "for",
+   "norm": "for",
+   "start": 6.45,
+   "end": 6.77,
+   "beat": "hook"
+  },
+  {
+   "word": "about",
+   "norm": "about",
+   "start": 6.77,
+   "end": 6.93,
+   "beat": "hook"
+  },
+  {
+   "word": "eleven",
+   "norm": "eleven",
+   "start": 6.93,
+   "end": 7.35,
+   "beat": "hook"
+  },
+  {
+   "word": "hours.",
+   "norm": "hours",
+   "start": 7.35,
+   "end": 7.81,
+   "beat": "hook"
+  },
+  {
+   "word": "Bolts",
+   "norm": "bolts",
+   "start": 8.43,
+   "end": 8.65,
+   "beat": "hook"
+  },
+  {
+   "word": "was",
+   "norm": "was",
+   "start": 8.65,
+   "end": 8.81,
+   "beat": "hook"
+  },
+  {
+   "word": "done",
+   "norm": "done",
+   "start": 8.81,
+   "end": 9.05,
+   "beat": "hook"
+  },
+  {
+   "word": "waiting.",
+   "norm": "waiting",
+   "start": 9.05,
+   "end": 9.33,
+   "beat": "hook"
+  },
+  {
+   "word": "So",
+   "norm": "so",
+   "start": 9.8,
+   "end": 9.96,
+   "beat": "mission"
+  },
+  {
+   "word": "he's",
+   "norm": "hes",
+   "start": 9.96,
+   "end": 10.3,
+   "beat": "mission"
+  },
+  {
+   "word": "building",
+   "norm": "building",
+   "start": 10.3,
+   "end": 10.46,
+   "beat": "mission"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 10.46,
+   "end": 10.64,
+   "beat": "mission"
+  },
+  {
+   "word": "wind",
+   "norm": "wind",
+   "start": 10.64,
+   "end": 10.8,
+   "beat": "mission"
+  },
+  {
+   "word": "turbine",
+   "norm": "turbine",
+   "start": 10.8,
+   "end": 11.12,
+   "beat": "mission"
+  },
+  {
+   "word": "taller",
+   "norm": "taller",
+   "start": 11.12,
+   "end": 11.72,
+   "beat": "mission"
+  },
+  {
+   "word": "than",
+   "norm": "than",
+   "start": 11.72,
+   "end": 12.04,
+   "beat": "mission"
+  },
+  {
+   "word": "his",
+   "norm": "his",
+   "start": 12.04,
+   "end": 12.14,
+   "beat": "mission"
+  },
+  {
+   "word": "house.",
+   "norm": "house",
+   "start": 12.14,
+   "end": 12.4,
+   "beat": "mission"
+  },
+  {
+   "word": "Fifty",
+   "norm": "fifty",
+   "start": 12.7,
+   "end": 12.9,
+   "beat": "mission"
+  },
+  {
+   "word": "feet",
+   "norm": "feet",
+   "start": 12.9,
+   "end": 13.14,
+   "beat": "mission"
+  },
+  {
+   "word": "of",
+   "norm": "of",
+   "start": 13.14,
+   "end": 13.24,
+   "beat": "mission"
+  },
+  {
+   "word": "steel,",
+   "norm": "steel",
+   "start": 13.24,
+   "end": 13.46,
+   "beat": "mission"
+  },
+  {
+   "word": "up",
+   "norm": "up",
+   "start": 13.46,
+   "end": 13.74,
+   "beat": "mission"
+  },
+  {
+   "word": "on",
+   "norm": "on",
+   "start": 13.74,
+   "end": 13.88,
+   "beat": "mission"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 13.88,
+   "end": 13.94,
+   "beat": "mission"
+  },
+  {
+   "word": "windy",
+   "norm": "windy",
+   "start": 13.94,
+   "end": 14.2,
+   "beat": "mission"
+  },
+  {
+   "word": "ridge",
+   "norm": "ridge",
+   "start": 14.2,
+   "end": 14.36,
+   "beat": "mission"
+  },
+  {
+   "word": "out",
+   "norm": "out",
+   "start": 14.36,
+   "end": 14.54,
+   "beat": "mission"
+  },
+  {
+   "word": "back.",
+   "norm": "back",
+   "start": 14.54,
+   "end": 14.74,
+   "beat": "mission"
+  },
+  {
+   "word": "And",
+   "norm": "and",
+   "start": 15.04,
+   "end": 15.1,
+   "beat": "mission"
+  },
+  {
+   "word": "yes,",
+   "norm": "yes",
+   "start": 15.1,
+   "end": 15.32,
+   "beat": "mission"
+  },
+  {
+   "word": "he",
+   "norm": "he",
+   "start": 15.62,
+   "end": 15.68,
+   "beat": "mission"
+  },
+  {
+   "word": "pulled",
+   "norm": "pulled",
+   "start": 15.68,
+   "end": 15.82,
+   "beat": "mission"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 15.82,
+   "end": 15.94,
+   "beat": "mission"
+  },
+  {
+   "word": "permit",
+   "norm": "permit",
+   "start": 15.94,
+   "end": 16.14,
+   "beat": "mission"
+  },
+  {
+   "word": "first.",
+   "norm": "first",
+   "start": 16.14,
+   "end": 16.44,
+   "beat": "mission"
+  },
+  {
+   "word": "Here's",
+   "norm": "heres",
+   "start": 17.01,
+   "end": 17.29,
+   "beat": "how"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 17.29,
+   "end": 17.39,
+   "beat": "how"
+  },
+  {
+   "word": "deal.",
+   "norm": "deal",
+   "start": 17.39,
+   "end": 17.61,
+   "beat": "how"
+  },
+  {
+   "word": "Wind",
+   "norm": "wind",
+   "start": 18.19,
+   "end": 18.19,
+   "beat": "how"
+  },
+  {
+   "word": "pushes",
+   "norm": "pushes",
+   "start": 18.19,
+   "end": 18.53,
+   "beat": "how"
+  },
+  {
+   "word": "three",
+   "norm": "three",
+   "start": 18.53,
+   "end": 19.01,
+   "beat": "how"
+  },
+  {
+   "word": "blades,",
+   "norm": "blades",
+   "start": 19.01,
+   "end": 19.21,
+   "beat": "how"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 19.69,
+   "end": 19.71,
+   "beat": "how"
+  },
+  {
+   "word": "blades",
+   "norm": "blades",
+   "start": 19.71,
+   "end": 19.91,
+   "beat": "how"
+  },
+  {
+   "word": "spin",
+   "norm": "spin",
+   "start": 19.91,
+   "end": 20.35,
+   "beat": "how"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 20.35,
+   "end": 20.47,
+   "beat": "how"
+  },
+  {
+   "word": "generator,",
+   "norm": "generator",
+   "start": 20.47,
+   "end": 20.73,
+   "beat": "how"
+  },
+  {
+   "word": "and",
+   "norm": "and",
+   "start": 21.19,
+   "end": 21.23,
+   "beat": "how"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 21.23,
+   "end": 21.33,
+   "beat": "how"
+  },
+  {
+   "word": "tail",
+   "norm": "tail",
+   "start": 21.33,
+   "end": 21.63,
+   "beat": "how"
+  },
+  {
+   "word": "keeps",
+   "norm": "keeps",
+   "start": 21.63,
+   "end": 21.85,
+   "beat": "how"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 21.85,
+   "end": 22.07,
+   "beat": "how"
+  },
+  {
+   "word": "whole",
+   "norm": "whole",
+   "start": 22.07,
+   "end": 22.19,
+   "beat": "how"
+  },
+  {
+   "word": "thing",
+   "norm": "thing",
+   "start": 22.19,
+   "end": 22.43,
+   "beat": "how"
+  },
+  {
+   "word": "pointed",
+   "norm": "pointed",
+   "start": 22.43,
+   "end": 22.73,
+   "beat": "how"
+  },
+  {
+   "word": "into",
+   "norm": "into",
+   "start": 22.73,
+   "end": 23.05,
+   "beat": "how"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 23.05,
+   "end": 23.15,
+   "beat": "how"
+  },
+  {
+   "word": "breeze.",
+   "norm": "breeze",
+   "start": 23.15,
+   "end": 23.35,
+   "beat": "how"
+  },
+  {
+   "word": "Power",
+   "norm": "power",
+   "start": 23.95,
+   "end": 24.13,
+   "beat": "how"
+  },
+  {
+   "word": "runs",
+   "norm": "runs",
+   "start": 24.13,
+   "end": 24.43,
+   "beat": "how"
+  },
+  {
+   "word": "down",
+   "norm": "down",
+   "start": 24.43,
+   "end": 24.71,
+   "beat": "how"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 24.71,
+   "end": 24.81,
+   "beat": "how"
+  },
+  {
+   "word": "buried",
+   "norm": "buried",
+   "start": 24.81,
+   "end": 25.07,
+   "beat": "how"
+  },
+  {
+   "word": "cable",
+   "norm": "cable",
+   "start": 25.07,
+   "end": 25.39,
+   "beat": "how"
+  },
+  {
+   "word": "to",
+   "norm": "to",
+   "start": 25.39,
+   "end": 25.71,
+   "beat": "how"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 25.71,
+   "end": 25.79,
+   "beat": "how"
+  },
+  {
+   "word": "battery",
+   "norm": "battery",
+   "start": 25.79,
+   "end": 25.99,
+   "beat": "how"
+  },
+  {
+   "word": "bank",
+   "norm": "bank",
+   "start": 25.99,
+   "end": 26.35,
+   "beat": "how"
+  },
+  {
+   "word": "in",
+   "norm": "in",
+   "start": 26.35,
+   "end": 26.53,
+   "beat": "how"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 26.53,
+   "end": 26.57,
+   "beat": "how"
+  },
+  {
+   "word": "shed.",
+   "norm": "shed",
+   "start": 26.57,
+   "end": 26.75,
+   "beat": "how"
+  },
+  {
+   "word": "First",
+   "norm": "first",
+   "start": 27.278,
+   "end": 27.478,
+   "beat": "snag1"
+  },
+  {
+   "word": "snag:",
+   "norm": "snag",
+   "start": 27.478,
+   "end": 27.718,
+   "beat": "snag1"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 28.098,
+   "end": 28.258,
+   "beat": "snag1"
+  },
+  {
+   "word": "fifty-foot",
+   "norm": "fiftyfoot",
+   "start": 28.258,
+   "end": 28.758,
+   "beat": "snag1"
+  },
+  {
+   "word": "tower",
+   "norm": "tower",
+   "start": 28.758,
+   "end": 29.058,
+   "beat": "snag1"
+  },
+  {
+   "word": "doesn't",
+   "norm": "doesnt",
+   "start": 29.058,
+   "end": 29.538,
+   "beat": "snag1"
+  },
+  {
+   "word": "stand",
+   "norm": "stand",
+   "start": 29.538,
+   "end": 29.838,
+   "beat": "snag1"
+  },
+  {
+   "word": "itself",
+   "norm": "itself",
+   "start": 29.838,
+   "end": 30.258,
+   "beat": "snag1"
+  },
+  {
+   "word": "up.",
+   "norm": "up",
+   "start": 30.258,
+   "end": 30.478,
+   "beat": "snag1"
+  },
+  {
+   "word": "And",
+   "norm": "and",
+   "start": 30.478,
+   "end": 30.938,
+   "beat": "snag1"
+  },
+  {
+   "word": "nobody's",
+   "norm": "nobodys",
+   "start": 30.938,
+   "end": 31.578,
+   "beat": "snag1"
+  },
+  {
+   "word": "climbing",
+   "norm": "climbing",
+   "start": 31.578,
+   "end": 31.738,
+   "beat": "snag1"
+  },
+  {
+   "word": "that.",
+   "norm": "that",
+   "start": 31.738,
+   "end": 32.038,
+   "beat": "snag1"
+  },
+  {
+   "word": "The",
+   "norm": "the",
+   "start": 32.464,
+   "end": 32.524,
+   "beat": "hack1"
+  },
+  {
+   "word": "hack?",
+   "norm": "hack",
+   "start": 32.524,
+   "end": 32.724,
+   "beat": "hack1"
+  },
+  {
+   "word": "A",
+   "norm": "a",
+   "start": 33.164,
+   "end": 33.224,
+   "beat": "hack1"
+  },
+  {
+   "word": "tilt-up",
+   "norm": "tiltup",
+   "start": 33.224,
+   "end": 33.664,
+   "beat": "hack1"
+  },
+  {
+   "word": "tower.",
+   "norm": "tower",
+   "start": 33.664,
+   "end": 33.864,
+   "beat": "hack1"
+  },
+  {
+   "word": "Build",
+   "norm": "build",
+   "start": 34.484,
+   "end": 34.484,
+   "beat": "hack1"
+  },
+  {
+   "word": "it",
+   "norm": "it",
+   "start": 34.484,
+   "end": 34.604,
+   "beat": "hack1"
+  },
+  {
+   "word": "flat",
+   "norm": "flat",
+   "start": 34.604,
+   "end": 34.784,
+   "beat": "hack1"
+  },
+  {
+   "word": "on",
+   "norm": "on",
+   "start": 34.784,
+   "end": 34.964,
+   "beat": "hack1"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 34.964,
+   "end": 35.044,
+   "beat": "hack1"
+  },
+  {
+   "word": "ground,",
+   "norm": "ground",
+   "start": 35.044,
+   "end": 35.244,
+   "beat": "hack1"
+  },
+  {
+   "word": "then",
+   "norm": "then",
+   "start": 35.764,
+   "end": 35.784,
+   "beat": "hack1"
+  },
+  {
+   "word": "crank",
+   "norm": "crank",
+   "start": 35.784,
+   "end": 36.024,
+   "beat": "hack1"
+  },
+  {
+   "word": "it",
+   "norm": "it",
+   "start": 36.024,
+   "end": 36.224,
+   "beat": "hack1"
+  },
+  {
+   "word": "upright",
+   "norm": "upright",
+   "start": 36.224,
+   "end": 36.464,
+   "beat": "hack1"
+  },
+  {
+   "word": "with",
+   "norm": "with",
+   "start": 36.464,
+   "end": 36.844,
+   "beat": "hack1"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 36.844,
+   "end": 36.904,
+   "beat": "hack1"
+  },
+  {
+   "word": "hand",
+   "norm": "hand",
+   "start": 36.904,
+   "end": 37.124,
+   "beat": "hack1"
+  },
+  {
+   "word": "winch.",
+   "norm": "winch",
+   "start": 37.124,
+   "end": 37.484,
+   "beat": "hack1"
+  },
+  {
+   "word": "Torque",
+   "norm": "torque",
+   "start": 38.004,
+   "end": 38.144,
+   "beat": "hack1"
+  },
+  {
+   "word": "supervises.",
+   "norm": "supervises",
+   "start": 38.144,
+   "end": 38.664,
+   "beat": "hack1"
+  },
+  {
+   "word": "Torque",
+   "norm": "torque",
+   "start": 39.084,
+   "end": 39.484,
+   "beat": "hack1"
+  },
+  {
+   "word": "also",
+   "norm": "also",
+   "start": 39.484,
+   "end": 39.884,
+   "beat": "hack1"
+  },
+  {
+   "word": "steals",
+   "norm": "steals",
+   "start": 39.884,
+   "end": 40.144,
+   "beat": "hack1"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 40.144,
+   "end": 40.384,
+   "beat": "hack1"
+  },
+  {
+   "word": "washer.",
+   "norm": "washer",
+   "start": 40.384,
+   "end": 40.664,
+   "beat": "hack1"
+  },
+  {
+   "word": "Second",
+   "norm": "second",
+   "start": 41.128,
+   "end": 41.428,
+   "beat": "snag2"
+  },
+  {
+   "word": "snag:",
+   "norm": "snag",
+   "start": 41.428,
+   "end": 41.688,
+   "beat": "snag2"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 42.028,
+   "end": 42.168,
+   "beat": "snag2"
+  },
+  {
+   "word": "next",
+   "norm": "next",
+   "start": 42.168,
+   "end": 42.408,
+   "beat": "snag2"
+  },
+  {
+   "word": "storm.",
+   "norm": "storm",
+   "start": 42.408,
+   "end": 42.848,
+   "beat": "snag2"
+  },
+  {
+   "word": "Wind",
+   "norm": "wind",
+   "start": 43.388,
+   "end": 43.468,
+   "beat": "snag2"
+  },
+  {
+   "word": "that",
+   "norm": "that",
+   "start": 43.468,
+   "end": 43.768,
+   "beat": "snag2"
+  },
+  {
+   "word": "strong",
+   "norm": "strong",
+   "start": 43.768,
+   "end": 44.168,
+   "beat": "snag2"
+  },
+  {
+   "word": "can",
+   "norm": "can",
+   "start": 44.168,
+   "end": 44.468,
+   "beat": "snag2"
+  },
+  {
+   "word": "spin",
+   "norm": "spin",
+   "start": 44.468,
+   "end": 44.768,
+   "beat": "snag2"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 44.768,
+   "end": 44.888,
+   "beat": "snag2"
+  },
+  {
+   "word": "small",
+   "norm": "small",
+   "start": 44.888,
+   "end": 45.168,
+   "beat": "snag2"
+  },
+  {
+   "word": "turbine",
+   "norm": "turbine",
+   "start": 45.168,
+   "end": 45.548,
+   "beat": "snag2"
+  },
+  {
+   "word": "to",
+   "norm": "to",
+   "start": 45.548,
+   "end": 45.728,
+   "beat": "snag2"
+  },
+  {
+   "word": "pieces.",
+   "norm": "pieces",
+   "start": 45.728,
+   "end": 46.068,
+   "beat": "snag2"
+  },
+  {
+   "word": "So",
+   "norm": "so",
+   "start": 46.773,
+   "end": 46.913,
+   "beat": "hack2"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 46.913,
+   "end": 47.013,
+   "beat": "hack2"
+  },
+  {
+   "word": "tail",
+   "norm": "tail",
+   "start": 47.013,
+   "end": 47.313,
+   "beat": "hack2"
+  },
+  {
+   "word": "does",
+   "norm": "does",
+   "start": 47.313,
+   "end": 47.513,
+   "beat": "hack2"
+  },
+  {
+   "word": "something",
+   "norm": "something",
+   "start": 47.513,
+   "end": 47.833,
+   "beat": "hack2"
+  },
+  {
+   "word": "sneaky.",
+   "norm": "sneaky",
+   "start": 47.833,
+   "end": 48.273,
+   "beat": "hack2"
+  },
+  {
+   "word": "When",
+   "norm": "when",
+   "start": 48.833,
+   "end": 48.853,
+   "beat": "hack2"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 48.853,
+   "end": 48.973,
+   "beat": "hack2"
+  },
+  {
+   "word": "wind",
+   "norm": "wind",
+   "start": 48.973,
+   "end": 49.113,
+   "beat": "hack2"
+  },
+  {
+   "word": "gets",
+   "norm": "gets",
+   "start": 49.113,
+   "end": 49.413,
+   "beat": "hack2"
+  },
+  {
+   "word": "wild,",
+   "norm": "wild",
+   "start": 49.413,
+   "end": 49.753,
+   "beat": "hack2"
+  },
+  {
+   "word": "it",
+   "norm": "it",
+   "start": 49.993,
+   "end": 50.013,
+   "beat": "hack2"
+  },
+  {
+   "word": "folds,",
+   "norm": "folds",
+   "start": 50.013,
+   "end": 50.293,
+   "beat": "hack2"
+  },
+  {
+   "word": "and",
+   "norm": "and",
+   "start": 50.293,
+   "end": 50.713,
+   "beat": "hack2"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 50.713,
+   "end": 50.813,
+   "beat": "hack2"
+  },
+  {
+   "word": "blades",
+   "norm": "blades",
+   "start": 50.813,
+   "end": 51.073,
+   "beat": "hack2"
+  },
+  {
+   "word": "swing",
+   "norm": "swing",
+   "start": 51.073,
+   "end": 51.373,
+   "beat": "hack2"
+  },
+  {
+   "word": "sideways,",
+   "norm": "sideways",
+   "start": 51.373,
+   "end": 51.833,
+   "beat": "hack2"
+  },
+  {
+   "word": "out",
+   "norm": "out",
+   "start": 51.833,
+   "end": 52.333,
+   "beat": "hack2"
+  },
+  {
+   "word": "of",
+   "norm": "of",
+   "start": 52.333,
+   "end": 52.433,
+   "beat": "hack2"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 52.433,
+   "end": 52.513,
+   "beat": "hack2"
+  },
+  {
+   "word": "blast.",
+   "norm": "blast",
+   "start": 52.513,
+   "end": 52.673,
+   "beat": "hack2"
+  },
+  {
+   "word": "It's",
+   "norm": "its",
+   "start": 53.393,
+   "end": 53.473,
+   "beat": "hack2"
+  },
+  {
+   "word": "called",
+   "norm": "called",
+   "start": 53.473,
+   "end": 53.633,
+   "beat": "hack2"
+  },
+  {
+   "word": "furling.",
+   "norm": "furling",
+   "start": 53.633,
+   "end": 54.133,
+   "beat": "hack2"
+  },
+  {
+   "word": "The",
+   "norm": "the",
+   "start": 54.673,
+   "end": 54.693,
+   "beat": "hack2"
+  },
+  {
+   "word": "turbine",
+   "norm": "turbine",
+   "start": 54.693,
+   "end": 54.933,
+   "beat": "hack2"
+  },
+  {
+   "word": "basically",
+   "norm": "basically",
+   "start": 54.933,
+   "end": 55.533,
+   "beat": "hack2"
+  },
+  {
+   "word": "ducks.",
+   "norm": "ducks",
+   "start": 55.533,
+   "end": 55.933,
+   "beat": "hack2"
+  },
+  {
+   "word": "And",
+   "norm": "and",
+   "start": 56.637,
+   "end": 56.817,
+   "beat": "works"
+  },
+  {
+   "word": "it",
+   "norm": "it",
+   "start": 56.817,
+   "end": 56.897,
+   "beat": "works"
+  },
+  {
+   "word": "works.",
+   "norm": "works",
+   "start": 56.897,
+   "end": 57.117,
+   "beat": "works"
+  },
+  {
+   "word": "Honest",
+   "norm": "honest",
+   "start": 58.017,
+   "end": 58.017,
+   "beat": "works"
+  },
+  {
+   "word": "numbers:",
+   "norm": "numbers",
+   "start": 58.017,
+   "end": 58.257,
+   "beat": "works"
+  },
+  {
+   "word": "it's",
+   "norm": "its",
+   "start": 58.837,
+   "end": 58.957,
+   "beat": "works"
+  },
+  {
+   "word": "rated",
+   "norm": "rated",
+   "start": 58.957,
+   "end": 59.157,
+   "beat": "works"
+  },
+  {
+   "word": "one",
+   "norm": "one",
+   "start": 59.157,
+   "end": 59.477,
+   "beat": "works"
+  },
+  {
+   "word": "and",
+   "norm": "and",
+   "start": 59.477,
+   "end": 59.577,
+   "beat": "works"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 59.577,
+   "end": 59.637,
+   "beat": "works"
+  },
+  {
+   "word": "half",
+   "norm": "half",
+   "start": 59.637,
+   "end": 59.757,
+   "beat": "works"
+  },
+  {
+   "word": "kilowatts,",
+   "norm": "kilowatts",
+   "start": 59.757,
+   "end": 60.217,
+   "beat": "works"
+  },
+  {
+   "word": "but",
+   "norm": "but",
+   "start": 60.437,
+   "end": 60.497,
+   "beat": "works"
+  },
+  {
+   "word": "that's",
+   "norm": "thats",
+   "start": 60.497,
+   "end": 60.857,
+   "beat": "works"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 60.857,
+   "end": 60.957,
+   "beat": "works"
+  },
+  {
+   "word": "peak.",
+   "norm": "peak",
+   "start": 60.957,
+   "end": 61.157,
+   "beat": "works"
+  },
+  {
+   "word": "Small",
+   "norm": "small",
+   "start": 61.997,
+   "end": 61.997,
+   "beat": "works"
+  },
+  {
+   "word": "turbines",
+   "norm": "turbines",
+   "start": 61.997,
+   "end": 62.197,
+   "beat": "works"
+  },
+  {
+   "word": "average",
+   "norm": "average",
+   "start": 62.197,
+   "end": 62.797,
+   "beat": "works"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 62.797,
+   "end": 63.137,
+   "beat": "works"
+  },
+  {
+   "word": "small",
+   "norm": "small",
+   "start": 63.137,
+   "end": 63.397,
+   "beat": "works"
+  },
+  {
+   "word": "slice",
+   "norm": "slice",
+   "start": 63.397,
+   "end": 63.657,
+   "beat": "works"
+  },
+  {
+   "word": "of",
+   "norm": "of",
+   "start": 63.657,
+   "end": 63.897,
+   "beat": "works"
+  },
+  {
+   "word": "that.",
+   "norm": "that",
+   "start": 63.897,
+   "end": 64.037,
+   "beat": "works"
+  },
+  {
+   "word": "On",
+   "norm": "on",
+   "start": 64.337,
+   "end": 64.497,
+   "beat": "works"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 64.497,
+   "end": 64.617,
+   "beat": "works"
+  },
+  {
+   "word": "good",
+   "norm": "good",
+   "start": 64.617,
+   "end": 64.797,
+   "beat": "works"
+  },
+  {
+   "word": "windy",
+   "norm": "windy",
+   "start": 64.797,
+   "end": 65.117,
+   "beat": "works"
+  },
+  {
+   "word": "site,",
+   "norm": "site",
+   "start": 65.117,
+   "end": 65.357,
+   "beat": "works"
+  },
+  {
+   "word": "figure",
+   "norm": "figure",
+   "start": 65.357,
+   "end": 65.937,
+   "beat": "works"
+  },
+  {
+   "word": "around",
+   "norm": "around",
+   "start": 65.937,
+   "end": 66.257,
+   "beat": "works"
+  },
+  {
+   "word": "five",
+   "norm": "five",
+   "start": 66.257,
+   "end": 66.737,
+   "beat": "works"
+  },
+  {
+   "word": "kilowatt-hours",
+   "norm": "kilowatthours",
+   "start": 66.737,
+   "end": 67.437,
+   "beat": "works"
+  },
+  {
+   "word": "a",
+   "norm": "a",
+   "start": 67.437,
+   "end": 67.577,
+   "beat": "works"
+  },
+  {
+   "word": "day.",
+   "norm": "day",
+   "start": 67.577,
+   "end": 67.737,
+   "beat": "works"
+  },
+  {
+   "word": "That",
+   "norm": "that",
+   "start": 68.117,
+   "end": 68.277,
+   "beat": "works"
+  },
+  {
+   "word": "won't",
+   "norm": "wont",
+   "start": 68.277,
+   "end": 68.517,
+   "beat": "works"
+  },
+  {
+   "word": "run",
+   "norm": "run",
+   "start": 68.517,
+   "end": 68.617,
+   "beat": "works"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 68.617,
+   "end": 68.737,
+   "beat": "works"
+  },
+  {
+   "word": "whole",
+   "norm": "whole",
+   "start": 68.737,
+   "end": 68.877,
+   "beat": "works"
+  },
+  {
+   "word": "house,",
+   "norm": "house",
+   "start": 68.877,
+   "end": 69.197,
+   "beat": "works"
+  },
+  {
+   "word": "but",
+   "norm": "but",
+   "start": 69.597,
+   "end": 69.797,
+   "beat": "works"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 69.797,
+   "end": 69.937,
+   "beat": "works"
+  },
+  {
+   "word": "fridge,",
+   "norm": "fridge",
+   "start": 69.937,
+   "end": 70.177,
+   "beat": "works"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 70.537,
+   "end": 70.617,
+   "beat": "works"
+  },
+  {
+   "word": "lights,",
+   "norm": "lights",
+   "start": 70.617,
+   "end": 70.897,
+   "beat": "works"
+  },
+  {
+   "word": "and",
+   "norm": "and",
+   "start": 70.937,
+   "end": 71.297,
+   "beat": "works"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 71.297,
+   "end": 71.377,
+   "beat": "works"
+  },
+  {
+   "word": "phones?",
+   "norm": "phones",
+   "start": 71.377,
+   "end": 71.677,
+   "beat": "works"
+  },
+  {
+   "word": "Covered.",
+   "norm": "covered",
+   "start": 72.117,
+   "end": 72.377,
+   "beat": "works"
+  },
+  {
+   "word": "So",
+   "norm": "so",
+   "start": 72.978,
+   "end": 73.098,
+   "beat": "callback"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 73.098,
+   "end": 73.198,
+   "beat": "callback"
+  },
+  {
+   "word": "next",
+   "norm": "next",
+   "start": 73.198,
+   "end": 73.338,
+   "beat": "callback"
+  },
+  {
+   "word": "time",
+   "norm": "time",
+   "start": 73.338,
+   "end": 73.578,
+   "beat": "callback"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 73.578,
+   "end": 73.738,
+   "beat": "callback"
+  },
+  {
+   "word": "street",
+   "norm": "street",
+   "start": 73.738,
+   "end": 73.958,
+   "beat": "callback"
+  },
+  {
+   "word": "goes",
+   "norm": "goes",
+   "start": 73.958,
+   "end": 74.178,
+   "beat": "callback"
+  },
+  {
+   "word": "dark,",
+   "norm": "dark",
+   "start": 74.178,
+   "end": 74.478,
+   "beat": "callback"
+  },
+  {
+   "word": "one",
+   "norm": "one",
+   "start": 74.978,
+   "end": 75.018,
+   "beat": "callback"
+  },
+  {
+   "word": "porch",
+   "norm": "porch",
+   "start": 75.018,
+   "end": 75.418,
+   "beat": "callback"
+  },
+  {
+   "word": "light",
+   "norm": "light",
+   "start": 75.418,
+   "end": 75.618,
+   "beat": "callback"
+  },
+  {
+   "word": "stays",
+   "norm": "stays",
+   "start": 75.618,
+   "end": 75.958,
+   "beat": "callback"
+  },
+  {
+   "word": "on.",
+   "norm": "on",
+   "start": 75.958,
+   "end": 76.198,
+   "beat": "callback"
+  },
+  {
+   "word": "The",
+   "norm": "the",
+   "start": 76.738,
+   "end": 76.818,
+   "beat": "callback"
+  },
+  {
+   "word": "neighbor",
+   "norm": "neighbor",
+   "start": 76.818,
+   "end": 77.078,
+   "beat": "callback"
+  },
+  {
+   "word": "has",
+   "norm": "has",
+   "start": 77.078,
+   "end": 77.518,
+   "beat": "callback"
+  },
+  {
+   "word": "questions.",
+   "norm": "questions",
+   "start": 77.518,
+   "end": 78.018,
+   "beat": "callback"
+  },
+  {
+   "word": "But",
+   "norm": "but",
+   "start": 78.7,
+   "end": 78.82,
+   "beat": "teaser"
+  },
+  {
+   "word": "what",
+   "norm": "what",
+   "start": 78.82,
+   "end": 78.94,
+   "beat": "teaser"
+  },
+  {
+   "word": "happens",
+   "norm": "happens",
+   "start": 78.94,
+   "end": 79.22,
+   "beat": "teaser"
+  },
+  {
+   "word": "when",
+   "norm": "when",
+   "start": 79.22,
+   "end": 79.44,
+   "beat": "teaser"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 79.44,
+   "end": 79.56,
+   "beat": "teaser"
+  },
+  {
+   "word": "wind",
+   "norm": "wind",
+   "start": 79.56,
+   "end": 79.7,
+   "beat": "teaser"
+  },
+  {
+   "word": "stops?",
+   "norm": "stops",
+   "start": 79.7,
+   "end": 80.06,
+   "beat": "teaser"
+  },
+  {
+   "word": "Tomorrow,",
+   "norm": "tomorrow",
+   "start": 80.62,
+   "end": 80.84,
+   "beat": "teaser"
+  },
+  {
+   "word": "he",
+   "norm": "he",
+   "start": 81.08,
+   "end": 81.14,
+   "beat": "teaser"
+  },
+  {
+   "word": "looks",
+   "norm": "looks",
+   "start": 81.14,
+   "end": 81.28,
+   "beat": "teaser"
+  },
+  {
+   "word": "at",
+   "norm": "at",
+   "start": 81.28,
+   "end": 81.42,
+   "beat": "teaser"
+  },
+  {
+   "word": "the",
+   "norm": "the",
+   "start": 81.42,
+   "end": 81.48,
+   "beat": "teaser"
+  },
+  {
+   "word": "creek.",
+   "norm": "creek",
+   "start": 81.48,
+   "end": 81.64,
+   "beat": "teaser"
+  },
+  {
+   "word": "Would",
+   "norm": "would",
+   "start": 82.199,
+   "end": 82.399,
+   "beat": "question"
+  },
+  {
+   "word": "your",
+   "norm": "your",
+   "start": 82.399,
+   "end": 82.699,
+   "beat": "question"
+  },
+  {
+   "word": "HOA",
+   "norm": "hoa",
+   "start": 82.699,
+   "end": 83.259,
+   "beat": "question"
+  },
+  {
+   "word": "let",
+   "norm": "let",
+   "start": 83.259,
+   "end": 83.479,
+   "beat": "question"
+  },
+  {
+   "word": "you",
+   "norm": "you",
+   "start": 83.479,
+   "end": 83.599,
+   "beat": "question"
+  },
+  {
+   "word": "put",
+   "norm": "put",
+   "start": 83.599,
+   "end": 83.739,
+   "beat": "question"
+  },
+  {
+   "word": "this",
+   "norm": "this",
+   "start": 83.739,
+   "end": 84.019,
+   "beat": "question"
+  },
+  {
+   "word": "in",
+   "norm": "in",
+   "start": 84.019,
+   "end": 84.239,
+   "beat": "question"
+  },
+  {
+   "word": "your",
+   "norm": "your",
+   "start": 84.239,
+   "end": 84.339,
+   "beat": "question"
+  },
+  {
+   "word": "yard?",
+   "norm": "yard",
+   "start": 84.339,
+   "end": 84.579,
+   "beat": "question"
+  }
+ ],
+ "chunks": [
+  {
+   "text": "Storm rolls through",
+   "start": 0.15,
+   "end": 1.26,
+   "png": "c000.png",
+   "bbox": [
+    206,
+    1216,
+    874,
+    1391
+   ]
+  },
+  {
+   "text": "and boom",
+   "start": 1.35,
+   "end": 1.96,
+   "png": "c001.png",
+   "bbox": [
+    281,
+    1264,
+    794,
+    1343
+   ]
+  },
+  {
+   "text": "the whole street",
+   "start": 2.03,
+   "end": 2.47,
+   "png": "c002.png",
+   "bbox": [
+    67,
+    1264,
+    1014,
+    1343
+   ]
+  },
+  {
+   "text": "goes dark",
+   "start": 2.47,
+   "end": 3.16,
+   "png": "c003.png",
+   "bbox": [
+    264,
+    1264,
+    820,
+    1343
+   ]
+  },
+  {
+   "text": "Again",
+   "start": 3.69,
+   "end": 3.94,
+   "png": "c004.png",
+   "bbox": [
+    383,
+    1264,
+    692,
+    1343
+   ]
+  },
+  {
+   "text": "Last year the average",
+   "start": 3.99,
+   "end": 5.03,
+   "png": "c005.png",
+   "bbox": [
+    205,
+    1216,
+    873,
+    1391
+   ]
+  },
+  {
+   "text": "American home sat",
+   "start": 5.03,
+   "end": 5.97,
+   "png": "c006.png",
+   "bbox": [
+    285,
+    1216,
+    790,
+    1391
+   ]
+  },
+  {
+   "text": "without power for",
+   "start": 5.97,
+   "end": 6.77,
+   "png": "c007.png",
+   "bbox": [
+    263,
+    1216,
+    822,
+    1391
+   ]
+  },
+  {
+   "text": "about eleven hours",
+   "start": 6.77,
+   "end": 8.06,
+   "png": "c008.png",
+   "bbox": [
+    174,
+    1216,
+    901,
+    1391
+   ]
+  },
+  {
+   "text": "Bolts was done waiting",
+   "start": 8.43,
+   "end": 9.58,
+   "png": "c009.png",
+   "bbox": [
+    192,
+    1216,
+    891,
+    1391
+   ]
+  },
+  {
+   "text": "So he's building a",
+   "start": 9.8,
+   "end": 10.64,
+   "png": "c010.png",
+   "bbox": [
+    67,
+    1264,
+    1015,
+    1343
+   ]
+  },
+  {
+   "text": "wind turbine taller",
+   "start": 10.64,
+   "end": 11.72,
+   "png": "c011.png",
+   "bbox": [
+    187,
+    1217,
+    890,
+    1390
+   ]
+  },
+  {
+   "text": "than his house",
+   "start": 11.72,
+   "end": 12.65,
+   "png": "c012.png",
+   "bbox": [
+    135,
+    1264,
+    943,
+    1343
+   ]
+  },
+  {
+   "text": "Fifty feet of steel",
+   "start": 12.7,
+   "end": 13.46,
+   "png": "c013.png",
+   "bbox": [
+    275,
+    1217,
+    810,
+    1391
+   ]
+  },
+  {
+   "text": "up on the windy",
+   "start": 13.46,
+   "end": 14.2,
+   "png": "c014.png",
+   "bbox": [
+    117,
+    1264,
+    969,
+    1343
+   ]
+  },
+  {
+   "text": "ridge out back",
+   "start": 14.2,
+   "end": 14.99,
+   "png": "c015.png",
+   "bbox": [
+    139,
+    1264,
+    948,
+    1343
+   ]
+  },
+  {
+   "text": "And yes",
+   "start": 15.04,
+   "end": 15.57,
+   "png": "c016.png",
+   "bbox": [
+    329,
+    1264,
+    750,
+    1343
+   ]
+  },
+  {
+   "text": "he pulled the",
+   "start": 15.62,
+   "end": 15.94,
+   "png": "c017.png",
+   "bbox": [
+    174,
+    1265,
+    910,
+    1343
+   ]
+  },
+  {
+   "text": "permit first",
+   "start": 15.94,
+   "end": 16.69,
+   "png": "c018.png",
+   "bbox": [
+    213,
+    1264,
+    871,
+    1343
+   ]
+  },
+  {
+   "text": "Here's the deal",
+   "start": 17.01,
+   "end": 17.86,
+   "png": "c019.png",
+   "bbox": [
+    130,
+    1264,
+    954,
+    1343
+   ]
+  },
+  {
+   "text": "Wind pushes three blades",
+   "start": 18.19,
+   "end": 19.46,
+   "png": "c020.png",
+   "bbox": [
+    182,
+    1216,
+    898,
+    1391
+   ]
+  },
+  {
+   "text": "the blades spin",
+   "start": 19.69,
+   "end": 20.35,
+   "png": "c021.png",
+   "bbox": [
+    121,
+    1264,
+    956,
+    1343
+   ]
+  },
+  {
+   "text": "a generator",
+   "start": 20.35,
+   "end": 20.98,
+   "png": "c022.png",
+   "bbox": [
+    199,
+    1264,
+    881,
+    1343
+   ]
+  },
+  {
+   "text": "and a tail keeps",
+   "start": 21.19,
+   "end": 21.85,
+   "png": "c023.png",
+   "bbox": [
+    104,
+    1264,
+    974,
+    1343
+   ]
+  },
+  {
+   "text": "the whole thing pointed",
+   "start": 21.85,
+   "end": 22.73,
+   "png": "c024.png",
+   "bbox": [
+    167,
+    1216,
+    912,
+    1391
+   ]
+  },
+  {
+   "text": "into the breeze",
+   "start": 22.73,
+   "end": 23.6,
+   "png": "c025.png",
+   "bbox": [
+    122,
+    1264,
+    961,
+    1343
+   ]
+  },
+  {
+   "text": "Power runs down a",
+   "start": 23.95,
+   "end": 24.81,
+   "png": "c026.png",
+   "bbox": [
+    227,
+    1216,
+    856,
+    1391
+   ]
+  },
+  {
+   "text": "buried cable to",
+   "start": 24.81,
+   "end": 25.71,
+   "png": "c027.png",
+   "bbox": [
+    118,
+    1264,
+    965,
+    1343
+   ]
+  },
+  {
+   "text": "a battery bank",
+   "start": 25.71,
+   "end": 26.35,
+   "png": "c028.png",
+   "bbox": [
+    124,
+    1265,
+    957,
+    1342
+   ]
+  },
+  {
+   "text": "in the shed",
+   "start": 26.35,
+   "end": 27.0,
+   "png": "c029.png",
+   "bbox": [
+    242,
+    1264,
+    841,
+    1343
+   ]
+  },
+  {
+   "text": "First snag",
+   "start": 27.278,
+   "end": 27.968,
+   "png": "c030.png",
+   "bbox": [
+    260,
+    1264,
+    822,
+    1343
+   ]
+  },
+  {
+   "text": "a fifty-foot tower doesn't",
+   "start": 28.098,
+   "end": 29.538,
+   "png": "c031.png",
+   "bbox": [
+    153,
+    1216,
+    927,
+    1391
+   ]
+  },
+  {
+   "text": "stand itself up",
+   "start": 29.538,
+   "end": 30.478,
+   "png": "c032.png",
+   "bbox": [
+    126,
+    1264,
+    953,
+    1343
+   ]
+  },
+  {
+   "text": "And nobody's climbing that",
+   "start": 30.478,
+   "end": 32.288,
+   "png": "c033.png",
+   "bbox": [
+    166,
+    1216,
+    916,
+    1391
+   ]
+  },
+  {
+   "text": "The hack?",
+   "start": 32.464,
+   "end": 32.974,
+   "png": "c034.png",
+   "bbox": [
+    269,
+    1264,
+    811,
+    1343
+   ]
+  },
+  {
+   "text": "A tilt-up tower",
+   "start": 33.164,
+   "end": 34.114,
+   "png": "c035.png",
+   "bbox": [
+    127,
+    1264,
+    953,
+    1343
+   ]
+  },
+  {
+   "text": "Build it flat",
+   "start": 34.484,
+   "end": 34.784,
+   "png": "c036.png",
+   "bbox": [
+    207,
+    1265,
+    878,
+    1343
+   ]
+  },
+  {
+   "text": "on the ground",
+   "start": 34.784,
+   "end": 35.494,
+   "png": "c037.png",
+   "bbox": [
+    146,
+    1264,
+    934,
+    1343
+   ]
+  },
+  {
+   "text": "then crank it upright",
+   "start": 35.764,
+   "end": 36.464,
+   "png": "c038.png",
+   "bbox": [
+    228,
+    1216,
+    855,
+    1391
+   ]
+  },
+  {
+   "text": "with a hand winch",
+   "start": 36.464,
+   "end": 37.734,
+   "png": "c039.png",
+   "bbox": [
+    235,
+    1217,
+    847,
+    1391
+   ]
+  },
+  {
+   "text": "Torque supervises",
+   "start": 38.004,
+   "end": 38.914,
+   "png": "c040.png",
+   "bbox": [
+    242,
+    1216,
+    838,
+    1391
+   ]
+  },
+  {
+   "text": "Torque also steals",
+   "start": 39.084,
+   "end": 40.144,
+   "png": "c041.png",
+   "bbox": [
+    217,
+    1216,
+    861,
+    1391
+   ]
+  },
+  {
+   "text": "a washer",
+   "start": 40.144,
+   "end": 40.914,
+   "png": "c042.png",
+   "bbox": [
+    288,
+    1264,
+    793,
+    1343
+   ]
+  },
+  {
+   "text": "Second snag",
+   "start": 41.128,
+   "end": 41.938,
+   "png": "c043.png",
+   "bbox": [
+    199,
+    1264,
+    879,
+    1343
+   ]
+  },
+  {
+   "text": "the next storm",
+   "start": 42.028,
+   "end": 43.098,
+   "png": "c044.png",
+   "bbox": [
+    124,
+    1264,
+    952,
+    1343
+   ]
+  },
+  {
+   "text": "Wind that strong can",
+   "start": 43.388,
+   "end": 44.468,
+   "png": "c045.png",
+   "bbox": [
+    229,
+    1217,
+    849,
+    1391
+   ]
+  },
+  {
+   "text": "spin a small",
+   "start": 44.468,
+   "end": 45.168,
+   "png": "c046.png",
+   "bbox": [
+    210,
+    1264,
+    870,
+    1343
+   ]
+  },
+  {
+   "text": "turbine to pieces",
+   "start": 45.168,
+   "end": 46.318,
+   "png": "c047.png",
+   "bbox": [
+    69,
+    1264,
+    1010,
+    1343
+   ]
+  },
+  {
+   "text": "So the tail",
+   "start": 46.773,
+   "end": 47.313,
+   "png": "c048.png",
+   "bbox": [
+    245,
+    1264,
+    835,
+    1343
+   ]
+  },
+  {
+   "text": "does something sneaky",
+   "start": 47.313,
+   "end": 48.523,
+   "png": "c049.png",
+   "bbox": [
+    120,
+    1216,
+    963,
+    1391
+   ]
+  },
+  {
+   "text": "When the wind",
+   "start": 48.833,
+   "end": 49.113,
+   "png": "c050.png",
+   "bbox": [
+    149,
+    1265,
+    928,
+    1342
+   ]
+  },
+  {
+   "text": "gets wild",
+   "start": 49.113,
+   "end": 49.993,
+   "png": "c051.png",
+   "bbox": [
+    282,
+    1264,
+    799,
+    1343
+   ]
+  },
+  {
+   "text": "it folds",
+   "start": 49.993,
+   "end": 50.293,
+   "png": "c052.png",
+   "bbox": [
+    328,
+    1264,
+    757,
+    1343
+   ]
+  },
+  {
+   "text": "and the blades",
+   "start": 50.293,
+   "end": 51.073,
+   "png": "c053.png",
+   "bbox": [
+    131,
+    1264,
+    948,
+    1343
+   ]
+  },
+  {
+   "text": "swing sideways",
+   "start": 51.073,
+   "end": 51.833,
+   "png": "c054.png",
+   "bbox": [
+    124,
+    1264,
+    956,
+    1343
+   ]
+  },
+  {
+   "text": "out of the blast",
+   "start": 51.833,
+   "end": 52.923,
+   "png": "c055.png",
+   "bbox": [
+    91,
+    1264,
+    991,
+    1343
+   ]
+  },
+  {
+   "text": "It's called furling",
+   "start": 53.393,
+   "end": 54.383,
+   "png": "c056.png",
+   "bbox": [
+    257,
+    1216,
+    827,
+    1391
+   ]
+  },
+  {
+   "text": "The turbine basically ducks",
+   "start": 54.673,
+   "end": 56.183,
+   "png": "c057.png",
+   "bbox": [
+    102,
+    1217,
+    982,
+    1391
+   ]
+  },
+  {
+   "text": "And it works",
+   "start": 56.637,
+   "end": 57.367,
+   "png": "c058.png",
+   "bbox": [
+    190,
+    1264,
+    888,
+    1343
+   ]
+  },
+  {
+   "text": "Honest numbers",
+   "start": 58.017,
+   "end": 58.507,
+   "png": "c059.png",
+   "bbox": [
+    104,
+    1264,
+    981,
+    1343
+   ]
+  },
+  {
+   "text": "it's rated one and",
+   "start": 58.837,
+   "end": 59.577,
+   "png": "c060.png",
+   "bbox": [
+    282,
+    1216,
+    801,
+    1391
+   ]
+  },
+  {
+   "text": "a half kilowatts",
+   "start": 59.577,
+   "end": 60.437,
+   "png": "c061.png",
+   "bbox": [
+    78,
+    1264,
+    1000,
+    1343
+   ]
+  },
+  {
+   "text": "but that's the peak",
+   "start": 60.437,
+   "end": 61.407,
+   "png": "c062.png",
+   "bbox": [
+    262,
+    1216,
+    822,
+    1390
+   ]
+  },
+  {
+   "text": "Small turbines average a",
+   "start": 61.997,
+   "end": 63.137,
+   "png": "c063.png",
+   "bbox": [
+    128,
+    1216,
+    952,
+    1391
+   ]
+  },
+  {
+   "text": "small slice of that",
+   "start": 63.137,
+   "end": 64.287,
+   "png": "c064.png",
+   "bbox": [
+    230,
+    1216,
+    849,
+    1391
+   ]
+  },
+  {
+   "text": "On a good",
+   "start": 64.337,
+   "end": 64.797,
+   "png": "c065.png",
+   "bbox": [
+    273,
+    1264,
+    807,
+    1343
+   ]
+  },
+  {
+   "text": "windy site",
+   "start": 64.797,
+   "end": 65.357,
+   "png": "c066.png",
+   "bbox": [
+    257,
+    1264,
+    819,
+    1343
+   ]
+  },
+  {
+   "text": "figure around five",
+   "start": 65.357,
+   "end": 66.737,
+   "png": "c067.png",
+   "bbox": [
+    215,
+    1216,
+    863,
+    1391
+   ]
+  },
+  {
+   "text": "kilowatt-hours a day",
+   "start": 66.737,
+   "end": 67.987,
+   "png": "c068.png",
+   "bbox": [
+    117,
+    1216,
+    967,
+    1390
+   ]
+  },
+  {
+   "text": "That won't run",
+   "start": 68.117,
+   "end": 68.617,
+   "png": "c069.png",
+   "bbox": [
+    130,
+    1264,
+    946,
+    1343
+   ]
+  },
+  {
+   "text": "the whole house",
+   "start": 68.617,
+   "end": 69.447,
+   "png": "c070.png",
+   "bbox": [
+    85,
+    1264,
+    993,
+    1343
+   ]
+  },
+  {
+   "text": "but the fridge",
+   "start": 69.597,
+   "end": 70.427,
+   "png": "c071.png",
+   "bbox": [
+    151,
+    1264,
+    932,
+    1343
+   ]
+  },
+  {
+   "text": "the lights",
+   "start": 70.537,
+   "end": 70.937,
+   "png": "c072.png",
+   "bbox": [
+    255,
+    1264,
+    824,
+    1343
+   ]
+  },
+  {
+   "text": "and the phones?",
+   "start": 70.937,
+   "end": 71.927,
+   "png": "c073.png",
+   "bbox": [
+    98,
+    1264,
+    981,
+    1343
+   ]
+  },
+  {
+   "text": "Covered",
+   "start": 72.117,
+   "end": 72.627,
+   "png": "c074.png",
+   "bbox": [
+    313,
+    1264,
+    767,
+    1343
+   ]
+  },
+  {
+   "text": "So the next time",
+   "start": 72.978,
+   "end": 73.578,
+   "png": "c075.png",
+   "bbox": [
+    98,
+    1264,
+    982,
+    1343
+   ]
+  },
+  {
+   "text": "the street goes dark",
+   "start": 73.578,
+   "end": 74.728,
+   "png": "c076.png",
+   "bbox": [
+    246,
+    1216,
+    834,
+    1391
+   ]
+  },
+  {
+   "text": "one porch light",
+   "start": 74.978,
+   "end": 75.618,
+   "png": "c077.png",
+   "bbox": [
+    107,
+    1264,
+    975,
+    1343
+   ]
+  },
+  {
+   "text": "stays on",
+   "start": 75.618,
+   "end": 76.448,
+   "png": "c078.png",
+   "bbox": [
+    299,
+    1264,
+    778,
+    1343
+   ]
+  },
+  {
+   "text": "The neighbor has questions",
+   "start": 76.738,
+   "end": 78.268,
+   "png": "c079.png",
+   "bbox": [
+    158,
+    1216,
+    926,
+    1397
+   ]
+  },
+  {
+   "text": "But what happens when",
+   "start": 78.7,
+   "end": 79.44,
+   "png": "c080.png",
+   "bbox": [
+    167,
+    1217,
+    914,
+    1391
+   ]
+  },
+  {
+   "text": "the wind stops?",
+   "start": 79.44,
+   "end": 80.31,
+   "png": "c081.png",
+   "bbox": [
+    112,
+    1264,
+    967,
+    1343
+   ]
+  },
+  {
+   "text": "Tomorrow",
+   "start": 80.62,
+   "end": 81.08,
+   "png": "c082.png",
+   "bbox": [
+    257,
+    1264,
+    825,
+    1343
+   ]
+  },
+  {
+   "text": "he looks at",
+   "start": 81.08,
+   "end": 81.42,
+   "png": "c083.png",
+   "bbox": [
+    226,
+    1264,
+    859,
+    1343
+   ]
+  },
+  {
+   "text": "the creek",
+   "start": 81.42,
+   "end": 81.89,
+   "png": "c084.png",
+   "bbox": [
+    269,
+    1264,
+    814,
+    1343
+   ]
+  },
+  {
+   "text": "Would your HOA let",
+   "start": 82.199,
+   "end": 83.479,
+   "png": "c085.png",
+   "bbox": [
+    216,
+    1216,
+    863,
+    1391
+   ]
+  },
+  {
+   "text": "you put this",
+   "start": 83.479,
+   "end": 84.019,
+   "png": "c086.png",
+   "bbox": [
+    202,
+    1264,
+    876,
+    1343
+   ]
+  },
+  {
+   "text": "in your yard?",
+   "start": 84.019,
+   "end": 84.829,
+   "png": "c087.png",
+   "bbox": [
+    175,
+    1264,
+    909,
+    1343
+   ]
+  }
+ ],
+ "alignment": [
+  {
+   "beat": "hook",
+   "match_ratio": 0.929,
+   "heard": "Storm rolls through, and boom, the whole streak goes dark. Again, last year the average American home sat without power for about 11 hours. Bolts was done waiting."
+  },
+  {
+   "beat": "mission",
+   "match_ratio": 0.964,
+   "heard": "So he's building a wind turbine taller than his house, 50 feet of steel up on the windy ridge out back. And yes, he pulled the permit first."
+  },
+  {
+   "beat": "how",
+   "match_ratio": 1.0,
+   "heard": "And here's the deal. Wind pushes three blades, the blades spin a generator, and a tail keeps the whole thing pointed into the breeze. Power runs down a buried cable to a battery bank in the shed."
+  },
+  {
+   "beat": "snag1",
+   "match_ratio": 0.923,
+   "heard": "first snag, a 50 -foot tower doesn't stand itself up and nobody's climbing that."
+  },
+  {
+   "beat": "hack1",
+   "match_ratio": 0.962,
+   "heard": "The hack? A tilt -up tower. Build it flat on the ground, then crank it upright with a hand winch. Torque supervises. Torque also steals a washer."
+  },
+  {
+   "beat": "snag2",
+   "match_ratio": 0.867,
+   "heard": "Second snag, the next storm. When that strong can spin a small turban to pieces."
+  },
+  {
+   "beat": "hack2",
+   "match_ratio": 0.966,
+   "heard": "So the tail does something sneaky. When the wind gets wild, it folds and the blades swing sideways out of the blast. It's called firling. The turbine basically ducks."
+  },
+  {
+   "beat": "works",
+   "match_ratio": 0.98,
+   "heard": "And it works! Honest numbers. It's rated one and a half kilowatts, but that's the peak. Small turbines average a small slice of that. On a good windy site, figure around five kilowatt hours a day. That won't run the whole house, but the fridge, the lights, and the phones, covered."
+  },
+  {
+   "beat": "callback",
+   "match_ratio": 1.0,
+   "heard": "So the next time the street goes dark, one porch light stays on. The neighbor has questions."
+  },
+  {
+   "beat": "teaser",
+   "match_ratio": 1.0,
+   "heard": "But what happens when the wind stops? Tomorrow, he looks at the creek."
+  },
+  {
+   "beat": "question",
+   "match_ratio": 1.0,
+   "heard": "Would your HOA let you put this in your yard?"
+  }
+ ]
+}

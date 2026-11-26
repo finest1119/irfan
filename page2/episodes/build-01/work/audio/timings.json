@@ -1,0 +1,93 @@
+{
+  "total": 85.69,
+  "beats": [
+    {
+      "id": "hook",
+      "speech_start": 0.15,
+      "speech_end": 9.5,
+      "start": 0.0,
+      "end": 9.8,
+      "duration": 9.8
+    },
+    {
+      "id": "mission",
+      "speech_start": 9.8,
+      "speech_end": 16.71,
+      "start": 9.8,
+      "end": 17.01,
+      "duration": 7.21
+    },
+    {
+      "id": "how",
+      "speech_start": 17.01,
+      "speech_end": 26.978,
+      "start": 17.01,
+      "end": 27.278,
+      "duration": 10.268
+    },
+    {
+      "id": "snag1",
+      "speech_start": 27.278,
+      "speech_end": 32.164,
+      "start": 27.278,
+      "end": 32.464,
+      "duration": 5.186
+    },
+    {
+      "id": "hack1",
+      "speech_start": 32.464,
+      "speech_end": 40.828,
+      "start": 32.464,
+      "end": 41.128,
+      "duration": 8.664
+    },
+    {
+      "id": "snag2",
+      "speech_start": 41.128,
+      "speech_end": 46.473,
+      "start": 41.128,
+      "end": 46.773,
+      "duration": 5.645
+    },
+    {
+      "id": "hack2",
+      "speech_start": 46.773,
+      "speech_end": 56.337,
+      "start": 46.773,
+      "end": 56.637,
+      "duration": 9.864
+    },
+    {
+      "id": "works",
+      "speech_start": 56.637,
+      "speech_end": 72.678,
+      "start": 56.637,
+      "end": 72.978,
+      "duration": 16.341
+    },
+    {
+      "id": "callback",
+      "speech_start": 72.978,
+      "speech_end": 78.4,
+      "start": 72.978,
+      "end": 78.7,
+      "duration": 5.722
+    },
+    {
+      "id": "teaser",
+      "speech_start": 78.7,
+      "speech_end": 81.899,
+      "start": 78.7,
+      "end": 82.199,
+      "duration": 3.499
+    },
+    {
+      "id": "question",
+      "speech_start": 82.199,
+      "speech_end": 84.89,
+      "start": 82.199,
+      "end": 85.69,
+      "duration": 3.491
+    }
+  ]
+}
