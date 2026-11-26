@@ -9,7 +9,8 @@ Automatic checks (report -> <outdir>/qc_full.json + qc_full.md):
     long pauses (> 0.75 s silence inside the narration), leading/trailing silence
   - spoken words vs script (faster-whisper on the final audio): missing/extra words, word error rate
 Visual review material (a human/agent MUST look at every sheet):
-  - <outdir>/full/sheet_XX.jpg: one frame every STEP seconds (default 2 s; Irfan 24 Nov: save tokens) of the WHOLE video, 15 frames per sheet, timestamps burned in,
+  - <outdir>/full/sheet_XX.jpg: one frame every STEP seconds (default 2 s; Irfan 24 Nov: save tokens) of the WHOLE video, 15 frames per sheet
+    (240x427 tiles, JPEG q70; env QC_TILE_W / QC_JPEG_Q for more detail), timestamps burned in,
     with 12 %/80 % safe-area guides. Check every frame: void/plain backgrounds, glitches, clipped or overlapping
     text, labels on wrong objects, wrong spelling, anything graphic/insensitive, visuals not matching the words.
 """
@@ -151,21 +152,27 @@ def main(ep_path, mp4, outdir=None):
         issues.append("whisper check failed: %s" % e)
 
     # --- full-video contact sheets: 1 frame every STEP s (env QC_STEP, default 2)
+    # Tiles 240x427 (9:16) saved as JPEG q70 to cut image tokens (26 Nov; was 360x640 q85).
+    # More detail when needed: QC_TILE_W=360 (height follows 9:16), QC_JPEG_Q=85.
     STEP = float(os.environ.get("QC_STEP", "2"))
+    W = int(os.environ.get("QC_TILE_W", "240"))
+    H = int(round(W * 16 / 9))
+    JPEG_Q = int(os.environ.get("QC_JPEG_Q", "70"))
+    k_s = W / 360.0  # scale the timestamp label/guides with the tile
     n = int(dur)
     fdir = os.path.join(outdir, "full")
     for f in os.listdir(fdir):
         os.remove(os.path.join(fdir, f))
     # (this ffmpeg build has no drawtext -> label/tile with PIL)
     from PIL import Image, ImageDraw, ImageFont
-    subprocess.run([PC.ffmpeg_exe(), "-v", "error", "-y", "-i", mp4, "-vf", "fps=1/%g,scale=360:640" % STEP, "-q:v", "3",
+    subprocess.run([PC.ffmpeg_exe(), "-v", "error", "-y", "-i", mp4, "-vf", "fps=1/%g,scale=%d:%d:flags=lanczos" % (STEP, W, H), "-q:v", "3",
                     os.path.join(fdir, "f_%04d.jpg")], check=True)
     frames = sorted(f for f in os.listdir(fdir) if f.startswith("f_"))
     try:
-        font = ImageFont.truetype(PC.font_path("SUB_FONT")[0], 26)
+        font = ImageFont.truetype(PC.font_path("SUB_FONT")[0], max(12, int(26 * k_s)))
     except Exception:  # noqa
         font = ImageFont.load_default()
-    per, cols, W, H, pad = 15, 5, 360, 640, 6
+    per, cols, pad = 15, 5, 6
     sheets = []
     for s in range(0, len(frames), per):
         chunk = frames[s:s + per]
@@ -174,13 +181,13 @@ def main(ep_path, mp4, outdir=None):
             im = Image.open(os.path.join(fdir, f)).convert("RGB")
             d = ImageDraw.Draw(im)
             for g in (0.12, 0.80):
-                d.line([(0, int(H * g)), (W, int(H * g))], fill=(255, 220, 0), width=2)
+                d.line([(0, int(H * g)), (W, int(H * g))], fill=(255, 220, 0), width=max(1, int(round(2 * k_s))))
             t = (s + k) * STEP + STEP / 2
-            d.rectangle([0, 0, 92, 34], fill=(0, 0, 0))
-            d.text((6, 4), "%d:%02d" % (t // 60, t % 60), font=font, fill=(255, 220, 0))
+            d.rectangle([0, 0, int(92 * k_s), int(34 * k_s)], fill=(0, 0, 0))
+            d.text((int(6 * k_s), int(4 * k_s)), "%d:%02d" % (t // 60, t % 60), font=font, fill=(255, 220, 0))
             sheet.paste(im, (pad + (k % cols) * (W + pad), pad + (k // cols) * (H + pad)))
         name = "sheet_%02d.jpg" % (s // per + 1)
-        sheet.save(os.path.join(fdir, name), quality=85)
+        sheet.save(os.path.join(fdir, name), "JPEG", quality=JPEG_Q, optimize=True)
         sheets.append(name)
     for f in frames:
         os.remove(os.path.join(fdir, f))

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- DRAFT (26 Nov 2026), not loaded. Posts each reel's engagement comment as the Page 10-60 min after it goes live.
+     Install: copy to ~/Library/LaunchAgents/ and bootstrap (see tools/auto_comment.py). -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.irfan.fb-autocomment</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/irfan/Documents/Facebook &amp; Youtube Monetisation/irfan/.venv/bin/python</string>
+		<string>/Users/irfan/Documents/Facebook &amp; Youtube Monetisation/irfan/tools/auto_comment.py</string>
+		<string>--pages</string>
+		<string>wjh,sme,ed</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>/Users/irfan/Documents/Facebook &amp; Youtube Monetisation/irfan</string>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PYTHONUNBUFFERED</key>
+		<string>1</string>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/Users/irfan/Documents/Facebook &amp; Youtube Monetisation/irfan/output/auto-comment.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/irfan/Documents/Facebook &amp; Youtube Monetisation/irfan/output/auto-comment.log</string>
+</dict>
+</plist>
