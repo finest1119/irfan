@@ -33,7 +33,7 @@
   "model": "gemini-3.8-flash-tts",
   "fallback_model": "gemini-3.1-flash-tts-preview",
   "voice": "Sadaltager",
-  "director_notes": "Calm, knowledgeable American male explainer for a short science/how-it-works social video. Curious and warm, clear and fairly brisk (about 165-180 words per minute), conversational, a short pause before the twist fact, never salesy or dramatic news tone. US English.",
+  "director_notes": "Calm, curious American male explainer, warm and clear, about 170 words per minute, short pause before the twist. Read only the script text.",
   "pause_between_beats": 0.3
  },
  "music": null,
