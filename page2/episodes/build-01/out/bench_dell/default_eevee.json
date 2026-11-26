@@ -1,0 +1,47 @@
+{
+ "profile": "default",
+ "engine": "eevee",
+ "scale": 1.0,
+ "samples": 32,
+ "device": "eevee",
+ "render_res": null,
+ "exit": 0,
+ "build_s": 20.2,
+ "warmup_s": 17.3,
+ "wall_s": 117.9,
+ "frames": [
+  {
+   "frame": 60,
+   "shot": "hook_dusk_wide",
+   "render_s": 26.6
+  },
+  {
+   "frame": 907,
+   "shot": "day_wide_grass",
+   "render_s": 5.4
+  },
+  {
+   "frame": 473,
+   "shot": "bolts_point_medium",
+   "render_s": 8.4
+  },
+  {
+   "frame": 444,
+   "shot": "snap_mblur",
+   "render_s": 8.2
+  },
+  {
+   "frame": 2127,
+   "shot": "kitchen_window",
+   "render_s": 3.9
+  },
+  {
+   "frame": 2240,
+   "shot": "callback_street_dusk",
+   "render_s": 24.8
+  }
+ ],
+ "mean_render_s": 12.88,
+ "mean_post_s": null,
+ "note": "render_s = Blender render time per still (after a 1-sample warm-up); post_s = fast_post upscale + 2D blur (CPU, runs after each job in a real render)"
+}

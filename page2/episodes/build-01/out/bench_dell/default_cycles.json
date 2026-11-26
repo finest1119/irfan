@@ -1,0 +1,47 @@
+{
+ "profile": "default",
+ "engine": "cycles",
+ "scale": 1.0,
+ "samples": 32,
+ "device": "OPTIX",
+ "render_res": null,
+ "exit": 0,
+ "build_s": 22.3,
+ "warmup_s": 3.8,
+ "wall_s": 94.1,
+ "frames": [
+  {
+   "frame": 60,
+   "shot": "hook_dusk_wide",
+   "render_s": 4.6
+  },
+  {
+   "frame": 907,
+   "shot": "day_wide_grass",
+   "render_s": 9.1
+  },
+  {
+   "frame": 473,
+   "shot": "bolts_point_medium",
+   "render_s": 13.6
+  },
+  {
+   "frame": 444,
+   "shot": "snap_mblur",
+   "render_s": 10.1
+  },
+  {
+   "frame": 2127,
+   "shot": "kitchen_window",
+   "render_s": 22.4
+  },
+  {
+   "frame": 2240,
+   "shot": "callback_street_dusk",
+   "render_s": 4.1
+  }
+ ],
+ "mean_render_s": 10.65,
+ "mean_post_s": null,
+ "note": "render_s = Blender render time per still (after a 1-sample warm-up); post_s = fast_post upscale + 2D blur (CPU, runs after each job in a real render)"
+}
