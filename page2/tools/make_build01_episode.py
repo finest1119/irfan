@@ -165,7 +165,7 @@ OVERLAYS = {
             {"type": "label", "text": "BURIED CABLE", "anchor": "cable_mid", "cue": "buried"},
             {"type": "meter", "label": "BATTERY 12 %", "segments": 8, "cues": ["battery"], "y": 0.7}],
     "snag1": [{"type": "chips", "items": ["SNAG"], "at": 0.1},
-              {"type": "bar", "top": "tower_tip_flat", "bottom": "tower_base", "label": "50 FT", "cue": "fifty"}],
+              {"type": "label", "text": "50 FT TOWER", "anchor": "tower_base", "dx": 200, "cue": "fifty"}],
     "hack1": [{"type": "chips", "items": ["HACK"], "at": 0.1},
               {"type": "label", "text": "HINGE", "anchor": "hinge", "cue": "tilt"},
               {"type": "label", "text": "GIN POLE", "anchor": "gin_pole", "cue": "build", "dx": 150},

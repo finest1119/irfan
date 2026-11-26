@@ -794,10 +794,10 @@
       "at": 0.1
      },
      {
-      "type": "bar",
-      "top": "tower_tip_flat",
-      "bottom": "tower_base",
-      "label": "50 FT",
+      "type": "label",
+      "text": "50 FT TOWER",
+      "anchor": "tower_base",
+      "dx": 200,
       "cue": "fifty"
      }
     ],

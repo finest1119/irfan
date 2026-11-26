@@ -1,0 +1,52 @@
+﻿# Build #1 render stats, Dell G15 (RTX 3050 Ti 4 GB, Studio 621.40, Blender 5.3.0, OPTIX)
+# render start 09:09:30, last frame 16:52:57 (26 Nov 2026), wall 27,808 s = 7.72 h, 2571 frames, 10.82 s/frame overall
+# scale 1.0 (1080x1920), 32 samples, mblur 3d; Windows power mode Balanced during the render
+
+stats_0001-0150  device=OPTIX bolts_impl=s9_quaternius build_s=16.3
+stats_0151-0294  device=OPTIX bolts_impl=s9_quaternius build_s=20.5
+stats_0295-0444  device=OPTIX bolts_impl=s9_quaternius build_s=19.3
+stats_0300-1600  device=OPTIX bolts_impl=s9_quaternius build_s=16.5
+stats_0445-0510  device=OPTIX bolts_impl=s9_quaternius build_s=19.2
+stats_0511-0660  device=OPTIX bolts_impl=s9_quaternius build_s=19.2
+stats_0661-0810  device=OPTIX bolts_impl=s9_quaternius build_s=19.9
+stats_0811-0818  device=OPTIX bolts_impl=s9_quaternius build_s=19.8
+stats_0819-0968  device=OPTIX bolts_impl=s9_quaternius build_s=19.9
+stats_0969-0974  device=OPTIX bolts_impl=s9_quaternius build_s=19.4
+stats_0975-1124  device=OPTIX bolts_impl=s9_quaternius build_s=19.0
+stats_1125-1234  device=OPTIX bolts_impl=s9_quaternius build_s=19.4
+stats_1235-1384  device=OPTIX bolts_impl=s9_quaternius build_s=19.6
+stats_1385-1403  device=OPTIX bolts_impl=s9_quaternius build_s=20.7
+stats_1404-1553  device=OPTIX bolts_impl=s9_quaternius build_s=20.5
+stats_1554-1699  device=OPTIX bolts_impl=s9_quaternius build_s=21.6
+stats_1700-1849  device=OPTIX bolts_impl=s9_quaternius build_s=21.6
+stats_1850-1999  device=OPTIX bolts_impl=s9_quaternius build_s=21.1
+stats_2000-2149  device=OPTIX bolts_impl=s9_quaternius build_s=20.9
+stats_2150-2189  device=OPTIX bolts_impl=s9_quaternius build_s=17.9
+stats_2190-2339  device=OPTIX bolts_impl=s9_quaternius build_s=18.5
+stats_2340-2361  device=OPTIX bolts_impl=s9_quaternius build_s=18.1
+stats_2362-2466  device=OPTIX bolts_impl=s9_quaternius build_s=18.4
+stats_2467-2571  device=OPTIX bolts_impl=s9_quaternius build_s=18.5
+
+job_0001-0150  frames=150
+job_0151-0294  frames=144
+job_0295-0444  frames=150
+job_0445-0510  frames=66
+job_0511-0660  frames=150
+job_0661-0810  frames=150
+job_0811-0818  frames=8
+job_0819-0968  frames=150
+job_0969-0974  frames=6
+job_0975-1124  frames=150
+job_1125-1234  frames=110
+job_1235-1384  frames=150
+job_1385-1403  frames=19
+job_1404-1553  frames=150
+job_1554-1699  frames=146
+job_1700-1849  frames=150
+job_1850-1999  frames=150
+job_2000-2149  frames=150
+job_2150-2189  frames=40
+job_2190-2339  frames=150
+job_2340-2361  frames=22
+job_2362-2466  frames=105
+job_2467-2571  frames=105
