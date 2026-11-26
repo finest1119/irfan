@@ -1,0 +1,215 @@
+{
+ "id": "2026-12-01-ed-e2-noise-cancelling",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "noise cancelling",
+ "slug": "noise-cancelling",
+ "title": "Noise-Cancelling Headphones Fight Sound With Sound",
+ "fb_caption": "Noise-cancelling headphones don't just block outside sound. Tiny microphones on the ear cups listen to the noise around you, and a chip makes a matching sound wave, flipped upside down. When the two waves meet, the peaks fill the dips and much of the hum cancels out. It works best on steady, low hums like an air conditioner or an engine; voices are higher and keep changing, so more of them gets through. Where do you wear yours the most?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Headphones",
+  "#Tech",
+  "#TravelTips"
+ ],
+ "engagement_comment": "Where do you wear yours the most? 1 = on a plane, 2 = on my commute, 3 = at my desk.",
+ "sources": [
+  "Bose, What is active noise cancellation? (microphones read the sounds around you, the headphones produce opposite signals to cancel them; works best on steady low-frequency sounds such as an air conditioner's hum; less effective on sudden, sharp sounds; mid and high frequencies reduced less): https://www.bose.com/stories/what-is-active-noise-cancellation",
+  "Sennheiser support, What is Active Noise Cancelling (microphones pick up outside noise; the electronics create a wave with the opposite phase; the waves cancel): https://support.sennheiser-hearing.com/hc/en-at/articles/34973151457565-What-is-Active-Noise-Cancelling",
+  "Sennheiser support, How ANC and passive isolation work (ANC works best on repetitive low-frequency noise such as engine or air-conditioning hum, less effective on higher-frequency sounds like people talking): https://support.sennheiser-hearing.com/hc/en-gb/articles/38785026673181-What-impacts-ANC-Active-Noise-Cancellation-performance-in-Headband-headphones"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, warm American male narrator.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Noise-cancelling headphones don't just block outside sound. They actually fight sound with more sound.",
+   "shot": {
+    "builder": "noise_cancel_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "SOUND VS. SOUND",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "mics",
+   "text": "Tiny microphones on the ear cups listen to the noise around you, like the hum of an air conditioner.",
+   "shot": {
+    "builder": "noise_cancel_v2",
+    "params": {
+     "view": "mics",
+     "mic_cue": "microphones",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "MICROPHONE",
+      "anchor": "mic",
+      "cue": "microphones",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "HEARS THE HUM"
+      ],
+      "cues": [
+       "listen"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "chip",
+   "text": "A chip inside makes a matching sound wave, flipped upside down, and plays it through the speakers.",
+   "shot": {
+    "builder": "noise_cancel_v2",
+    "params": {
+     "view": "chip",
+     "chip_cue": "flipped",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "FLIPPED WAVE",
+      "anchor": "anti",
+      "cue": "flipped",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "MADE BY A CHIP"
+      ],
+      "cues": [
+       "chip"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "cancel",
+   "text": "When the two waves meet, the peaks fill the dips, so much of that hum cancels out.",
+   "shot": {
+    "builder": "noise_cancel_v2",
+    "params": {
+     "view": "cancel",
+     "cancel_cue": "cancels",
+     "_still": 0.92
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "HUM CANCELS",
+      "anchor": "ear",
+      "cue": "cancels",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "PEAKS FILL THE DIPS"
+      ],
+      "cues": [
+       "peaks"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. It works best on steady, low hums. Voices are higher and keep changing, so more gets through.",
+   "shot": {
+    "builder": "noise_cancel_v2",
+    "params": {
+     "view": "twist",
+     "voice_cue": "voices",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "VOICES GET THROUGH",
+      "cue": "voices"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "BEST ON STEADY HUMS"
+      ],
+      "cues": [
+       "steady"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Where do you wear yours the most: on a plane, on your commute, or at your desk? Tell us below.",
+   "shot": {
+    "builder": "noise_cancel_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "PLANE, COMMUTE OR DESK?",
+      "at": 0.25,
+      "sub": "Tell us below",
+      "sub_cue": "tell"
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

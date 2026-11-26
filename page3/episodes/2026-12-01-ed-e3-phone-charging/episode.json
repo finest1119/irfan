@@ -1,0 +1,221 @@
+{
+ "id": "2026-12-01-ed-e3-phone-charging",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "phone charging",
+ "slug": "phone-charging",
+ "title": "Why Your Phone Charges Slower After About 80 Percent",
+ "fb_caption": "Your phone races to about 80 percent, then crawls the rest of the way, and that's on purpose. At first the charger pushes a strong, steady current. Near full, the battery reaches its voltage limit, so the charger holds it there and lets the current taper off. Many phones also learn your routine, pause around 80 percent overnight, and finish just before you wake up, because sitting at a full charge for hours wears a battery faster. Do you charge your phone overnight, or top it up during the day?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Smartphone",
+  "#BatteryTips",
+  "#Tech"
+ ],
+ "engagement_comment": "Do you charge your phone overnight, or top it up during the day? 1 = overnight, every night, 2 = quick top-ups, 3 = whenever it turns red.",
+ "sources": [
+  "Battery University, BU-409: Charging Lithium-ion (stage 1 constant current until the voltage limit, reached at roughly 70-85 percent; stage 2 saturation holds the voltage while the current drops): https://batteryuniversity.com/article/bu-409-charging-lithium-ion",
+  "Apple Support, About Optimized Battery Charging on iPhone (learns your daily charging routine; delays charging past 80 percent when it predicts a long charge, finishing before you unplug, to reduce battery wear from time spent fully charged): https://support.apple.com/en-us/108055",
+  "Google Pixel Help, Get the most life from your Pixel phone battery (Adaptive Charging learns your habits and completes charging right before you typically unplug, so the phone isn't at 100% for a long time; Limit to 80% option): https://support.google.com/pixelphone/answer/6090612",
+  "Analytics Insight, Why Your Phone Charges Fast at First, Slows Near 80% (CC-CV: the constant-current phase covers roughly 70-80 percent, then voltage is held and current tapers): https://www.analyticsinsight.net/phones/why-your-phone-charges-fast-at-first-slows-near-80"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, warm American male narrator.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Your phone races to about eighty percent, then crawls the rest of the way. That's on purpose.",
+   "shot": {
+    "builder": "phone_charge_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "WHY IT SLOWS DOWN",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "fast",
+   "text": "At first, the charger pushes a strong, steady current, and the battery fills up really fast.",
+   "shot": {
+    "builder": "phone_charge_v2",
+    "params": {
+     "view": "fast",
+     "fast_cue": "strong",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "FAST PHASE",
+      "anchor": "battery",
+      "cue": "strong",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "STEADY CURRENT"
+      ],
+      "cues": [
+       "steady"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "slow",
+   "text": "Near full, the battery hits its voltage limit, so the charger holds it there and lets the current taper off.",
+   "shot": {
+    "builder": "phone_charge_v2",
+    "params": {
+     "view": "slow",
+     "limit_cue": "limit",
+     "taper_cue": "taper",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "VOLTAGE LIMIT",
+      "anchor": "battery",
+      "cue": "limit",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "VOLTAGE HELD",
+       "CURRENT TAPERS"
+      ],
+      "cues": [
+       "holds",
+       "taper"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the twist. Some phones learn your routine, hold around eighty percent overnight, and finish just before you wake up.",
+   "shot": {
+    "builder": "phone_charge_v2",
+    "params": {
+     "view": "twist",
+     "pause_cue": "pause",
+     "finish_cue": "finish",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "PAUSED AT ABOUT 80%",
+      "cue": "pause"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "FINISHES BEFORE YOU WAKE"
+      ],
+      "cues": [
+       "finish"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "why",
+   "text": "Sitting at a full charge for hours wears a battery faster, so that pause helps it last longer.",
+   "shot": {
+    "builder": "phone_charge_v2",
+    "params": {
+     "view": "why",
+     "wear_cue": "wears",
+     "pause_cue": "pause",
+     "_still": 0.9
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "LESS TIME AT 100%",
+      "anchor": "battery",
+      "cue": "pause",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "FULL FOR HOURS = MORE WEAR"
+      ],
+      "cues": [
+       "wears"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Do you charge your phone overnight, or top it up during the day? Tell us below.",
+   "shot": {
+    "builder": "phone_charge_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "OVERNIGHT OR TOP-UPS?",
+      "at": 0.25,
+      "sub": "Tell us below",
+      "sub_cue": "tell"
+     }
+    ]
+   }
+  }
+ ],
+ "qc": {
+  "duration_s": [
+   30,
+   60
+  ]
+ }
+}

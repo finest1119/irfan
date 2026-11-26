@@ -582,3 +582,53 @@ Floss (shades, dimming), Bestpass (toll by mail) and PCWorld are search-summary 
   ... only half the exits" (App. J = one exit from each pair); "Many sticker tags have no battery" (SunPass Mini;
   "powers them" from the RFID article, not SunPass); "up to about thirty percent" (codewords; Keyence says area);
   "cover one of those corners, and the scan can fail" (Make Tech Easier: riskier); "the bill comes by mail".
+
+## Session: Track A batch 05 (26 Nov 2026, for 1 Dec; Opus build)
+
+Script: `page3/scripts/TRACK-A-BATCH-05.md`. Episodes (v2, ED style / tts / render / qc blocks copied from d5, director
+notes "Calm, warm American male narrator."): `page3/episodes/2026-12-01-ed-e1-fridge-heat/`, `-e2-noise-cancelling/`,
+`-e3-phone-charging/` (keywords "fridge heat", "noise cancelling", "phone charging"). 6 beats each, 106-107 words,
+~39-41 s synthetic; every beat >= 14 words (TTS director-notes lesson); cues checked against their beat's words.
+
+### Builders appended to `page3/blender/scene_lib_v2_ed.py`
+- helpers `_tube` (polyline tube), `_serp` (coil serpentine), `_flow_dots` (glow dots along a path, speed callable),
+  `_glow_tube` (additive sleeve), `_ribbon_fn` (ribbon from a function).
+- `fridge_heat_v2` (hook|inside|comp|coils|twist|outro): REUSED `_kitchen`; fridge-freezer at the left wall end (faces +X),
+  teal evaporator + cold dots, compressor glow + rings, amber condenser coil + hot dots, amber heat puffs behind / under,
+  teal cold spill on door open. comp = near side panel cut away; coils = left room wall faces deleted + floor strip, camera
+  outside the room (a clip-through attempt showed a grey void strip, replaced). Anchors tubes, comp, coils, fridge.
+- `noise_cancel_v2` (hook|mics|chip|cancel|twist|outro): REUSED `_living_room` (books hidden: they covered the waves) +
+  window AC unit; headphones on a stand; amber hum ribbon, teal flipped wave above it, both flatten + white line on
+  cancel, coral voice wave in twist. Camera looks -Y over the navy sofa (calm caption band). Anchors mic, wave, anti (moved above the hum after the
+  flipped wave was raised), ear, ac, headphones.
+- `phone_charge_v2` (hook|fast|slow|twist|why|outro): NEW `_bedroom` set; phone face up on a nightstand, cable to the
+  outlet with current dots, 3D battery gauge (plain PBR teal / amber fill; additive fill read as pale mint). Anchors battery, phone, cable, window.
+No WIREFRAME pulses, no CONSTANT-keyed cue effects (_hold / _ramp patterns), no 3D text, no emissive signs in close-ups
+(lamp shade is plain fabric lit by a point light; gauge fill is plain PBR after review; phone screen art at 0.55),
+textures generated in memory (<= 512 px). Only write outside page3/: output/<slug>/preview_synth/ (synthetic timings,
+stills, logs) + scratchpad overlay previews.
+
+### Stills (0.5 scale, 12 samples)
+Sheets `page3/_preview/2026-12-01-ed-e1-fridge-heat-stills.jpg`, `-e2-noise-cancelling-stills.jpg`,
+`-e3-phone-charging-stills.jpg`; overlay layout check `page3/_preview/track-a-batch05-overlay-check.jpg` (beats 0/2/4/5,
+all 18 beats, no assert failures). Renders per beat: fridge hook/inside/twist 2, comp 3, coils 4, outro 1; noise hook 4, mics/chip/
+cancel/twist 2, outro 1; phone hook/slow/twist 3, fast/why 2, outro 1. Build 0.1-0.2 s, ~2 s per still.
+
+### Fact pass
+Opened 26 Nov: Apple Support 108055 (Optimized Battery Charging), Battery University BU-409, Bose ANC story, University
+of Illinois Physics Van "Open Refrigerator", Google Pixel Help 6090612 (Adaptive Charging). Search summaries only (Sears /
+Sennheiser returned 403): Danfoss, Sears Home Services, iFixit (fridge cycle), Sennheiser support (ANC x2), Analytics
+Insight (CC-CV ~70-80 %); marked in the script. Android Authority (77 % article) replaced by Google Pixel Help.
+
+### Known issues / leftovers
+- fridge: comp view milk carton recoloured blue (was white in the caption band); coils still has a soft fill-light glare
+  + the coil top and heat puffs inside the caption band (logged, past the iteration cap); coils view is a cut-away from outside the room (left wall removed); amber puffs faint in the hook; teal puffs
+  only visible late in the twist; hook band has a strip of pale kitchen wall at the left edge.
+- noise: AC unit only visible in no still (hook reframed onto the headphones; AC rings exist in hook/mics/twist off-frame);
+  teal cancel rings / mic rings not caught in stills; cup partly cropped at the left in close views.
+- phone: slow view gauge top just touches the caption band; lamp shade edge in the band in hook / twist (plain fabric,
+  calm); pause rings in the twist not caught in the still; current dots small.
+- Facts for the Fable fact-check: "hotter than your kitchen" (Sears); "near the bottom" (soft); "your kitchen gets warmer"
+  (sealed-room reasoning, Illinois); "Voices are higher and keep changing" (Sennheiser / Bose wording: less effective on
+  higher-frequency speech); "races to about eighty percent" (CV switch 70-85 %); "Many phones ... pause around eighty
+  percent overnight" (Apple Optimized / Pixel Adaptive; feature-dependent).

@@ -47,6 +47,14 @@ Builders (Track A batch 04, 26 Nov 2026, for 30 Nov):
                                              pointing hand (skin / knit glove / conductive-thread tip), touch glow.
   qr_code_v2          view hook | data | damage | level | corners | tip | outro   REUSED store: poster with a QR-like
                                              code (not decodable), torn patches, finder frames, phone camera view.
+Builders (Track A batch 05, 26 Nov 2026, for 1 Dec):
+  fridge_heat_v2      view hook | inside | comp | coils | twist | outro   REUSED kitchen (_kitchen): fridge-freezer at the
+                                             left wall end, teal evaporator, compressor, amber condenser coil (coils
+                                             view opens the left wall), heat / cold puffs, door opens on door_cue.
+  noise_cancel_v2     view hook | mics | chip | cancel | twist | outro   REUSED living room + window AC: headphones on a
+                                             stand, amber hum ribbon, teal flipped wave, both flatten, coral voice wave.
+  phone_charge_v2     view hook | fast | slow | twist | why | outro   NEW small bedroom (_bedroom): phone face up on a
+                                             nightstand, cable with current dots, 3D battery gauge (teal / amber fill).
 No 3D text (barcode bars are graphics, no digits); non-graphic; textures generated in memory (<= 512 px).
 """
 import math
@@ -5025,4 +5033,749 @@ S.V2_BUILDERS.update({
     "toll_tag_v2": b_toll_tag_v2,
     "glove_touch_v2": b_glove_touch_v2,
     "qr_code_v2": b_qr_code_v2,
+})
+
+
+# ======================================================================================================================
+# Track A batch 05 (26 Nov 2026, for 1 Dec): fridge_heat_v2, noise_cancel_v2, phone_charge_v2
+# Same cue patterns as batch 03/04 (_hold_* pops, _ramp fades); no WIREFRAME rings, no CONSTANT keys.
+# ======================================================================================================================
+def _tube(bm, pts, r, seg=10, mi=0):
+    """Round tube swept along a polyline (parallel-transport frames, open ends)."""
+    pts = [Vector(q) for q in pts]
+    n = len(pts)
+    rings, prev = [], None
+    for i in range(n):
+        t = pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]
+        t = t.normalized() if t.length > 1e-9 else Vector((1, 0, 0))
+        if prev is None:
+            a = Vector((0, 0, 1)) if abs(t.z) < 0.9 else Vector((1, 0, 0))
+            nn = t.cross(a).normalized()
+        else:
+            nn = prev - t * prev.dot(t)
+            nn = nn.normalized() if nn.length > 1e-9 else prev
+        bb = t.cross(nn)
+        prev = nn
+        rings.append([bm.verts.new(pts[i] + (nn * math.cos(2 * math.pi * k / seg) + bb * math.sin(2 * math.pi * k / seg)) * r)
+                      for k in range(seg)])
+    for i in range(n - 1):
+        for k in range(seg):
+            f = bm.faces.new((rings[i][k], rings[i][(k + 1) % seg], rings[i + 1][(k + 1) % seg], rings[i + 1][k]))
+            f.material_index = mi
+
+
+def _serp(o, u, v, w, h, runs, nb=7):
+    """Serpentine (coil) points: `runs` straight runs of length w along u, stacked h along v, round bends."""
+    o, u, v = Vector(o), Vector(u).normalized(), Vector(v).normalized()
+    dv = h / (runs - 1)
+    rb = dv / 2
+    pts = []
+    for i in range(runs):
+        a, b = (rb, w - rb) if i % 2 == 0 else (w - rb, rb)
+        for s in range(6):
+            pts.append(o + u * (a + (b - a) * s / 5) + v * (i * dv))
+        if i < runs - 1:
+            sg = 1 if i % 2 == 0 else -1
+            for k in range(1, nb):
+                ang = -math.pi / 2 + math.pi * k / nb
+                pts.append(o + u * (b + sg * rb * math.cos(ang)) + v * (i * dv + rb + rb * math.sin(ang)))
+    return pts
+
+
+def _path_at(pts, cum, s):
+    s = s % cum[-1]
+    for i in range(len(cum) - 1):
+        if cum[i + 1] >= s:
+            t = (s - cum[i]) / max(1e-6, cum[i + 1] - cum[i])
+            return pts[i].lerp(pts[i + 1], t)
+    return pts[-1]
+
+
+def _flow_dots(ctx, name, pts, n, speed, color, r=0.01, strength=4.0, f_on=1, step=2):
+    """Glowing dots travelling along a polyline. speed = m/s or a callable speed(frame)."""
+    pts = [Vector(q) for q in pts]
+    cum = [0.0]
+    for a, b in zip(pts, pts[1:]):
+        cum.append(cum[-1] + (b - a).length)
+    m, _ = L.add_mat(name + "_m", color, strength)
+    fps = float(ctx.scene.render.fps)
+    sp = speed if callable(speed) else (lambda f, v=speed: v)
+    T = ctx.frames
+    frames = list(range(1, T + 1, step)) + ([T] if (T - 1) % step else [])
+    out = []
+    for k in range(n):
+        bm = bmesh.new()
+        bmesh.ops.create_uvsphere(bm, u_segments=10, v_segments=6, radius=r)
+        o = S.obj("%s%d" % (name, k), S.mesh_from_bm("%s%d" % (name, k), bm, [m], smooth=True))
+        o.visible_shadow = False
+        s, last = cum[-1] * k / n, 1
+        for f in frames:
+            s += sum(sp(x) for x in range(last, f)) / fps
+            last = f
+            kf(o, "location", f, _path_at(pts, cum, s))
+        _interp(o, "LINEAR")
+        if f_on > 1:
+            _hold_obj(o, "scale", [(1, (0.001,) * 3), (f_on, (1, 1, 1))])
+        out.append(o)
+    return out
+
+
+def _glow_tube(name, pts, r, color, parent=None):
+    """Additive glow sleeve along a polyline; returns (object, strength socket) (starts at 0)."""
+    m, sock = L.add_mat(name + "_m", color, 0.0)
+    bm = bmesh.new()
+    _tube(bm, pts, r, 10)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [m], smooth=True), parent=parent)
+    o.visible_shadow = False
+    return o, sock
+
+
+# ---------------------------------------------------------------- fridge_heat_v2 (REUSES the mw_kitchen set)
+FR_X0, FR_X1 = -2.7, -1.95             # back / front face (fridge stands at the left wall end, facing +X)
+FR_Y0, FR_Y1 = -1.35, -0.45            # Y0 side faces the room camera (cut away in the comp view)
+FR_Z0, FR_Z1 = 0.02, 1.78
+FR_FLOOR, FR_SPLIT = 0.3, 1.24
+
+
+def _fridge(ctx, p, view, door_keys=None):
+    """Freestanding fridge-freezer (no logo / text). Returns dict of parts + loop paths."""
+    steel = S.pbr("fr_steel", hexc(p.get("fridge_col", "9aa3ab")), 0.28, 0.75, coat=0.3, var=0.02)
+    liner = S.pbr("fr_liner", hexc("cbd6dc"), 0.35, coat=0.2, var=0)
+    gask = S.pbr("fr_gasket", hexc("2a2d31"), 0.7, var=0)
+    dark = S.pbr("fr_dark", hexc("1d2024"), 0.5, 0.3, var=0)
+    foam = S.pbr("fr_foam", hexc("e2cf98"), 0.9, var=0.05, var_scale=30.0)
+    alu = S.pbr("fr_alu", hexc("b9c1c6"), 0.3, 0.9, var=0)
+    copper = S.pbr("fr_cu", hexc("b8734a"), 0.35, 0.9, var=0)
+    glass = S.pbr("fr_glass", hexc("dfeef2"), 0.08, coat=1.0, var=0)
+    cut = view == "comp"
+    x0, x1, y0, y1 = FR_X0, FR_X1, FR_Y0, FR_Y1
+    xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
+    w = 0.045
+
+    def shell(bm):
+        S.bm_box(bm, (x0 + 0.02, ym, (FR_FLOOR + FR_Z1) / 2), (0.04, y1 - y0, FR_Z1 - FR_FLOOR), 0)        # back
+        S.bm_box(bm, (xm, ym, FR_Z1 - 0.02), (x1 - x0, y1 - y0, 0.04), 0)                                   # top
+        S.bm_box(bm, (xm, y1 - 0.02, (FR_Z0 + FR_Z1) / 2), (x1 - x0, 0.04, FR_Z1 - FR_Z0), 0)              # far side
+        if not cut:
+            S.bm_box(bm, (xm, y0 + 0.02, (FR_Z0 + FR_Z1) / 2), (x1 - x0, 0.04, FR_Z1 - FR_Z0), 0)
+        # base: floor slab + front kick plate (machine compartment open at the back)
+        S.bm_box(bm, (xm + 0.12, ym, FR_FLOOR - 0.03), (x1 - x0 - 0.24, y1 - y0, 0.06), 0)
+        S.bm_box(bm, (x1 - 0.03, ym, (FR_Z0 + FR_FLOOR) / 2), (0.06, y1 - y0, FR_FLOOR - FR_Z0), 0)
+        # insulation section + liner
+        S.bm_box(bm, (x0 + w + 0.012, ym, (FR_FLOOR + FR_Z1) / 2), (0.024, y1 - y0 - 0.08, FR_Z1 - FR_FLOOR - 0.06), 1)
+        S.bm_box(bm, (x0 + w + 0.026, ym, (FR_FLOOR + FR_Z1) / 2), (0.004, y1 - y0 - 0.08, FR_Z1 - FR_FLOOR - 0.08), 2)
+        S.bm_box(bm, (xm, y1 - w, (FR_FLOOR + FR_Z1) / 2), (x1 - x0 - 0.06, 0.01, FR_Z1 - FR_FLOOR - 0.06), 2)
+        S.bm_box(bm, (xm, ym, FR_FLOOR + 0.005), (x1 - x0 - 0.06, y1 - y0 - 0.08, 0.01), 2)
+        S.bm_box(bm, (xm, ym, FR_Z1 - 0.045), (x1 - x0 - 0.06, y1 - y0 - 0.08, 0.01), 2)
+        S.bm_box(bm, (xm, ym, FR_SPLIT), (x1 - x0 - 0.06, y1 - y0 - 0.08, 0.05), 2)                       # mullion
+        if not cut:
+            S.bm_box(bm, (xm, y0 + w, (FR_FLOOR + FR_Z1) / 2), (x1 - x0 - 0.06, 0.01, FR_Z1 - FR_FLOOR - 0.06), 2)
+        for k in range(7):                                                                                   # kick grille
+            S.bm_box(bm, (x1 + 0.002, ym, 0.06 + 0.022 * k), (0.01, y1 - y0 - 0.12, 0.01), 3)
+    S.obj("fr_shell", _mesh("fr_shell", shell, [steel, foam, liner, dark]))
+    # glass shelves + food
+    S.obj("fr_shelves", _mesh("fr_shelves", lambda bm: [S.bm_box(bm, (xm + 0.01, ym, z), (x1 - x0 - 0.12, y1 - y0 - 0.1, 0.008))
+                                                         for z in (0.62, 0.92, 1.5)], [glass]))
+    food = [S.pbr("fr_f%d" % i, hexc(c), 0.45, coat=0.3, var=0.03) for i, c in enumerate(
+        ("7fb0cf", "e9893a", "cf3b2b", "f0c53c", "5aa05a", "3a6fb0", "8a4fb0"))]
+
+    def items(bm):
+        _cyl(bm, (x0 + 0.25, y0 + 0.2, 0.43), 0.06, 0.24, "Z", 18, 0)            # milk
+        _cyl(bm, (x0 + 0.25, y0 + 0.2, 0.57), 0.02, 0.03, "Z", 10, 5)
+        _cyl(bm, (x0 + 0.3, y0 + 0.36, 0.42), 0.04, 0.22, "Z", 16, 1)            # juice
+        for k in range(4):                                                         # apples
+            S._ellipsoid(bm, (x1 - 0.18 - 0.05 * (k % 2), y1 - 0.18 - 0.07 * k, 0.345), (0.035,) * 3, 2, 12, 8)
+        _rbox(bm, (x0 + 0.26, y1 - 0.2, 0.675), (0.18, 0.12, 0.1), 0.01, 2, 3)     # cheese box
+        _cyl(bm, (x0 + 0.22, ym, 0.68), 0.045, 0.11, "Z", 16, 4)                  # jar
+        _cyl(bm, (x0 + 0.24, y0 + 0.2, 0.99), 0.05, 0.13, "Z", 16, 5)
+        _rbox(bm, (x0 + 0.27, y1 - 0.22, 0.98), (0.2, 0.16, 0.11), 0.01, 2, 6)
+        _rbox(bm, (x0 + 0.24, ym, 1.33), (0.22, 0.4, 0.12), 0.01, 2, 0)            # freezer boxes
+        _rbox(bm, (x0 + 0.24, ym - 0.05, 1.56), (0.2, 0.3, 0.08), 0.01, 2, 5)
+    S.obj("fr_food", _mesh("fr_food", items, food, smooth=True))
+    # doors (hinged on the Y1 side, open towards +X)
+    hinges = []
+    for k, (za, zb) in enumerate(((FR_FLOOR - 0.0, FR_SPLIT - 0.02), (FR_SPLIT + 0.02, FR_Z1))):
+        h = _empty("fr_hinge%d" % k, (x1 + 0.03, y1, 0.0))
+
+        def door(bm, za=za, zb=zb, k=k):
+            _rbox(bm, (0, -(y1 - y0) / 2, (za + zb) / 2), (0.055, y1 - y0, zb - za), 0.012, 2, 0)
+            S.bm_box(bm, (-0.03, -(y1 - y0) / 2, (za + zb) / 2), (0.01, y1 - y0 - 0.03, zb - za - 0.03), 1)
+            hz0, hz1 = (za + 0.08, za + 0.42) if k == 1 else (zb - 0.5, zb - 0.06)
+            _cyl(bm, (0.065, -(y1 - y0) + 0.07, (hz0 + hz1) / 2), 0.012, hz1 - hz0, "Z", 12, 2)
+            for zz in (hz0 + 0.01, hz1 - 0.01):
+                _cyl(bm, (0.04, -(y1 - y0) + 0.07, zz), 0.008, 0.05, "X", 8, 2)
+            if k == 0:                                                              # door bins
+                for zz in (za + 0.25, za + 0.6):
+                    S.bm_box(bm, (-0.09, -(y1 - y0) / 2, zz), (0.07, y1 - y0 - 0.12, 0.012), 3)
+                    S.bm_box(bm, (-0.125, -(y1 - y0) / 2, zz + 0.04), (0.006, y1 - y0 - 0.12, 0.08), 3)
+                for j, c in enumerate((4, 1, 5)):
+                    _cyl(bm, (-0.09, -0.2 - 0.17 * j, za + 0.36), 0.03, 0.2, "Z", 14, 4 + j % 2)
+        dm = _mesh("fr_door%d" % k, door, [steel, gask, alu, glass, food[1], food[4]])
+        S.obj("fr_door%d" % k, dm, parent=h)
+        hinges.append(h)
+    if door_keys:
+        for h in hinges[:1]:
+            for f, ang in door_keys:
+                kf(h, "rotation_euler", max(1, int(f)), Vector((0, 0, math.radians(ang))))
+    # evaporator (inside, on the back liner), compressor, condenser coil (outside the back), tubes
+    ex = x0 + w + 0.036
+    evap = _serp((ex, y0 + 0.1, 0.42), (0, 1, 0), (0, 0, 1), (y1 - y0) - 0.2, 1.2, 11)
+    cx = x0 - 0.035
+    cond = _serp((cx, y0 + 0.08, 0.36), (0, 1, 0), (0, 0, 1), (y1 - y0) - 0.16, 1.24, 13)
+    comp_c = Vector((x0 + 0.16, ym + 0.1, 0.12))
+    suction = [evap[0], (x0 + 0.02, evap[0][1], 0.42), (x0 - 0.06, evap[0][1], 0.36), (x0 - 0.06, evap[0][1], 0.2),
+               (comp_c.x - 0.04, comp_c.y - 0.02, 0.24), (comp_c.x, comp_c.y, 0.2)]
+    discharge = [(comp_c.x, comp_c.y - 0.05, 0.16), (x0 - 0.05, comp_c.y - 0.05, 0.16), (cx, cond[0][1], 0.2),
+                 cond[0]]
+    capillary = [cond[-1], (cx, cond[-1][1], FR_Z1 - 0.06), (x0 + 0.02, cond[-1][1], FR_Z1 - 0.1),
+                 (ex, evap[-1][1], evap[-1][2] + 0.05), evap[-1]]
+    S.obj("fr_evap", _mesh("fr_evap", lambda bm: _tube(bm, evap, 0.008, 10, 0), [alu], smooth=True))
+    S.obj("fr_cond", _mesh("fr_cond", lambda bm: [_tube(bm, cond, 0.0065, 10, 0)] + [
+        _cyl(bm, (cx - 0.008, y0 + 0.1 + 0.07 * j, 0.98), 0.0018, 1.28, "Z", 6, 1) for j in range(11)],
+        [dark, alu], smooth=True))
+    S.obj("fr_lines", _mesh("fr_lines", lambda bm: [_tube(bm, suction, 0.007, 8, 0), _tube(bm, discharge, 0.007, 8, 0),
+                                                     _tube(bm, capillary, 0.003, 6, 0)], [copper], smooth=True))
+
+    def compressor(bm):
+        S._ellipsoid(bm, tuple(comp_c), (0.1, 0.12, 0.1), 0, 20, 12)
+        S.bm_box(bm, (comp_c.x, comp_c.y, 0.03), (0.2, 0.26, 0.02), 1)
+    S.obj("fr_comp", _mesh("fr_comp", compressor, [dark, alu], smooth=True))
+    # interior light
+    _point("fr_in_l", (x1 - 0.12, ym, 1.1), p.get("in_light", 6.0), (0.85, 0.93, 1.0), 0.05)
+    return {"evap": evap, "cond": cond, "comp": comp_c, "suction": suction, "discharge": discharge,
+            "capillary": capillary, "hinges": hinges}
+
+
+def _v_fridge(ctx, p, view):
+    T = ctx.frames
+    _kitchen(ctx, p)
+    f_door = ctx.word_time(p.get("door_cue", "open"), 0.3)
+    door = None
+    if view in ("inside",):
+        door = [(1, 100.0)]
+    elif view == "twist":
+        door = [(1, 0.0), (f_door, 0.0), (f_door + 14, 95.0)]
+    elif view == "outro":
+        door = [(1, 0.0), (int(T * 0.2), 0.0), (int(T * 0.45), 70.0)]
+    fr = _fridge(ctx, p, view, door)
+    x0, x1, y0, y1 = FR_X0, FR_X1, FR_Y0, FR_Y1
+    ym = (y0 + y1) / 2
+    evap, cond = fr["evap"], fr["cond"]
+    loop = fr["suction"] + fr["discharge"] + cond + fr["capillary"][1:] + list(reversed(evap))
+    ev_o, ev_s = _glow_tube("fr_evap_g", evap, 0.012, TEAL)
+    cd_o, cd_s = _glow_tube("fr_cond_g", cond, 0.011, AMBER)
+    hot = fr["discharge"] + cond
+    behind = Vector((x0 - 0.05, ym, FR_Z1 + 0.02))
+    if view == "hook":
+        ev_s.default_value = 0.6
+        _ramp_sock(cd_s, int(T * 0.3), 0.0, 1.6, 20)
+        _puffs(ctx, "fr_hp", behind, int(T * 0.3), n=12, gap=7, rise=(0.45, -0.15, 0.4), spread=0.3, r=0.07, life=60,
+               color=AMBER, peak=0.7, seed=4)
+        _puffs(ctx, "fr_hg", (x1 + 0.05, ym, 0.12), int(T * 0.35), n=10, gap=8, rise=(0.5, -0.1, 0.3), spread=0.2,
+               r=0.05, life=50, color=AMBER, peak=0.6, seed=5)
+        cams = ((-0.15, -3.3, 1.45), (-2.2, -0.9, 0.95), (-0.35, -3.0, 1.4), (-2.25, -0.9, 0.95), 26)
+    elif view == "inside":
+        fe = ctx.word_time(p.get("evap_cue", "evaporates"), 0.4)
+        fs = ctx.word_time(p.get("heat_cue", "soaking"), 0.6)
+        _ramp_sock(ev_s, fe, 0.0, 2.4, 14)
+        _flow_dots(ctx, "fr_cold", list(reversed(evap)), 10, 0.18, TEAL, r=0.012, strength=5.0, f_on=fe)
+        srcs = [(x0 + 0.25, y0 + 0.2, 0.6), (x0 + 0.3, y0 + 0.36, 0.56), (x1 - 0.2, y1 - 0.25, 0.4),
+                (x0 + 0.26, y1 - 0.2, 0.75), (x0 + 0.24, y0 + 0.2, 1.08)]
+        for k, s in enumerate(srcs):
+            _puffs(ctx, "fr_ip%d" % k, s, fs + 3 * k, n=5, gap=6, rise=(-0.17, 0.0, 0.04), spread=0.05, r=0.028,
+                   life=30, color=AMBER, peak=2.0, seed=10 + k)
+        cams = ((-0.45, -1.4, 1.25), (-2.4, -0.9, 0.85), (-0.5, -1.35, 1.22), (-2.4, -0.9, 0.85), 24)
+    elif view == "comp":
+        fc = ctx.word_time(p.get("comp_cue", "compressor"), 0.3)
+        fq = ctx.word_time(p.get("squeeze_cue", "squeezes"), 0.5)
+        ev_s.default_value = 0.8
+        _rings(ctx, tuple(fr["comp"] + Vector((0, -0.14, 0.0))), fc, color=AMBER, count=3, gap=8, r1=0.22, life=20,
+               name="fr_cr", rot=(math.radians(90), 0, 0), width=0.06)
+        cm, cs = L.add_mat("fr_comp_g", AMBER, 0.0)
+        bm = bmesh.new()
+        S._ellipsoid(bm, tuple(fr["comp"]), (0.106, 0.126, 0.106), 0, 20, 12)
+        S.obj("fr_comp_g", S.mesh_from_bm("fr_comp_g", bm, [cm], smooth=True)).visible_shadow = False
+        _ramp_sock(cs, fq, 0.0, 1.2, 12)
+        _flow_dots(ctx, "fr_hot", hot, 14, 0.25, AMBER, r=0.012, strength=5.0, f_on=fq)
+        _flow_dots(ctx, "fr_cold", fr["suction"], 4, 0.25, TEAL, r=0.011, strength=4.0, f_on=fc)
+        _point("fr_comp_l", (x0 + 0.2, y0 - 0.3, 0.35), 8.0, (1.0, 0.95, 0.9), 0.1)
+        cams = ((-1.9, -2.3, 0.36), (-2.5, -0.85, 0.24), (-1.95, -2.2, 0.35), (-2.5, -0.85, 0.24), 22)
+    elif view == "coils":
+        fc = ctx.word_time(p.get("coil_cue", "coils"), 0.2)
+        fr_ = ctx.word_time(p.get("release_cue", "release"), 0.5)
+        _ramp_sock(cd_s, fc, 0.0, 2.6, 14)
+        _flow_dots(ctx, "fr_hot", cond, 12, 0.3, AMBER, r=0.011, strength=5.0, f_on=fc)
+        for k in range(3):
+            _puffs(ctx, "fr_cp%d" % k, (x0 - 0.06, y0 + 0.2 + 0.25 * k, 0.6 + 0.3 * k), fr_ + 4 * k, n=6, gap=8,
+                   rise=(-0.2, 0.0, 0.7), spread=0.15, r=0.05, life=50, color=AMBER, peak=0.9, seed=20 + k)
+        cams = ((-5.1, -0.85, 1.1), (-2.7, -0.9, 0.92), (-5.05, -0.95, 1.08), (-2.7, -0.9, 0.92), 20)
+    elif view == "twist":
+        ev_s.default_value = 0.0
+        fh = ctx.word_time(p.get("hard_cue", "harder"), 0.6)
+        _puffs(ctx, "fr_cold_out", (x1 + 0.12, ym, 0.7), f_door + 8, n=14, gap=9, rise=(0.5, -0.15, -0.45), spread=0.2,
+               r=0.07, life=40, color=TEAL, peak=1.4, seed=31)
+        _ramp_sock(cd_s, fh, 0.6, 2.6, 12)
+        _puffs(ctx, "fr_tp", behind, fh, n=10, gap=4, rise=(0.6, -0.2, 0.6), spread=0.35, r=0.08, life=40,
+               color=AMBER, peak=0.6, seed=32)
+        _puffs(ctx, "fr_tg", (x1 + 0.05, ym, 0.12), fh + 4, n=8, gap=5, rise=(0.6, -0.1, 0.35), spread=0.25, r=0.05,
+               life=36, color=AMBER, peak=0.55, seed=33)
+        cams = ((-0.2, -3.2, 1.35), (-2.2, -0.85, 0.9), (-0.3, -3.05, 1.3), (-2.2, -0.85, 0.9), 26)
+    else:   # outro
+        ev_s.default_value = 0.5
+        cams = ((-0.4, -2.9, 1.35), (-2.2, -0.85, 0.95), (0.4, -3.9, 1.6), (-1.6, -0.6, 1.0), 26)
+    c0, t0, c1, t1, lens = cams
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=p.get("clip", 0.02), far=60.0)
+    if view == "coils":
+        room = bpy.data.objects.get("k_room")
+        if room is not None:                       # open the left wall (cut-away) instead of clipping through it
+            bm = bmesh.new()
+            bm.from_mesh(room.data)
+            bmesh.ops.delete(bm, geom=[f for f in bm.faces if all(v.co.x < -2.89 for v in f.verts)], context="FACES")
+            bm.to_mesh(room.data)
+            bm.free()
+        S.plane_obj("fr_floor_ext", 4.0, 7.0, (-5.0, -1.0, 0.0), S.pbr("k_floor", hexc("b48a5e"), 0.55))
+        A._area("fr_back_fill", (-3.6, -0.9, 1.6), 1.2, 14.0, (1.0, 0.95, 0.9),
+                rot=(0, math.radians(-70), 0))
+    S.anchor(ctx, "tubes", _empty("fr_tubes_a", (FR_X0 + 0.09, ym - 0.1, 0.95)), (0, 0, 0))
+    S.anchor(ctx, "comp", _empty("fr_comp_a", tuple(fr["comp"] + Vector((0, 0, 0.08)))), (0, 0, 0))
+    S.anchor(ctx, "coils", _empty("fr_coils_a", (FR_X0 - 0.04, ym, 1.1)), (0, 0, 0))
+    S.anchor(ctx, "fridge", _empty("fr_top_a", (FR_X1, ym, 1.5)), (0, 0, 0))
+
+
+def b_fridge_heat_v2(ctx, p):
+    """A fridge moves heat into the kitchen. REUSES the mw_kitchen_v2 set (_kitchen); freestanding fridge-freezer at
+    the left wall end (faces +X, no logo): glass shelves + food, door bins, teal-glow evaporator serpentine on the
+    inner back, compressor at the bottom back, amber-glow condenser coil on the outside back, copper lines.
+    view hook | inside (door open; evap_cue glow + cold dots, heat_cue amber puffs from the food to the tubes) |
+    comp (near side cut away; compressor rings on comp_cue, hot amber dots on squeeze_cue) | coils (seen from behind
+    the wall, clip; coil glows on coil_cue, heat puffs on release_cue) | twist (door opens on door_cue, cold spills,
+    more heat behind / under on hard_cue) | outro. Anchors tubes, comp, coils, fridge."""
+    _v_fridge(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- noise_cancel_v2 (REUSES the living-room set)
+NC_P = (0.02, -0.42, 0.44)             # headphone stand base on the coffee table
+NC_CUP_Z = 0.53
+NC_AC = (-2.98, -0.5, 0.98)            # window AC unit (front face x ~ -2.73)
+
+
+def _ribbon_fn(name, length, fn, width, mat, n=160, parent=None):
+    """Flat ribbon along local X (centred), offset fn(x) along Z, face normal Y."""
+    bm = bmesh.new()
+    prev = None
+    for i in range(n + 1):
+        x = length * i / n - length / 2
+        z = fn(x)
+        va, vb = bm.verts.new((x, 0, z + width / 2)), bm.verts.new((x, 0, z - width / 2))
+        if prev:
+            bm.faces.new((prev[0], prev[1], vb, va))
+        prev = (va, vb)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]), parent=parent)
+    o.visible_shadow = False
+    return o
+
+
+def _headphones(x, y, z):
+    ivory = S.pbr("nc_shell", hexc("e6dfd3"), 0.35, coat=0.4, var=0.02)
+    cush = S.pbr("nc_cush", hexc("3b3f46"), 0.75, var=0.04, var_scale=40.0, bump=0.2)
+    metal = S.pbr("nc_metal", hexc("aeb4ba"), 0.3, 0.9, var=0)
+    grill = S.pbr("nc_grill", hexc("24272c"), 0.5, 0.4, var=0)
+    wood = S.pbr("nc_stand", hexc("6b4a32"), 0.45, coat=0.3, var=0.06, var_scale=6.0)
+    top = z + 0.27
+    R = 0.088
+
+    def stand(bm):
+        _cyl(bm, (x, y, z + 0.007), 0.06, 0.014, "Z", 24, 0)
+        _cyl(bm, (x, y, z + 0.13), 0.009, 0.24, "Z", 12, 0)
+        _rbox(bm, (x, y, top - 0.022), (0.07, 0.03, 0.014), 0.006, 2, 0)
+    S.obj("nc_stand", _mesh("nc_stand", stand, [wood], smooth=True))
+
+    def hp(bm):
+        pts = [(x - R, y, NC_CUP_Z + 0.06)] + [(x + R * math.cos(a), y, top - 0.012 - R + R * math.sin(a))
+                                                for a in [math.pi - math.pi * k / 24 for k in range(25)]] + [(x + R, y, NC_CUP_Z + 0.06)]
+        _tube(bm, pts, 0.011, 12, 0)
+        for sx in (-1, 1):
+            cx = x + sx * (R + 0.012)
+            _cyl(bm, (cx, y, NC_CUP_Z + 0.075), 0.006, 0.05, "Z", 8, 2)                      # yoke
+            _cyl(bm, (cx + sx * 0.012, y, NC_CUP_Z), 0.052, 0.034, "X", 32, 0)              # cup shell
+            _cyl(bm, (cx - sx * 0.012, y, NC_CUP_Z), 0.05, 0.022, "X", 32, 1)               # cushion
+            _cyl(bm, (cx + sx * 0.0295, y - 0.018, NC_CUP_Z + 0.022), 0.0075, 0.002, "X", 16, 3)   # mic grill
+            _cyl(bm, (cx + sx * 0.0295, y + 0.02, NC_CUP_Z - 0.02), 0.006, 0.002, "X", 16, 3)
+    S.obj("nc_hp", _mesh("nc_hp", hp, [ivory, cush, metal, grill], smooth=True))
+    return {"left_mic": Vector((x - R - 0.012 - 0.0305, y - 0.018, NC_CUP_Z + 0.022)),
+            "left_cup": Vector((x - R - 0.024, y, NC_CUP_Z)), "top": Vector((x, y, top))}
+
+
+def _ac_unit():
+    body = S.pbr("nc_ac", hexc("e4e1da"), 0.5, var=0.02)
+    gr = S.pbr("nc_acgr", hexc("9a9d9f"), 0.5, 0.3, var=0)
+    x, y, z = NC_AC
+
+    def ac(bm):
+        _rbox(bm, (x, y, z), (0.5, 0.62, 0.34), 0.02, 2, 0)
+        for k in range(8):
+            S.bm_box(bm, (x + 0.252, y + 0.08, z - 0.12 + 0.03 * k), (0.01, 0.38, 0.012), 1)
+        _rbox(bm, (x + 0.252, y - 0.22, z + 0.06), (0.012, 0.1, 0.12), 0.006, 1, 1)
+    S.obj("nc_acunit", _mesh("nc_acunit", ac, [body, gr]))
+    return Vector((x + 0.26, y + 0.08, z))
+
+
+def _v_noise(ctx, p, view):
+    T = ctx.frames
+    _living_room(ctx, p, None, p.get("tv_strength", 0.45))
+    hp = _headphones(*NC_P)
+    ac_front = _ac_unit()
+    if bpy.data.objects.get("lr_books") is not None:       # books sat in front of the wave ribbons
+        bpy.data.objects["lr_books"].hide_render = True
+    lm, lc = hp["left_mic"], hp["left_cup"]
+    fps = float(ctx.scene.render.fps)
+    wl, amp, ln = 0.075, 0.022, 0.46
+    zc = lc.z
+    xs = lc.x - 0.04 - ln / 2                    # ribbon centre (ends at the left cup)
+    yr = lc.y + 0.0
+
+    def travel(name, z, flip=False, keys_scale=None):
+        car = _empty(name + "_car", (xs, yr, z))
+        kf(car, "location", 1, Vector((xs, yr, z)))
+        kf(car, "location", 1 + int(fps * 0.9), Vector((xs + wl, yr, z)))
+        _interp(car, "LINEAR")
+        _cyclic(car)
+        return car
+    hum_m, hum_s = L.add_mat("nc_hum_m", AMBER, 0.0)
+    anti_m, anti_s = L.add_mat("nc_anti_m", TEAL, 0.0)
+    flat_m, flat_s = L.add_mat("nc_flat_m", hexc("f4f1ea"), 0.0)
+    f_mic = ctx.word_time(p.get("mic_cue", "microphones"), 0.3)
+    f_chip = ctx.word_time(p.get("chip_cue", "flipped"), 0.5)
+    f_meet = ctx.word_time(p.get("meet_cue", "meet"), 0.3)
+    f_can = ctx.word_time(p.get("cancel_cue", "cancels"), 0.6)
+    show_hum = view in ("hook", "mics", "chip", "cancel", "twist")
+    if show_hum:
+        car = travel("nc_hum", zc + 0.0)
+        hum = wave_ribbon("nc_hum", ln, wl, amp, 0.006, hum_m, "XZ", parent=car)
+        hum.location = (0, 0, 0)
+        if view == "hook":
+            _ramp_sock(hum_s, int(T * 0.25), 0.0, 3.0, 12)
+        elif view == "mics":
+            _ramp_sock(hum_s, max(2, f_mic - 20), 0.0, 3.0, 10)
+        elif view == "twist":
+            hum_s.default_value = 2.2
+            hum.scale = (1, 1, 0.06)
+        else:
+            hum_s.default_value = 3.0
+    if view in ("chip", "cancel"):
+        dz = 0.075 if view == "chip" else 0.0
+        car2 = travel("nc_anti", zc + dz)
+        anti = wave_ribbon("nc_anti", ln, wl, amp, 0.006, anti_m, "XZ", parent=car2)
+        anti.rotation_euler = (math.pi, 0, 0)
+        if view == "chip":
+            _ramp_sock(anti_s, f_chip, 0.0, 3.0, 10)
+        else:
+            anti_s.default_value = 3.0
+            for o in (hum, anti):
+                _ramp_attr(o, "scale", f_can, Vector((1, 1, 1)), Vector((1, 1, 0.05)), 16)
+            _ramp_sock(flat_s, f_can + 8, 0.0, 2.5, 12)
+            _rings(ctx, tuple(lc + Vector((0.0, -0.06, 0.0))), f_can + 6, color=TEAL, count=3, gap=8, r1=0.09, life=20,
+                   name="nc_q", rot=(math.radians(90), 0, 0), width=0.05)
+    if view in ("cancel",):
+        _ribbon_fn("nc_flat", ln, lambda x: 0.0, 0.004, flat_m).location = (xs, yr - 0.004, zc)
+    if view in ("mics", "chip", "cancel", "hook"):
+        gm, gs = L.add_mat("nc_mic_g", TEAL, 0.0)
+        _annulus("nc_mic_g", 0.006, 0.012, gm, 32, tuple(lm + Vector((-0.002, 0, 0))), (0, math.radians(90), 0))
+        if view == "mics":
+            _ramp_sock(gs, f_mic, 0.0, 6.0, 6)
+            _rings(ctx, tuple(lm + Vector((-0.003, 0, 0))), f_mic + 2, color=TEAL, count=3, gap=8, r1=0.05, life=18,
+                   name="nc_mr", rot=(0, math.radians(90), 0), width=0.06)
+        else:
+            gs.default_value = 4.0 if view != "hook" else 0.0
+    if view in ("hook", "mics", "twist"):
+        _rings(ctx, tuple(ac_front + Vector((0.02, 0, 0))), int(T * 0.1), color=AMBER, count=6, gap=14, r1=0.5,
+               life=40, name="nc_acr", rot=(0, math.radians(90), 0), width=0.05)
+    if view == "chip":
+        cm, cs = L.add_mat("nc_chip_m", TEAL, 0.0)
+        bm = bmesh.new()
+        _rbox(bm, tuple(lc + Vector((-0.018, -0.02, -0.005))), (0.006, 0.022, 0.016), 0.002, 1, 0)
+        S.obj("nc_chip", S.mesh_from_bm("nc_chip", bm, [cm])).visible_shadow = False
+        _ramp_sock(cs, max(2, ctx.word_time(p.get("chip_word", "chip"), 0.2)), 0.0, 6.0, 6)
+    if view == "twist":
+        fv = ctx.word_time(p.get("voice_cue", "voices"), 0.5)
+        vm, vs = L.add_mat("nc_voice_m", hexc("ff6b5b"), 0.0)
+
+        def vfn(x):
+            env = 0.55 + 0.45 * math.sin(x * 23.0 + 1.0) * math.sin(x * 9.0)
+            return 0.016 * env * (math.sin(2 * math.pi * x / 0.022) + 0.45 * math.sin(2 * math.pi * x / 0.013 + 0.7))
+        car3 = travel("nc_voice", zc + 0.06)
+        _ribbon_fn("nc_voice", ln + 0.05, vfn, 0.004, vm, n=600, parent=car3).location = (0.03, 0, 0)
+        _ramp_sock(vs, fv, 0.0, 3.2, 8)
+        _rings(ctx, tuple(lc + Vector((0.0, -0.06, 0.04))), fv + 6, color=hexc("ff6b5b"), count=3, gap=8, r1=0.08,
+               life=18, name="nc_vr", rot=(math.radians(90), 0, 0), width=0.05)
+    x, y, z = NC_P
+    cams = {
+        "hook": ((0.3, 1.15, 0.86), (-0.13, -0.42, 0.56), (0.1, 0.92, 0.76), (-0.15, -0.42, 0.56), 28),
+        "mics": ((-0.6, 0.5, 0.64), (-0.22, -0.42, 0.55), (-0.58, 0.44, 0.63), (-0.22, -0.42, 0.55), 30),
+        "chip": ((-0.55, 0.78, 0.68), (-0.27, -0.42, 0.56), (-0.54, 0.72, 0.67), (-0.27, -0.42, 0.56), 30),
+        "cancel": ((-0.55, 0.78, 0.66), (-0.27, -0.42, 0.55), (-0.54, 0.72, 0.65), (-0.27, -0.42, 0.55), 30),
+        "twist": ((-0.55, 0.82, 0.68), (-0.27, -0.42, 0.56), (-0.54, 0.76, 0.67), (-0.27, -0.42, 0.56), 30),
+        "outro": ((x + 0.15, y + 0.7, 0.75), (x - 0.05, y, 0.57), (x + 0.5, y + 1.7, 1.2), (x - 0.4, y - 0.4, 0.6), 30),
+    }
+    c0, t0, c1, t1, lens = cams.get(view, cams["mics"])
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=0.01, far=60.0)
+    if view != "hook":
+        ctx.cam.data.dof.use_dof = True
+        ctx.cam.data.dof.focus_object = _empty("nc_focus", tuple(lc + Vector((-0.12, 0, 0))))
+        ctx.cam.data.dof.aperture_fstop = p.get("fstop", 5.6)
+    S.anchor(ctx, "mic", _empty("nc_mic_a", tuple(lm)), (0, 0, 0))
+    S.anchor(ctx, "wave", _empty("nc_wave_a", (xs - 0.08, yr, zc + 0.03)), (0, 0, 0))
+    S.anchor(ctx, "anti", _empty("nc_anti_a", (xs - 0.08, yr, zc + (0.105 if view == "chip" else 0.03))), (0, 0, 0))
+    S.anchor(ctx, "ear", _empty("nc_ear_a", tuple(lc + Vector((0, 0, 0.05)))), (0, 0, 0))
+    S.anchor(ctx, "ac", _empty("nc_ac_a", tuple(ac_front + Vector((0, 0, 0.17)))), (0, 0, 0))
+    S.anchor(ctx, "headphones", _empty("nc_hp_a", tuple(hp["top"])), (0, 0, 0))
+
+
+def b_noise_cancel_v2(ctx, p):
+    """Noise-cancelling headphones. REUSES the living-room set (_living_room) + a window AC unit; ivory over-ear
+    headphones on a walnut stand on the coffee table (no logo). Waves are flat 3D ribbons read by a camera looking -Y
+    (the AC side is screen-right): amber hum travelling into the left cup, teal flipped wave (chip_cue "flipped"),
+    both flatten on cancel_cue + white flat line + teal rings; twist: hum flat, coral jagged voice wave on voice_cue.
+    view hook | mics | chip | cancel | twist | outro. Anchors mic, wave, anti, ear, ac, headphones."""
+    _v_noise(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- phone_charge_v2 (new small bedroom set)
+BR_NS = (-0.95, 2.2, 0.58)             # nightstand top centre
+BR_PH = (-0.92, 2.16, 0.586)           # phone (lying face up, top towards +Y)
+BR_GA = (-0.72, 2.24, 0.586)           # battery gauge base
+
+
+def _bedroom(ctx, p, sky_keys=None):
+    """Own lit bedroom set (never a void): calm dusty-blue headboard wall, oak floor, rug, bed with duvet + pillows,
+    walnut nightstand (drawer, ceramic lamp with a fabric shade lit from inside), window with a daylight panel on the
+    left wall, framed colour-block art. No text."""
+    sc = ctx.scene
+    w = bpy.data.worlds.new("br_world")
+    sc.world = w
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.6, 0.58, 0.55, 1.0)
+    bg.inputs["Strength"].default_value = 0.4
+    sc.view_settings.exposure = p.get("exposure", -0.5)
+    L.fog(0.001, hexc("d8d2c8"), start=10.0)
+    wall = S.pbr("br_wall", hexc(p.get("wall", "7d93a3")), 0.85, var=0.02)
+    side = S.pbr("br_side", hexc("b0a291"), 0.85, var=0.02)
+    ceil = S.pbr("br_ceil", hexc("e9e4dc"), 0.9, var=0)
+    floor = S.pbr("br_floor", hexc("a87b52"), 0.5, var=0.12, var_scale=3.0, bump=0.01)
+    rug = S.pbr("br_rug", hexc("b9a98f"), 0.95, var=0.06, var_scale=8.0, bump=0.02)
+    S.plane_obj("br_floor", 7.0, 7.0, (0, 0.0, 0.0), floor)
+    S.plane_obj("br_rug", 2.6, 1.6, (0.4, 0.6, 0.006), rug)
+
+    def room(bm):
+        S.bm_box(bm, (0, 2.6, 1.4), (6.4, 0.2, 2.8), 0)
+        S.bm_box(bm, (0, -3.3, 1.4), (6.4, 0.2, 2.8), 1)
+        S.bm_box(bm, (3.1, -0.35, 1.4), (0.2, 6.1, 2.8), 1)
+        for (y0, y1, z0, z1) in ((-3.3, -0.2, 0, 2.8), (1.6, 2.7, 0, 2.8), (-0.2, 1.6, 0, 0.8), (-0.2, 1.6, 2.2, 2.8)):
+            S.bm_box(bm, (-3.1, (y0 + y1) / 2, (z0 + z1) / 2), (0.2, y1 - y0, z1 - z0), 1)
+        S.bm_box(bm, (0, -0.35, 2.85), (6.4, 6.1, 0.1), 2)
+        S.bm_box(bm, (0, 2.485, 0.05), (6.2, 0.03, 0.1), 2)
+    S.obj("br_room", _mesh("br_room", room, [wall, side, ceil]))
+    sky = S.emis("br_sky", hexc("cfe3f2"), 2.0)
+    S.obj("br_sky", _mesh("br_sky", lambda bm: S.bm_box(bm, (-3.25, 0.7, 1.5), (0.02, 1.8, 1.4)), [sky]))
+    if sky_keys:
+        st, sc_ = _em_socks("br_sky")
+        for f, col, s in sky_keys:
+            L.kf_socket(sc_, max(1, int(f)), (*col, 1.0))
+            L.kf_socket(st, max(1, int(f)), s)
+    frame = S.pbr("br_wframe", hexc("f3f0ea"), 0.4, var=0)
+    S.obj("br_wframe", _mesh("br_wframe", lambda bm: [S.bm_box(bm, c, s) for c, s in (
+        ((-3.0, 0.7, 0.8), (0.12, 1.9, 0.05)), ((-3.0, 0.7, 2.2), (0.12, 1.9, 0.05)),
+        ((-3.0, -0.22, 1.5), (0.12, 0.05, 1.45)), ((-3.0, 1.62, 1.5), (0.12, 0.05, 1.45)),
+        ((-3.0, 0.7, 1.5), (0.08, 0.03, 1.4)))], [frame]))
+    # bed (head against the back wall)
+    walnut = S.pbr("br_walnut", hexc("6b4a32"), 0.5, coat=0.2, var=0.08, var_scale=6.0)
+    head = S.pbr("br_head", hexc("c9b79c"), 0.9, var=0.05, var_scale=12.0, bump=0.03)
+    duvet = S.pbr("br_duvet", hexc("d9d2c4"), 0.9, var=0.05, var_scale=6.0, bump=0.04)
+    throw = S.pbr("br_throw", hexc("4f6f8a"), 0.95, var=0.08, var_scale=40.0, bump=0.1)
+    pil = S.pbr("br_pillow", hexc("ede8df"), 0.9, var=0.03, bump=0.02)
+
+    def bed(bm):
+        _rbox(bm, (0.4, 1.4, 0.16), (1.7, 2.15, 0.26), 0.03, 2, 0)
+        _rbox(bm, (0.4, 2.45, 0.7), (1.8, 0.1, 1.15), 0.04, 2, 1)
+        _rbox(bm, (0.4, 1.35, 0.4), (1.62, 2.0, 0.24), 0.08, 3, 2)
+        _rbox(bm, (0.4, 0.75, 0.53), (1.66, 0.6, 0.04), 0.02, 2, 3)
+        for sx in (-0.38, 0.38):
+            _rbox(bm, (0.4 + sx, 2.15, 0.6), (0.68, 0.36, 0.16), 0.07, 3, 4)
+    S.obj("br_bed", _mesh("br_bed", bed, [walnut, head, duvet, throw, pil], smooth=False))
+    # nightstand
+    nx, ny, nz = BR_NS
+    knob = S.pbr("br_knob", hexc("c9a35a"), 0.3, 0.8, var=0)
+
+    def ns(bm):
+        _rbox(bm, (nx, ny, nz - 0.02), (0.52, 0.44, 0.04), 0.01, 2, 0)
+        _rbox(bm, (nx, ny, nz - 0.27), (0.48, 0.4, 0.42), 0.01, 2, 0)
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                S.bm_box(bm, (nx + sx * 0.21, ny + sy * 0.17, 0.05), (0.03, 0.03, 0.1), 0)
+        S.bm_box(bm, (nx, ny - 0.202, nz - 0.18), (0.44, 0.008, 0.005), 0)
+        _cyl(bm, (nx, ny - 0.215, nz - 0.1), 0.012, 0.02, "Y", 12, 1)
+    S.obj("br_ns", _mesh("br_ns", ns, [walnut, knob], smooth=False))
+    cer = S.pbr("br_lampbase", hexc("5f8f86"), 0.35, coat=0.5, var=0)
+    fab = S.pbr("br_shade", hexc("efe3cf"), 0.9, var=0.02)
+    lx, ly = nx - 0.15, ny + 0.1
+    S.obj("br_lamp", _mesh("br_lamp", lambda bm: [S._ellipsoid(bm, (lx, ly, nz + 0.1), (0.07, 0.07, 0.1), 0, 20, 12),
+                                                  _cyl(bm, (lx, ly, nz + 0.24), 0.008, 0.1, "Z", 8, 0),
+                                                  _cyl(bm, (lx, ly, nz + 0.33), 0.13, 0.16, "Z", 24, 1)], [cer, fab],
+                           smooth=True))
+    _point("br_lamp_l", (lx, ly, nz + 0.33), p.get("lamp_w", 12.0), (1.0, 0.8, 0.55), 0.08)
+    # wall outlet + charger
+    plate = S.pbr("br_plate", hexc("ece8e0"), 0.4, var=0)
+    S.obj("br_outlet", _mesh("br_outlet", lambda bm: [S.bm_box(bm, (nx - 0.2, 2.495, 0.32), (0.08, 0.01, 0.12), 0),
+                                                       _rbox(bm, (nx - 0.2, 2.47, 0.34), (0.045, 0.04, 0.045), 0.006, 2, 0)],
+                           [plate]))
+    art = [S.pbr("br_art%d" % i, hexc(c), 0.8, var=0) for i, c in enumerate(("e2d6bd", "c8553d", "2f6f8f", "e3b448"))]
+    S.obj("br_art", _mesh("br_art", lambda bm: [
+        S.bm_box(bm, (0.4, 2.49, 1.65), (1.0, 0.03, 0.6), 0), S.bm_box(bm, (0.22, 2.47, 1.7), (0.4, 0.02, 0.36), 1),
+        S.bm_box(bm, (0.62, 2.47, 1.58), (0.3, 0.02, 0.28), 2), _cyl(bm, (0.66, 2.47, 1.8), 0.08, 0.02, "Y", 20, 3)], art))
+    for k, (x, y) in enumerate(((-1.0, 0.8), (1.2, 0.8), (0.0, -1.5))):
+        A._area("br_a%d" % k, (x, y, 2.7), 1.4, p.get("ceil_w", 110.0), (1.0, 0.95, 0.88), size_y=1.4)
+    win = A._area("br_win", (-2.8, 0.7, 1.5), 1.6, p.get("win_w", 150.0), (0.9, 0.95, 1.0), size_y=1.3)
+    win.rotation_euler = (0, math.radians(-90), 0)
+
+
+def _lock_img(name="ed_lock"):
+    a = _cv(256, 512, "18324a")
+    X, Y = _grid(a)
+    g = (Y / 512.0)[..., None]
+    a[..., :3] = a[..., :3] * (0.6 + 0.7 * g)
+    _dsc(a, 128, 250, 70, "19d3c0", 0.9, ring=10)
+    _rr(a, 112, 222, 144, 280, 6, "19d3c0", 0.9)
+    _rr(a, 122, 280, 134, 288, 2, "19d3c0", 0.9)
+    _rr(a, 60, 420, 196, 440, 10, "f2f2f2", 0.35)
+    return _np_img(name, a)
+
+
+def _v_charge(ctx, p, view):
+    T = ctx.frames
+    sky = None
+    if view == "twist":
+        fp = ctx.word_time(p.get("pause_cue", "pause"), 0.4)
+        sky = None
+    _bedroom(ctx, p, sky)
+    scr = _screen_mat("br_scr", [_lock_img()], strength=p.get("screen", 0.55))
+    ph = make_phone("phone", scr, BR_PH, (math.radians(-90), 0, 0), stand=False)
+    px, py, pz = BR_PH
+    # cable from the port (phone bottom, -Y) round to the outlet
+    port = Vector((px, py - 0.004, pz + PH_T / 2))
+    cable = [port + Vector((0, -0.01, 0)), (px, py - 0.06, pz + 0.004), (px - 0.03, py - 0.1, pz + 0.004),
+             (px - 0.12, py - 0.08, pz + 0.004), (px - 0.17, py + 0.02, pz + 0.004), (px - 0.19, py + 0.18, pz + 0.004),
+             (px - 0.21, 2.42, pz + 0.002), (px - 0.22, 2.445, pz - 0.05), (px - 0.23, 2.45, 0.37), (px - 0.23, 2.45, 0.345)]
+    cable = [Vector(c) for c in cable]
+    wm = S.pbr("br_cable", hexc("f1f0ec"), 0.45, var=0)
+    S.obj("br_cable", _mesh("br_cable", lambda bm: [_tube(bm, cable, 0.0022, 8, 0),
+                                                     _rbox(bm, tuple(cable[0] + Vector((0, 0.002, 0))), (0.009, 0.016, 0.005),
+                                                           0.002, 1, 0)], [wm], smooth=True))
+    flow = list(reversed(cable))
+    # battery gauge (3D graphic standing on the nightstand): frame + teal fill (scale z from its base)
+    gx, gy, gz = BR_GA
+    GH, GW = 0.15, 0.075
+    fm = S.pbr("br_gauge", hexc("eef2f4"), 0.3, coat=0.6, var=0)
+
+    def gframe(bm):
+        for (c, s) in (((gx, gy, gz + 0.006), (GW + 0.012, 0.03, 0.012)), ((gx, gy, gz + GH + 0.018), (GW + 0.012, 0.03, 0.012)),
+                       ((gx - GW / 2, gy, gz + GH / 2 + 0.012), (0.012, 0.03, GH + 0.012)),
+                       ((gx + GW / 2, gy, gz + GH / 2 + 0.012), (0.012, 0.03, GH + 0.012)),
+                       ((gx, gy, gz + GH + 0.032), (0.04, 0.026, 0.016))):
+            _rbox(bm, c, s, 0.004, 2, 0)
+    S.obj("br_gframe", _mesh("br_gframe", gframe, [fm]))
+    tm_ = S.pbr("br_fill_t", hexc("16bfa9"), 0.35, coat=0.6, var=0)      # plain (non-emissive) fills
+    am_ = S.pbr("br_fill_a", hexc("f39a1c"), 0.35, coat=0.6, var=0)
+    H = GH - 0.008
+
+    def fill_obj(name, m):
+        e = _empty(name + "_root", (gx, gy, gz + 0.014))
+        bm = bmesh.new()
+        S.bm_box(bm, (0, 0, H / 2), (GW - 0.016, 0.02, H), 0)
+        o = S.obj(name, S.mesh_from_bm(name, bm, [m]), parent=e)
+        o.visible_shadow = False
+        return e
+    ft = fill_obj("br_fill_t", tm_)
+    fa = fill_obj("br_fill_a", am_)
+
+    def lvl(e, keys):
+        for f, v in keys:
+            kf(e, "scale", max(1, int(f)), Vector((1, 1, max(0.002, v))))
+        _interp(e, "LINEAR")
+    fps = float(ctx.scene.render.fps)
+    hide = [(1, 0.0)]
+    if view == "hook":
+        a = int(T * 0.55)
+        lvl(ft, [(1, 0.3), (a, 0.8), (T, 0.84)])
+        lvl(fa, hide)
+        _flow_dots(ctx, "br_cur", flow, 12, lambda f, a=a: 0.22 if f < a else 0.05, TEAL, r=0.0045, strength=6.0)
+    elif view == "fast":
+        fs = ctx.word_time(p.get("fast_cue", "strong"), 0.3)
+        lvl(ft, [(1, 0.12), (fs, 0.15), (T, 0.72)])
+        lvl(fa, hide)
+        _flow_dots(ctx, "br_cur", flow, 16, 0.22, TEAL, r=0.0045, strength=6.0, f_on=max(2, fs - 6))
+    elif view == "slow":
+        fh = ctx.word_time(p.get("taper_cue", "taper"), 0.6)
+        lvl(ft, [(1, 0.8), (T, 0.88)])
+        lvl(fa, hide)
+        _flow_dots(ctx, "br_cur", flow, 6, lambda f, fh=fh: 0.12 if f < fh else 0.035, TEAL, r=0.0045, strength=5.0)
+        rm, rs = L.add_mat("br_vlim", AMBER, 0.0)
+        bm = bmesh.new()
+        S.bm_box(bm, (gx, gy - 0.017, gz + 0.014 + H * 0.8), (GW + 0.03, 0.002, 0.004))
+        S.obj("br_vlim", S.mesh_from_bm("br_vlim", bm, [rm])).visible_shadow = False
+        _ramp_sock(rs, ctx.word_time(p.get("limit_cue", "limit"), 0.3), 0.0, 5.0, 6)
+    elif view == "twist":
+        fp = ctx.word_time(p.get("pause_cue", "pause"), 0.4)
+        ff = ctx.word_time(p.get("finish_cue", "finish"), 0.75)
+        lvl(ft, [(1, 0.74), (fp, 0.8), (ff, 0.8), (min(T, ff + 24), 1.0)])
+        lvl(fa, hide)
+        _flow_dots(ctx, "br_cur", flow, 6, lambda f, fp=fp, ff=ff: 0.06 if f < fp or f > ff else 0.0, TEAL, r=0.0045,
+                   strength=5.0)
+        _rings(ctx, (gx, gy - 0.02, gz + 0.014 + H * 0.8), fp, color=AMBER, count=3, gap=10, r1=0.09, life=22,
+               name="br_pr", rot=(math.radians(90), 0, 0), width=0.05)
+    elif view == "why":
+        fw = ctx.word_time(p.get("wear_cue", "wears"), 0.35)
+        fp = ctx.word_time(p.get("pause_cue", "pause"), 0.7)
+        lvl(fa, [(1, 1.0), (fp, 1.0), (fp + 1, 0.0)])
+        lvl(ft, [(1, 0.0), (fp, 0.0), (fp + 1, 0.8), (T, 0.8)])
+        _rings(ctx, (gx, gy - 0.02, gz + 0.11), fw + 2, color=AMBER, count=3, gap=8, r1=0.12, life=20, name="br_wr",
+               rot=(math.radians(90), 0, 0), width=0.05)
+        _rings(ctx, (gx, gy - 0.02, gz + 0.09), fp + 3, color=TEAL, count=2, gap=10, r1=0.12, life=22, name="br_ok",
+               rot=(math.radians(90), 0, 0), width=0.05)
+    else:   # outro
+        lvl(ft, [(1, 1.0)])
+        lvl(fa, hide)
+    gxa = Vector((gx, gy, gz + GH + 0.05))
+    cams = {
+        "hook": ((-0.28, 1.22, 1.3), (-0.7, 2.2, 0.64), (-0.34, 1.32, 1.25), (-0.7, 2.2, 0.64), 28),
+        "fast": ((-0.6, 1.5, 1.15), (-0.79, 2.2, 0.62), (-0.62, 1.56, 1.12), (-0.79, 2.2, 0.62), 30),
+        "slow": ((-0.95, 1.52, 1.28), (-0.8, 2.2, 0.62), (-0.93, 1.58, 1.25), (-0.8, 2.2, 0.62), 30),
+        "twist": ((-0.12, 1.32, 1.25), (-0.7, 2.2, 0.64), (-0.18, 1.4, 1.2), (-0.7, 2.2, 0.64), 28),
+        "why": ((-0.55, 1.6, 1.08), (-0.74, 2.24, 0.65), (-0.56, 1.65, 1.06), (-0.74, 2.24, 0.65), 30),
+        "outro": ((-0.6, 1.2, 1.1), (-0.82, 2.2, 0.66), (0.4, -0.6, 1.5), (-0.6, 1.8, 0.8), 28),
+    }
+    c0, t0, c1, t1, lens = cams.get(view, cams["fast"])
+    _cam_keys2(ctx, [(1, p.get("cam0", c0), p.get("tgt0", t0)), (1.0, p.get("cam1", c1), p.get("tgt1", t1))],
+               lens=p.get("lens", lens), clip=0.01, far=60.0)
+    S.anchor(ctx, "battery", _empty("br_bat_a", tuple(gxa)), (0, 0, 0))
+    S.anchor(ctx, "phone", ph["root"], (0, -PH_H / 2, 0.0))
+    S.anchor(ctx, "cable", _empty("br_cab_a", tuple(cable[4])), (0, 0, 0))
+    S.anchor(ctx, "window", _empty("br_win_a", (-3.0, 0.7, 1.6)), (0, 0, 0))
+
+
+def b_phone_charge_v2(ctx, p):
+    """Why a phone charges slower after about 80 percent. NEW small bedroom set (_bedroom): phone face up on a walnut
+    nightstand (lock-screen art, no text), white cable to a wall charger, teal current dots along the cable (fast and
+    dense / slow and sparse / paused), a 3D battery gauge graphic beside the phone (teal fill rises; amber fill = full
+    for hours in `why`). view hook | fast | slow (amber voltage-limit line on limit_cue, dots slow on taper_cue) |
+    twist (fill pauses at 0.8 + amber rings on pause_cue, finishes on finish_cue) | why | outro.
+    Anchors battery, phone, cable, window."""
+    _v_charge(ctx, p, p.get("view", "hook"))
+
+
+S.V2_BUILDERS.update({
+    "fridge_heat_v2": b_fridge_heat_v2,
+    "noise_cancel_v2": b_noise_cancel_v2,
+    "phone_charge_v2": b_phone_charge_v2,
 })
