@@ -7,3 +7,7 @@
 - Minor, not fixed (SKIP): the window shades are flat blue ovals (stylised), fine.
 - Covers: A = 02_path f0060 (dimmed aisle with floor path lights) "Why planes dim the lights:" / "YOUR EYES"; B = 04_twist f0180 (full aisle) "Airliners must empty in" / "90 SECONDS".
 - No fixes applied, nothing re-rendered.
+
+## Update 26 Nov 16:17 MYT: MUST-FIX resolved
+- ED fixed the seatbelt-sign panel in 752a6c8; shot 3 (03_shades) re-rendered alone (179 s), re-assembled, fb 9.26 MB.
+- qc_full PASS, qc_v2 PASS; checked 17.5 / 19.5 / 21.0 s: glitch gone (zz_fixed_shades.jpg). Sheets updated.
