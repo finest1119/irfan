@@ -1,0 +1,222 @@
+{
+ "id": "2026-11-28-ed-b2-gum-barcode",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "gum barcode",
+ "slug": "gum-barcode",
+ "title": "A Pack of Gum Changed Every Store in America",
+ "fb_caption": "Every beep at the checkout goes back to one pack of gum. Those black bars are a 12-digit number in stripes, a red laser reads it, and in most cases the price isn't in the barcode at all: the store's computer looks the number up. The first real checkout scan happened on June 26, 1974, at a Marsh supermarket in Troy, Ohio, on a 10-pack of Juicy Fruit gum. Self-checkout or a cashier?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Barcode",
+  "#History",
+  "#Grocery"
+ ],
+ "engagement_comment": "Self-checkout or a cashier? 1 = self-checkout every time, 2 = a cashier, please, 3 = whichever line is shorter.",
+ "sources": [
+  "HISTORY.com, 'Barcode scanner first used' (June 26, 1974, 8:01 a.m., Troy, Ohio, Wrigley's Juicy Fruit gum; laser reads 12-digit code, product and price go to the computerized register): https://www.history.com/this-day-in-history/june-26/barcode-scanner-invention-first-use",
+  "Wikipedia, Universal Product Code (UPC-A = 12 digits with a check digit; first scan a 10-pack (50 sticks) of Juicy Fruit at the Marsh supermarket in Troy, Ohio, June 26, 1974): https://en.wikipedia.org/wiki/Universal_Product_Code",
+  "Ideastream Public Media, '50 years ago the first retail barcode was scanned at an Ohio grocery store' (Marsh, Troy; multi-pack of Juicy Fruit; NCR register + laser scanner): https://www.ideastream.org/2024-06-25/50-years-ago-the-first-retail-barcode-was-scanned-at-an-ohio-grocery-store",
+  "Montana Dept. of Agriculture, UPC Barcode Basics (the barcode does not contain the price; the store system looks it up): https://agr.mt.gov/_docs/marketing-docs/sellingtoretail/UPC_Barcode_Basics.pdf"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, knowledgeable American male explainer for a short science/how-it-works social video. Curious and warm, clear and fairly brisk (about 165-180 words per minute), conversational, a short pause before the twist fact, never salesy or dramatic news tone. US English.\nPronunciation: Troy, Ohio = TROY, oh-HI-oh. Juicy Fruit = JOO-see froot.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Every beep at the checkout goes back to one pack of gum.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "ONE PACK OF GUM?",
+      "at": 0.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "bars",
+   "text": "Those black bars aren't a picture. They're a twelve-digit number, written in stripes a machine can read.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "bars",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "A 12-DIGIT NUMBER",
+      "anchor": "code",
+      "cue": "twelve",
+      "color": "amber"
+     }
+    ]
+   }
+  },
+  {
+   "id": "scan",
+   "text": "The scanner sweeps a red laser across the stripes and reads that number back.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "scan",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "LASER SCANNER",
+      "anchor": "scanner",
+      "cue": "laser",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "STRIPES",
+       "NUMBER"
+      ],
+      "cues": [
+       "stripes",
+       "number"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "lookup",
+   "text": "Here's what most people miss. The price usually isn't in the barcode. The store's computer looks the number up and sends the price back.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "lookup",
+     "send_cue": "looks",
+     "back_cue": "sends",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "THE PRICE ISN'T IN THE BARS",
+      "cue": "price"
+     },
+     {
+      "type": "label",
+      "text": "STORE COMPUTER",
+      "anchor": "computer",
+      "cue": "computer",
+      "color": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "id": "first",
+   "text": "The very first scan at a real checkout was June 26, 1974, at a Marsh supermarket in Troy, Ohio. The item: a ten-pack of Juicy Fruit gum.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "first",
+     "scan_cue": "item",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "JUNE 26, 1974 · TROY, OHIO",
+      "anchor": "gum",
+      "cue": "june",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "10-PACK OF GUM"
+      ],
+      "cues": [
+       "ten"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "today",
+   "text": "Now that same idea is on almost everything you buy.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "today",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "chips",
+      "items": [
+       "ALMOST EVERYTHING"
+      ],
+      "cues": [
+       "almost"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Self-checkout or a cashier? Tell us below.",
+   "shot": {
+    "builder": "checkout_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "SELF-CHECKOUT OR CASHIER?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.2
+     }
+    ]
+   }
+  }
+ ]
+}

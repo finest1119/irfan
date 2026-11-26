@@ -10,6 +10,18 @@ Builders (Track A batch 01, 26 Nov 2026):
   ils_beams_v2        view top | side | touchdown   localizer fan / glideslope wedge / CAT III touchdown in fog.
   bag_belt_v2         view counter | tag | scan_arch | screen | sort | makeup | apron   indoor baggage hall
                                              (lightbox lit, never a void) + apron belt loader in the airport world.
+Builders (Track A batch 02, 26 Nov 2026, for 28 Nov):
+  mw_kitchen_v2       view hook | inside | bounce | water | mesh | light | outro   bright kitchen set + countertop
+                                             microwave (perforated door screen shader, cut-away top / left side,
+                                             magnetron, teal wave packets bouncing, water molecules, 12 cm standing
+                                             wave vs tiny holes, amber light squiggles slipping out).
+  checkout_v2         view hook | bars | scan | lookup | first | today | outro   supermarket set (shelves, 3 lanes,
+                                             belts, flush scanner + red laser fans, UPC-style label art with no
+                                             digits, data pulses arcing to a store computer, warm 1974 lane + gum pack).
+  lift_v2             view hook | rig | balance | motor | pass | safety | outro   scene_lib_v2_tower city + a mid-rise
+                                             with the lift shaft cut open: car with riders, counterweight (top plates
+                                             glow amber on load_cue), ropes over a yellow sheave, machine room,
+                                             safety wedges clamp the rail on clamp_cue.
 No 3D text (barcode bars are graphics, no digits); non-graphic; textures generated in memory (<= 512 px).
 """
 import math
@@ -1373,4 +1385,1177 @@ S.V2_BUILDERS.update({
     "ed_cockpit_fog_v2": b_ed_cockpit_fog_v2,
     "ils_beams_v2": b_ils_beams_v2,
     "bag_belt_v2": b_bag_belt_v2,
+})
+
+
+# ======================================================================================================================
+# Track A batch 02 (28 Nov 2026): mw_kitchen_v2 (microwave door mesh), checkout_v2 (gum barcode), lift_v2 (elevator
+# counterweight). Same rules: no 3D text (barcode bars are graphics, no digits), never a void (kitchen / store are
+# lightbox-lit interior sets, the elevator lives in the scene_lib_v2_tower city), non-graphic, in-memory textures
+# <= 512 px, no volumetrics.
+# ======================================================================================================================
+def _point(name, loc, energy, color=(1.0, 0.85, 0.6), radius=0.03):
+    d = bpy.data.lights.new(name, "POINT")
+    d.energy = energy
+    d.color = color
+    d.shadow_soft_size = radius
+    o = L.link(bpy.data.objects.new(name, d))
+    o.location = loc
+    return o
+
+
+def wave_ribbon(name, length, wl, amp, width, mat, plane="XZ", parent=None, seg_per_wl=24):
+    """Flat sine ribbon centred on its origin, travelling along local +X. plane "XZ": amplitude along Z (face normal
+    Y, read by a camera looking along Y); "XY": amplitude along Y (face up, read from above). Zero at both ends."""
+    n = max(10, int(length / wl * seg_per_wl))
+    bm = bmesh.new()
+    prev = None
+    k = 2 * math.pi / wl
+    for i in range(n + 1):
+        x = length * i / n
+        a = amp * math.sin(k * x)
+        da = amp * k * math.cos(k * x)
+        nx, na = -da, 1.0
+        ln = math.hypot(nx, na)
+        nx, na = nx / ln, na / ln
+        hw = width / 2
+        p1 = (x - length / 2 + nx * hw, a + na * hw)
+        p2 = (x - length / 2 - nx * hw, a - na * hw)
+        if plane == "XZ":
+            va, vb = bm.verts.new((p1[0], 0, p1[1])), bm.verts.new((p2[0], 0, p2[1]))
+        else:
+            va, vb = bm.verts.new((p1[0], p1[1], 0)), bm.verts.new((p2[0], p2[1], 0))
+        if prev:
+            bm.faces.new((prev[0], prev[1], vb, va))
+        prev = (va, vb)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [mat]), parent=parent)
+    o.visible_shadow = False
+    return o
+
+
+def _perf_mat(name, pitch, hole=0.34):
+    """Perforated dark metal (door screen): round holes on a square grid in the object's local XZ plane, cut with a
+    Transparent mix (dithered, cheap). `hole` = hole radius / pitch."""
+    if name in S._MV2:
+        return S._MV2[name]
+    m, nt, N, Lk, pr = S._new_mat(name)
+    pr.inputs["Base Color"].default_value = hexc("17191c")
+    pr.inputs["Metallic"].default_value = 0.6
+    pr.inputs["Roughness"].default_value = 0.45
+    tc = N.new("ShaderNodeTexCoord")
+    mul = N.new("ShaderNodeVectorMath")
+    mul.operation = "MULTIPLY"
+    mul.inputs[1].default_value = (1.0 / pitch, 0.0, 1.0 / pitch)
+    Lk.new(tc.outputs["Object"], mul.inputs[0])
+    fr = N.new("ShaderNodeVectorMath")
+    fr.operation = "FRACTION"
+    Lk.new(mul.outputs[0], fr.inputs[0])
+    sb = N.new("ShaderNodeVectorMath")
+    sb.operation = "SUBTRACT"
+    sb.inputs[1].default_value = (0.5, 0.0, 0.5)
+    Lk.new(fr.outputs[0], sb.inputs[0])
+    ln = N.new("ShaderNodeVectorMath")
+    ln.operation = "LENGTH"
+    Lk.new(sb.outputs[0], ln.inputs[0])
+    lt = N.new("ShaderNodeMath")
+    lt.operation = "LESS_THAN"
+    lt.inputs[1].default_value = hole
+    Lk.new(ln.outputs["Value"], lt.inputs[0])
+    tr = N.new("ShaderNodeBsdfTransparent")
+    mx = N.new("ShaderNodeMixShader")
+    Lk.new(lt.outputs[0], mx.inputs[0])
+    Lk.new(pr.outputs[0], mx.inputs[1])
+    Lk.new(tr.outputs[0], mx.inputs[2])
+    S._MV2[name] = S._finish(m, mx.outputs[0], haze=False)
+    return S._MV2[name]
+
+
+def _glow_keys(name, color, keys):
+    """Additive glow material with keyed strength [(frame, strength)]."""
+    m, sock = L.add_mat(name, color, 0.0)
+    for f, v in keys:
+        L.kf_socket(sock, max(1, int(f)), v, "LINEAR")
+    return m
+
+
+def _cam_keys2(ctx, keys, lens=30, clip=0.02, far=500.0):
+    """keys = [(frame, cam, tgt)] (frame <= 1.0 float = fraction of the shot)."""
+    T = ctx.frames
+    ks = [(int(round(1 + (T - 1) * f)) if isinstance(f, float) and f <= 1.0 else int(f), c, t) for f, c, t in keys]
+    A._cam(ctx, ks[0][1], ks[0][2], lens=lens)
+    A._cam_keys(ctx, ks)
+    ctx.cam.data.clip_start = clip
+    ctx.cam.data.clip_end = far
+
+
+# ---------------------------------------------------------------- kitchen + microwave
+MW_ROOT = (0.0, 0.02, 0.92)          # microwave bottom centre on the counter (front face at y = -0.18)
+MW_W, MW_D, MW_H = 0.52, 0.40, 0.31
+CAV = (-MW_W / 2 + 0.03, MW_W / 2 - 0.15, -MW_D / 2 + 0.02, MW_D / 2 - 0.03, 0.04, MW_H - 0.04)   # x0 x1 y0 y1 z0 z1
+
+
+def _kitchen(ctx, p):
+    """Bright kitchen: wood floor, sage lower + upper cabinets, light stone counter, tiled backsplash, a window with
+    a soft daylight panel, ceiling lights, a few props. Own lit set (never a void)."""
+    sc = ctx.scene
+    w = bpy.data.worlds.new("kitchen_world")
+    sc.world = w
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.78, 0.76, 0.72, 1.0)
+    bg.inputs["Strength"].default_value = 0.5
+    sc.view_settings.exposure = p.get("exposure", -0.6)
+    L.fog(0.001, hexc("ece6dc"), start=8.0)
+    floor = S.pbr("k_floor", hexc("b48a5e"), 0.55, var=0.12, var_scale=2.5, bump=0.01)
+    wall = S.pbr("k_wall", hexc("e4dccf"), 0.8, var=0.02)
+    cab = S.pbr("k_cab", hexc("8fa79a"), 0.45, coat=0.2, var=0.02)
+    top = S.pbr("k_top", hexc("d8d0c4"), 0.3, coat=0.3, var=0.05, var_scale=4.0)
+    tile = S.pbr("k_tile", hexc("e9e6df"), 0.25, coat=0.4, var=0.02)
+    knob = S.pbr("k_knob", hexc("c9a35a"), 0.3, 0.8, var=0)
+    ceil = S.pbr("k_ceil", hexc("f4f1ec"), 0.85, var=0)
+    S.plane_obj("k_floor", 7.0, 7.0, (0, -2.0, 0.0), floor)
+
+    # back wall with a window opening at x 1.35..2.35, z 1.05..1.9
+    def back(bm):
+        for (x0, x1, z0, z1) in ((-3.0, 1.35, 0.0, 2.8), (2.35, 3.0, 0.0, 2.8), (1.35, 2.35, 0.0, 1.05),
+                                 (1.35, 2.35, 1.9, 2.8)):
+            S.bm_box(bm, ((x0 + x1) / 2, 0.5, (z0 + z1) / 2), (x1 - x0, 0.2, z1 - z0), 0)
+        S.bm_box(bm, (-3.0, -2.0, 1.4), (0.2, 5.2, 2.8), 0)
+        S.bm_box(bm, (3.0, -2.0, 1.4), (0.2, 5.2, 2.8), 0)
+        S.bm_box(bm, (0, -4.6, 1.4), (6.0, 0.2, 2.8), 0)
+        S.bm_box(bm, (0, -2.0, 2.85), (6.0, 5.4, 0.1), 1)
+    S.obj("k_room", _mesh("k_room", back, [wall, ceil]))
+    sky = S.emis("k_sky", hexc("dcebf7"), 2.2)
+    S.obj("k_sky", _mesh("k_sky", lambda bm: S.bm_box(bm, (1.85, 0.75, 1.48), (1.4, 0.02, 1.2)), [sky]))
+    frame = S.pbr("k_wframe", hexc("fbfaf7"), 0.4, var=0)
+    S.obj("k_wframe", _mesh("k_wframe", lambda bm: [S.bm_box(bm, c, s) for c, s in (
+        ((1.85, 0.41, 1.05), (1.1, 0.06, 0.05)), ((1.85, 0.41, 1.9), (1.1, 0.06, 0.05)),
+        ((1.33, 0.41, 1.48), (0.05, 0.06, 0.9)), ((2.37, 0.41, 1.48), (0.05, 0.06, 0.9)),
+        ((1.85, 0.41, 1.48), (0.03, 0.04, 0.85)), ((1.85, 0.32, 1.03), (1.2, 0.2, 0.03)))], [frame]))
+
+    def cabinets(bm):
+        # lower run x -2.9..2.9 (counter z 0.92), toe kick, door seams
+        S.bm_box(bm, (0, 0.05, 0.46), (5.8, 0.6, 0.84), 0)
+        S.bm_box(bm, (0, 0.04, 0.9), (5.9, 0.68, 0.04), 1)
+        for x in (-2.4, -1.6, -0.8, 0.0, 0.8, 1.6, 2.4):
+            S.bm_box(bm, (x, -0.252, 0.5), (0.012, 0.01, 0.72), 3)
+        for x in (-2.0, -1.2, -0.4, 0.4, 1.2, 2.0):
+            S.bm_box(bm, (x - 0.3, -0.27, 0.75), (0.12, 0.025, 0.015), 4)
+        # backsplash
+        S.bm_box(bm, (0, 0.395, 1.18), (5.8, 0.01, 0.52), 2)
+        # upper cabinets (leave the window bay open)
+        for (x0, x1) in ((-2.9, 1.2), (2.5, 2.9)):
+            S.bm_box(bm, ((x0 + x1) / 2, 0.22, 1.98), (x1 - x0, 0.36, 0.78), 0)
+            x = x0 + 0.45
+            while x < x1 - 0.1:
+                S.bm_box(bm, (x, 0.035, 1.98), (0.012, 0.01, 0.7), 3)
+                x += 0.6
+        # tall pantry at the far left
+        S.bm_box(bm, (-2.55, 0.05, 1.2), (0.7, 0.6, 2.4), 0)
+    seam = S.pbr("k_seam", hexc("6f8a7c"), 0.6, var=0)
+    S.obj("k_cab", _mesh("k_cab", cabinets, [cab, top, tile, seam, knob]))
+    # props: kettle, fruit bowl, cutting board, plant
+    metal = S.pbr("k_steel", hexc("c7ccd1"), 0.25, 0.9, var=0)
+    wood = S.pbr("k_board", hexc("c28f58"), 0.5, var=0.06, var_scale=6.0)
+    pot = S.pbr("k_pot", hexc("d9774f"), 0.6, var=0.03)
+    leaf = S.pbr("k_leaf", hexc("4f8a45"), 0.6, var=0.08, var_scale=8.0)
+    fruit = [S.pbr("k_fr%d" % i, hexc(c), 0.45, coat=0.3, var=0.04) for i, c in enumerate(("e0a526", "cf3b2b", "8cbf3f"))]
+
+    def props(bm):
+        _cyl(bm, (0.85, 0.15, 1.04), 0.09, 0.2, "Z", 20, 0)
+        _cyl(bm, (0.85, 0.15, 1.15), 0.03, 0.04, "Z", 10, 0)
+        _rbox(bm, (-0.85, 0.2, 0.935), (0.42, 0.28, 0.025), 0.01, 2, 1)
+        _cyl(bm, (2.6, 0.15, 1.02), 0.09, 0.2, "Z", 16, 2)
+    S.obj("k_props", _mesh("k_props", props, [metal, wood, pot]))
+    bm = bmesh.new()
+    rng = random.Random(7)
+    for k in range(9):
+        r = bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=rng.uniform(0.07, 0.1))
+        bmesh.ops.translate(bm, vec=(2.6 + rng.uniform(-0.08, 0.08), 0.15 + rng.uniform(-0.08, 0.08),
+                                     1.2 + rng.uniform(0, 0.2)), verts=r["verts"])
+    S.obj("k_plant", S.mesh_from_bm("k_plant", bm, [leaf], smooth=True))
+    bm = bmesh.new()
+    for k in range(5):
+        r = bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.04)
+        bmesh.ops.translate(bm, vec=(-1.55 + 0.07 * k - 0.02 * (k % 2), 0.12 + 0.05 * (k % 2), 0.98), verts=r["verts"])
+        for f in {f for v in r["verts"] for f in v.link_faces}:
+            f.material_index = k % 3
+    S.obj("k_fruit", S.mesh_from_bm("k_fruit", bm, fruit, smooth=True))
+    lp = S.emis("k_lamp", hexc("fff6e8"), 3.0)
+    S.obj("k_lamps", _mesh("k_lamps", lambda bm: [_cyl(bm, (x, y, 2.79), 0.09, 0.02, "Z", 16) for x in (-1.5, 0.0, 1.5)
+                                                   for y in (-0.6, -2.6)], [lp]))
+    for k, (x, y) in enumerate(((-1.2, -1.0), (1.2, -1.0), (0.0, -3.0))):
+        A._area("k_a%d" % k, (x, y, 2.7), 1.6, 170.0, (1.0, 0.96, 0.9), size_y=1.6)
+    win = A._area("k_win", (1.85, 0.2, 1.48), 1.0, 120.0, (0.9, 0.95, 1.0), size_y=0.85)
+    win.rotation_euler = (math.radians(-90), 0, 0)
+
+
+def make_microwave(ctx, top=True, left=True, pitch=0.0022, lamp=True, spin=True):
+    """Countertop microwave at MW_ROOT. top/left False = cut-away (case + cavity wall removed). Door window = perforated
+    metal screen (_perf_mat, `pitch` m). Cavity: light enamel, warm lamp, glass turntable with a bowl of soup.
+    Right compartment: magnetron (fins, antenna dome) + waveguide to a mica cover on the cavity wall.
+    Returns dict(root, turntable, food_z)."""
+    T = ctx.frames
+    W, D, H = MW_W, MW_D, MW_H
+    x0, x1, y0, y1, z0, z1 = CAV
+    root = _empty("mw", MW_ROOT)
+    case = S.pbr("mw_case", hexc("eceef0"), 0.3, 0.15, coat=0.4, var=0.02)
+    cav = S.pbr("mw_cav", hexc("c3c8cc"), 0.4, 0.0, coat=0.2, var=0.02)
+    panel = S.pbr("mw_panel", hexc("1d2024"), 0.25, 0.0, coat=0.6, var=0)
+    trim = S.pbr("mw_trim", hexc("2b2e33"), 0.4, 0.3, var=0)
+    t = 0.008
+    dx0, dx1, fw = -W / 2, W / 2 - 0.137, 0.035
+
+    def shell(bm):
+        S.bm_box(bm, (0, 0, t / 2), (W, D, t), 0)
+        if top:
+            S.bm_box(bm, (0, 0, H - t / 2), (W, D, t), 0)
+        S.bm_box(bm, (0, D / 2 - t / 2, H / 2), (W, t, H), 0)
+        S.bm_box(bm, (W / 2 - t / 2, 0, H / 2), (t, D, H), 0)
+        if left:
+            S.bm_box(bm, (-W / 2 + t / 2, 0, H / 2), (t, D, H), 0)
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        S.bm_box(bm, (cx, cy, z0), (x1 - x0, y1 - y0, t), 1)
+        S.bm_box(bm, (cx, y1, (z0 + z1) / 2), (x1 - x0, t, z1 - z0), 1)
+        S.bm_box(bm, (x1, cy, (z0 + z1) / 2), (t, y1 - y0, z1 - z0), 1)
+        if top:
+            S.bm_box(bm, (cx, cy, z1), (x1 - x0, y1 - y0, t), 1)
+        if left:
+            S.bm_box(bm, (x0, cy, (z0 + z1) / 2), (t, y1 - y0, z1 - z0), 1)
+        S.bm_box(bm, (W / 2 - 0.0675, -D / 2 + 0.006, H / 2), (0.135, 0.012, H), 2)        # control panel
+        for (c, s) in ((((dx0 + dx1) / 2, -D / 2 - 0.012, H - fw / 2), (dx1 - dx0, 0.024, fw)),
+                       (((dx0 + dx1) / 2, -D / 2 - 0.012, fw / 2), (dx1 - dx0, 0.024, fw)),
+                       ((dx0 + fw / 2, -D / 2 - 0.012, H / 2), (fw, 0.024, H)),
+                       ((dx1 - fw / 2, -D / 2 - 0.012, H / 2), (fw, 0.024, H))):
+            S.bm_box(bm, c, s, 2)
+        S.bm_box(bm, (dx1 - 0.012, -D / 2 - 0.03, H / 2), (0.018, 0.02, H * 0.6), 3)      # handle
+        for i in range(4):                                                                  # buttons (no text)
+            for j in range(3):
+                S.bm_box(bm, (W / 2 - 0.105 + 0.038 * j, -D / 2 - 0.001, H - 0.12 - 0.032 * i), (0.026, 0.004, 0.02), 3)
+        _cyl(bm, (W / 2 - 0.067, -D / 2 - 0.006, 0.06), 0.022, 0.012, "Y", 18, 3)
+        for sx in (-1, 1):                                                                  # feet
+            S.bm_box(bm, (sx * 0.2, 0, -0.004), (0.04, D - 0.06, 0.008), 3)
+    S.obj("mw_shell", _mesh("mw_shell", shell, [case, cav, panel, trim]), parent=root)
+    disp = S.emis("mw_disp", hexc("3ad6c2"), 2.5)
+    S.obj("mw_disp", _mesh("mw_disp", lambda bm: S.bm_box(bm, (W / 2 - 0.067, -D / 2 - 0.002, H - 0.06),
+                                                         (0.09, 0.004, 0.028)), [disp]), parent=root)
+    # door screen (perforated) inside the frame
+    scr = S.obj("mw_screen", _mesh("mw_screen", lambda bm: S.bm_box(bm, ((dx0 + dx1) / 2, -D / 2 - 0.008, H / 2),
+                                                                    (dx1 - dx0 - 2 * fw + 0.004, 0.001, H - 2 * fw + 0.004)),
+                                   [_perf_mat("mw_perf_%d" % int(pitch * 1e4), pitch)]), parent=root)
+    scr.visible_shadow = False
+    # magnetron + waveguide in the right compartment
+    alu = S.pbr("mw_alu", hexc("b9c0c6"), 0.3, 0.9, var=0)
+    cop = S.pbr("mw_copper", hexc("c27a45"), 0.3, 0.9, var=0)
+    mag = S.pbr("mw_magnet", hexc("3b4046"), 0.5, 0.3, var=0)
+    mica = S.pbr("mw_mica", hexc("d8c7a2"), 0.6, var=0.03)
+    mx = (x1 + W / 2) / 2
+
+    def magnetron(bm):
+        S.bm_box(bm, (mx, 0.06, 0.12), (0.09, 0.09, 0.07), 0)
+        for k in range(7):
+            S.bm_box(bm, (mx, 0.06, 0.09 + 0.01 * k), (0.11, 0.1, 0.003), 0)
+        _cyl(bm, (mx, 0.06, 0.07), 0.042, 0.02, "Z", 20, 2)
+        _cyl(bm, (mx, 0.06, 0.168), 0.042, 0.02, "Z", 20, 2)
+        _cyl(bm, (mx, 0.06, 0.19), 0.012, 0.03, "Z", 12, 1)
+        S.bm_box(bm, ((mx + x1) / 2, 0.06, 0.215), (mx - x1 + 0.04, 0.07, 0.04), 0)   # waveguide
+        S.bm_box(bm, (mx + 0.035, -0.08, 0.11), (0.05, 0.06, 0.12), 2)               # capacitor / transformer
+    S.obj("mw_magnetron", _mesh("mw_magnetron", magnetron, [alu, cop, mag]), parent=root)
+    S.obj("mw_mica", _mesh("mw_mica", lambda bm: S.bm_box(bm, (x1 - 0.005, 0.06, 0.215), (0.003, 0.06, 0.05)),
+                           [mica]), parent=root)
+    # turntable + bowl
+    tt = _empty("mw_tt", ((x0 + x1) / 2, (y0 + y1) / 2, z0 + 0.006), parent=root)
+    glass = S.pbr("mw_plate", hexc("dfe9e8"), 0.08, coat=1.0, var=0)
+    bowl = S.pbr("mw_bowl", hexc("f4f2ee"), 0.25, coat=0.5, var=0)
+    soup = S.pbr("mw_soup", hexc("d9792e"), 0.35, coat=0.3, var=0.12, var_scale=40.0, bump=0.02)
+
+    def plate(bm):
+        _cyl(bm, (0, 0, 0.006), 0.135, 0.008, "Z", 40, 0)
+        r = bmesh.ops.create_cone(bm, cap_ends=True, segments=32, radius1=0.055, radius2=0.085, depth=0.06)
+        bmesh.ops.translate(bm, vec=(0, 0, 0.04), verts=r["verts"])
+        for f in {f for v in r["verts"] for f in v.link_faces}:
+            f.material_index = 1
+        _cyl(bm, (0, 0, 0.071), 0.079, 0.004, "Z", 32, 2)
+    S.obj("mw_plate", _mesh("mw_plate", plate, [glass, bowl, soup], smooth=True), parent=tt)
+    if spin:
+        kf(tt, "rotation_euler", 1, Vector((0, 0, 0)))
+        kf(tt, "rotation_euler", T + 1, Vector((0, 0, 2 * math.pi * 0.12 * T / ctx.fps)))
+        _interp(tt, "LINEAR")
+    if lamp:
+        _point("mw_lamp", (MW_ROOT[0] + x1 - 0.03, MW_ROOT[1] + y1 - 0.05, MW_ROOT[2] + z1 - 0.02), 0.9,
+               (1.0, 0.82, 0.55), 0.02)
+    return {"root": root, "tt": tt, "food_z": z0 + 0.006 + 0.073}
+
+
+def _mw_w(x, y, z):
+    return (MW_ROOT[0] + x, MW_ROOT[1] + y, MW_ROOT[2] + z)
+
+
+def _packets(ctx, paths, f0, n, gap, speed=0.22, wl=0.05, amp=0.009, z=0.2, name="pk"):
+    """Teal microwave packets (flat XY ribbons) running along bounce polylines (microwave-local XY at height z)."""
+    mat = S.emis("mw_wave", TEAL, 5.0)
+    objs = []
+    for k in range(n):
+        pts = [_mw_w(px, py, z) for px, py in paths[k % len(paths)]]
+        o = wave_ribbon("%s%d" % (name, k), wl * 2.0, wl, amp, 0.004, mat, plane="XY")
+        fs = int(f0 + k * gap)
+        fr = path_move(ctx, o, pts, fs, speed, every=1)
+        _show(o, max(2, fs), int(fr[-1]) + 1)
+        objs.append(o)
+    return objs
+
+
+BOUNCE = [[(0.10, 0.06), (-0.22, -0.05), (-0.05, -0.17), (0.10, -0.03), (-0.06, 0.0)],
+          [(0.10, 0.06), (-0.08, 0.16), (-0.22, 0.03), (-0.06, 0.0)],
+          [(0.10, 0.06), (-0.15, -0.17), (-0.22, 0.10), (-0.06, 0.0)],
+          [(0.10, 0.06), (0.02, 0.16), (-0.22, -0.12), (-0.06, 0.0)]]
+
+
+def _standing_wave(ctx, x=-0.2, amp=0.022):
+    """12 cm standing wave between the cavity back wall and the door (microwave-local), breathing amplitude."""
+    T = ctx.frames
+    y_back, y_door = CAV[3] - 0.004, -MW_D / 2 - 0.004
+    ln = y_back - y_door
+    wl = 2 * ln / 6.0
+    o = wave_ribbon("mw_standing", ln, wl, amp, 0.006, S.emis("mw_wave_big", TEAL, 6.0), plane="XZ")
+    o.location = _mw_w(x, (y_back + y_door) / 2, 0.16)
+    o.rotation_euler = (0, 0, -math.pi / 2)
+    for f in range(1, T + 2, 12):
+        kf(o, "scale", f, Vector((1, 1, 1.0 if (f // 12) % 2 == 0 else 0.7)), "BEZIER")
+    return o, wl
+
+
+def _v_mw(ctx, p, view):
+    T = ctx.frames
+    _kitchen(ctx, p)
+    cut_top = view in ("inside", "bounce", "water")
+    cut_left = view in ("mesh", "light")
+    pitch = p.get("pitch", 0.0022 if view in ("mesh", "light") else 0.0045)
+    mw = make_microwave(ctx, top=not cut_top, left=not cut_left, pitch=pitch)
+    x0, x1, y0, y1, z0, z1 = CAV
+    if view == "hook":
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.75, -2.2, 1.5)), p.get("tgt0", (-0.02, 0.0, 1.1))),
+                         (1.0, p.get("cam1", (-0.42, -1.3, 1.26)), p.get("tgt1", (-0.04, 0.0, 1.08)))],
+                   lens=p.get("lens", 32))
+        S.anchor(ctx, "door", mw["root"], (-0.07, -MW_D / 2, MW_H / 2))
+    elif view == "outro":
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.5, -1.25, 1.3)), p.get("tgt0", (-0.04, 0.0, 1.06))),
+                         (1.0, p.get("cam1", (-1.1, -3.3, 1.75)), p.get("tgt1", (0.1, 0.0, 1.25)))],
+                   lens=p.get("lens", 30))
+    elif view == "inside":
+        fw = ctx.word_time(p.get("wave_cue", "microwaves"), 0.4)
+        _packets(ctx, BOUNCE, fw, 10, 7)
+        A.ring_pulses(ctx, _mw_w(x1 - 0.01, 0.06, 0.215), fw, color=TEAL, count=3, gap=9, r1=0.08, life=22,
+                      rot=(0, math.radians(90), 0), name="mw_emit")
+        _cam_keys2(ctx, [(1, p.get("cam0", (0.34, -0.24, 1.58)), p.get("tgt0", (0.15, 0.05, 1.03))),
+                         (1.0, p.get("cam1", (0.32, -0.2, 1.54)), p.get("tgt1", (0.14, 0.05, 1.03)))],
+                   lens=p.get("lens", 30))
+        S.anchor(ctx, "magnetron", mw["root"], ((x1 + MW_W / 2) / 2, 0.06, 0.2))
+    elif view == "bounce":
+        _packets(ctx, BOUNCE, 2, 16, 6, speed=0.24)
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.05, -0.42, 1.68)), p.get("tgt0", (-0.06, 0.0, 1.03))),
+                         (1.0, p.get("cam1", (-0.04, -0.36, 1.62)), p.get("tgt1", (-0.06, 0.0, 1.03)))],
+                   lens=p.get("lens", 28))
+        S.anchor(ctx, "wall", mw["root"], (x0, -0.04, 0.2))
+        S.anchor(ctx, "food", mw["tt"], (0, 0, 0.07))
+    elif view == "water":
+        fh = ctx.word_time(p.get("heat_cue", "heat"), 0.8)
+        fv = ctx.word_time(p.get("vib_cue", "vibrate"), 0.5)
+        o_m = S.pbr("h2o_o", hexc("e2463c"), 0.3, coat=0.6, var=0)
+        h_m = S.pbr("h2o_h", hexc("f5f6f7"), 0.3, coat=0.6, var=0)
+        rng = random.Random(21)
+        mol = None
+        for k in range(7):
+            def build(bm):
+                r = bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=0.0085)
+                for s in (-1, 1):
+                    a = math.radians(52.25) * s
+                    r2 = bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.0055)
+                    bmesh.ops.translate(bm, vec=(math.sin(a) * 0.0105, 0, -math.cos(a) * 0.0105), verts=r2["verts"])
+                    for f in {f for v in r2["verts"] for f in v.link_faces}:
+                        f.material_index = 1
+            ang = k * 2.4
+            rad = 0.018 + 0.05 * math.sqrt((k + 0.5) / 7.0)
+            loc = Vector((math.cos(ang) * rad, math.sin(ang) * rad, mw["food_z"] - (z0 + 0.006) + 0.013))
+            o = S.obj("h2o%d" % k, _mesh("h2o%d" % k, build, [o_m, h_m], smooth=True), tuple(loc), parent=mw["tt"])
+            base = Vector((rng.uniform(0, 6.28), rng.uniform(0, 6.28), rng.uniform(0, 6.28)))
+            for f in range(1, T + 2, 2):
+                amp = 0.12 if f < fv else 0.45
+                kf(o, "rotation_euler", f, base + Vector((rng.uniform(-amp, amp), rng.uniform(-amp, amp),
+                                                         rng.uniform(-amp, amp))))
+                j = 0.0006 if f < fv else 0.002
+                kf(o, "location", f, loc + Vector((rng.uniform(-j, j), rng.uniform(-j, j), rng.uniform(-j, j))))
+            _interp(o, "LINEAR")
+            if k == 0:
+                mol = o
+        glow = _glow_keys("soup_glow", hexc("ff8a2a"), [(1, 0.0), (fv, 0.0), (fh, 0.35), (fh + 20, 0.9)])
+        g = S.obj("soup_glow", _mesh("soup_glow", lambda bm: _cyl(bm, (0, 0, 0), 0.08, 0.002, "Z", 32),
+                                     [glow]), (0, 0, mw["food_z"] - (z0 + 0.006) + 0.002), parent=mw["tt"])
+        g.visible_shadow = False
+        fc = _mw_w((x0 + x1) / 2, (y0 + y1) / 2, mw["food_z"])
+        _cam_keys2(ctx, [(1, p.get("cam0", (fc[0] - 0.02, fc[1] - 0.2, fc[2] + 0.14)), p.get("tgt0", fc)),
+                         (1.0, p.get("cam1", (fc[0] - 0.01, fc[1] - 0.15, fc[2] + 0.11)), p.get("tgt1", fc))],
+                   lens=p.get("lens", 35))
+        ctx.cam.data.dof.use_dof = True
+        ctx.cam.data.dof.focus_distance = 0.2
+        ctx.cam.data.dof.aperture_fstop = 4.0
+        S.anchor(ctx, "molecule", mol)
+    elif view in ("mesh", "light"):
+        sw, wl = _standing_wave(ctx)
+        A.ring_pulses(ctx, _mw_w(-0.2, -MW_D / 2 + 0.004, 0.16), 6, color=TEAL, count=6, gap=24, r1=0.05, life=20,
+                      rot=(math.radians(90), 0, 0), name="mw_refl")
+        S.anchor(ctx, "wave", sw, (wl * 1.25, 0, -0.022))
+        S.anchor(ctx, "holes", mw["root"], (-0.13, -MW_D / 2 - 0.009, 0.2))
+        if view == "light":
+            am = S.emis("mw_light", hexc("ffc04a"), 7.0)
+            rng = random.Random(8)
+            for k in range(14):
+                o = wave_ribbon("ph%d" % k, 0.05, 0.008, 0.0028, 0.0022, am, plane="XZ")
+                o.rotation_euler = (0, 0, -math.pi / 2)
+                xa, za = rng.uniform(-0.22, 0.05), rng.uniform(0.08, 0.25)
+                ST_loop(o, _mw_w(xa, 0.02, za), _mw_w(xa + rng.uniform(-0.1, 0.1), -0.75, za + rng.uniform(-0.05, 0.08)),
+                        T, 1, 40, phase=k / 14.0)
+            S.anchor(ctx, "light", _empty("light_anc", _mw_w(-0.12, -0.42, 0.2)))
+            _cam_keys2(ctx, [(1, p.get("cam0", (-0.78, -0.82, 1.2)), p.get("tgt0", (-0.1, -0.2, 1.06))),
+                             (1.0, p.get("cam1", (-0.7, -0.74, 1.18)), p.get("tgt1", (-0.1, -0.2, 1.06)))],
+                       lens=p.get("lens", 30))
+        else:
+            _cam_keys2(ctx, [(1, p.get("cam0", (-0.62, -0.44, 1.13)), p.get("tgt0", (-0.16, -0.07, 1.07))),
+                             (1.0, p.get("cam1", (-0.57, -0.41, 1.12)), p.get("tgt1", (-0.16, -0.07, 1.07)))],
+                       lens=p.get("lens", 30))
+
+
+def ST_loop(o, p0, p1, T, f_on, period, phase=0.0):
+    import scene_lib_v2_storm as ST
+    ST.loop_move(o, p0, p1, T, f_on, period, phase=phase, grow=5)
+
+
+def b_mw_kitchen_v2(ctx, p):
+    """Microwave door mesh explainer. view hook | inside | bounce | water | mesh | light | outro (see _v_mw).
+    Anchors: door (hook), magnetron (inside), wall + food (bounce), molecule (water), wave + holes (mesh/light),
+    light (light). Params: wave_cue, vib_cue, heat_cue, pitch, cam0/1, tgt0/1, lens, exposure."""
+    _v_mw(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- supermarket checkout (gum barcode)
+def _upc_image(seed=11):
+    """UPC-style barcode artwork made in memory (NO digits): white label, black bars, taller guard bars."""
+    import numpy as np
+    name = "ed_upc_img_%d" % seed
+    if name in bpy.data.images:
+        return bpy.data.images[name]
+    W, H = 512, 256
+    a = np.ones((H, W, 4), dtype=np.float32)
+    a[..., :3] = 0.97
+    rng = random.Random(seed)
+    m = 3                                   # module width in px (95 modules + quiet zones)
+    x = (W - 95 * m) // 2
+    mods = [1, 0, 1]
+    for _ in range(6):
+        mods += [rng.choice((0, 1)) for _ in range(7)]
+    mods += [0, 1, 0, 1, 0]
+    for _ in range(6):
+        mods += [rng.choice((0, 1)) for _ in range(7)]
+    mods += [1, 0, 1]
+    guards = set(list(range(3)) + list(range(45, 50)) + list(range(92, 95)))
+    for i, v in enumerate(mods):
+        if v:
+            y0 = 30 if i in guards else 60
+            a[y0:H - 30, x + i * m:x + (i + 1) * m, :3] = 0.04
+    img = bpy.data.images.new(name, W, H, alpha=False)
+    img.pixels.foreach_set(a.ravel())
+    img.pack()
+    return img
+
+
+def _upc_mat():
+    if "ed_upc" in S._MV2:
+        return S._MV2["ed_upc"]
+    m, nt, N, Lk, pr = S._new_mat("ed_upc")
+    tex = N.new("ShaderNodeTexImage")
+    tex.image = _upc_image()
+    tex.interpolation = "Cubic"
+    Lk.new(N.new("ShaderNodeTexCoord").outputs["UV"], tex.inputs["Vector"])
+    Lk.new(tex.outputs["Color"], pr.inputs["Base Color"])
+    pr.inputs["Roughness"].default_value = 0.45
+    S._MV2["ed_upc"] = S._finish(m, pr.outputs[0])
+    return S._MV2["ed_upc"]
+
+
+def _label_quad(bm, uvl, c, w, h, axis="-Y", mi=1):
+    """UV-mapped quad centred at c facing -Y (or +Z) for barcode labels."""
+    x, y, z = c
+    if axis == "-Y":
+        vs = [(x - w / 2, y, z - h / 2), (x + w / 2, y, z - h / 2), (x + w / 2, y, z + h / 2), (x - w / 2, y, z + h / 2)]
+    else:   # +Z (label on top)
+        vs = [(x - w / 2, y - h / 2, z), (x + w / 2, y - h / 2, z), (x + w / 2, y + h / 2, z), (x - w / 2, y + h / 2, z)]
+    f = bm.faces.new([bm.verts.new(v) for v in vs])
+    for lp, uv in zip(f.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
+        lp[uvl].uv = uv
+    f.material_index = mi
+
+
+PROD_COLS = ["d9462f", "f0b429", "2f8f86", "3a6fb0", "8a4fb0", "e07a1f", "5aa05a", "c23b6b", "f2e3c2", "2b2f36"]
+
+
+def make_product(name, kind, size, color, label=True, parent=None):
+    """Grocery item: kind box | can | gum. Generic colour blocks, no logos or text; barcode label on the -Y face
+    (box / gum) or wrapped on the can front. Origin = bottom centre."""
+    body = S.pbr("pr_%s" % color, hexc(color), 0.4, coat=0.3, var=0.02)
+    band = S.pbr("pr_band", hexc("f7f4ec"), 0.45, var=0)
+    lid = S.pbr("pr_lid", hexc("c9ced3"), 0.3, 0.9, var=0)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new()
+    lx, ly, lz = size
+    if kind == "can":
+        _cyl(bm, (0, 0, lz / 2), lx / 2, lz, "Z", 24, 0)
+        _cyl(bm, (0, 0, lz - 0.004), lx / 2 - 0.002, 0.008, "Z", 24, 3)
+        _cyl(bm, (0, 0, lz * 0.62), lx / 2 + 0.001, lz * 0.22, "Z", 24, 2)
+        if label:
+            _label_quad(bm, uvl, (0, -lx / 2 - 0.0015, lz * 0.3), lx * 0.55, lx * 0.28)
+    else:
+        _rbox(bm, (0, 0, lz / 2), (lx, ly, lz), r=min(0.006, lz * 0.2), seg=2, mi=0)
+        S.bm_box(bm, (0, 0, lz * (0.72 if kind == "box" else 0.5)), (lx + 0.002, ly + 0.002, lz * 0.16), 2)
+        if label:
+            if kind == "gum":
+                _label_quad(bm, uvl, (lx * 0.12, -ly / 2 - 0.0012, lz * 0.5), lx * 0.5, lz * 0.42)
+            else:
+                _label_quad(bm, uvl, (lx * 0.18, -ly / 2 - 0.0012, lz * 0.25), lx * 0.5, lx * 0.25)
+    o = S.obj(name, S.mesh_from_bm(name, bm, [body, _upc_mat(), band, lid], smooth=(kind == "can")), parent=parent)
+    return o
+
+
+def _store(ctx, p, vintage=False):
+    """Bright supermarket: vinyl tile floor, pale walls with a teal band, ceiling light panels, gondola shelves of
+    colour-block products behind three checkout lanes. vintage=True: warmer light, wood-tone counters (1974 beat)."""
+    sc = ctx.scene
+    w = bpy.data.worlds.new("store_world")
+    sc.world = w
+    bg = w.node_tree.nodes.get("Background")
+    bg.inputs["Color"].default_value = (0.8, 0.78, 0.72, 1.0) if vintage else (0.74, 0.77, 0.8, 1.0)
+    bg.inputs["Strength"].default_value = 0.45
+    sc.view_settings.exposure = p.get("exposure", -0.45)
+    L.fog(0.002, hexc("e8e4dc"), start=12.0)
+    tile = S.pbr("st_floor" + ("_v" if vintage else ""), hexc("c4b391" if vintage else "c6c5bd"), 0.35, coat=0.2,
+                 var=0.08, var_scale=1.2)
+    S.plane_obj("st_floor", 30, 26, (0, 4, 0), tile)
+    wall = S.pbr("st_wall", hexc("ebe6dc"), 0.8, var=0.02)
+    bandm = S.pbr("st_band", hexc("b8743a" if vintage else "2f8f86"), 0.5, var=0.02)
+    ceil = S.pbr("st_ceil", hexc("d9dadb"), 0.8, var=0)
+
+    def room(bm):
+        S.bm_box(bm, (0, 13.0, 2.6), (30, 0.3, 5.2), 0)
+        S.bm_box(bm, (0, 12.84, 3.6), (30, 0.04, 0.6), 1)
+        for sx in (-1, 1):
+            S.bm_box(bm, (sx * 15, 4, 2.6), (0.3, 26, 5.2), 0)
+            S.bm_box(bm, (sx * 14.84, 4, 3.6), (0.04, 26, 0.6), 1)
+        S.bm_box(bm, (0, -9.0, 2.6), (30, 0.3, 5.2), 0)
+        S.bm_box(bm, (0, -8.84, 3.6), (30, 0.04, 0.6), 1)
+        S.bm_box(bm, (0, 4, 5.25), (30, 26, 0.1), 2)
+    S.obj("st_room", _mesh("st_room", room, [wall, bandm, ceil]))
+    daylt = S.emis("st_window", hexc("e3eef6"), 2.0)
+    mull = S.pbr("st_mull", hexc("5b636b"), 0.4, 0.5, var=0)
+    S.obj("st_win", _mesh("st_win", lambda bm: S.bm_box(bm, (0, -8.83, 1.75), (26, 0.02, 2.7)), [daylt]))
+    S.obj("st_mull", _mesh("st_mull", lambda bm: [S.bm_box(bm, (x, -8.8, 1.75), (0.08, 0.06, 2.7)) for x in range(-13, 14, 2)] +
+                           [S.bm_box(bm, (0, -8.8, z_), (26, 0.06, 0.08)) for z_ in (0.4, 3.1)], [mull]))
+    pan = S.emis("st_panel", hexc("fff1d6" if vintage else "f6f8fb"), 3.0)
+
+    def panels(bm):
+        for x in range(-12, 13, 4):
+            for y in range(-6, 13, 3):
+                S.bm_box(bm, (x, y, 5.17), (2.4, 0.5, 0.05))
+    S.obj("st_panels", _mesh("st_panels", panels, [pan]))
+    col = (1.0, 0.9, 0.75) if vintage else (1.0, 0.98, 0.95)
+    for k, (x, y) in enumerate(((-4, 0), (4, 0), (-4, 7), (4, 7), (0, -4))):
+        A._area("st_a%d" % k, (x, y, 5.0), 5.0, 1500.0, col, size_y=4.0)
+    # gondolas (shelves) behind the lanes, running along Y
+    shelf = S.pbr("st_shelf", hexc("e3e5e7"), 0.4, 0.3, var=0)
+    mats = [shelf] + [S.pbr("pr_%s" % c, hexc(c), 0.4, coat=0.3, var=0.02) for c in PROD_COLS]
+    rng = random.Random(31)
+    bm = bmesh.new()
+    for gx in (-7.5, -4.5, -1.5, 1.5, 4.5, 7.5):
+        y0, y1 = 4.5, 12.5
+        S.bm_box(bm, (gx, (y0 + y1) / 2, 0.75), (0.12, y1 - y0, 1.5), 0)
+        S.bm_box(bm, (gx, (y0 + y1) / 2, 0.08), (1.1, y1 - y0, 0.16), 0)
+        for lvl in range(3):
+            z = 0.18 + lvl * 0.42
+            S.bm_box(bm, (gx, (y0 + y1) / 2, z), (1.1, y1 - y0, 0.025), 0)
+            for side in (-1, 1):
+                y = y0 + 0.1
+                while y < y1 - 0.15:
+                    ww = rng.uniform(0.12, 0.3)
+                    hh = rng.uniform(0.16, 0.34)
+                    ci = 1 + rng.randrange(len(PROD_COLS))
+                    for d in range(2):
+                        S.bm_box(bm, (gx + side * (0.15 + d * 0.22), y + ww / 2, z + 0.0125 + hh / 2), (0.2, ww - 0.015, hh), ci)
+                    y += ww
+    S.obj("st_gondolas", S.mesh_from_bm("st_gondolas", bm, mats))
+    return rng
+
+
+LANE_Z = 0.86
+
+
+def _lane(ctx, x0, vintage=False, tower=True, speed=0.16):
+    """Checkout lane at x offset x0: counter with a belt (customer side -Y, belt along +X to the scanner at x0),
+    flush scanner window + vertical scanner tower, register with a screen (no text), bagging shelf, lane light."""
+    if vintage:
+        body = S.pbr("ln_body_v", hexc("8a5a34"), 0.5, var=0.06, var_scale=3.0)
+        top = S.pbr("ln_top_v", hexc("d8c7a4"), 0.35, coat=0.3, var=0.03)
+    else:
+        body = S.pbr("ln_body", hexc("f1f2f3"), 0.35, coat=0.3, var=0.02)
+        top = S.pbr("ln_top", hexc("3a4652"), 0.3, coat=0.3, var=0.02)
+    dark = S.pbr("ln_dark", hexc("23272c"), 0.35, var=0)
+    z = LANE_Z
+
+    def counter(bm):
+        S.bm_box(bm, (x0 - 1.6, 0, z / 2), (2.6, 0.75, z), 0)
+        S.bm_box(bm, (x0 + 0.55, 0, z / 2), (1.7, 0.75, z), 0)
+        S.bm_box(bm, (x0 + 0.55, 0, z + 0.015), (1.7, 0.8, 0.03), 1)
+        S.bm_box(bm, (x0 + 1.1, 0.0, z + 0.1), (0.6, 0.6, 0.02), 1)                    # bagging shelf
+        if tower:
+            S.bm_box(bm, (x0 + 0.1, 0.33, z + 0.17), (0.38, 0.1, 0.34), 2)              # scanner tower
+        S.bm_box(bm, (x0 + 0.55, 0.62, 0.55), (0.6, 0.45, 1.1), 0)                      # register stand
+        S.bm_box(bm, (x0 + 0.55, 0.55, 1.36), (0.05, 0.05, 0.5), 2)
+        S.bm_box(bm, (x0 + 0.55, 0.5, 1.62), (0.44, 0.04, 0.3), 2)                      # monitor back
+        S.bm_box(bm, (x0 - 2.95, 0, 1.3), (0.06, 0.06, 2.6), 2)                          # lane light pole
+        _cyl(bm, (x0 - 2.95, 0, 2.62), 0.16, 0.08, "Z", 20, 2)
+    S.obj("lane%.0f" % x0, _mesh("lane%.0f" % x0, counter, [body, top, dark]))
+    belt(ctx, "lbelt%.0f" % x0, (x0 - 2.85, 0), (x0 - 0.3, 0), z=z + 0.03, w=0.55, speed=speed, legs=False, guards=False)
+    scr = S.emis("ln_screen", hexc("9ec9e8"), 1.3)
+    S.obj("lscr%.0f" % x0, _mesh("lscr%.0f" % x0, lambda bm: S.bm_box(bm, (x0 + 0.55, 0.477, 1.62), (0.4, 0.005, 0.26)),
+                                 [scr]))
+    lamp = S.emis("ln_lamp", hexc("ffb000"), 3.0)
+    S.obj("llamp%.0f" % x0, _mesh("llamp%.0f" % x0, lambda bm: _cyl(bm, (x0 - 2.95, 0, 2.62), 0.165, 0.03, "Z", 20),
+                                  [lamp]))
+    win = S.emis("ln_win", hexc("7a1a14"), 1.2)
+    S.obj("lwin%.0f" % x0, _mesh("lwin%.0f" % x0, lambda bm: [S.bm_box(bm, (x0 + 0.1, 0.0, z + 0.03), (0.34, 0.3, 0.003))] +
+                                 ([S.bm_box(bm, (x0 + 0.1, 0.277, z + 0.18), (0.3, 0.004, 0.22))] if tower else []),
+                                 [win]))
+
+
+def _lasers(ctx, origin, n=7, ln=0.45, spread=38.0, tilt=(0.0, 0.0), name="ls", f_on=1, f_off=None):
+    """Fan of sweeping red laser lines from `origin` (thin unlit boxes, pivot at the emitter, pointing +Z by
+    default, tilted by `tilt` (rx, ry) radians)."""
+    las = S.emis("ed_laser2", hexc("ff1a12"), 7.0)
+    rng = random.Random(7)
+    me = _mesh(name + "_m", lambda bm: S.bm_box(bm, (0, 0, ln / 2), (0.0022, 0.0022, ln)), [las])
+    out = []
+    for i in range(n):
+        o = S.obj("%s%d" % (name, i), me, origin)
+        o.visible_shadow = False
+        base = (tilt[0], tilt[1] + math.radians(-spread / 2 + spread * i / max(1, n - 1)), 0.0)
+        ph, per = rng.uniform(0, 6.28), rng.randint(16, 26)
+        for j in range(0, per + 1, 2):
+            a = math.radians(12) * math.sin(ph + 2 * math.pi * j / per)
+            kf(o, "rotation_euler", 1 + j, Vector((base[0] + a, base[1], base[2])))
+        _interp(o, "LINEAR")
+        _cyclic(o)
+        if f_on > 1 or f_off:
+            _show(o, f_on, f_off)
+        out.append(o)
+    return out
+
+
+def _belt_items(ctx, x0, rng, items, v=0.25, f_start=1):
+    """Products ride the belt (+X) towards the scanner and slide on over the window to the bagging shelf."""
+    objs = []
+    for k, (kind, size, color, xs) in enumerate(items):
+        o = make_product("item%d_%.0f" % (k, x0), kind, size, color)
+        path_move(ctx, o, [(x0 + xs, rng.uniform(-0.08, 0.08), LANE_Z + 0.03), (x0 + 1.2, 0.0, LANE_Z + 0.03)], f_start, v,
+                  yaw_off=math.pi / 2 if kind != "can" else 0.0)
+        objs.append(o)
+    return objs
+
+
+def _v_checkout(ctx, p, view):
+    T = ctx.frames
+    vintage = view == "first"
+    rng = _store(ctx, p, vintage=vintage)
+    if view == "first":
+        _lane(ctx, 0.0, vintage=True, tower=False, speed=0.12)
+    else:
+        for x0 in (-4.2, 0.0, 4.2):
+            _lane(ctx, x0)
+    z = LANE_Z + 0.03          # item base (belt top = counter top)
+    if view == "hook":
+        items = [("box", (0.2, 0.07, 0.28), "d9462f", -1.5), ("can", (0.075, 0.075, 0.12), "2f8f86", -0.9),
+                 ("gum", (0.08, 0.075, 0.026), "f0c419", -0.45), ("box", (0.15, 0.1, 0.22), "3a6fb0", -2.3)]
+        _belt_items(ctx, 0.0, rng, items, v=0.16)
+        _lasers(ctx, (0.1, 0.0, z), n=7, ln=0.32, name="ls")
+        A.ring_pulses(ctx, (0.1, 0.0, z + 0.25), int(T * 0.35), color=AMBER, count=3, gap=int(T * 0.2), r1=0.4,
+                      life=18, rot=(math.radians(90), 0, 0), name="beep")
+        _cam_keys2(ctx, [(1, p.get("cam0", (1.65, 1.25, 1.75)), p.get("tgt0", (-0.45, -0.15, 0.95))),
+                         (1.0, p.get("cam1", (1.4, 1.0, 1.62)), p.get("tgt1", (-0.4, -0.15, 0.95)))],
+                   lens=p.get("lens", 28))
+    elif view == "bars":
+        o = make_product("hero_box", "box", (0.22, 0.08, 0.3), "d9462f")
+        o.location = (-0.9, 0.0, z)
+        o.rotation_euler = (0, 0, 0)
+        o2 = make_product("side_can", "can", (0.075, 0.075, 0.12), "2f8f86")
+        o2.location = (-0.62, 0.05, z)
+        foc = _empty("code_foc", (-0.9 + 0.22 * 0.18, -0.041, z + 0.3 * 0.25))
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.86, -0.42, z + 0.16)), p.get("tgt0", foc.location[:])),
+                         (1.0, p.get("cam1", (-0.87, -0.3, z + 0.12)), p.get("tgt1", foc.location[:]))],
+                   lens=p.get("lens", 40))
+        ctx.cam.data.dof.use_dof = True
+        ctx.cam.data.dof.focus_object = foc
+        ctx.cam.data.dof.aperture_fstop = 2.8
+        S.anchor(ctx, "code", foc)
+    elif view == "scan":
+        o = make_product("scan_box", "box", (0.2, 0.07, 0.26), "3a6fb0")
+        path_move(ctx, o, [(-0.45, 0.0, z), (0.7, 0.0, z)], 1, 0.9 / (T / ctx.fps), yaw_off=0.0)
+        _lasers(ctx, (0.1, 0.0, z), n=9, ln=0.34, name="ls")
+        _lasers(ctx, (0.1, 0.27, z + 0.2), n=7, ln=0.5, tilt=(math.radians(90), 0.0), spread=40, name="lt")
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.25, -0.95, 1.28)), p.get("tgt0", (0.08, 0.1, z + 0.12))),
+                         (1.0, p.get("cam1", (-0.18, -0.82, 1.22)), p.get("tgt1", (0.08, 0.1, z + 0.12)))],
+                   lens=p.get("lens", 32))
+        S.anchor(ctx, "scanner", _empty("scan_anc", (0.1, 0.25, z + 0.34)))
+    elif view == "lookup":
+        fs = ctx.word_time(p.get("send_cue", "looks"), 0.55)
+        fb = ctx.word_time(p.get("back_cue", "sends"), 0.8)
+        o = make_product("lk_box", "box", (0.2, 0.07, 0.26), "e07a1f")
+        o.location = (0.1, 0.0, z)
+        # back-office computer: desk + tower + monitor by the wall
+        desk = S.pbr("of_desk", hexc("c9b08a"), 0.5, var=0.04)
+        pc = S.pbr("of_pc", hexc("2a2e34"), 0.35, var=0)
+        cx, cy = 0.0, 0.0           # office built locally, placed at OC and turned to face the lane
+        OC, OR = Vector((1.95, 1.95, 0.0)), Matrix.Rotation(math.radians(-45), 3, "Z")
+        oroot = _empty("office_root", tuple(OC))
+        oroot.rotation_euler = (0, 0, math.radians(-45))
+        partm = S.pbr("of_part", hexc("dfe3e6"), 0.8, var=0.02)
+
+        def office(bm):
+            S.bm_box(bm, (cx, cy, 0.74), (1.4, 0.7, 0.04), 0)
+            for sx in (-1, 1):
+                S.bm_box(bm, (cx + sx * 0.66, cy, 0.37), (0.04, 0.66, 0.74), 0)
+            S.bm_box(bm, (cx + 0.45, cy, 0.98), (0.22, 0.5, 0.44), 1)
+            S.bm_box(bm, (cx - 0.15, cy + 0.15, 1.05), (0.6, 0.04, 0.38), 1)
+            S.bm_box(bm, (cx - 0.15, cy + 0.2, 0.84), (0.05, 0.05, 0.2), 1)
+            S.bm_box(bm, (cx, cy + 0.75, 1.3), (3.6, 0.1, 2.6), 2)                    # office partition
+            S.bm_box(bm, (cx, cy + 0.69, 2.2), (3.6, 0.02, 0.3), 3)
+        S.obj("office", _mesh("office", office, [desk, pc, partm, S.pbr("st_band", hexc("2f8f86"), 0.5, var=0.02)]),
+              parent=oroot)
+        scr_m = _glow_keys("of_scr", hexc("3ad6c2"), [(1, 0.6), (fs + 26, 0.6), (fs + 32, 2.4)])
+        S.obj("of_scr", _mesh("of_scr", lambda bm: S.bm_box(bm, (cx - 0.15, cy + 0.125, 1.05), (0.54, 0.005, 0.32)),
+                              [scr_m]), parent=oroot)
+        led = _glow_keys("of_led", hexc("ffb000"), [(1, 0.0), (fs + 26, 0.0), (fs + 30, 4.0)])
+        S.obj("of_led", _mesh("of_led", lambda bm: [S.bm_box(bm, (cx + 0.45, cy - 0.252, 0.9 + 0.05 * k), (0.12, 0.004, 0.012))
+                                                     for k in range(4)], [led]), parent=oroot)
+        pa_, pb_ = Vector((0.1, 0.0, z + 0.06)), OC + OR @ Vector((0.45, -0.27, 1.25))
+        path = [tuple(pa_.lerp(pb_, u) + Vector((0, 0, 1.3 * math.sin(math.pi * u)))) for u in [i / 12.0 for i in range(13)]]
+        cab = _glow_keys("cable", hexc("3ad6c2"), [(1, 1.0)])
+        bm = bmesh.new()
+        for a_, b_ in zip(path[:-1], path[1:]):
+            a_, b_ = Vector(a_), Vector(b_)
+            d = b_ - a_
+            o_ = bmesh.ops.create_cone(bm, cap_ends=True, segments=8, radius1=0.008, radius2=0.008, depth=d.length * 0.6)
+            rot = Vector((0, 0, 1)).rotation_difference(d.normalized()).to_matrix()
+            bmesh.ops.rotate(bm, verts=o_["verts"], cent=(0, 0, 0), matrix=rot)
+            bmesh.ops.translate(bm, vec=(a_ + b_) / 2, verts=o_["verts"])
+        S.obj("cable", S.mesh_from_bm("cable", bm, [cab]))
+        plen = sum((Vector(b_) - Vector(a_)).length for a_, b_ in zip(path[:-1], path[1:]))
+        f_arr = int(fb + plen / 3.6 * ctx.fps)
+        reg = _glow_keys("reg_glow", hexc("ffb000"), [(1, 0.0), (f_arr, 0.0), (f_arr + 5, 1.8)])
+        S.obj("reg_glow", _mesh("reg_glow", lambda bm: S.bm_box(bm, (0.55, 0.474, 1.62), (0.4, 0.004, 0.26)), [reg]))
+        am = S.emis("pulse_a", hexc("ffb000"), 8.0)
+        tm = S.emis("pulse_t", hexc("3ad6c2"), 8.0)
+        for k in range(8):
+            for (m_, pts, f0, nm) in ((am, path, fs + 5 * k, "pa"), (tm, list(reversed(path)), fb + 5 * k, "pt")):
+                bm = bmesh.new()
+                bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.035)
+                o_ = S.obj("%s%d" % (nm, k), S.mesh_from_bm("%s%d" % (nm, k), bm, [m_], smooth=True))
+                o_.visible_shadow = False
+                fr = path_move(ctx, o_, pts, f0, 3.6, every=1)
+                _show(o_, max(2, int(f0)), int(fr[-1]) + 2)
+        _lasers(ctx, (0.1, 0.0, z), n=7, ln=0.32, name="ls")
+        _cam_keys2(ctx, [(1, p.get("cam0", (-1.15, -1.45, 1.95)), p.get("tgt0", (1.15, 1.1, 1.05))),
+                         (1.0, p.get("cam1", (-1.0, -1.3, 1.9)), p.get("tgt1", (1.15, 1.1, 1.05)))],
+                   lens=p.get("lens", 24))
+        S.anchor(ctx, "computer", _empty("pc_anc", tuple(OC + OR @ Vector((0.1, 0.0, 1.35)))))
+    elif view == "first":
+        fsc = ctx.word_time(p.get("scan_cue", "item"), 0.75)
+        gum = make_product("gum", "gum", (0.08, 0.075, 0.026), "f0c419")
+        v = 0.12
+        x_win = 0.1
+        x_start = x_win - v * (fsc - 1) / ctx.fps
+        path_move(ctx, gum, [(x_start, 0.0, z), (1.2, 0.0, z)], 1, v, yaw_off=math.pi / 2)
+        _lasers(ctx, (0.1, 0.0, z), n=7, ln=0.3, name="ls")
+        A.ring_pulses(ctx, (0.1, 0.0, z + 0.2), fsc, color=AMBER, count=3, gap=8, r1=0.35, life=20,
+                      rot=(math.radians(90), 0, 0), name="beep")
+        spot = bpy.data.lights.new("spot", "SPOT")
+        spot.energy = 50.0
+        spot.spot_size = math.radians(40)
+        spot.color = (1.0, 0.85, 0.6)
+        so = L.link(bpy.data.objects.new("spot", spot))
+        so.location = (0.1, -0.6, 2.4)
+        so.rotation_euler = (math.radians(15), 0, 0)
+        _cam_keys2(ctx, [(1, p.get("cam0", (-0.5, -0.72, 1.16)), p.get("tgt0", (0.14, 0.02, z + 0.02))),
+                         (1.0, p.get("cam1", (-0.42, -0.62, 1.12)), p.get("tgt1", (0.15, 0.02, z + 0.02)))],
+                   lens=p.get("lens", 34))
+        S.anchor(ctx, "gum", _empty("gum_anc", (0.1, 0.0, z + 0.06)))
+    elif view == "today":
+        _cam_keys2(ctx, [(1, p.get("cam0", (-3.0, 3.4, 1.25)), p.get("tgt0", (-3.0, 11.0, 0.75))),
+                         (1.0, p.get("cam1", (-3.0, 5.6, 1.2)), p.get("tgt1", (-3.0, 12.0, 0.75)))],
+                   lens=p.get("lens", 26))
+    else:   # outro
+        items = [("box", (0.2, 0.07, 0.28), "5aa05a", -1.2), ("can", (0.075, 0.075, 0.12), "d9462f", -0.6)]
+        _belt_items(ctx, 0.0, rng, items, v=0.16)
+        _lasers(ctx, (0.1, 0.0, z), n=7, ln=0.32, name="ls")
+        _cam_keys2(ctx, [(1, p.get("cam0", (1.3, 2.1, 1.8)), p.get("tgt0", (-0.6, -0.4, 0.95))),
+                         (1.0, p.get("cam1", (2.6, 4.0, 3.0)), p.get("tgt1", (-0.8, -1.4, 0.9)))],
+                   lens=p.get("lens", 28))
+
+
+def b_checkout_v2(ctx, p):
+    """Supermarket checkout (gum barcode). view hook | bars | scan | lookup | first | today | outro.
+    Anchors: code (bars), scanner (scan), computer (lookup), gum (first). Params: send_cue, back_cue, scan_cue,
+    cam0/1, tgt0/1, lens, exposure."""
+    _v_checkout(ctx, p, p.get("view", "hook"))
+
+
+# ---------------------------------------------------------------- elevator counterweight (tower city)
+LF_N, LF_FH = 7, 3.3                 # floors, floor height
+LF_W, LF_D = 14.0, 9.0               # building footprint (x, y); front face at local y = -LF_D / 2
+LF_SHX = (-1.7, 1.7)                 # shaft bay x range (front wall cut away here)
+LF_SHY = (-LF_D / 2, -1.6)           # shaft depth (open front)
+LF_RY = -2.9                         # rope / sheave plane (local y)
+LF_CAR_X, LF_CW_X = -0.55, 1.0       # rope lines: car centre, counterweight centre
+LF_SHEAVE_Z = LF_N * LF_FH + 1.15    # sheave axle height (machine room floor at LF_N * LF_FH)
+LF_ROPE = 2 * LF_SHEAVE_Z - 3.05 - 2.75 - 0.15 - (LF_N - 1) * LF_FH - 0.25   # rope constant (car at floor 0 <-> cwt high)
+
+
+def _lf_cw_z(car_z):
+    """Counterweight bottom for a car floor height car_z (1:1 roping over the sheave: what one side drops the other
+    side rises). Car hitch = car_z + 2.9, counterweight hitch = cw_z + 2.75."""
+    return 2 * LF_SHEAVE_Z - LF_ROPE - (car_z + 2.9) - 2.75
+
+
+def _lift_building(ctx, root, p, glow_frame=None, riders=True):
+    """Mid-rise cream office block with the lift shaft bay cut open at the front: guide rails, landing doors, car
+    (open-front cab, warm light, riders), counterweight frame with plates, ropes over a yellow sheave in a cut-open
+    machine room on the roof. Returns dict of the moving parts."""
+    W, D, H = LF_W, LF_D, LF_N * LF_FH
+    x0, x1 = LF_SHX
+    wall = S.facade_mat("lf_facade", hexc("efe6d6"), hexc("3d5570"), 3.0, LF_FH, 0.55)
+    band = S.pbr("lf_band", hexc("c46a43"), 0.7, var=0.05)
+    slab = S.pbr("lf_slab", hexc("a9aeb3"), 0.8, var=0.04)
+    inner = S.pbr("lf_inner", hexc("e9e5dd"), 0.85, var=0.03)
+    cut = S.pbr("lf_cut", hexc("8fd3c8"), 0.6, var=0)
+    bm = bmesh.new()
+    S.bm_box(bm, (0, D / 2 - 0.2, H / 2), (W, 0.4, H), 0)                       # back
+    for sx in (-1, 1):
+        S.bm_box(bm, (sx * (W / 2 - 0.2), 0, H / 2), (0.4, D, H), 0)             # sides
+    for (a, b) in ((-W / 2, x0 - 0.3), (x1 + 0.3, W / 2)):                       # front, both sides of the shaft bay
+        S.bm_box(bm, ((a + b) / 2, -D / 2 + 0.2, H / 2), (b - a, 0.4, H), 0)
+    xa, xb = x0 - 0.3, x1 + 0.3
+    for k in range(LF_N + 1):
+        z = k * LF_FH
+        if k == LF_N:
+            S.bm_box(bm, (0, 0, z + 0.15), (W, D, 0.3), 2)                          # roof (over the shaft too)
+        else:                                                                         # slab with the shaft hole
+            S.bm_box(bm, ((-W / 2 + xa) / 2, 0, z + 0.15), (xa + W / 2, D, 0.3), 2)
+            S.bm_box(bm, ((xb + W / 2) / 2, 0, z + 0.15), (W / 2 - xb, D, 0.3), 2)
+            S.bm_box(bm, (0, (LF_SHY[1] + D / 2) / 2, z + 0.15), (xb - xa, D / 2 - LF_SHY[1], 0.3), 2)
+        for (a, b) in ((-W / 2 - 0.05, xa), (xb, W / 2 + 0.05)):
+            S.bm_box(bm, ((a + b) / 2, -D / 2 - 0.02, z + 0.15), (b - a, 0.1, 0.45), 1)
+    S.bm_box(bm, (0, -D / 2 - 0.05, H + 0.5), (W + 0.2, 0.2, 0.3), 1)              # parapet (front)
+    S.bm_box(bm, (0, D / 2 + 0.05, H + 0.5), (W + 0.2, 0.2, 0.3), 1)
+    S.obj("lf_shell", S.mesh_from_bm("lf_shell", bm, [wall, band, slab]), parent=root)
+    # shaft: back + side walls (light), cut edge trim (pale teal), landing doors, rails
+    bm = bmesh.new()
+    S.bm_box(bm, ((x0 + x1) / 2, LF_SHY[1] + 0.1, (H + 3.4) / 2), (x1 - x0 + 0.6, 0.2, H + 3.4), 0)
+    for x in (x0 - 0.15, x1 + 0.15):
+        S.bm_box(bm, (x, (LF_SHY[0] + LF_SHY[1]) / 2, (H + 3.4) / 2), (0.3, LF_SHY[1] - LF_SHY[0], H + 3.4), 0)
+    for x in (x0 - 0.3, x1 + 0.3):
+        S.bm_box(bm, (x, -D / 2 - 0.03, (H + 3.4) / 2), (0.08, 0.1, H + 3.4), 1)
+    S.obj("lf_shaft", S.mesh_from_bm("lf_shaft", bm, [inner, cut]), parent=root)
+    steel = S.pbr("lf_steel", hexc("aeb5bc"), 0.3, 0.8, var=0)
+    rail = S.pbr("lf_rail", hexc("5f666d"), 0.35, 0.8, var=0)
+    bm = bmesh.new()
+    for k in range(LF_N):
+        z = k * LF_FH + 0.3
+        S.bm_box(bm, (LF_CAR_X, LF_SHY[1] - 0.02, z + 1.05), (1.1, 0.06, 2.1), 0)       # landing doors
+        S.bm_box(bm, (LF_CAR_X, LF_SHY[1] - 0.06, z + 1.05), (0.012, 0.02, 2.1), 1)
+    for x in (LF_CAR_X - 1.0, LF_CAR_X + 1.0, LF_CW_X - 0.42 + 0.12, LF_CW_X + 0.42 - 0.12):
+        S.bm_box(bm, (x if abs(x - LF_CW_X) > 0.5 else x, LF_RY, (H + 1.0) / 2), (0.09, 0.12, H + 1.0), 1)
+    S.obj("lf_rails", S.mesh_from_bm("lf_rails", bm, [steel, rail]), parent=root)
+    # shaft lights (strips) + front fill
+    lm = S.emis("lf_strip", hexc("fff4e2"), 1.6)
+    S.obj("lf_strips", _mesh("lf_strips", lambda bm: [S.bm_box(bm, (x, LF_SHY[1] - 0.05, H / 2), (0.06, 0.03, H))
+                                                       for x in (x0 + 0.08, x1 - 0.08)], [lm]), parent=root)
+    # machine room on the roof (front cut open)
+    mr = S.pbr("lf_mroom", hexc("e3ddd2"), 0.85, var=0.02)
+    bm = bmesh.new()
+    S.bm_box(bm, (0.3, -2.6, H + 3.4), (5.4, 4.0, 0.25), 0)
+    S.bm_box(bm, (0.3, -0.7, H + 1.7), (5.4, 0.25, 3.4), 0)
+    for x in (-2.4, 3.0):
+        S.bm_box(bm, (x, -2.6, H + 1.7), (0.25, 4.0, 3.4), 0)
+    S.obj("lf_mroom", S.mesh_from_bm("lf_mroom", bm, [mr]), parent=root)
+    _point("lf_mr_light", (root.location.x + 0.3, root.location.y - 2.0, H + 3.0), 120.0, (1.0, 0.95, 0.85), 0.4)
+    yel = S.pbr("lf_yellow", hexc("f2c230"), 0.4, 0.2, coat=0.3, var=0.02)
+    blue = S.pbr("lf_motor", hexc("2d5b8c"), 0.35, 0.3, coat=0.3, var=0.02)
+    dark = S.pbr("lf_dark", hexc("33383e"), 0.5, 0.4, var=0)
+    r_sh = (LF_CW_X - LF_CAR_X) / 2
+    shx = (LF_CW_X + LF_CAR_X) / 2
+
+    def machine(bm):
+        S.bm_box(bm, (shx + 0.4, LF_RY + 0.5, H + 0.45), (2.6, 1.8, 0.3), 2)         # bedplate
+        _cyl(bm, (shx, LF_RY + 0.75, H + 1.15), 0.12, 1.4, "Y", 16, 2)                 # axle
+        _cyl(bm, (shx, LF_RY + 1.05, H + 1.15), 0.42, 0.7, "Y", 28, 1)                 # motor
+        _cyl(bm, (shx, LF_RY + 1.5, H + 1.15), 0.3, 0.2, "Y", 24, 2)                   # brake drum
+        S.bm_box(bm, (shx + 1.5, LF_RY + 1.1, H + 1.0), (0.7, 0.5, 1.1), 0)            # controller cabinet
+        S.bm_box(bm, (shx, LF_RY + 1.05, H + 0.75), (0.7, 0.5, 0.3), 2)
+    S.obj("lf_machine", _mesh("lf_machine", machine, [S.pbr("lf_cab", hexc("c9ced3"), 0.4, 0.3, var=0), blue, dark]),
+          parent=root)
+    led = S.emis("lf_led", hexc("3ad6c2"), 4.0)
+    S.obj("lf_leds", _mesh("lf_leds", lambda bm: [S.bm_box(bm, (shx + 1.3 + 0.12 * k, LF_RY + 0.84, H + 1.3), (0.06, 0.01, 0.06))
+                                                   for k in range(4)], [led]), parent=root)
+    sheave = _empty("lf_sheave", (shx, LF_RY, LF_SHEAVE_Z), parent=root)
+
+    def sh(bm):
+        _cyl(bm, (0, 0, 0), r_sh, 0.26, "Y", 40, 0)
+        for k in range(4):
+            _cyl(bm, (0, -0.09 + 0.06 * k, 0), r_sh + 0.012, 0.02, "Y", 40, 1)
+        for k in range(6):
+            a = k * math.pi / 3
+            S.bm_box(bm, (math.cos(a) * r_sh * 0.55, -0.15, math.sin(a) * r_sh * 0.55), (0.12, 0.04, 0.12), 1)
+        _cyl(bm, (0, -0.14, 0), 0.16, 0.04, "Y", 20, 1)
+    S.obj("lf_sheave_m", _mesh("lf_sheave_m", sh, [yel, dark]), parent=sheave)
+    # rope arc over the sheave (static)
+    ropem = S.pbr("lf_rope", hexc("8d949b"), 0.35, 0.9, var=0)
+    bm = bmesh.new()
+    for k in range(4):
+        yy = -0.09 + 0.06 * k
+        for i in range(24):
+            a0, a1 = math.pi * i / 24, math.pi * (i + 1) / 24
+            pa = Vector((-math.cos(a0) * r_sh, yy, math.sin(a0) * r_sh))
+            pb = Vector((-math.cos(a1) * r_sh, yy, math.sin(a1) * r_sh))
+            d = pb - pa
+            r = bmesh.ops.create_cone(bm, cap_ends=False, segments=6, radius1=0.016, radius2=0.016, depth=d.length)
+            bmesh.ops.rotate(bm, verts=r["verts"], cent=(0, 0, 0),
+                             matrix=Vector((0, 0, 1)).rotation_difference(d.normalized()).to_matrix())
+            bmesh.ops.translate(bm, vec=(pa + pb) / 2 + Vector((shx, LF_RY, LF_SHEAVE_Z)), verts=r["verts"])
+    S.obj("lf_rope_arc", S.mesh_from_bm("lf_rope_arc", bm, [ropem]), parent=root)
+    # unit-length hanging ropes (origin at the top, hanging -Z, scaled per frame)
+    bm = bmesh.new()
+    for k in range(4):
+        _cyl(bm, (0, -0.09 + 0.06 * k, -0.5), 0.016, 1.0, "Z", 6, 0)
+    rope_me = S.mesh_from_bm("lf_rope", bm, [ropem])
+    rope_car = S.obj("lf_rope_car", rope_me, (LF_CAR_X, LF_RY, LF_SHEAVE_Z), parent=root)
+    rope_cw = S.obj("lf_rope_cw", rope_me, (LF_CW_X, LF_RY, LF_SHEAVE_Z), parent=root)
+    # car: open-front cab + sling, warm ceiling light, riders
+    car = _empty("lf_car", (LF_CAR_X, 0, 0), parent=root)
+    cabm = S.pbr("lf_cabin", hexc("d8d2c6"), 0.4, 0.2, coat=0.2, var=0.02)
+    floorm = S.pbr("lf_cabfloor", hexc("6b5a4a"), 0.6, var=0.05)
+
+    def cab(bm):
+        y0, y1 = LF_SHY[0] + 0.45, LF_SHY[1] - 0.15
+        cy = (y0 + y1) / 2
+        S.bm_box(bm, (0, cy, 0.06), (1.9, y1 - y0, 0.12), 1)
+        S.bm_box(bm, (0, cy, 2.5), (1.9, y1 - y0, 0.1), 0)
+        S.bm_box(bm, (0, y1, 1.28), (1.9, 0.06, 2.35), 0)
+        for sx in (-1, 1):
+            S.bm_box(bm, (sx * 0.92, cy, 1.28), (0.06, y1 - y0, 2.35), 0)
+            S.bm_box(bm, (sx * 0.98, LF_RY, 1.45), (0.1, 0.16, 2.9), 2)            # sling stiles
+        S.bm_box(bm, (0, LF_RY, 2.88), (2.06, 0.18, 0.16), 2)                       # crosshead
+        S.bm_box(bm, (0, LF_RY, -0.05), (2.06, 0.18, 0.12), 2)                      # plank
+        S.bm_box(bm, (0, cy, 1.0), (1.84, 0.02, 0.03), 2)                           # handrail (back)
+    S.obj("lf_cab", _mesh("lf_cab", cab, [cabm, floorm, dark]), parent=car)
+    cl = S.emis("lf_cabl", hexc("fff1d8"), 3.0)
+    S.obj("lf_cabl", _mesh("lf_cabl", lambda bm: S.bm_box(bm, (0, -2.95, 2.44), (1.2, 0.8, 0.02)), [cl]), parent=car)
+    li = A._area("lf_cab_a", (0, 0, 0), 1.0, 60.0, (1.0, 0.92, 0.8), size_y=0.8)
+    li.parent = car
+    li.location = (0, -2.95, 2.4)
+    rider_m = [S.pbr("lf_rider%d" % i, hexc(c), 0.6, var=0.03) for i, c in enumerate(("2f5f8f", "b8503a", "4f7a4a"))]
+    skin = S.pbr("lf_head", hexc("c99a76"), 0.6, var=0.02)
+    for i, (rx, ry) in enumerate(((-0.45, -2.7), (0.1, -2.4), (0.55, -2.85)) if riders else ()):
+        bm = bmesh.new()
+        r = bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=0.2, radius2=0.17, depth=1.2)
+        bmesh.ops.translate(bm, vec=(0, 0, 0.72), verts=r["verts"])
+        h = bmesh.ops.create_uvsphere(bm, u_segments=14, v_segments=10, radius=0.13)
+        bmesh.ops.translate(bm, vec=(0, 0, 1.5), verts=h["verts"])
+        for f in {f for v in h["verts"] for f in v.link_faces}:
+            f.material_index = 1
+        S.obj("lf_rider%d" % i, S.mesh_from_bm("lf_rider%d" % i, bm, [rider_m[i], skin], smooth=True), (rx, ry, 0.12),
+              parent=car)
+    # counterweight: frame + plates (top plates = the "part of the load" share, can glow amber)
+    cw = _empty("lf_cw", (LF_CW_X, LF_RY, 0), parent=root)
+    plate = S.pbr("lf_plate", hexc("454b52"), 0.5, 0.6, var=0.03)
+
+    def cwf(bm):
+        for sx in (-1, 1):
+            S.bm_box(bm, (sx * 0.27, 0, 1.375), (0.08, 0.26, 2.75), 0)
+        S.bm_box(bm, (0, 0, 2.7), (0.62, 0.26, 0.1), 0)
+        S.bm_box(bm, (0, 0, 0.05), (0.62, 0.26, 0.1), 0)
+        for k in range(13):
+            S.bm_box(bm, (0, 0, 0.16 + 0.14 * k), (0.46, 0.2, 0.12), 1)
+    S.obj("lf_cwf", _mesh("lf_cwf", cwf, [dark, plate]), parent=cw)
+    m_load = S._new_mat("lf_loadplate")
+    mat, nt, N, Lk, pr = m_load
+    pr.inputs["Base Color"].default_value = hexc("8a6a2a")
+    pr.inputs["Roughness"].default_value = 0.5
+    pr.inputs["Emission Color"].default_value = AMBER
+    pr.inputs["Emission Strength"].default_value = 0.0
+    S._finish(mat, pr.outputs[0])
+    if glow_frame:
+        L.kf_socket(pr.inputs["Emission Strength"], 1, 0.0)
+        L.kf_socket(pr.inputs["Emission Strength"], max(2, glow_frame), 0.0)
+        L.kf_socket(pr.inputs["Emission Strength"], glow_frame + 12, 2.2)
+    S.obj("lf_cw_load", _mesh("lf_cw_load", lambda bm: [S.bm_box(bm, (0, 0, 0.16 + 0.14 * k), (0.47, 0.21, 0.12))
+                                                          for k in range(13, 18)], [mat]), parent=cw)
+    return {"car": car, "cw": cw, "sheave": sheave, "rope_car": rope_car, "rope_cw": rope_cw, "r_sh": r_sh, "H": H}
+
+
+def _lift_motion(ctx, parts, keys, every=2):
+    """keys = [(frame, car_z)] (BEZIER-like smoothstep between keys). Moves car, counterweight, ropes, sheave."""
+    T = ctx.frames
+    def car_z(f):
+        if f <= keys[0][0]:
+            return keys[0][1]
+        for (fa, za), (fb, zb) in zip(keys[:-1], keys[1:]):
+            if f <= fb:
+                u = (f - fa) / float(max(1, fb - fa))
+                u = u * u * (3 - 2 * u) if parts.get("smooth", True) else u
+                return za + (zb - za) * u
+        return keys[-1][1]
+    z_ref = car_z(1)
+    for f in list(range(1, T + 2, every)) + [T + 1]:
+        zc = car_z(f)
+        zw = _lf_cw_z(zc)
+        kf(parts["car"], "location", f, Vector((LF_CAR_X, 0, zc)))
+        kf(parts["cw"], "location", f, Vector((LF_CW_X, LF_RY, zw)))
+        kf(parts["rope_car"], "scale", f, Vector((1, 1, max(0.05, LF_SHEAVE_Z - (zc + 2.9)))))
+        kf(parts["rope_cw"], "scale", f, Vector((1, 1, max(0.05, LF_SHEAVE_Z - (zw + 2.75)))))
+        kf(parts["sheave"], "rotation_euler", f, Vector((0, (zc - z_ref) / parts["r_sh"], 0)))
+    for o in (parts["car"], parts["cw"], parts["rope_car"], parts["rope_cw"], parts["sheave"]):
+        _interp(o, "LINEAR")
+    return car_z
+
+
+def _lift_world(ctx, p, glow_frame=None, riders=True):
+    import scene_lib_v2_tower as TW
+    TW.build_city(ctx, p, golden=p.get("golden", False))
+    TW.build_hero(ctx)
+    # remove the city traffic lane that runs through the explainer plot (y ~ 56 / 64)
+    drop = [o.name for o in bpy.data.objects
+            if o.name.startswith("tc") and o.parent is None and abs(o.location.y - TW.EXP[1]) < 10]
+    for nm in drop:
+        o = bpy.data.objects.get(nm)
+        if o is None:
+            continue
+        kids = [c.name for c in o.children_recursive]
+        bpy.data.objects.remove(o, do_unlink=True)
+        for c in kids:
+            if bpy.data.objects.get(c) is not None:
+                bpy.data.objects.remove(bpy.data.objects[c], do_unlink=True)
+    root = _empty("lf_root", (TW.EXP[0], TW.EXP[1], 0.0))
+    parts = _lift_building(ctx, root, p, glow_frame, riders)
+    # plaza paving in front + fill light into the cut-open shaft
+    S.plane_obj("lf_plaza", 60, 40, (TW.EXP[0], TW.EXP[1] - 20, 0.04), S.pbr("lf_paving", hexc("cfc8ba"), 0.8, var=0.06))
+    fl = A._area("lf_fill", (TW.EXP[0], TW.EXP[1] - 30.0, 14.0), 12.0, p.get("fill", 9000.0), (1.0, 0.97, 0.92))
+    fl.rotation_euler = (math.radians(80), 0, 0)
+    fl.data.size_y = 26.0
+    return root, parts
+
+
+def _lw(root, x, y, z):
+    return (root.location.x + x, root.location.y + y, z)
+
+
+def _v_lift(ctx, p, view):
+    T = ctx.frames
+    FH = LF_FH
+    glow = ctx.word_time(p.get("load_cue", "plus"), 0.5) if view == "balance" else None
+    root, parts = _lift_world(ctx, p, glow, riders=(view != "balance"))
+    yf = -LF_D / 2
+    if view in ("hook", "outro"):
+        _lift_motion(ctx, parts, [(1, 0.3), (T, 0.3 + 4 * FH)])
+        if view == "hook":
+            _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, -9.0, -52.0, 4.0)), p.get("tgt0", _lw(root, 0.0, 0.0, 17.5))),
+                             (1.0, p.get("cam1", _lw(root, -6.5, -44.0, 4.5)), p.get("tgt1", _lw(root, 0.0, 0.0, 17.0)))],
+                       lens=p.get("lens", 30), clip=0.3, far=40000.0)
+        else:
+            _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, -8.0, -40.0, 6.0)), p.get("tgt0", _lw(root, 0.0, 0.0, 13.0))),
+                             (1.0, p.get("cam1", _lw(root, -40.0, -120.0, 45.0)), p.get("tgt1", _lw(root, 0.0, 0.0, 16.0)))],
+                       lens=p.get("lens", 30), clip=0.3, far=40000.0)
+        S.anchor(ctx, "car", parts["car"], (0, -2.9, 1.4))
+    elif view == "rig":
+        _lift_motion(ctx, parts, [(1, 0.3), (T, 1.3)])
+        H = parts["H"]
+        _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, 2.4, yf - 9.0, H + 0.4)), p.get("tgt0", _lw(root, 0.3, -2.9, H - 0.1))),
+                         (1.0, p.get("cam1", _lw(root, 2.0, yf - 7.8, H + 0.5)), p.get("tgt1", _lw(root, 0.3, -2.9, H)))],
+                   lens=p.get("lens", 26), clip=0.1)
+        S.anchor(ctx, "sheave", parts["sheave"], (0, -0.2, parts["r_sh"]))
+        S.anchor(ctx, "cwt", parts["cw"], (0, 0, 2.0))
+        S.anchor(ctx, "car", parts["car"], (0, -2.9, 2.9))
+    elif view == "balance":
+        zc = 3 * FH + 0.3
+        _lift_motion(ctx, parts, [(1, zc), (T, zc + 0.15)])
+        zm = zc + 1.4
+        _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, 0.6, yf - 6.0, zm + 0.6)), p.get("tgt0", _lw(root, 0.15, -2.9, zm - 0.1))),
+                         (1.0, p.get("cam1", _lw(root, 0.5, yf - 5.3, zm + 0.5)), p.get("tgt1", _lw(root, 0.15, -2.9, zm - 0.1)))],
+                   lens=p.get("lens", 28), clip=0.1)
+        S.anchor(ctx, "car", parts["car"], (0, -2.9, 1.9))
+        S.anchor(ctx, "cwt", parts["cw"], (0, 0, 2.5))
+    elif view == "motor":
+        _lift_motion(ctx, parts, [(1, 2 * FH + 0.3), (T, 3 * FH + 0.3)])
+        H = parts["H"]
+        shx = (LF_CW_X + LF_CAR_X) / 2
+        _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, shx + 2.0, yf - 2.8, H + 2.1)), p.get("tgt0", _lw(root, shx - 0.1, -2.3, H + 1.0))),
+                         (1.0, p.get("cam1", _lw(root, shx + 1.7, yf - 2.4, H + 2.0)), p.get("tgt1", _lw(root, shx - 0.1, -2.3, H + 1.0)))],
+                   lens=p.get("lens", 26), clip=0.05)
+        S.anchor(ctx, "motor", parts["sheave"], (0, -0.16, 0))
+    elif view == "pass":
+        zmid = 3 * FH + 0.3
+        z0 = _lf_cw_z(zmid)
+        # car goes up so that it passes the counterweight (same mid height) at ~55 % of the beat
+        zcross = (2 * LF_SHEAVE_Z - LF_ROPE - 2.9 - 2.75) / 2.0
+        _lift_motion(ctx, parts, [(1, zcross - 3.2), (T, zcross + 2.6)])
+        _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, 2.5, yf - 10.0, zcross + 2.0)), p.get("tgt0", _lw(root, 0.2, -2.9, zcross + 1.4))),
+                         (1.0, p.get("cam1", _lw(root, 2.2, yf - 9.0, zcross + 2.2)), p.get("tgt1", _lw(root, 0.2, -2.9, zcross + 1.5)))],
+                   lens=p.get("lens", 28), clip=0.1)
+        S.anchor(ctx, "car", parts["car"], (0, -2.9, 2.0))
+        S.anchor(ctx, "cwt", parts["cw"], (0, 0, 1.5))
+    elif view == "safety":
+        fcl = ctx.word_time(p.get("clamp_cue", "clamp"), 0.6)
+        zs = 2 * FH + 1.6
+        z_start = zs + 1.0
+        parts["smooth"] = False
+        _lift_motion(ctx, parts, [(1, z_start), (fcl, zs + 0.35), (fcl + 8, zs)], every=1)
+        # safety wedges on both rails at the car's plank, clamp in on the cue + red-amber glow
+        wm = _glow_keys("lf_wedge_glow", hexc("ff5a2a"), [(1, 0.0), (fcl, 0.0), (fcl + 3, 4.0), (fcl + 30, 2.5)])
+        dark = S.pbr("lf_wedge", hexc("2b2f35"), 0.4, 0.6, var=0)
+        for sx in (-1, 1):
+            for side in (-1, 1):
+                w = S.obj("wedge%d%d" % (sx, side), _mesh("wedge%d%d" % (sx, side),
+                          lambda bm: S.bm_box(bm, (0, 0, 0), (0.12, 0.14, 0.3)), [dark]), parent=parts["car"])
+                x_r = sx * 1.0
+                kf(w, "location", 1, Vector((x_r + side * 0.16, LF_RY, -0.3)))
+                kf(w, "location", fcl, Vector((x_r + side * 0.16, LF_RY, -0.3)))
+                kf(w, "location", fcl + 3, Vector((x_r + side * 0.11, LF_RY, -0.3)))
+                _interp(w, "LINEAR")
+                g = S.obj("wglow%d%d" % (sx, side), _mesh("wglow%d%d" % (sx, side),
+                          lambda bm: S.bm_box(bm, (0, -0.072, 0), (0.1, 0.004, 0.27)), [wm]), parent=w)
+                g.visible_shadow = False
+        A.ring_pulses(ctx, _lw(root, LF_CAR_X - 1.0, LF_RY - 0.1, zs), fcl, color=AMBER, count=3, gap=7, r1=0.7,
+                      life=20, rot=(math.radians(90), 0, 0), name="clamp")
+        zc = zs
+        _cam_keys2(ctx, [(1, p.get("cam0", _lw(root, LF_CAR_X - 0.2, yf - 1.2, zc - 0.55)), p.get("tgt0", _lw(root, LF_CAR_X - 1.0, LF_RY, zc - 0.3))),
+                         (1.0, p.get("cam1", _lw(root, LF_CAR_X - 0.25, yf - 1.0, zc - 0.5)), p.get("tgt1", _lw(root, LF_CAR_X - 1.0, LF_RY, zc - 0.3)))],
+                   lens=p.get("lens", 28), clip=0.05)
+        S.anchor(ctx, "brake", parts["car"], (-1.0, LF_RY, -0.15))
+
+
+def b_lift_v2(ctx, p):
+    """Elevator counterweight explainer in the scene_lib_v2_tower city: a cream mid-rise on the explainer plot with
+    its lift shaft cut open at the front. view hook | rig | balance | motor | pass | safety | outro.
+    Anchors: car (hook/rig/balance/pass), sheave + cwt (rig), cwt (balance/pass), motor (motor), brake (safety).
+    Params: load_cue (balance: top plates glow amber), clamp_cue (safety), cam0/1, tgt0/1, lens, fill, golden."""
+    _v_lift(ctx, p, p.get("view", "hook"))
+
+
+S.V2_BUILDERS.update({
+    "mw_kitchen_v2": b_mw_kitchen_v2,
+    "checkout_v2": b_checkout_v2,
+    "lift_v2": b_lift_v2,
 })

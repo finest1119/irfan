@@ -354,3 +354,86 @@ World build time per beat (Blender log, "built … in"):
   laptop, so expect similar VRAM (≲ 2.5 GB at 1080×1920). Interiors are tiny (≤ ~120 objects, a few area lights).
 - One risk: the outro fog lift animates a world mix, so EEVEE re-bakes world lighting every frame (slower frames,
   not more VRAM).
+
+## Session: Track A batch 02 (26 Nov 2026, for 28 Nov 12:00 / 17:00 / 20:00 ET)
+
+Script: `page3/scripts/TRACK-A-BATCH-02.md`. Episodes (v2, libs `scene_lib_v2_ed`, voice Sadaltager + ED director notes):
+- `page3/episodes/2026-11-28-ed-b1-microwave-mesh/` (keyword "microwave mesh", slug `microwave-mesh`, synthetic 43.1 s)
+- `page3/episodes/2026-11-28-ed-b2-gum-barcode/` (keyword "gum barcode", slug `gum-barcode`, 42.5 s)
+- `page3/episodes/2026-11-28-ed-b3-elevator-counterweight/` (keyword "elevator counterweight", slug `elevator-counterweight`, 42.1 s)
+All cues checked by script: every `cue` / `cues` / `sub_cue` / `*_cue` is a word prefix in its own beat; every label
+anchor is registered by its view.
+
+### Builders (appended to `page3/blender/scene_lib_v2_ed.py`, second `V2_BUILDERS.update` block; batch 01 untouched)
+- Shared helpers: `wave_ribbon` (flat sine ribbon, XZ or XY), `_perf_mat` (perforated door-screen shader: round holes
+  via Transparent mix, `pitch` 2.2 mm in macro views, 4.5 mm in wide views to avoid moire), `_glow_keys`,
+  `_cam_keys2`, `_point`.
+- `mw_kitchen_v2` view hook|inside|bounce|water|mesh|light|outro. `_kitchen()` lightbox set (sage cabinets, stone
+  counter, window daylight panel, props). `make_microwave(top, left, pitch)` cut-away options; magnetron + waveguide +
+  mica cover; turntable bowl of soup spins. inside/bounce: teal packets on `BOUNCE` polylines (`wave_cue`); water:
+  7 H2O models jiggle harder from `vib_cue`, soup glow from `heat_cue`; mesh/light: 12 cm standing wave between back
+  wall and door (left side cut away), reflection rings at the door; light: amber short squiggles exit through the door.
+  Anchors magnetron, wall, food, molecule, wave, holes, light, door.
+- `checkout_v2` view hook|bars|scan|lookup|first|today|outro. `_store()` (3-level gondolas of colour-block products,
+  storefront windows, teal band), `_lane()` x3 (belt reused from bag_belt_v2, flush scanner window, optional tower,
+  register), `make_product` (box / can / gum, UPC label = `_upc_image()` 512x256 bars, NO digits), `_lasers()` (new
+  material `ed_laser2`; batch 01 `ed_laser` unchanged). lookup: amber pulses arc scanner -> office computer on
+  `send_cue`, teal back on `back_cue`, register glows. first: warm wood 1974 lane without the tower, yellow gum pack
+  crosses the window on `scan_cue` + beep rings. Anchors code, scanner, computer, gum.
+- `lift_v2` view hook|rig|balance|motor|pass|safety|outro. REUSES the `scene_lib_v2_tower` city (`build_city` +
+  `build_hero`, imported lazily); a 7-floor cream mid-rise replaces the explainer tower on `EXP`, shaft bay cut open
+  (slabs have a shaft hole), guide rails, landing doors, open-front car with 3 pill riders, counterweight (top 5 plates
+  glow amber on `load_cue`), 4 ropes over a yellow sheave (rope lengths + sheave spin keyed from the car height, 1:1
+  roping), machine room with motor / brake / controller. City cars on the road through that plot are deleted.
+  safety: car runs down then stops on `clamp_cue`, four wedges clamp the rail and glow. Anchors car, cwt, sheave,
+  motor, brake.
+
+### Stills (0.5 scale, 12 samples, synthetic timings in `output/<slug>/preview_synth/`)
+Sheets: `page3/_preview/2026-11-28-ed-b1-microwave-mesh-stills.jpg`, `…-b2-gum-barcode-stills.jpg`,
+`…-b3-elevator-counterweight-stills.jpg`.
+Iterations (renders per beat):
+- microwave: magnetron 3 (compartment hidden behind the door frame, then too far), twist 3 (door out of frame);
+  all others 2 (first pass washed out: exposure -0.6, darker walls, soup was hidden under the bowl cap).
+- gum: hook 4 (shelves in the caption band -> camera moved to the cashier side facing the storefront; then gum hidden
+  by the scanner tower), lookup 4 (cable behind the counter -> overhead data arc; computer out of frame -> office moved
+  onto the sight line with a partition behind it); first 3 (items sat 3 cm inside the counter: belt raised to counter
+  height); others 3 (re-rendered with the store fixes).
+- elevator: safety 4 (wedges hidden under the cab floor -> bigger wedges below the plank, camera under the car);
+  rig 3 (counterweight out of frame -> car starts low so the weight is near the top); others 2 (slabs crossed the
+  shaft).
+Build time per beat (Blender log): kitchen 0.1–0.4 s; store ~16.5 s (gondola mesh); tower city + lift ~5.6–6 s.
+Regression: batch 01 `bag_belt_v2` scan_arch re-rendered after the append (build 0.2 s, unchanged look;
+`page3/_preview/2026-11-27-ed-a2-checked-bag-stills.jpg` re-sheeted).
+
+### Known issues / leftovers
+- gum hook: the register pole and the scanner tower's back fill the left/front of the frame; the gum pack is small.
+- gum today / bars: plain (white aisle, flat red box face in the caption band) but calm.
+- microwave magnetron: narrow compartment, the magnetron reads as a grey block; twist: the door frame is a big dark
+  slab on the right (the dotted screen face is visible on it).
+- microwave light squiggles and molecule sizes are stylised, not to scale (narration says "thousands of times smaller").
+- elevator hook / outro: city towers (busy window grids) behind the caption band, as in the WJH tower outro.
+- elevator riders are simple pill figures; landing doors only on the back wall.
+- Store build ~16 s per render job (fine; could merge gondolas into fewer boxes).
+- Twist-card wordings ("TOO BIG TO FIT THROUGH", "THE PRICE ISN'T IN THE BARS", "IT MOSTLY MOVES THE DIFFERENCE")
+  need fact-check sign-off.
+
+### Windows RTX 3050 4 GB / EEVEE notes
+- No volume shaders. Door screen = one dithered Transparent mix shader; beams/pulses = emission or `add_mat` (few).
+- Images: in-memory 512x256 UPC label (+ batch 01 256x512 tag); the tower city uses the same HDRI / textures as the
+  WJH high-rise episode, which already renders on that laptop. Kitchen / store interiors: a few area lights, < 3k objects.
+
+### Review pass (same session)
+- Cue / motion fixes: gum `first` date label anchored to the static scanner window (the pack starts off-frame because
+  it is timed to reach the window on "item"); lookup pulses 3.6 m/s, office LEDs / screen on arrival, register glow
+  keyed to the return arrival; lane belt scroll speed = item speed (0.16, vintage 0.12); elevator safety run-in
+  shortened to 1 m so the car is in frame all beat; balance view drops the riders (chip says "EMPTY CAR"); rig camera
+  tilted so the wheel sits below the caption band; motor label now "MOTOR TURNS THE WHEEL" on the sheave hub (the
+  motor body is hidden behind the wheel); microwave "wave" anchor moved to the antinode next to the door.
+  Extra renders: microwave twist 4, gum hook / lookup 5, first / outro 4, elevator rig / safety 5, balance / motor 3.
+- Overlay layout check (cards, chips, captions; labels absent because no tracks are rendered):
+  `page3/_preview/track-a-batch02-overlay-check.jpg` (overlay_v2 `--preview` with
+  `EPISODE_WORKDIR=output/<slug>/preview_synth`, written to the scratchpad, then tiled). All band asserts pass; the
+  longest strings ("+ ABOUT 40–50 % OF A FULL LOAD", "SELF-CHECKOUT OR CASHIER?", "IT MOSTLY MOVES THE DIFFERENCE")
+  fit.
+- Numeral cues: "twelve" (bars), "ten" (first chip), "forty" (balance chip) sit on spoken numbers, like batch 01's
+  "ten". If whisper writes digits, `word_time` falls back silently to the default fraction: check after TTS.

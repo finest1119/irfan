@@ -1,0 +1,236 @@
+{
+ "id": "2026-11-28-ed-b3-elevator-counterweight",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "elevator counterweight",
+ "slug": "elevator-counterweight",
+ "title": "Your Elevator Barely Lifts You: A Hidden Counterweight Does",
+ "fb_caption": "In most tall buildings, the elevator motor isn't lifting the whole car by itself. Steel ropes run over a grooved wheel at the top to a heavy counterweight that matches the empty car plus about 40 to 50 percent of a full load, so the motor mostly moves the difference. And if a car ever goes too fast, safety brakes clamp onto the rails. Three floors: stairs or elevator?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Elevator",
+  "#Engineering",
+  "#Physics"
+ ],
+ "engagement_comment": "Three floors: stairs or elevator? 1 = stairs, always, 2 = elevator, obviously, 3 = depends what I'm carrying.",
+ "sources": [
+  "Wikipedia, Elevator (counterweight typically = cab weight + 40-50% of capacity; steel ropes over a deeply grooved sheave; governor-tripped brake shoes clamp the rails): https://en.wikipedia.org/wiki/Elevator",
+  "TK Elevator, Classroom on Demand: Counterweights (cab weight + 40 to 50% of rated load; reduces the effort required by the lifting machine): https://tkelevator.com/us-en/tools/classroom-on-demand/counterweights.html",
+  "TK Elevator, Classroom on Demand: Governor (overspeed trips the governor; safety jaws grip the guide rails and stop the cab): https://www.tkelevator.com/us-en/tools/classroom-on-demand/governor-module.html",
+  "California Code of Regulations, Title 8 section 1604.15 (counterweight no more than car weight + half the rated load): https://dir.ca.gov/Title8/1604_15.html"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, knowledgeable American male explainer for a short science/how-it-works social video. Curious and warm, clear and fairly brisk (about 165-180 words per minute), conversational, a short pause before the twist fact, never salesy or dramatic news tone. US English.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "In most tall buildings, the elevator motor isn't lifting your whole car. A hidden weight is helping.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "WHO'S LIFTING YOU?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "rig",
+   "text": "Your car hangs from steel ropes that loop over a grooved wheel at the top and down to a heavy counterweight.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "rig",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "GROOVED WHEEL",
+      "anchor": "sheave",
+      "cue": "grooved",
+      "color": "amber"
+     },
+     {
+      "type": "label",
+      "text": "COUNTERWEIGHT",
+      "anchor": "cwt",
+      "cue": "counterweight",
+      "color": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "id": "balance",
+   "text": "That counterweight matches the empty car plus about forty to fifty percent of a full load.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "balance",
+     "load_cue": "plus",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "COUNTERWEIGHT",
+      "anchor": "cwt",
+      "cue": "counterweight",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "EMPTY CAR",
+       "+ ABOUT 40–50 % OF A FULL LOAD"
+      ],
+      "cues": [
+       "empty",
+       "forty"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "motor",
+   "text": "So the motor mostly moves the difference, like a seesaw with a friend on the other end.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "motor",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "MOTOR TURNS THE WHEEL",
+      "anchor": "motor",
+      "cue": "motor",
+      "color": "amber"
+     },
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "IT MOSTLY MOVES THE DIFFERENCE",
+      "cue": "difference"
+     }
+    ]
+   }
+  },
+  {
+   "id": "pass",
+   "text": "As your car rises, the counterweight drops, and they pass each other in the shaft.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "pass",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "CAR UP",
+      "anchor": "car",
+      "cue": "rises",
+      "color": "teal"
+     },
+     {
+      "type": "label",
+      "text": "WEIGHT DOWN",
+      "anchor": "cwt",
+      "cue": "drops",
+      "color": "amber"
+     }
+    ]
+   }
+  },
+  {
+   "id": "safety",
+   "text": "And if a car ever goes too fast, safety brakes clamp onto the rails and stop it.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "safety",
+     "clamp_cue": "clamp",
+     "_still": 0.8
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "SAFETY BRAKES",
+      "anchor": "brake",
+      "cue": "safety",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "CLAMP",
+       "STOP"
+      ],
+      "cues": [
+       "clamp",
+       "stop"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Three floors: stairs or elevator? Tell us below.",
+   "shot": {
+    "builder": "lift_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "STAIRS OR ELEVATOR?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ]
+}

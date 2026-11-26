@@ -1,0 +1,246 @@
+{
+ "id": "2026-11-28-ed-b1-microwave-mesh",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "microwave mesh",
+ "slug": "microwave-mesh",
+ "title": "Why There's a Metal Mesh in Your Microwave Door",
+ "fb_caption": "That dotted screen in your microwave door is metal, and it's doing a big job. A magnetron fills the box with microwaves, the metal walls bounce them around until your food soaks them up, and the door's tiny holes are far too small for waves nearly five inches long to get through. Visible light is thousands of times smaller than the holes, so it slips right out and you can watch your food. Do you watch your food spin, or walk away?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Microwave",
+  "#Science",
+  "#Kitchen"
+ ],
+ "engagement_comment": "Do you watch your food spin, or walk away? 1 = I watch every second, 2 = I walk away, 3 = I stand back from it.",
+ "sources": [
+  "FDA, Microwave Ovens (magnetron; microwaves reflected by the metal interior and absorbed by food; water molecules vibrate; leakage limit): https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+  "HyperPhysics (GSU), Microwave Oven (2,450 MHz, about 12 cm wavelength; door screen holes about 1 mm, far smaller than the wavelength; visible light about 2,000 times smaller than the holes): https://hyperphysics.gsu.edu/hbase/Waves/mwoven.html",
+  "Wikipedia, Microwave oven (12.2 cm wavelength; metal screen in the door): https://en.wikipedia.org/wiki/Microwave_oven"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "Calm, knowledgeable American male explainer for a short science/how-it-works social video. Curious and warm, clear and fairly brisk (about 165-180 words per minute), conversational, a short pause before the twist fact, never salesy or dramatic news tone. US English.\nPronunciation: Magnetron = MAG-nuh-tron.",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [
+   1080,
+   1920
+  ],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": [
+   "scene_lib_v2_ed"
+  ]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "There's a metal screen hidden in your microwave door. It's why you can watch your food cook.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "hook",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "WHY THE DOTS?",
+      "at": 0.25
+     }
+    ]
+   }
+  },
+  {
+   "id": "magnetron",
+   "text": "Inside, a part called a magnetron makes microwaves, an invisible kind of radio wave.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "inside",
+     "wave_cue": "microwaves",
+     "_still": 0.75
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "MAGNETRON",
+      "anchor": "magnetron",
+      "cue": "magnetron",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "INVISIBLE",
+       "RADIO WAVE"
+      ],
+      "cues": [
+       "invisible",
+       "radio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "bounce",
+   "text": "Metal walls reflect them, so they bounce around until your food soaks them up.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "bounce",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "METAL WALLS REFLECT",
+      "anchor": "wall",
+      "cue": "reflect",
+      "color": "teal"
+     },
+     {
+      "type": "label",
+      "text": "FOOD SOAKS THEM UP",
+      "anchor": "food",
+      "cue": "soaks",
+      "color": "amber"
+     }
+    ]
+   }
+  },
+  {
+   "id": "water",
+   "text": "They make the water molecules in your food vibrate, and that motion turns into heat.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "water",
+     "heat_cue": "heat",
+     "_still": 0.85
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "WATER MOLECULE",
+      "anchor": "molecule",
+      "cue": "water",
+      "color": "teal"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "VIBRATE",
+       "HEAT"
+      ],
+      "cues": [
+       "vibrate",
+       "heat"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "Here's the trick. These microwaves are nearly five inches long. The holes are tiny, so almost none get out.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "mesh",
+     "_still": 0.7
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "WAVE: ABOUT 5 IN",
+      "anchor": "wave",
+      "cue": "nearly",
+      "color": "teal"
+     },
+     {
+      "type": "label",
+      "text": "TINY HOLES",
+      "anchor": "holes",
+      "cue": "holes",
+      "color": "amber"
+     },
+     {
+      "type": "card",
+      "style": "twist",
+      "text": "TOO BIG TO FIT THROUGH",
+      "cue": "almost"
+     }
+    ]
+   }
+  },
+  {
+   "id": "light",
+   "text": "Visible light waves are thousands of times smaller than the holes, so light slips through. You see in, the microwaves stay in.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "light",
+     "_still": 0.6
+    },
+    "overlays": [
+     {
+      "type": "label",
+      "text": "LIGHT GETS OUT",
+      "anchor": "light",
+      "cue": "slips",
+      "color": "amber"
+     },
+     {
+      "type": "chips",
+      "items": [
+       "LIGHT OUT",
+       "MICROWAVES IN"
+      ],
+      "cues": [
+       "see",
+       "stay"
+      ],
+      "style": "check"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Do you watch your food spin, or walk away? Tell us below.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "outro"
+    },
+    "overlays": [
+     {
+      "type": "card",
+      "text": "WATCH OR WALK AWAY?",
+      "sub": "Tell us below",
+      "sub_cue": "tell",
+      "at": 0.25
+     }
+    ]
+   }
+  }
+ ]
+}
