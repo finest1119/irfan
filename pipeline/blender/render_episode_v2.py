@@ -25,7 +25,7 @@ import scene_lib as L  # noqa: E402
 import scene_lib_v2 as S  # noqa: E402
 
 
-def load_builders():
+def load_builders(ep=None):
     import scene_lib_v2_air  # noqa: F401  (registers into S.V2_BUILDERS)
     import scene_lib_v2_city  # noqa: F401
     import scene_lib_v2_market  # noqa: F401
@@ -47,6 +47,22 @@ def load_builders():
         except Exception:
             import traceback
             traceback.print_exc()
+    # Other Pages' builder libs (opt-in): episode.json "render": {"libs": ["scene_lib_v2_ed"], "lib_dirs": ["page3/blender"]}
+    # lib_dirs are repo-relative (default page3/blender when libs is set). WJH/SME episodes have no "libs" -> unchanged.
+    r = (ep or {}).get("render", {}) or {}
+    libs = r.get("libs") or []
+    if libs:
+        root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+        for d in r.get("lib_dirs") or ["page3/blender"]:
+            d = os.path.join(root, d)
+            if d not in sys.path:
+                sys.path.insert(0, d)
+        for mod in libs:
+            try:
+                __import__(mod)
+            except Exception:
+                import traceback
+                traceback.print_exc()
     return S.V2_BUILDERS
 
 
@@ -103,7 +119,7 @@ def main():
     ctx = L.Ctx(scene, frames, fps, beat_words, tm["start"])
     ctx.anchors = {}
     ctx.params = params
-    builders = load_builders()
+    builders = load_builders(ep)
     if shot["builder"] not in builders:
         raise SystemExit("unknown v2 builder %r (v2 builders: %s)" % (shot["builder"], ", ".join(sorted(builders))))
     t0 = time.time()
