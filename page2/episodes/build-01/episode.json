@@ -612,7 +612,7 @@
      },
      {
       "type": "big",
-      "text": "PERMIT ✔",
+      "text": "PERMIT: OK",
       "cue": "permit"
      }
     ],
@@ -1288,7 +1288,7 @@
     "overlays": [
      {
       "type": "card",
-      "text": "Would your HOA let you put this in YOUR yard?",
+      "text": "Would your HOA allow this?",
       "at": 0.2
      }
     ]

@@ -158,7 +158,7 @@ OVERLAYS = {
                 {"type": "bar", "top": "house_top", "bottom": "house_base", "label": "HOUSE ≈ 28 FT", "cue": "taller", "side": "left"},
                 {"type": "bar", "top": "tower_top_ghost", "bottom": "tower_base", "label": "TOWER 50 FT", "cue": "fifty", "color": "red"},
                 {"type": "label", "text": "WINDY RIDGE +70 FT", "anchor": "ridge_pad", "cue": "windy"},
-                {"type": "big", "text": "PERMIT ✔", "cue": "permit"}],
+                {"type": "big", "text": "PERMIT: OK", "cue": "permit"}],
     "how": [{"type": "label", "text": "3 BLADES", "anchor": "rotor_hub", "cue": "three"},
             {"type": "label", "text": "GENERATOR", "anchor": "generator", "cue": "generator", "dx": 140},
             {"type": "label", "text": "TAIL VANE", "anchor": "tail", "cue": "tail", "dx": -140},
@@ -182,7 +182,7 @@ OVERLAYS = {
                  {"type": "big", "text": "ONE LIGHT.", "cue": "one"}],
     "teaser": [{"type": "card", "text": "NEXT: BUILD #2", "cue": "tomorrow"},
                {"type": "label", "text": "?", "anchor": "waterfall", "cue": "creek"}],
-    "question": [{"type": "card", "text": "Would your HOA let you put this in YOUR yard?", "at": 0.2}],
+    "question": [{"type": "card", "text": "Would your HOA allow this?", "at": 0.2}],
 }
 
 
