@@ -18,3 +18,6 @@ Mildly Elsewhere-style cutaways are realistic to reach.
 3. Roll out after Irfan approves: SME first, then ED, then WJH.
 
 Also open: YouTube Shorts cross-posting (decision pending: 1 channel per Page recommended). YPP thresholds double on 1 Feb 2027.
+
+## Update 27 Nov 2026 (Irfan)
+WJH ALSO moves to the realistic Blender cutaway look (approved in the ED test, page3/tests/cutaway_test), REPLACING the Zack D. Films plan. The three Pages stay distinct through palette and grade, caption style and thumbnails. WJH: cooler, dramatic news grade with its own caption style and the WJH thumbnail layouts. Rollout after the 29 Nov reset; heavy scene building is done by Codex.
