@@ -6,7 +6,7 @@ Panduan untuk Irfan selepas semakan editorial. Nama menu di bawah mengikut papar
 
 **Nama Page** · Di Belakang Tabir  
 **Kategori utama** · Education  
-**Bio (82 aksara)** · Selak benda harian di Malaysia. Ikut aliran air, wang dan tenaga dalam keratan 3D.
+**Bio** · Jom kita tengok cerita di belakang tabir dalam kehidupan seharian kita. Follow untuk ilmu baru setiap hari
 
 **About / Perihal**
 
@@ -15,7 +15,7 @@ Pernah tertanya ke mana air satu taman mengalir selepas hujan? Dalam siri Dalam 
 ## Senarai semak Irfan
 
 1. [ ] Pada komputer, log masuk menggunakan profil Irfan yang akan mentadbir Page. Dari menu Facebook pilih **Pages → Create new Page**, atau buka borang penciptaan terus. [Borang Facebook](https://www.facebook.com/pages/create) · [Panduan penciptaan Meta](https://en-gb.facebook.com/business/learn/lessons/how-create-facebook-business-page)
-2. [ ] Dalam **Page name**, masukkan **Di Belakang Tabir**. Taip **Education** dalam **Category** dan klik cadangan yang sepadan. Jika pilihan setempat berbeza, cuba **Digital creator**. Tampal bio di atas dalam **Bio**. Baca pratonton untuk ejaan dan jarak, kemudian klik **Create Page**.
+2. [ ] Dalam **Page name**, masukkan **Di Belakang Tabir**. Taip **Education** dalam **Category** dan klik cadangan yang sepadan. Jika pilihan setempat berbeza, cuba **Digital creator**. Tampal bio di atas dalam **Bio**. Jika Facebook mengehadkan bio kepada 101 aksara, Irfan pilih potongan sebelum diteruskan. Baca pratonton untuk ejaan dan jarak, kemudian klik **Create Page**.
 3. [ ] Dalam langkah **Finish setting up your Page**, langkau alamat, waktu operasi, laman web, nombor telefon dan WhatsApp. Tiada butiran hubungan awam dibekalkan. Jika Irfan sediakan e-mel editorial kelak, masukkan melalui **About → Contact and basic info → Edit → Save**. Untuk pertanyaan sekarang, gunakan Messenger. Pada Page, buka menu **… → Add/Edit action button → Send message → Save** jika tersedia. Semak butang dari pandangan pelawat.
 4. [ ] Klik gambar profil kanan atas → **See all profiles → Di Belakang Tabir**. Pada muka Page, pilih **About → Details about you → Write some details about yourself** atau medan **Description** jika tersedia. Tampal perenggan About dan simpan. Sesetengah paparan hanya menawarkan Bio. Dalam keadaan itu, kekalkan bio pendek dan catat bahawa medan panjang belum tersedia.
 5. [ ] Dengan identiti Page masih aktif, pilih **Settings & privacy → Settings → Page setup → Name → Username → Edit**. Cuba `@dibelakangtabirmy`, `@dibelakangtabirmalaysia`, `@dibelakangtabir3d` mengikut turutan. Taip tanpa `@` jika medan menambahkannya. Klik **Save changes** selepas Facebook menerima nama. Ketersediaan handle dan laluan pada akaun Irfan **(perlu semak)**. Jika medan belum tersedia, teruskan dengan URL bernombor.

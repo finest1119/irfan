@@ -31,7 +31,7 @@ Satu bakul rotan, dua resit dan petak kayu yang boleh dilihat melalui keratan ka
 
 | Masa | Beat dan arahan kamera | Narasi BM dan kad sari kata |
 | --- | --- | --- |
-| 0–5 s | Hook. Resit jatuh ke dalam bakul. Angka 1.9% kelihatan di luar bakul. | Inflasi Oktober / satu perpuluhan sembilan peratus. / Bakul siapa yang dikira? |
+| 0–5 s | Hook. Resit jatuh ke dalam bakul. Angka 1.9% kelihatan di luar bakul. | Beli ikan kat gerai sama. / Kenapa jiran lebih terasa / bila harga naik? |
 | 5–13 s | Kamera melepasi pemegang bakul. Jejak ikan, sayur, kemudian bergerak ke kunci rumah dan tiket. | Di pasar, mungkin anda / cuma beli ikan dan sayur. / Dalam kiraan negara, / ada sewa rumah, / ada tambang juga. |
 | 13–21 s | Dinding sisi terbelah, nampak ruang berlainan saiz. Pandang tepat ke luas tapak. | Tengok petak dalam model ni. / Petak besar mewakili / bahagian belanja yang besar / dalam corak purata isi rumah. |
 | 21–28 s | Gerakkan kad harga sama banyak secara peratusan di satu petak besar dan satu petak kecil. | Kalau harga berubah / dengan peratus yang sama, / petak besar lebih mempengaruhi / angka keseluruhan. |

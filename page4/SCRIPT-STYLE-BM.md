@@ -1,3 +1,5 @@
+> Arkib cadangan awal. Untuk dua Page dan draf produksi semasa, rujuk [NEXT-STEPS.md](NEXT-STEPS.md).
+
 # The voice of Selak Sekejap
 
 **Use “korang” as the default direct address.** It sounds like a host talking to people gathered around a workbench. Say it once when it earns its place. An opening like “Air dah surut. Habis, air tu pergi mana?” needs no pronoun. “Kau” can sound pointed with a stranger. Reserve “anda” for verbatim official text if that text must appear. Use neutral, widely understood Malaysian BM, with local terms when the setting warrants them. Listen for a neighbour explaining a thing they have noticed.
@@ -15,7 +17,7 @@
 
 **Dalam Benda** · Follow one object, drop, signal or receipt. Show where it goes, what changes it and one surprise. Return to the opening object so the viewer can now read it differently.
 
-**Bengkel Din** · Keep the viewer in the second person. Din does the physical work silently. “Korang pernah angkat baju sebab hujan tempias? Din tarik rak masuk. Tapi baju kat tengah masih lembap. Jadi dia jarakkan palang.” Each *tapi* must expose a consequence of the previous attempt. Each *jadi* must produce a change the camera can show. End with the test and one honest limit. Keep Din’s pencil, metric rule and porch bench recognisable.
+**Bengkel Bar** · Keep the viewer in the second person. Bar does the physical work silently. “Korang pernah angkat baju sebab hujan tempias? Bar tarik rak masuk. Tapi baju kat tengah masih lembap. Jadi dia jarakkan palang.” Each *tapi* must expose a consequence of the previous attempt. Each *jadi* must produce a change the camera can show. End with the test and one honest limit. Keep Bar’s pencil, metric rule and porch bench recognisable.
 
 ## Timing, voice and captions
 
@@ -23,7 +25,7 @@
 - Google lists **Standard Malay** for Gemini TTS and provides preset voices with different delivery. Audition **Achird** (friendly) and **Zubenelgenubi** (casual) on the same BM passage. Include **Sadaltager** (knowledgeable) if neither lands the explanation. Accent and natural Malaysian delivery by individual voice **(perlu semak)**. Google’s language listing alone cannot tell us which one Irfan will recognise as local. Google lists free-tier input and output for Gemini 3.8 Flash TTS. Verify free quota in the intended project before the audition. [Google speech generation, voices and languages](https://ai.google.dev/gemini-api/docs/speech-generation) · [Google pricing, Flash TTS](https://ai.google.dev/gemini-api/docs/pricing#gemini-3.8-flash-tts)
 - Direct the voice separately from spoken copy: “Cakap macam tengah terangkan dekat kawan di Malaysia. Santai, jelas. Berhenti sekejap bila soalan habis.” Blind-test the same line with Irfan: “Korang perasan tak? Lepas hujan, air kat kedai mamak dah surut. Tapi dekat simpang tu, lopak masih ada. Tambang LRT pula dua ringgit lima puluh sen.” This is audition copy. Score *korang*, *surut*, *simpang*, LRT, price, rhythm and the question ending. Lock one approved voice and prompt across both series. If none passes, adjust direction and retry within free quota.
 - Keep the full approved BM words. Burn 2–4 words per card, one phrase at a time, up to two short lines if necessary. Break at meaning, keep “satu perpuluhan sembilan peratus” together as “1.9%”, and keep a preposition with its noun. Use white Montserrat Bold with a dark shadow in the lower-middle safe area. Shift the subject or caption if the words cover the mechanism. Align to the actual speech with multilingual Whisper (`ms`) and listen against the script. Never display the planning separators or estimated timestamps.
-- Use two or three relevant hashtags: one series or Page tag and one or two issue tags. Examples: “#SelakSekejap #MusimHujan”, “#DalamBenda #HargaBarang” and “#BengkelDin #JemurBaju”. Ask about something viewers can observe. “Dekat rumah korang, tuala selalu lambat kering kat bahagian mana?”
+- Use two or three relevant hashtags: one series or Page tag and one or two issue tags. Examples: “#SelakSekejap #MusimHujan”, “#DalamBenda #HargaBarang” and “#BengkelBar #JemurBaju”. Ask about something viewers can observe. “Dekat rumah korang, tuala selalu lambat kering kat bahagian mana?”
 
 ## A Malaysian frame before the first word
 

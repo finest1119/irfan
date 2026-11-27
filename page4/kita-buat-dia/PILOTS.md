@@ -1,66 +1,60 @@
-# Kita Buat Dia · tiga episod rintis
+# Kita Buat Dia · tiga skrip rintis BM
 
-Tiga skrip untuk Reel menegak 9:16. Baca lajur kanan dari atas ke bawah untuk narasi penuh. Setiap garis miring menandakan pertukaran kad sari kata dan senyap dalam rakaman. Masa ialah sasaran suntingan **(perlu semak)** melalui bacaan BM sebenar. Letak label “Ilustrasi 3D” dan baris isu pada bingkai pertama, asing daripada sari kata. Lihat [daftar topik dan sumber](TOPICS-20.md).
+Narator bercerita sambil Bar bekerja senyap. Baca lajur suara dari atas ke bawah. Masa sasaran termasuk jeda bunyi dan aksi. Satu gerakan kamera menegak 9:16 bagi setiap cerita, dari masalah ke dalam mekanisme lalu keluar semula untuk ujian kedua. Paparkan “Ilustrasi 3D” dan baris isu pada pembukaan.
 
-## SME-01 · Rak dah teduh, lengan masih lembap · 53 saat
+## SME-01 · Kayuh basikal, dapat jus tembikai · 48 saat
 
-**Baris isu pada pembukaan** · “Persediaan sekolah menghadapi tengkujuh · KPM · 3 Nov 2026”
+**Baris isu** · Terengganu, 17 Nov 2026 · Usaha menangani lebihan buah bermusim. Gerai pasar malam Bar ialah rekaan. [Laporan negeri](https://api.trdi.my/kerajaan-negeri-laksana-pelbagai-usaha-tangani-lambakan-buah-bermusim) · [Rekod pemprosesan lebihan buah, 5 Nov](https://hansard.parlimen.gov.my/hansard/dewan-rakyat/2026-11-05)
 
-Din bekerja di bawah awning rumah teres. Sediakan dua pasang lengan kapas serupa, dibasahkan sama rata. Dalam setiap pasangan, bandingkan kawasan kain yang asalnya bersentuhan. Guna cahaya, angin dan tempoh sama.
-
-| Masa | Beat dan arahan kamera | Narasi BM dan kad sari kata |
+| Masa | Gerak kamera dan bunyi | Suara narator |
 | --- | --- | --- |
-| 0–6 s | Hook. Tangan Din memicit dua lapis lengan. Bunyi titis pada cucur atap. | Musim hujan, rak dah teduh. / Kenapa lengan baju sekolah / masih basah kat tengah? |
-| 6–14 s | Gerak seiring rak dari tepi luar ke bawah awning. Perhatikan dua penyangkut yang berlaga. | Din tarik rak / masuk bawah bumbung. / Hujan dah tak kena. / Tapi rak terpaksa rapat / dengan dinding. |
-| 14–23 s | Menyelit di antara dua lengan. Tunjuk permukaan kain yang melekap dan ruang udara yang sempit. | Tengok lengan yang dua ni. / Kain basah melekap. / Udara lembap di celahnya / susah nak berganti. / Patutlah bahagian tu lambat. |
-| 23–32 s | Din ketuk pembaris dua kali. Dia gelongsorkan palang belakang. Lengan berjiran kini berselang. | Cuba sekali lagi. / Jadi Din tambah satu palang / di belakang. / Satu penyangkut depan, / satu lagi belakang. / Haa, dah ada celah. |
-| 32–43 s | Benang bergerak di celah baru. Label masa berlalu. Keratan serat menunjukkan bahagian terdedah dan bertindih. | Korang tengok benang tu. / Angin boleh lalu. / Din biarkan kedua-dua pasang / di bawah teduh yang sama. / Lepas beberapa ketika, / periksa bahagian yang bertindih tadi. |
-| 43–53 s | Dalam ilustrasi ujian, susunan berjarak mempunyai tompok lembap lebih kecil. Tunjuk tepi basah yang masih tinggal. | Bila kain terpisah, / air lebih mudah menyejat. / Kalau udara sekeliling lembap, / masih ambil masa. / Ikuti Kita Buat Dia / untuk cubaan Din seterusnya. |
+| 0–6 s | Ikut hirisan tembikai jatuh ke dalam jag. Undur melepasi penutup hingga nampak pedal bergerak. | Nak segelas jus tembikai? Kat gerai Bar, orang yang buat air kena naik basikal dulu. |
+| 6–14 s | Luncur dari bakul buah masak ke roda belakang yang terangkat di atas kaki penyangga. | Pasar malam dah nak tutup. Tembikai elok ada sebakul lagi. Bar bawa keluar pengisar yang boleh jalan dengan kayuhan kaki. |
+| 14–22 s | Jejak garis kapur pada tayar ke penggelek di balik pengadang. Bunyi tayar berdesir. | Masa jag kosong, elok je dia pusing. Tapi bila masuk buah, tengok garis putih tu. Tayar lalu, penggelek kat sebelah macam tertinggal bas! |
+| 22–31 s | Bar berhenti. Dua ketukan pembaris. Dalam keratan, penggelek bersalut getah kini rapat sekata pada tayar. | Cuba sekali lagi. Jadi Bar tukar penggelek tu. Permukaan getah yang baharu mencengkam tayar. Kali ni dia kayuh dengan isi jag yang sama. |
+| 31–41 s | Tanda pada penggelek melintas berkali-kali bagi setiap pusingan tayar. Kamera naik ikut aci ke pusaran merah. | Nampak yang kecil tu berpusing laju? Dialah yang memusingkan bilah di dasar jag. Ketul tembikai mula turun ke tengah. Dah jadi jus! |
+| 41–48 s | Bar berhenti, tunggu bilah pegun, kemudian tuang segelas. Bakul sebelah masih penuh. | Segelas siap. Bar pandang bakul, lepas tu dia tengok betis sendiri. Siapa nak kayuh untuk gelas kedua? |
 
-**Kapsyen Facebook** · Pada 3 November, KPM mengingatkan sekolah tentang persediaan tengkujuh. Di anjung rumah model Din pula, cuba cari dua lengan baju yang masih melekap selepas rak dialih. Ilustrasi 3D. #KitaBuatDia #BengkelDin #JemurBaju
+**Untuk produksi.** Tunjuk pemacu terlindung, kaki penyangga stabil dan jag terkunci sepanjang kayuhan. Tiada janji masa mengisar. [Contoh pengisar kayuh sebenar](https://rockthebike.com/products/fender-blender-universale)
 
-**Komen pertama Page** · Bila jemur baju bawah bumbung, bahagian mana yang selalu korang kena periksa kali kedua?
+**Kapsyen FB** · Roda belakang laju, tembikai dalam jag tak bergerak. Cuba cari bahagian yang tergelincir. #KitaBuatDia #BengkelBar
 
-**Semakan editorial.** Benang menunjukkan pergerakan udara. Tompok ialah ilustrasi, masa pengeringan sebenar (perlu semak). [Fizik menjemur kain, West Texas A&M](https://www.wtamu.edu/~cbaird/sq/mobile/2015/03/06/when-hang-drying-clothes-which-is-faster-indoors-or-outdoors/) · [Kajian penyejatan dan udara, USGS](https://pubs.usgs.gov/pp/0272c/report.pdf). Sumber bagi isu pembukaan di bawah. [Surat KPM](https://www.moe.gov.my/storage/files/shares/pengumuman/2026/SURAT%20PERINGATAN%20MTL%202026_2027.pdf) · [Tinjauan METMalaysia](https://www.bernama.com/en/news.php?id=2624650)
+**Komen pertama** · Kalau satu kayuhan dapat satu teguk, jus apa yang berbaloi?
 
-## SME-02 · Mana lebih murah bagi 100 gram? · 56 saat
+## SME-02 · Bumbung main kompang · 46 saat
 
-**Baris isu pada pembukaan** · “Harga pengguna Malaysia · Keluaran DOSM · 19 Nov 2026”
+**Baris isu** · Tinjauan Monsun Timur Laut 2026/27 · Kenyataan METMalaysia, 23 Okt 2026. [Surat KPM yang memetik tinjauan](https://www.moe.gov.my/storage/files/shares/pengumuman/2026/SURAT%20PERINGATAN%20MTL%202026_2027.pdf)
 
-Set kedai runcit rekaan. Dua pek bahan sama, 300 g pada RM6 dan 500 g pada RM8. Tulis “Harga contoh” pada kad pertama hingga akhir. Din bawa poket kad lipat dari bengkel.
-
-| Masa | Beat dan arahan kamera | Narasi BM dan kad sari kata |
+| Masa | Gerak kamera dan bunyi | Suara narator |
 | --- | --- | --- |
-| 0–7 s | Hook. Din hulur RM6, kemudian sangkut bila dua pek disandingkan. Tunjuk berat kedua-duanya. | Pek enam ringgit / atau lapan ringgit? / Kalau korang nak banding harga, / Din ada masalah kecil. |
-| 7–15 s | Beralih bawah lipatan kertas. Kad pertama ada dua harga besar. Din letakkan kad pada pek masing-masing. | Lepas angka harga Oktober keluar, / Din cuba banding belanja dapur. / Dia tulis harga pek / atas dua kad. |
-| 15–25 s | Tapi. Muka pek terbuka dalam keratan. Pek panjang mengandungi lebih banyak bahan. | Tapi yang enam ringgit / cuma tiga ratus gram. / Yang lapan ringgit / lima ratus gram. / Macam mana nak banding / jumlah yang sama? |
-| 25–35 s | Jadi. Din buka kad berpetak. Letak satu petak bagi setiap 100 g. Bahagi harga merentasi petak. | Jadi Din lipat kad baru. / Satu petak, seratus gram. / Pek kecil isi tiga petak. / Enam ringgit bahagi tiga, / dua ringgit sepetak. |
-| 35–45 s | Kamera ikut lima petak hingga label RM1.60. Tutup selebihnya supaya penonton nampak satu petak setiap kad. | Pek besar isi lima petak. / Lapan ringgit bahagi lima, / seringgit enam puluh sen. / Sekarang tutup semua / kecuali satu petak setiap kad. |
-| 45–56 s | Din tindih petak yang sama berat. Tunjuk semula kedua-dua harga penuh di kaunter sebelum tamat. | Berat sama, / pek besar lebih murah / bagi setiap seratus gram. / Nak beli satu pek, / tetap kena bayar lapan ringgit. / Ikuti Kita Buat Dia. |
+| 0–5 s | Kompang berbunyi sekali. Undur hingga dua tangan Bar kelihatan dalam poket apron. | Siapa ketuk kompang kat anjung tu? Bar tengah berdiri dengan dua-dua tangan dalam poket. |
+| 5–13 s | Susur ke hujung atap model. Bar tunjuk cubaan awal pada kompang kecil sebelahnya. | Bila musim tengkujuh, Bar selalu jenguk pintu nak tengok lebat mana hujan. Kali ni dia nak dengar dari meja kerja. |
+| 13–20 s | Ikut satu titis jatuh terus ke kulit. Bunyi halus tenggelam bawah deru air. | Mula-mula dia biar air ketuk sendiri. Tapi cuba dengar. Bunyi atas atap lagi kuat. Kulit kompang pula dah basah. |
+| 20–30 s | Kamera melengkung ke model kedua. Keratan tunjuk cawan pada paksi dan pemukul di bawah teduh. | Jadi Bar tadah titisan dalam cawan kecil. Sebelah sini makin berat. Bila cawan terjungkit, air tumpah ke dulang dan pemukul jatuh. Dung! |
+| 30–39 s | Pemberat mengembalikan cawan kosong dan mengangkat pemukul. Besarkan aliran dari penyiram pada model. | Bila kosong, cawan tegak balik. Dengar jarak pukulan sekarang. Air masuk lebih laju, cawan cepat penuh, pukulan pun makin rapat. |
+| 39–46 s | Berhentikan aliran. Kamera undur ke Bar yang masih menunggu satu pukulan. Cawan separuh penuh. | Eh, dah senyap? Tengok dalam cawan. Air masih ada, cuma belum cukup berat untuk main nota terakhir. |
 
-**Kapsyen Facebook** · DOSM menerbitkan IHP Oktober pada 19 November. Di kedai rekaan Din, lipat sekeping kad dan dua harga pek yang berbeza terus boleh dibandingkan. Semua harga dalam ilustrasi 3D ini ialah contoh. #KitaBuatDia #BengkelDin #HargaBarang
+**Untuk produksi.** Kekalkan kompang kedua kering dan beri ruang kepada pukulan sebenar dalam adunan bunyi. Rentak ikut air yang masuk ke model. Alat ini tiada penentukuran hujan. Kosongkan tadahan selepas ujian. [Prinsip cawan jungkit, USGS](https://www.usgs.gov/media/images/tipping-bucket)
 
-**Komen pertama Page** · Barang dapur apa yang korang selalu jumpa dalam dua saiz pek di rak yang sama?
+**Kapsyen FB** · Hujan main kompang di bengkel Bar. Dengar apa jadi pada sela pukulan bila cawan cepat penuh. #KitaBuatDia #MusimHujan
 
-**Semakan editorial.** Semak semula RM6 ÷ 3 = RM2 dan RM8 ÷ 5 = RM1.60 bagi 100 g. Rujukan kaedah sahaja, [ACCC](https://www.accc.gov.au/consumers/pricing/unit-prices-for-groceries) dan [Consumer Protection NZ](https://www.consumerprotection.govt.nz/general-help/guide-to-buying-smart/saving-at-the-supermarket-with-unit-prices). Tiada harga kedai atau kenaikan barang tertentu didakwa. Sumber bagi isu pembukaan di bawah. [DOSM](https://www.dosm.gov.my/uploads/release-content/file_20261119081202.pdf) · [Analisis Kenanga](https://www.bixmalaysia.com/CMSPages/GetFile.aspx?guid=1f1324eb-9b85-47c2-ac41-8f2807e5ef03)
+**Komen pertama** · Kat rumah korang, bunyi hujan atas permukaan apa yang paling senang cam?
 
-## SME-03 · Dinding kotak dah tebal. Mana lagi haba masuk? · 52 saat
+## SME-03 · Kotak yang ingat dia pernah senget · 48 saat
 
-**Baris isu pada pembukaan** · “Perjalanan cuti · Trafik perlahan dilaporkan LLM · 7 Nov 2026”
+**Baris isu** · Malaysia · Imbas kempen kiriman 11.11, 1–22 Nov 2026. [Jadual kempen EasyParcel](https://blog.easyparcel.com/my/deepavali-mega-deals-11-11/)
 
-Buka pada kotak bekal di ruang barang kereta yang terparkir. Ujian berpasangan di meja anjung. Kedua-dua kotak sama, ada pelapik dinding dan dasar. Hanya satu diberi pelapik penutup. Kekalkan kedudukan penutup rapat bagi kedua-duanya.
-
-| Masa | Beat dan arahan kamera | Narasi BM dan kad sari kata |
+| Masa | Gerak kamera dan bunyi | Suara narator |
 | --- | --- | --- |
-| 0–6 s | Hook. Din angkat penutup kotak. Ketul ais meluncur dalam air. Kereta kekal terparkir. | Balik kampung, / jalan bergerak perlahan. / Dinding kotak dah tebal. / Mana lagi haba masuk? |
-| 6–14 s | Di tepi meja, keratan bergerak dari dasar ke bucu. Pelapik kelihatan di dasar dan keliling. | Din dah lapik dasar / dan keliling kotak ais. / Dia tutup rapat. / Tapi tengok keratan / di bahagian atas ni. |
-| 14–23 s | Tahan pada kepingan nipis di atas, dilihat dari sisi. Cahaya sisi membezakan kulit luar dengan ruang dalam. | Penutupnya tinggal sekeping nipis. / Haba dari luar / masih boleh masuk ikut sini. / Jadi Din potong / satu lagi pelapik / untuk penutup. |
-| 23–33 s | Ujian. Letak dua kotak di tempat teduh. Din timbang ais, tutup kedua-duanya. Jam bermula. | Korang tengok dua kotak ni. / Ais sama berat, / tempat teduh yang sama. / Cuma satu penutup / ada lapisan tambahan. / Din mulakan jam. |
-| 33–43 s | Label “Masa dipercepat”. Kedua-dua penutup diangkat serentak. Tapis air cair dan bandingkan baki ais. | Lepas tempoh yang sama, / Din buang air cair / dan timbang baki ais. / Dalam model ni, / lebih banyak ais tinggal / bawah penutup berlapik. |
-| 43–52 s | Kembali ke keratan penutup, kemudian ke tangan Din menutup kotak. Bunyi penutup menggantikan muzik. | Pelapik memperlahankan / haba yang masuk. / Ais tetap akan cair, / cuma lebih perlahan. / Ikuti Kita Buat Dia / untuk ujian seterusnya. |
+| 0–6 s | Dua kotak tegak di meja bungkus Bar. Rapat pada tingkap jernih. Guli merah kelihatan pada satu kotak sahaja. | Dua kotak ni sampai tegak. Tapi satu tadi pernah dibaringkan. Macam mana Bar tahu kalau dia tak pasang kamera? |
+| 6–14 s | Lalu di sisi pasu yang menunggu untuk dibungkus. Ikut Bar ke kotak ujian kosong. | Lepas sibuk bungkus pesanan sebelas sebelas, Bar terfikir pasal pasu kecil dia. Dia cuba selitkan guli dalam alur pada dinding kotak. |
+| 14–22 s | Kekal paras meja semasa Bar baringkan kotak ke kanan dan tegakkan semula. Bunyi guli pergi dan balik. | Bila kotak senget, guli bergolek sampai ke hujung. Tapi bila tegak balik, guli ikut balik. Habis hilang cerita tadi. |
+| 22–31 s | Dua ketukan pembaris. Ikut lekuk alur baharu ke pintu kecil yang hanya terbuka dari satu sisi. | Jadi Bar tambah poket di hujung alur. Ada pintu kecil kat mulutnya. Guli boleh tolak pintu tu dari sebelah luar. |
+| 31–41 s | Bar ulang gerak yang sama. Kamera ikut guli merah melepasi pintu. Pintu tertutup semula, penahan menghalangnya daripada terbuka ke belakang. | Cuba baringkan sekali lagi. Dengar klik tu? Sekarang tegakkan kotak. Guli nak balik ikut jalan tadi, tapi pintu dah tertahan. Nampak titik merah tu? |
+| 41–48 s | Undur melalui tingkap merah. Kotak kawalan di sebelah kekal tegak dengan tingkap kosong. | Yang ni pernah senget ke kanan. Pasu kat dalam pecah ke tidak? Yang tu Bar kena buka dan tengok sendiri. |
 
-**Kapsyen Facebook** · LLM melaporkan trafik perlahan di beberapa lebuh raya pada 7 November. Untuk perjalanan panjang macam itu, Din tengok bahagian kotak ais yang paling senang terlepas pandang. Ilustrasi 3D. #KitaBuatDia #BengkelDin #BalikKampung
+**Untuk produksi.** Guna guli merah dalam bekas tertutup dan kotak ujian kosong. Model ini menunjukkan satu arah kecondongan. [Contoh penunjuk kecondongan kiriman, SpotSee](https://helpcenter.spotsee.io/knowledge/tiltwatch-xtr)
 
-**Komen pertama Page** · Bila bawa bekal jauh, korang pernah perasan bahagian mana pada kotak ais tu paling nipis?
+**Kapsyen FB** · Kotak dah berdiri elok, guli merah masih tersangkut. Ikut guli tu masa Bar tegakkan kotak kali kedua. #KitaBuatDia #BengkelBar
 
-**Semakan editorial.** Arah aliran haba dan prinsip penebatan disokong oleh [DOE](https://bsesc.energy.gov/energy-basics/heat-flow) dan [aktiviti kotak ais Cornell](https://ecommons.cornell.edu/bitstream/handle/1813/11461/Fibers%20and%20Animals.pdf?isAllowed=y&sequence=1). Baki ais ialah jangkaan model. Berat sebenar, masa tahan sejuk dan prestasi bekas (perlu semak). Sumber bagi isu pembukaan di bawah. [Unjuran PLUS](https://www.plus.com.my/wp-content/uploads/2026/11/PLUS-MEDIA-STATEMENT-PLUS-URGES-HIGHWAY-USERS-TO-PLAN-AHEAD-THIS-DEEPAVALI.pdf) · [Pemerhatian LLM](https://www.bernama.com/bm/news.php?id=2631246)
+**Komen pertama** · Barang apa yang korang harap kekal tegak sepanjang jalan?

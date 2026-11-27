@@ -1,3 +1,5 @@
+> Arkib cadangan awal. Untuk dua Page dan draf produksi semasa, rujuk [NEXT-STEPS.md](NEXT-STEPS.md).
+
 # Three launch pilots
 
 Read each BM column top to bottom for the complete narration. Each slash is a change of on-screen caption, silent in the VO. The time ranges are beat targets **(perlu semak)**. Fit the camera and caption cards to the approved recording. Each film is one continuous vertical move. Keep “Ilustrasi 3D” legible on the opening scene.
@@ -40,20 +42,20 @@ Read each BM column top to bottom for the complete narration. Each slash is a ch
 
 **Editor’s evidence.** DOSM is the issuer of the October figure released on 19 November. Its dashboard lets the editor check the month and comparison period. Bank Negara explains the basket weights and why household experiences vary. The fish/egg example is hypothetical. It makes no claim about October fish or egg prices. [DOSM release](https://storage.dosm.gov.my/cpi/cpi_2026-10.pdf) · [OpenDOSM prices](https://open.dosm.gov.my/dashboard/consumer-prices) · [Bank Negara on the basket](https://www.bnm.gov.my/monetary-stability) · [Bank Negara on households](https://www.bnm.gov.my/insights/inflation/ar2025b1)
 
-## 3 · Bengkel Din · Rak baju musim hujan
+## 3 · Bengkel Bar · Rak baju musim hujan
 
-**Topic 04 · target 47 s.** A school uniform hangs under Din’s terrace awning. Din works silently. Keep the camera inside the porch as he adjusts a model drying rack. For the comparison, use two matching damp sleeves, equal starting moisture, same shade and breeze, and equal elapsed time. Use a visible time-lapse cue “Selepas beberapa ketika”. This illustrates the effect. It promises no specific drying time.
+**Topic 04 · target 47 s.** A school uniform hangs under Bar’s terrace awning. Bar works silently. Keep the camera inside the porch as he adjusts a model drying rack. For the comparison, use two matching damp sleeves, equal starting moisture, same shade and breeze, and equal elapsed time. Use a visible time-lapse cue “Selepas beberapa ketika”. This illustrates the effect. It promises no specific drying time.
 
 | Time | Beat and camera | BM narration and caption cards |
 | --- | --- | --- |
-| 0–6 s | Hook. Din presses the dry cuff, then the damp underarm seam. | Musim hujan, lengan / baju sekolah dah kering. / Tapi kenapa ketiak / masih lembap? |
-| 6–14 s | First fix. Din slides the rack under shelter. The camera slips between the hangers. | Kat rumah korang / pernah jadi macam ni? / Din tarik rak / masuk bawah bumbung. / Elok, tempias dah / tak kena baju. |
+| 0–6 s | Hook. Bar presses the dry cuff, then the damp underarm seam. | Musim hujan, lengan / baju sekolah dah kering. / Tapi kenapa ketiak / masih lembap? |
+| 6–14 s | First fix. Bar slides the rack under shelter. The camera slips between the hangers. | Kat rumah korang / pernah jadi macam ni? / Bar tarik rak / masuk bawah bumbung. / Elok, tempias dah / tak kena baju. |
 | 14–21 s | Snag. Sleeves overlap in the narrower space. Reveal the film of moisture. | Tapi ruang sempit. / Lengan baju bertindih. / Bila air kat kain / mula menyejat, / udara celah baju / jadi lembap. |
-| 21–29 s | Second fix. Din adds a staggered rail and spaces hangers. | Jadi Din tambah / satu palang kat belakang. / Dia susun penyangkut / berselang-seli. / Sekarang lengan baju / dah tak melekap. |
+| 21–29 s | Second fix. Bar adds a staggered rail and spaces hangers. | Jadi Bar tambah / satu palang kat belakang. / Dia susun penyangkut / berselang-seli. / Sekarang lengan baju / dah tak melekap. |
 | 29–38 s | Test. Travel with a thread tied to the rack into the new gap. | Nampak benang tu bergerak? / Ada angin lalu / celah kain. / Udara lembap tadi / berganti dengan udara / yang lebih kering. |
 | 38–47 s | Payoff. Compare the exposed and overlapped sleeves after the same interval. | Jadi air kat kain / lebih mudah menyejat. / Kalau udara sekeliling / pun lembap, / lambat jugalah. / Patutlah baju kat tengah / selalu tinggal akhir sekali. |
 
-**FB caption** · “Dah alih rak bawah bumbung, baju sekolah masih lembap lagi? Din cuba ubah jarak penyangkut. Tengok benang kecil kat celah lengan tu. #BengkelDin #JemurBaju #MusimHujan”
+**FB caption** · “Dah alih rak bawah bumbung, baju sekolah masih lembap lagi? Bar cuba ubah jarak penyangkut. Tengok benang kecil kat celah lengan tu. #BengkelBar #JemurBaju #MusimHujan”
 
 **Page comment** · “Bila terpaksa jemur bawah bumbung, korang susun tuala dengan baju macam mana?”
 
