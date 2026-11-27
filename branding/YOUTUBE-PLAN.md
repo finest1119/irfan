@@ -20,3 +20,6 @@
 2. In each Page's Gemini/Google Cloud project, enable YouTube Data API v3 and create an OAuth client; authorise each channel once.
 3. Risk: uploads from unaudited API projects are locked to PRIVATE, so request the YouTube API compliance audit (free; can take a while). Until it is approved, upload via the browser or by hand.
 - API quota: about 6 uploads/day per project, so one project per Page is needed (ED up to 5/day).
+
+## Upload method (Irfan, 27 Nov 2026): option 3
+Everything runs from the Mac. The Mac pulls each reel's video from Facebook via the Graph API (Page tokens for all 3 Pages are on the Mac; API files carry no watermark) and uploads it to YouTube. The laptops are not involved. Codex builds and runs it (prompt: branding/CODEX-YOUTUBE-PROMPT.md); Irfan only handles logins, 2FA and consent screens.
