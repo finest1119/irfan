@@ -1,0 +1,18 @@
+{
+  "_about": "What Just Happened, layout C 'lower third': full-bleed hero, the hook as ONE caption (setup white, payoff ALL CAPS on a red #E63946 box) on a solid navy news lower-third band with a red top rule near the bottom of the safe zone; optional yellow rounded label sticker on the object (--sticker/--sticker-label). Rotate A->B->C per Page.",
+  "layout": "C",
+  "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "align": "center",
+  "margin_x": 70,
+  "safe": [285, 1635],
+  "grade": {"contrast": 1.06, "saturation": 1.12, "vignette": 0.2},
+  "caption": {
+    "size": 100, "max_lines": 3, "setup_case": "asis", "payoff_case": "upper",
+    "color": "#FFFFFF", "shadow": 0.0, "box": "#E63946", "box_text": "#FFFFFF", "radius": 6, "pad": [12, 22],
+    "line_gap": 14, "y_bottom": 1560, "micro_size": 40, "micro_color": "#FFD21F",
+    "band": {"type": "solid", "color": "#0B1F3A", "alpha": 0.94, "pad": 36, "rule": "#E63946", "rule_h": 12}
+  },
+  "sticker": {"size": 46, "box": "#FFD21F", "text": "#0B1F3A", "radius": 40, "pad": [14, 30], "shadow": 0.4},
+  "badge": null,
+  "pointers": false
+}

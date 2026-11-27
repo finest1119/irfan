@@ -8,7 +8,7 @@ literally true to the reel. All key content must sit inside the preset's safe zo
 
 Usage:
   .venv/bin/python tools/make_thumbnail.py HERO.png OUT.jpg --setup "Your tower can act like a" --payoff "CHIMNEY"
-      [--style wjh|sme|ed|path.json] [--micro "context line"] [--sticker "fact" --sticker-at x,y]
+      [--style wjh|wjh_b|wjh_c|sme|sme_b|sme_c|ed|ed_b|ed_c|path.json] [--micro "context line"] [--sticker "fact" --sticker-at x,y]
       [--sticker-label "TOWER"] [--badge "BUILD #01"] [--payoff-lines "THE TOP|FLOORS"] [--accent #hex] [--zoom 1.0] [--focus 0.5,0.5] [--text-top PX]
       [--arrow x,y,angle] [--circle x,y,r] [--debug-safe]
 
@@ -21,8 +21,29 @@ Usage:
   --badge TEXT       set / override the badge text (e.g. "BUILD #01"); uses the preset's badge style.
   --debug-safe       also writes OUT-debug.jpg with the safe zone and content boxes drawn.
 
+Layouts (preset key "layout"; rotate A->B->C per Page, never the same layout twice in a row):
+  A (default)  full-bleed hero + two-tier hook on top (setup line + payoff box). Absent key = A, byte-identical.
+  B "poster"   flat paper header, thin rule, small kicker (--setup), HUGE stacked payoff words in alternating
+               colours, hero frame in a window below (edge: line | hazard | torn). --micro under the words.
+  C "caption"  full-bleed hero, the hook as ONE caption near the bottom of the safe zone (setup plain, payoff on a
+               single highlight box, never split), over a gradient or solid lower-third band; --micro above it;
+               pair with --sticker as a small label on the object.
+  --sticker / --badge / --arrow / --circle work the same in every layout.
+
 Preset JSON schema (tools/thumb_styles/<name>.json; every key optional, defaults below in DEFAULT).
 Every key marked (opt-in) is off by default, so presets that don't use it render exactly as before.
+  layout                "A" (default) | "B" | "C"; B/C presets don't inherit from the Page's A preset (restate font etc.)
+  poster                (layout B) {"bg", "grid" null|{step, major_every, color, alpha, major_alpha},
+                         "rule" null|{color, width, length (col width), gap}, "kicker_size" (58), "kicker_case"
+                         (upper), "kicker_color", "size" (250, auto-shrinks), "leading" (0.16 x cap), "colors" [line
+                         colours, cycled], "gap" (30), "micro_size", "micro_color", "window_gap" (44), "window_max_top"
+                         (1200), "edge" {"type": line|hazard|torn, "color", "height", "colors", "stripe", "depth", "step"}}
+                         Payoff lines: "|" splits, else 1 word per line (short words join the next), pairs for 4+.
+  caption               (layout C) {"font" (= payoff font), "size" (104, auto-shrinks), "max_lines" (3), "setup_case",
+                         "payoff_case" (asis|upper|lower|sentence), "color", "shadow", "box", "box_text", "radius",
+                         "pad" [y, x], "box_gap", "line_gap", "y_bottom" (1590; --text-top sets the top instead),
+                         "micro_size", "micro_color", "micro_gap",
+                         "band" {"type": gradient|solid, "color", "alpha", "fade" (gradient), "pad", "rule", "rule_h"}}
   font                  path (repo-relative or absolute) of the heavy sans, e.g. assets/fonts/Montserrat-ExtraBold.ttf,
                         OR a fallback list of paths: the first file that exists wins, missing ones are skipped
   text_top              y of the top of the hook block (px)
@@ -168,14 +189,19 @@ def color_panel(im, ts):
     return im
 
 
-def hero_plate(path, zoom, focus, grade, top_shade):
+def hero_plate(path, zoom, focus, grade, top_shade, size=(W, H)):
+    """Cover-fit crop + grade of the hero frame to size (default the full 1080x1920 cover)."""
+    pw, ph = size
     im = Image.open(path).convert("RGB")
-    s = max(W / im.width, H / im.height) * zoom
-    im = im.resize((max(W, round(im.width * s)), max(H, round(im.height * s))), Image.LANCZOS)
+    s = max(pw / im.width, ph / im.height) * zoom
+    im = im.resize((max(pw, round(im.width * s)), max(ph, round(im.height * s))), Image.LANCZOS)
     fx, fy = focus
-    x0 = min(max(0, round(im.width * fx - W / 2)), im.width - W)
-    y0 = min(max(0, round(im.height * fy - H / 2)), im.height - H)
-    im = im.crop((x0, y0, x0 + W, y0 + H))
+    x0 = min(max(0, round(im.width * fx - pw / 2)), im.width - pw)
+    y0 = min(max(0, round(im.height * fy - ph / 2)), im.height - ph)
+    im = im.crop((x0, y0, x0 + pw, y0 + ph))
+    if size != (W, H):   # poster window (layout B): grade only, no vignette / top shade
+        im = ImageEnhance.Contrast(im).enhance(grade.get("contrast", 1.05))
+        return ImageEnhance.Color(im).enhance(grade.get("saturation", 1.10))
     im = ImageEnhance.Contrast(im).enhance(grade.get("contrast", 1.05))
     im = ImageEnhance.Color(im).enhance(grade.get("saturation", 1.10))
     vig = grade.get("vignette", 0.0)
@@ -277,9 +303,247 @@ def draw_arrow(d, x, y, ang, col, dark, L=260):
 def case(s, mode):
     if mode == "upper":
         return s.upper()
+    if mode == "lower":
+        return s.lower()
     if mode == "sentence":
         return s[:1].upper() + s[1:]
     return s
+
+
+def cap_box_text(img, P, x, top, s, font, color, key=True):
+    """Draw s with its cap-height top at `top` (so mixed lines share a baseline). Returns the ink box."""
+    bb, hb = font.getbbox(s), font.getbbox("H")
+    ImageDraw.Draw(img).text((x - bb[0], top - hb[1]), s, font=font, fill=rgb(color) + (255,))
+    box = (x, top, x + bb[2] - bb[0], top + hb[3] - hb[1])
+    if key:
+        P.boxes.append(box)
+    return box
+
+
+def stack_lines(text):
+    """Layout B payoff: 'A|B' = explicit lines; else 1 word per line up to 3 words, pairs for 4+."""
+    if "|" in text:
+        return [ln.strip() for ln in text.split("|") if ln.strip()]
+    w = text.split()
+    if len(w) > 3:
+        return [" ".join(w[i:i + 2]) for i in range(0, len(w), 2)]
+    out = []   # short words (<= 3 letters, e.g. BY, OF) ride with the next word so no line is tiny
+    for i, x in enumerate(w):
+        if out and len(out[-1]) <= 3 and " " not in out[-1]:
+            out[-1] += " " + x
+        else:
+            out.append(x)
+    return out
+
+
+def layout_b(a, st, font_path, pfont_path):
+    """Layout B 'poster': flat paper header, thin rule, small kicker (= --setup), HUGE stacked payoff words in
+    alternating colours, the hero frame in a window below (edge: line | hazard | torn)."""
+    b = st.get("poster", {})
+    mx = st["margin_x"]
+    col_w = W - 2 * mx
+    center = st.get("align", "center") == "center"
+    s0, s1 = st["safe"]
+    y0 = a.text_top if a.text_top is not None else st["text_top"]
+    rule = b.get("rule") or {}
+    rule_h, rule_gap = (rule.get("width", 6), rule.get("gap", 26)) if rule else (0, 0)
+    kick = case(a.setup, b.get("kicker_case", "upper"))
+    ksize = b.get("kicker_size", 58)
+    kf = ImageFont.truetype(font_path, ksize)
+    while ink_size(kf, kick)[0] > col_w and ksize > 36:
+        ksize -= 2
+        kf = ImageFont.truetype(font_path, ksize)
+    klines = balanced(kf, kick.split(), col_w)
+    k_cap = ink_size(kf, "H")[1]
+    k_h = len(klines) * k_cap + (len(klines) - 1) * int(ksize * 0.35)
+    plines = stack_lines(a.payoff.upper())
+    mf = ImageFont.truetype(font_path, b.get("micro_size", 44)) if a.micro else None
+    micro_h = (ink_size(mf, "H")[1] + b.get("gap", 30)) if mf else 0
+    win_max, win_gap = b.get("window_max_top", 1200), b.get("window_gap", 44)
+    psize = b.get("size", 250)
+    while True:
+        pf = ImageFont.truetype(pfont_path, psize)
+        cap = ink_size(pf, "H")[1]
+        lead = int(cap * b.get("leading", 0.16))
+        p_h = len(plines) * cap + (len(plines) - 1) * lead
+        bottom = y0 + rule_h + rule_gap + k_h + b.get("gap", 30) + p_h + micro_h
+        fits = max(ink_size(pf, ln)[0] for ln in plines) <= col_w and bottom + win_gap <= win_max
+        if fits or psize <= 90:
+            break
+        psize -= 6
+    win_top = int(max(bottom + win_gap, b.get("window_min_top", 0)))
+
+    img = Image.new("RGB", (W, H), rgb(b.get("bg", "#F4F1EA")))
+    g = b.get("grid")
+    if g:   # graph-paper grid over the paper
+        gd = ImageDraw.Draw(img, "RGBA")
+        gc = rgb(g.get("color", "#14212E"))
+        for i, v in enumerate(range(0, H, g.get("step", 54))):
+            major = g.get("major_every", 5) and i % g.get("major_every", 5) == 0
+            al = int(255 * (g.get("major_alpha", 0.16) if major else g.get("alpha", 0.07)))
+            lw = g.get("major_width", 2) if major else g.get("width", 1)
+            gd.line((0, v, W, v), fill=gc + (al,), width=lw)
+            if v < W:
+                gd.line((v, 0, v, H), fill=gc + (al,), width=lw)
+    win = hero_plate(a.hero, a.zoom, [float(v) for v in a.focus.split(",")], st["grade"], 0, size=(W, H - win_top))
+    img.paste(win, (0, win_top))
+    img = img.convert("RGBA")
+    d = ImageDraw.Draw(img)
+    edge = b.get("edge") or {}
+    et, ec = edge.get("type", "line"), edge.get("color", b.get("rule", {}).get("color", "#000000"))
+    if et == "line":
+        d.rectangle((0, win_top, W, win_top + edge.get("height", 14)), fill=rgb(ec) + (255,))
+    elif et == "hazard":
+        hazard(img, (0, win_top, W, win_top + edge.get("height", 28)), edge.get("colors", [ec, "#14212E"]),
+               edge.get("stripe", 26))
+    elif et == "torn":   # ragged paper edge overhanging the image (deterministic teeth)
+        import random
+        rnd = random.Random(7)
+        depth, step = edge.get("depth", 26), edge.get("step", 22)
+        pts = [(0, win_top - 2)]
+        for x in range(0, W + step, step):
+            pts.append((x, win_top + rnd.randint(int(depth * 0.2), depth)))
+        pts.append((W, win_top - 2))
+        sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(sh).polygon([(x, y + 6) for x, y in pts], fill=(0, 0, 0, 110))
+        img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(6)))
+        d = ImageDraw.Draw(img)
+        d.polygon(pts, fill=rgb(b.get("bg", "#F4F1EA")) + (255,))
+
+    P = Painter(img)
+    y = y0
+    if rule:
+        rl = rule.get("length", col_w)
+        rx = (W - rl) / 2 if center else mx
+        d.rectangle((rx, y, rx + rl, y + rule_h), fill=rgb(rule["color"]) + (255,))
+        y += rule_h + rule_gap
+    for ln in klines:
+        w, _ = ink_size(kf, ln)
+        cap_box_text(img, P, (W - w) / 2 if center else mx, y, ln, kf, b.get("kicker_color", "#111111"))
+        y += k_cap + int(ksize * 0.35)
+    y += b.get("gap", 30) - int(ksize * 0.35)
+    cols = b.get("colors", ["#111111"])
+    for i, ln in enumerate(plines):
+        w, _ = ink_size(pf, ln)
+        cap_box_text(img, P, (W - w) / 2 if center else mx, y, ln, pf, cols[i % len(cols)])
+        y += cap + lead
+    if mf:
+        y += b.get("gap", 30) - lead
+        w, _ = ink_size(mf, a.micro)
+        cap_box_text(img, P, (W - w) / 2 if center else mx, y, a.micro, mf,
+                     b.get("micro_color", b.get("kicker_color", "#111111")))
+    return img, P, plines
+
+
+def layout_c(a, st, font_path, pfont_path):
+    """Layout C 'caption': full-bleed hero, the hook as ONE flowing caption line near the bottom of the safe zone
+    (setup words plain, payoff words on a single highlight box), over a dark gradient or a solid lower-third band.
+    Pair with --sticker (+ --sticker-label) as a small rounded label on the object."""
+    c = st.get("caption", {})
+    mx = st["margin_x"]
+    col_w = W - 2 * mx
+    center = st.get("align", "center") == "center"
+    img = hero_plate(a.hero, a.zoom, [float(v) for v in a.focus.split(",")], st["grade"], 0)
+    cfont = resolve_font(c["font"]) if c.get("font") else pfont_path
+    toks = [(w, False) for w in case(a.setup, c.get("setup_case", "asis")).split()] + \
+           [(w, True) for w in case(a.payoff.replace("|", " "), c.get("payoff_case", "upper")).split()]
+    pad_y, pad_x = c.get("pad", [10, 22])
+    gap_x = c.get("box_gap", 10)
+
+    def segs(line):
+        out = []
+        for w, hl in line:
+            if out and out[-1][1] == hl:
+                out[-1][0].append(w)
+            else:
+                out.append([[w], hl])
+        return [(" ".join(ws), hl) for ws, hl in out]
+
+    def width(f, line):
+        tot, sp = 0, f.getlength(" ")
+        for i, (s, hl) in enumerate(segs(line)):
+            tot += ink_size(f, s)[0] + (2 * pad_x if hl else 0) + (sp + (gap_x if hl or segs(line)[i - 1][1] else 0)
+                                                                     if i else 0)
+        return tot
+
+    size = c.get("size", 104)
+    while True:
+        f = ImageFont.truetype(cfont, size)
+        pay = [t for t in toks if t[1]]
+        stoks = toks[:len(toks) - len(pay)]
+        lines = [stoks] if width(f, stoks) <= col_w or len(stoks) < 2 else \
+            [stoks[:k], stoks[k:]] if (k := min(range(1, len(stoks)), key=lambda k: max(
+                width(f, stoks[:k]), width(f, stoks[k:])))) else [stoks]
+        if width(f, lines[-1] + pay) <= col_w:   # payoff rides on the last setup line if it fits...
+            lines[-1] = lines[-1] + pay
+        else:                                     # ...else gets its own line; never split the highlight box
+            lines.append(pay)
+        wraps = len(lines) > 1 + (lines[-1] is pay) and size > c.get("size", 104) * 0.85   # shrink a bit to keep setup on 1 line
+        if (not wraps and len(lines) <= c.get("max_lines", 3) and max(width(f, ln) for ln in lines) <= col_w) \
+                or size <= 64:
+            break
+        size -= 4
+    cap = ink_size(f, "H")[1]
+    desc = (f.getbbox("Hgjpy")[3] - f.getbbox("H")[3]) if c.get("payoff_case", "upper") != "upper" or \
+        c.get("setup_case", "asis") != "upper" else 0
+    row = cap + desc + 2 * pad_y
+    lgap = c.get("line_gap", 14)
+    total = len(lines) * row + (len(lines) - 1) * lgap
+    yb = a.text_top + total if a.text_top is not None else c.get("y_bottom", 1590)
+    ytop = yb - total
+
+    band = c.get("band") or {"type": "gradient"}
+    img = img.convert("RGBA")
+    if band.get("type") == "solid":
+        bp = band.get("pad", 34)
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(lay).rectangle((0, ytop - bp, W, yb + bp),
+                                      fill=rgb(band.get("color", "#000000")) + (int(255 * band.get("alpha", 0.92)),))
+        img.alpha_composite(lay)
+        if band.get("rule"):
+            ImageDraw.Draw(img).rectangle((0, ytop - bp - band.get("rule_h", 12), W, ytop - bp),
+                                          fill=rgb(band["rule"]) + (255,))
+    else:   # dark gradient from above the caption down to the bottom edge
+        g0, a_ = ytop - band.get("fade", 360), band.get("alpha", 0.78)
+        col = Image.new("L", (1, H))
+        for yy in range(H):
+            col.putpixel((0, yy), int(255 * a_ * min(1.0, max(0.0, (yy - g0) / max(1, ytop - 40 - g0)))))
+        img.alpha_composite(Image.composite(Image.new("RGBA", (W, H), rgb(band.get("color", "#000000")) + (255,)),
+                                            Image.new("RGBA", (W, H), (0, 0, 0, 0)), col.resize((W, H))))
+
+    P = Painter(img)
+    sp = f.getlength(" ")
+    y = ytop
+    for ln in lines:
+        lw = width(f, ln)
+        x = (W - lw) / 2 if center else mx
+        sg = segs(ln)
+        for i, (s, hl) in enumerate(sg):
+            if i:
+                x += sp + (gap_x if hl or sg[i - 1][1] else 0)
+            w, _ = ink_size(f, s)
+            if hl:
+                box = (x, y, x + w + 2 * pad_x, y + row)
+                ImageDraw.Draw(img).rounded_rectangle(box, c.get("radius", 14), fill=rgb(c.get("box", "#E63946")) + (255,))
+                cap_box_text(img, P, x + pad_x, y + pad_y, s, f, c.get("box_text", "#FFFFFF"), key=False)
+                P.boxes.append(box)
+                x += w + 2 * pad_x
+            else:
+                if c.get("shadow", 0):
+                    sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+                    bb = f.getbbox(s)
+                    ImageDraw.Draw(sh).text((x - bb[0], y + pad_y - f.getbbox("H")[1] + 3), s, font=f,
+                                            fill=(0, 0, 0, int(255 * c["shadow"])))
+                    img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(8)))
+                cap_box_text(img, P, x, y + pad_y, s, f, c.get("color", "#FFFFFF"))
+                x += w
+        y += row + lgap
+    if a.micro:
+        mf = ImageFont.truetype(font_path, c.get("micro_size", 40))
+        w, _ = ink_size(mf, a.micro)
+        my = ytop - c.get("micro_gap", 26) - ink_size(mf, "H")[1]
+        cap_box_text(img, P, (W - w) / 2 if center else mx, my, a.micro, mf, c.get("micro_color", "#FFFFFF"))
+    return img, P, [" ".join(w for w, _ in ln) for ln in lines]
 
 
 def main():
@@ -317,6 +581,14 @@ def main():
         sys.exit("hook is %d words; max 8 (setup + payoff)" % (len(sw) + len(pw)))
     if (a.arrow or a.circle) and not st.get("pointers", True):
         sys.exit("style %r does not allow arrows/circles (THUMBNAIL-STYLE.md: no arrows or circles)" % a.style)
+
+    lay = str(st.get("layout", "A")).upper()
+    if lay in ("B", "C"):
+        img, P, plines = (layout_b if lay == "B" else layout_c)(a, st, font_path, pfont_path)
+        draw_extras(img, P, a, st, font_path)
+        return finish(img, P, a, st, plines)
+    if lay != "A":
+        sys.exit("unknown layout %r (A, B or C)" % lay)
 
     img = hero_plate(a.hero, a.zoom, [float(v) for v in a.focus.split(",")], st["grade"], st.get("top_shade", 0))
     img = img.convert("RGBA")
@@ -394,6 +666,13 @@ def main():
         w, _ = ink_size(mf, a.micro)
         P.text((xpos(w), y + 10 + 10), a.micro, mf, m["text"], box=m.get("box"), box_text=m["text"], pad=(10, 20))
 
+    draw_extras(img, P, a, st, font_path)
+    finish(img, P, a, st, plines)
+
+
+def draw_extras(img, P, a, st, font_path):
+    """Shared by every layout: fact sticker (--sticker), pointer (--arrow/--circle) and badge."""
+    p, mx = st["payoff"], st["margin_x"]
     sticker_box = None
     if a.sticker:
         k = st["sticker"]
@@ -509,6 +788,11 @@ def main():
             if not bg.get("decorative"):
                 P.boxes.append(layer.getchannel("A").getbbox())
 
+
+
+def finish(img, P, a, st, plines):
+    """Shared tail: frame border, safe-zone check, JPEG save (<10 MB), optional debug overlay."""
+    d = ImageDraw.Draw(img)
     bd = st.get("border", {})
     if bd.get("width"):
         d.rectangle((0, 0, W - 1, H - 1), outline=rgb(bd["color"]) + (255,), width=bd["width"])

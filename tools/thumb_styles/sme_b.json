@@ -1,0 +1,29 @@
+{
+  "_about": "Self-Made Engineer, layout B 'graph-paper poster': off-white #F4F1EA paper with a faint navy engineering grid, short orange rule, orange kicker (= --setup, caps), HUGE stacked Oswald payoff in navy #14212E with alternate lines safety orange #FF7A1A, hero window below a hazard-stripe band. Rotate A->B->C per Page.",
+  "layout": "B",
+  "font": ["assets/fonts/Oswald-Bold.ttf", "assets/fonts/Montserrat-ExtraBold.ttf"],
+  "text_top": 330,
+  "align": "left",
+  "margin_x": 90,
+  "safe": [285, 1635],
+  "grade": {"contrast": 1.05, "saturation": 1.1, "vignette": 0.0},
+  "payoff": {"max_words": 4},
+  "poster": {
+    "bg": "#F4F1EA",
+    "grid": {"step": 54, "major_every": 5, "color": "#14212E", "alpha": 0.08, "major_alpha": 0.18},
+    "rule": {"color": "#FF7A1A", "width": 12, "length": 200, "gap": 30},
+    "kicker_size": 72, "kicker_case": "upper", "kicker_color": "#14212E",
+    "size": 270, "leading": 0.10, "colors": ["#14212E", "#D9600A"], "gap": 30,
+    "micro_size": 46, "micro_color": "#14212E",
+    "window_gap": 50, "window_max_top": 1220,
+    "edge": {"type": "hazard", "height": 30, "stripe": 28, "colors": ["#FF7A1A", "#14212E"]}
+  },
+  "sticker": {
+    "size": 130, "min_size": 90, "max_width": 410, "box": "#14212E", "text": "#F4F1EA", "radius": 0,
+    "shadow": 0.0, "pad": [20, 28], "align": "left", "label_size": 44, "label_color": "#FF7A1A", "label_gap": 12,
+    "border": {"width": 6, "color": "#FF7A1A"}
+  },
+  "badge": null,
+  "pointers": true,
+  "pointer": {"style": "leader", "color": "#FF7A1A", "width": 6, "dot_r": 14, "dot_color": "#F4F1EA"}
+}

@@ -1,0 +1,23 @@
+{
+  "_about": "Self-Made Engineer, layout C 'caption + tag': full-bleed hero, the hook as ONE all-caps Oswald caption (setup off-white, payoff navy on a square safety-orange #FF7A1A plate) over a navy gradient at the bottom of the safe zone, plus a small navy/orange label tag on the build (--sticker/--sticker-label). Rotate A->B->C per Page.",
+  "layout": "C",
+  "font": ["assets/fonts/Oswald-Bold.ttf", "assets/fonts/Montserrat-ExtraBold.ttf"],
+  "align": "left",
+  "margin_x": 80,
+  "safe": [285, 1635],
+  "grade": {"contrast": 1.05, "saturation": 1.1, "vignette": 0.0},
+  "payoff": {"max_words": 4},
+  "caption": {
+    "size": 132, "max_lines": 3, "setup_case": "upper", "payoff_case": "upper",
+    "color": "#F4F1EA", "shadow": 0.35, "box": "#FF7A1A", "box_text": "#14212E", "radius": 0, "pad": [14, 22],
+    "line_gap": 16, "y_bottom": 1580, "micro_size": 44, "micro_color": "#FF7A1A",
+    "band": {"type": "gradient", "color": "#14212E", "alpha": 0.9, "fade": 420}
+  },
+  "sticker": {
+    "size": 50, "box": "#14212E", "text": "#F4F1EA", "radius": 0, "shadow": 0.3, "pad": [14, 24],
+    "label_size": 30, "label_color": "#FF7A1A", "label_gap": 10, "border": {"width": 5, "color": "#FF7A1A"}
+  },
+  "badge": null,
+  "pointers": true,
+  "pointer": {"style": "leader", "color": "#FF7A1A", "width": 6, "dot_r": 14, "dot_color": "#F4F1EA"}
+}

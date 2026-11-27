@@ -1,0 +1,22 @@
+{
+  "_about": "Everyday Decoded, layout B 'cream poster' (the World Decoded text-only style, our palette): flat warm cream #FFF4E0 paper, thin charcoal rule, small charcoal kicker (= --setup, caps), HUGE stacked payoff words alternating deep teal #00796E / charcoal #1B1F24, hero window under a ragged torn-paper edge. Rotate A->B->C per Page.",
+  "layout": "B",
+  "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "text_top": 330,
+  "align": "left",
+  "margin_x": 80,
+  "safe": [285, 1635],
+  "grade": {"contrast": 1.05, "saturation": 1.10, "vignette": 0.0},
+  "poster": {
+    "bg": "#FFF4E0",
+    "rule": {"color": "#1B1F24", "width": 5, "gap": 30},
+    "kicker_size": 60, "kicker_case": "upper", "kicker_color": "#1B1F24",
+    "size": 220, "leading": 0.14, "colors": ["#00796E", "#1B1F24"], "gap": 34,
+    "micro_size": 44, "micro_color": "#1B1F24",
+    "window_gap": 60, "window_max_top": 1220,
+    "edge": {"type": "torn", "depth": 30, "step": 24}
+  },
+  "sticker": {"size": 40, "box": "#FFB000", "text": "#1B1F24", "radius": 30},
+  "badge": null,
+  "pointers": false
+}

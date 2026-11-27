@@ -51,3 +51,22 @@ Source: facebook.com/profile.php?id=61595892121610, Reels tab, studied 25 Nov 20
 - **Optional fact sticker:** yellow #FFD21F rounded box, #111 text, 40 px bold, near the hero (y 1200–1500). Use only a number or fact stated in the video.
 - **Total hook:** at most 8 words. A question or a present-tense event is preferred, with "your" where it is honest.
 - **Truth rule:** every word must be literally true to the video. A question is allowed only if the video answers it. No invented numbers, events or "JUST" unless it happens in the reel. No arrows, emojis, red X or circles.
+
+## Our cover layouts A / B / C (Irfan, 27 Nov 2026), not the reference Page's templates above
+So the feed never looks the same every video, each Page has **3 layouts** (presets in `tools/thumb_styles/`, key
+`"layout"`), all driven by the same `make_thumbnail.py` args (`--setup`, `--payoff`, `--micro`, `--sticker`…) and
+the same truth / word-count rules. Each Page keeps its own palette and fonts in every layout.
+- **A, "hook on top" (current, default):** full-bleed hero frame, two-tier hook at the top (setup line + payoff box).
+  Presets `wjh`, `sme`, `ed`.
+- **B, "poster":** text-only poster header on a flat background (thin rule, small caps kicker = `--setup`, HUGE stacked
+  payoff words in alternating colours), with the hero frame in a window below. Presets `wjh_b` (navy, white/red words,
+  red bar), `sme_b` (off-white graph paper, Oswald navy/orange words, hazard-stripe edge), `ed_b` (warm cream,
+  teal/charcoal words, torn-paper edge). Best with a 1–3 word payoff; the hero window shows only the lower ~40%, so
+  aim `--focus` at the hero object.
+- **C, "caption":** full-bleed hero, the hook as ONE caption near the bottom of the safe zone (setup words plain,
+  payoff words on a single highlight box), plus a small rounded label sticker on the object (`--sticker`,
+  `--sticker-at`). Presets `wjh_c` (solid navy news lower-third, red box), `sme_c` (all-caps Oswald over a navy
+  gradient, orange plate, navy/orange tag), `ed_c` (lowercase caption over a charcoal gradient, teal box, amber pill).
+- **Rotation rule:** rotate **A → B → C** per Page, in posting order, and **never use the same layout twice in a row**
+  on a Page. Check the Page's previous cover before choosing.
+- Samples (real hero frames): `branding/thumb_variants/` and the contact sheet `branding/thumb_variants/ALL.jpg`.

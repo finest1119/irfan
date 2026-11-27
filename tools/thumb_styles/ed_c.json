@@ -1,0 +1,18 @@
+{
+  "_about": "Everyday Decoded, layout C 'lowercase caption': full-bleed hero, the hook as ONE lowercase caption line (setup white, payoff charcoal on a rounded teal #00B3A4 highlight box) over a charcoal gradient at the bottom of the safe zone, plus a small rounded amber label sticker on the object (--sticker). Rotate A->B->C per Page.",
+  "layout": "C",
+  "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "align": "center",
+  "margin_x": 70,
+  "safe": [285, 1635],
+  "grade": {"contrast": 1.05, "saturation": 1.10, "vignette": 0.0},
+  "caption": {
+    "size": 104, "max_lines": 3, "setup_case": "lower", "payoff_case": "lower",
+    "color": "#FFFFFF", "shadow": 0.45, "box": "#00B3A4", "box_text": "#1B1F24", "radius": 22, "pad": [10, 24],
+    "line_gap": 14, "y_bottom": 1570, "micro_size": 40, "micro_color": "#FFB000",
+    "band": {"type": "gradient", "color": "#1B1F24", "alpha": 0.82, "fade": 380}
+  },
+  "sticker": {"size": 40, "box": "#FFB000", "text": "#1B1F24", "radius": 40, "pad": [12, 28], "shadow": 0.4},
+  "badge": null,
+  "pointers": false
+}

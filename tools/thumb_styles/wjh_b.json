@@ -1,0 +1,22 @@
+{
+  "_about": "What Just Happened, layout B 'breaking card': text-only poster. Flat navy #0B1F3A header, short red rule, small white kicker (= --setup, caps), HUGE stacked payoff words alternating white / red #E63946 (Montserrat ExtraBold), the hero frame in a window below a red bar. Rotate A->B->C per Page (branding/THUMBNAIL-STYLE.md).",
+  "layout": "B",
+  "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "text_top": 330,
+  "align": "center",
+  "margin_x": 80,
+  "safe": [285, 1635],
+  "grade": {"contrast": 1.06, "saturation": 1.12, "vignette": 0.0},
+  "poster": {
+    "bg": "#0B1F3A",
+    "rule": {"color": "#E63946", "width": 10, "length": 220, "gap": 34},
+    "kicker_size": 64, "kicker_case": "upper", "kicker_color": "#FFFFFF",
+    "size": 230, "leading": 0.14, "colors": ["#FFFFFF", "#E63946"], "gap": 34,
+    "micro_size": 44, "micro_color": "#FFD21F",
+    "window_gap": 56, "window_max_top": 1220,
+    "edge": {"type": "line", "color": "#E63946", "height": 16}
+  },
+  "sticker": {"size": 40, "box": "#FFD21F", "text": "#0B1F3A", "radius": 14},
+  "badge": null,
+  "pointers": false
+}
