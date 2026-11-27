@@ -1,18 +1,20 @@
 {
-  "_about": "What Just Happened, layout C 'lower third': full-bleed hero, the hook as ONE caption (setup white, payoff ALL CAPS on a red #E63946 box) on a solid navy news lower-third band with a red top rule near the bottom of the safe zone; optional yellow rounded label sticker on the object (--sticker/--sticker-label). Rotate A->B->C per Page.",
+  "_about": "What Just Happened, layout C 'big-statement news punch' (Irfan 27 Nov 2026): hero darkened at the edges, ONE giant white Montserrat headline (= --payoff, 2-4 words) with a heavy black stroke in the upper third, the key word (--key, default last word) in red #E63946, the setup on a slightly rotated yellow #FFD21F tape strip under it, and a red circle + arrow on the key object (--circle x,y,r / --arrow x,y,angle). Pointers are allowed in THIS layout only (Irfan's call; WJH A/B still have none). Rotate A->B->C per Page.",
   "layout": "C",
   "font": "assets/fonts/Montserrat-ExtraBold.ttf",
+  "text_top": 330,
   "align": "center",
-  "margin_x": 70,
+  "margin_x": 60,
   "safe": [285, 1635],
-  "grade": {"contrast": 1.06, "saturation": 1.12, "vignette": 0.2},
+  "grade": {"contrast": 1.10, "saturation": 1.15, "vignette": 0.6},
+  "payoff": {"box": "#E63946", "text": "#FFFFFF"},
   "caption": {
-    "size": 100, "max_lines": 3, "setup_case": "asis", "payoff_case": "upper",
-    "color": "#FFFFFF", "shadow": 0.0, "box": "#E63946", "box_text": "#FFFFFF", "radius": 6, "pad": [12, 22],
-    "line_gap": 14, "y_bottom": 1560, "micro_size": 40, "micro_color": "#FFD21F",
-    "band": {"type": "solid", "color": "#0B1F3A", "alpha": 0.94, "pad": 36, "rule": "#E63946", "rule_h": 12}
+    "variant": "punch",
+    "size": 210, "stroke": 14, "leading": 0.16, "color": "#FFFFFF", "key_color": "#E63946", "stroke_color": "#000000",
+    "edge_dark": 0.55,
+    "tape": {"size": 60, "case": "upper", "color": "#FFD21F", "text": "#0B1F3A", "pad": [18, 40], "rotate": -2.5},
+    "tape_gap": 40, "micro_size": 44, "micro_color": "#FFFFFF"
   },
-  "sticker": {"size": 46, "box": "#FFD21F", "text": "#0B1F3A", "radius": 40, "pad": [14, 30], "shadow": 0.4},
   "badge": null,
-  "pointers": false
+  "pointers": true
 }

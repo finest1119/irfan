@@ -63,10 +63,18 @@ the same truth / word-count rules. Each Page keeps its own palette and fonts in 
   red bar), `sme_b` (off-white graph paper, Oswald navy/orange words, hazard-stripe edge), `ed_b` (warm cream,
   teal/charcoal words, torn-paper edge). Best with a 1–3 word payoff; the hero window shows only the lower ~40%, so
   aim `--focus` at the hero object.
-- **C, "caption":** full-bleed hero, the hook as ONE caption near the bottom of the safe zone (setup words plain,
-  payoff words on a single highlight box), plus a small rounded label sticker on the object (`--sticker`,
-  `--sticker-at`). Presets `wjh_c` (solid navy news lower-third, red box), `sme_c` (all-caps Oswald over a navy
-  gradient, orange plate, navy/orange tag), `ed_c` (lowercase caption over a charcoal gradient, teal box, amber pill).
+- **C, one concept per Page** (`--style wjh_c|sme_c|ed_c`):
+  - `wjh_c` **"news punch"**: hero darkened at the edges, ONE giant white headline (= `--payoff`, 2–4 words) with a
+    heavy black stroke in the upper third, the key word in red (`--key WORD`, default the last word), the setup on a
+    slightly tilted yellow tape strip under it, and a red circle + arrow on the key object (`--circle x,y,r`,
+    `--arrow x,y,angle`). Irfan's exception (27 Nov 2026): circles/arrows are allowed in WJH layout C only; A and B
+    still use none.
+  - `sme_c` **"caption + tag"**: one all-caps Oswald caption near the bottom (setup off-white, payoff on a square
+    orange plate) over a navy gradient, plus a navy/orange label tag on the build (`--sticker`, `--sticker-at`).
+  - `ed_c` **"labelled diagram"**: teal blueprint-grid tint on the image edges, the hook in a white rounded
+    speech-bubble card at the top-left (setup charcoal, payoff deep teal), and thin white callout lines with dots
+    from 2–3 parts of the object to small charcoal rounded labels (`--callout "x,y:LABEL"` or
+    `--callout "x,y:LABEL@lx,ly"`, repeatable). Labels must name real parts shown in the reel.
 - **Rotation rule:** rotate **A → B → C** per Page, in posting order, and **never use the same layout twice in a row**
   on a Page. Check the Page's previous cover before choosing.
 - Samples (real hero frames): `branding/thumb_variants/` and the contact sheet `branding/thumb_variants/ALL.jpg`.

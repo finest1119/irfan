@@ -25,9 +25,13 @@ Layouts (preset key "layout"; rotate A->B->C per Page, never the same layout twi
   A (default)  full-bleed hero + two-tier hook on top (setup line + payoff box). Absent key = A, byte-identical.
   B "poster"   flat paper header, thin rule, small kicker (--setup), HUGE stacked payoff words in alternating
                colours, hero frame in a window below (edge: line | hazard | torn). --micro under the words.
-  C "caption"  full-bleed hero, the hook as ONE caption near the bottom of the safe zone (setup plain, payoff on a
-               single highlight box, never split), over a gradient or solid lower-third band; --micro above it;
-               pair with --sticker as a small label on the object.
+  C            caption.variant picks the concept:
+               "caption" (default, sme_c) the hook as ONE caption near the bottom of the safe zone (setup plain, payoff
+                 on a single highlight box, never split) over a gradient / solid band; --micro above; --sticker label.
+               "punch" (wjh_c) giant stroked headline (= --payoff), key word (--key, default last) in the accent colour,
+                 setup on a tilted yellow tape strip, edge-darkened hero; pair with --circle / --arrow.
+               "diagram" (ed_c) speech-bubble hook card top-left, blueprint-grid tint on the image edges, and
+                 --callout "x,y:LABEL[@lx,ly]" (repeatable) lines with dots to small rounded labels.
   --sticker / --badge / --arrow / --circle work the same in every layout.
 
 Preset JSON schema (tools/thumb_styles/<name>.json; every key optional, defaults below in DEFAULT).
@@ -39,7 +43,12 @@ Every key marked (opt-in) is off by default, so presets that don't use it render
                          colours, cycled], "gap" (30), "micro_size", "micro_color", "window_gap" (44), "window_max_top"
                          (1200), "edge" {"type": line|hazard|torn, "color", "height", "colors", "stripe", "depth", "step"}}
                          Payoff lines: "|" splits, else 1 word per line (short words join the next), pairs for 4+.
-  caption               (layout C) {"font" (= payoff font), "size" (104, auto-shrinks), "max_lines" (3), "setup_case",
+  caption               (layout C) {"variant": caption|punch|diagram; punch keys: "size", "stroke", "leading",
+                         "color", "key_color", "stroke_color", "edge_dark", "tape" {size, case, color, text, pad,
+                         rotate}, "tape_gap"; diagram keys: "grid" {tint, tint_alpha, color, alpha, major_alpha, step,
+                         major_every, inner, outer}, "card" {pad, max_width, radius, box, accent, setup_size/case/color,
+                         payoff_size/case/color, gap, tail}, "callout" {size, line, line_shadow, width, dot_r, dot_ring,
+                         box, text, border, border_w, pad, shadow}; caption keys: "font" (= payoff font), "size" (104, auto-shrinks), "max_lines" (3), "setup_case",
                          "payoff_case" (asis|upper|lower|sentence), "color", "shadow", "box", "box_text", "radius",
                          "pad" [y, x], "box_gap", "line_gap", "y_bottom" (1590; --text-top sets the top instead),
                          "micro_size", "micro_color", "micro_gap",
@@ -440,6 +449,11 @@ def layout_c(a, st, font_path, pfont_path):
     (setup words plain, payoff words on a single highlight box), over a dark gradient or a solid lower-third band.
     Pair with --sticker (+ --sticker-label) as a small rounded label on the object."""
     c = st.get("caption", {})
+    variant = c.get("variant", "caption")
+    if variant == "punch":
+        return layout_punch(a, st, font_path, pfont_path)
+    if variant == "diagram":
+        return layout_diagram(a, st, font_path, pfont_path)
     mx = st["margin_x"]
     col_w = W - 2 * mx
     center = st.get("align", "center") == "center"
@@ -545,6 +559,192 @@ def layout_c(a, st, font_path, pfont_path):
         cap_box_text(img, P, (W - w) / 2 if center else mx, my, a.micro, mf, c.get("micro_color", "#FFFFFF"))
     return img, P, [" ".join(w for w, _ in ln) for ln in lines]
 
+def edge_mask(strength, inner=0.45, outer=0.95):
+    """L mask: 0 in the centre, rising to `strength` towards the frame edges (elliptical)."""
+    m = Image.new("L", (W // 8, H // 8))
+    px = m.load()
+    for y in range(m.height):
+        for x in range(m.width):
+            d = math.hypot((x - m.width / 2) / (m.width / 2), (y - m.height / 2) / (m.height / 2)) / math.sqrt(2)
+            px[x, y] = int(255 * strength * min(1.0, max(0.0, (d - inner) / (outer - inner))))
+    return m.resize((W, H), Image.BICUBIC).filter(ImageFilter.GaussianBlur(16))
+
+
+def layout_punch(a, st, font_path, pfont_path):
+    """Layout C, variant 'punch' (news): darkened-edge hero, ONE giant white headline (= --payoff) with a heavy black
+    stroke in the upper third, one key word (--key, default last word) in the accent colour, the setup on a slightly
+    rotated yellow tape strip under it; use --circle / --arrow to point at the key object."""
+    c = st["caption"]
+    mx = st["margin_x"]
+    col_w = W - 2 * mx
+    img = hero_plate(a.hero, a.zoom, [float(v) for v in a.focus.split(",")], st["grade"], 0).convert("RGBA")
+    if c.get("edge_dark"):
+        img.alpha_composite(Image.composite(Image.new("RGBA", (W, H), (0, 0, 0, 255)),
+                                            Image.new("RGBA", (W, H), (0, 0, 0, 0)), edge_mask(c["edge_dark"])))
+    P = Painter(img)
+    words = a.payoff.replace("|", " ").upper().split()
+    key = (a.key or words[-1]).upper()
+    plines = stack_lines(a.payoff.upper())
+    sw_ = c.get("stroke", 14)
+    size = c.get("size", 210)
+    while True:
+        f = ImageFont.truetype(pfont_path, size)
+        if max(f.getlength(ln) for ln in plines) + 2 * sw_ <= col_w or size <= 80:
+            break
+        size -= 6
+    cap = ink_size(f, "H")[1]
+    y = a.text_top if a.text_top is not None else st["text_top"]
+    lead = int(cap * c.get("leading", 0.18))
+    for ln in plines:
+        lw = f.getlength(ln)
+        x = (W - lw) / 2
+        sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        hb = f.getbbox("H")
+        ImageDraw.Draw(sh).text((x, y - hb[1] + 10), ln, font=f, fill=(0, 0, 0, 170), stroke_width=sw_,
+                                stroke_fill=(0, 0, 0, 170))
+        img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(10)))
+        d = ImageDraw.Draw(img)
+        for i, wd in enumerate(ln.split()):
+            col = c.get("key_color", "#E63946") if wd.strip("?!.,") == key.strip("?!.,") else c.get("color", "#FFFFFF")
+            d.text((x, y - hb[1]), wd, font=f, fill=rgb(col) + (255,), stroke_width=sw_,
+                   stroke_fill=rgb(c.get("stroke_color", "#000000")) + (255,))
+            x += f.getlength(wd + " ")
+        P.boxes.append(((W - lw) / 2 - sw_, y - sw_, (W + lw) / 2 + sw_, y + cap + sw_))
+        y += cap + lead
+    # tape strip with the setup
+    t = c.get("tape", {})
+    tf = ImageFont.truetype(font_path, t.get("size", 60))
+    ttxt = case(a.setup, t.get("case", "upper"))
+    while ink_size(tf, ttxt)[0] + 2 * t.get("pad", [18, 40])[1] > col_w and tf.size > 36:
+        tf = ImageFont.truetype(font_path, tf.size - 2)
+    tw, _ = ink_size(tf, ttxt)
+    tcap = ink_size(tf, "H")[1]
+    py_, px_ = t.get("pad", [18, 40])
+    ty = y - lead + c.get("tape_gap", 34)
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    box = ((W - tw) / 2 - px_, ty, (W + tw) / 2 + px_, ty + tcap + 2 * py_)
+    ld = ImageDraw.Draw(layer)
+    ld.rectangle((box[0] + 8, box[1] + 10, box[2] + 8, box[3] + 10), fill=(0, 0, 0, 120))
+    ld.rectangle(box, fill=rgb(t.get("color", "#FFD21F")) + (255,))
+    for xx in (box[0], box[2]):   # ragged tape ends
+        for k in range(int(box[1]), int(box[3]), 12):
+            ld.polygon([(xx, k), (xx + (8 if xx == box[0] else -8), k + 6), (xx, k + 12)], fill=(0, 0, 0, 0))
+    cap_box_text(layer, Painter(layer), (W - tw) / 2, ty + py_, ttxt, tf, t.get("text", "#0B1F3A"), key=False)
+    layer = layer.rotate(t.get("rotate", -2.5), resample=Image.BICUBIC,
+                         center=((box[0] + box[2]) / 2, (box[1] + box[3]) / 2))
+    img.alpha_composite(layer)
+    P.boxes.append(layer.getchannel("A").point(lambda v: 255 if v > 200 else 0).getbbox())
+    if a.micro:
+        mf = ImageFont.truetype(font_path, c.get("micro_size", 44))
+        w, _ = ink_size(mf, a.micro)
+        my = P.boxes[-1][3] + c.get("micro_gap", 26)
+        bb = mf.getbbox(a.micro)
+        ImageDraw.Draw(img).text(((W - w) / 2 - bb[0], my - mf.getbbox("H")[1]), a.micro, font=mf,
+                                 fill=rgb(c.get("micro_color", "#FFFFFF")) + (255,), stroke_width=5,
+                                 stroke_fill=(0, 0, 0, 255))
+        P.boxes.append(((W - w) / 2, my, (W + w) / 2, my + ink_size(mf, "H")[1]))
+    return img, P, plines
+
+
+def layout_diagram(a, st, font_path, pfont_path):
+    """Layout C, variant 'diagram' (how it works): hero with a blueprint-grid tint on its edges, the hook in a white
+    rounded speech-bubble card at the top-left (setup charcoal, payoff accent), and thin white callout lines with
+    dots from 2-3 parts of the object to small rounded labels (--callout 'x,y:LABEL[@lx,ly]', repeatable)."""
+    c = st["caption"]
+    mx = st["margin_x"]
+    img = hero_plate(a.hero, a.zoom, [float(v) for v in a.focus.split(",")], st["grade"], 0).convert("RGBA")
+    g = c.get("grid", {})
+    em = edge_mask(1.0, g.get("inner", 0.40), g.get("outer", 0.85))
+    tint = Image.new("RGBA", (W, H), rgb(g.get("tint", "#00796E")) + (255,))
+    img.alpha_composite(Image.composite(tint, Image.new("RGBA", (W, H), (0, 0, 0, 0)),
+                                        em.point(lambda v: int(v * g.get("tint_alpha", 0.35)))))
+    lines = Image.new("L", (W, H), 0)
+    ld = ImageDraw.Draw(lines)
+    step, every = g.get("step", 54), g.get("major_every", 5)
+    for i, v in enumerate(range(0, H, step)):
+        al = int(255 * (g.get("major_alpha", 0.45) if every and i % every == 0 else g.get("alpha", 0.25)))
+        ld.line((0, v, W, v), fill=al, width=2 if i % every == 0 else 1)
+        if v < W:
+            ld.line((v, 0, v, H), fill=al, width=2 if i % every == 0 else 1)
+    img.alpha_composite(Image.composite(Image.new("RGBA", (W, H), rgb(g.get("color", "#FFFFFF")) + (255,)),
+                                        Image.new("RGBA", (W, H), (0, 0, 0, 0)), ImageChops.multiply(lines, em)))
+    P = Painter(img)
+    # hook card
+    k = c.get("card", {})
+    pad = k.get("pad", 40)
+    maxw = k.get("max_width", 760) - 2 * pad
+    sf = ImageFont.truetype(font_path, k.get("setup_size", 60))
+    stxt = case(a.setup, k.get("setup_case", "asis"))
+    slines = balanced(sf, stxt.split(), maxw)
+    ptxt = case(a.payoff.replace("|", " "), k.get("payoff_case", "upper"))
+    psize = k.get("payoff_size", 120)
+    while True:
+        pf = ImageFont.truetype(pfont_path, psize)
+        plines = [ln.strip() for ln in a.payoff.upper().split("|")] if "|" in a.payoff else \
+            wrap(pf, ptxt.split(), maxw)
+        if max(ink_size(pf, ln)[0] for ln in plines) <= maxw or psize <= 64:
+            break
+        psize -= 4
+    scap, pcap = ink_size(sf, "H")[1], ink_size(pf, "H")[1]
+    sgap, pgap, mid = int(scap * 0.45), int(pcap * 0.22), k.get("gap", 26)
+    inner_h = len(slines) * scap + (len(slines) - 1) * sgap + mid + len(plines) * pcap + (len(plines) - 1) * pgap
+    inner_w = max([ink_size(sf, ln)[0] for ln in slines] + [ink_size(pf, ln)[0] for ln in plines])
+    x0 = mx
+    y0 = a.text_top if a.text_top is not None else st["text_top"]
+    card = (x0, y0, x0 + inner_w + 2 * pad, y0 + inner_h + 2 * pad)
+    tail = k.get("tail", 46)
+    tail_pts = [(card[0] + 70, card[3] - 2), (card[0] + 70 + tail * 1.4, card[3] - 2), (card[0] + 60, card[3] + tail)]
+    sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(sh)
+    sd.rounded_rectangle([v + o for v, o in zip(card, (6, 12, 6, 12))], k.get("radius", 36), fill=(0, 0, 0, 110))
+    sd.polygon([(x + 6, y + 12) for x, y in tail_pts], fill=(0, 0, 0, 110))
+    img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(12)))
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle(card, k.get("radius", 36), fill=rgb(k.get("box", "#FFFFFF")) + (255,))
+    d.polygon(tail_pts, fill=rgb(k.get("box", "#FFFFFF")) + (255,))
+    if k.get("accent"):
+        d.rounded_rectangle((card[0], card[1] + 30, card[0] + 10, card[3] - 30), 5, fill=rgb(k["accent"]) + (255,))
+    y = y0 + pad
+    for ln in slines:
+        cap_box_text(img, P, x0 + pad, y, ln, sf, k.get("setup_color", "#1B1F24"), key=False)
+        y += scap + sgap
+    y += mid - sgap
+    for ln in plines:
+        cap_box_text(img, P, x0 + pad, y, ln, pf, k.get("payoff_color", "#00796E"), key=False)
+        y += pcap + pgap
+    P.boxes.append((card[0], card[1], card[2], card[3] + tail))
+    # callouts
+    q = c.get("callout", {})
+    lf = ImageFont.truetype(font_path, q.get("size", 38))
+    lcol, lw_ = rgb(q.get("line", "#FFFFFF")), q.get("width", 4)
+    for spec in a.callout:
+        pt, _, rest = spec.partition(":")
+        label, _, at = rest.partition("@")
+        x, yy = [float(v) for v in pt.split(",")]
+        lx, ly = [float(v) for v in at.split(",")] if at else (x + (230 if x < W / 2 else -230), yy + 170)
+        tw, _ = ink_size(lf, label)
+        lcap = ink_size(lf, "H")[1]
+        bpy, bpx = q.get("pad", [14, 26])
+        box = (lx - tw / 2 - bpx, ly - lcap / 2 - bpy, lx + tw / 2 + bpx, ly + lcap / 2 + bpy)
+        ex = min(max(x, box[0] + 20), box[2] - 20)
+        ey = box[1] if yy < box[1] else box[3] if yy > box[3] else ly
+        if box[0] <= x <= box[2] and box[1] <= yy <= box[3]:
+            ex, ey = lx, ly
+        if q.get("line_shadow"):
+            ImageDraw.Draw(img).line([(x, yy), (ex, ey)], fill=rgb(q["line_shadow"]) + (150,), width=lw_ + 4)
+        d = ImageDraw.Draw(img)
+        d.line([(x, yy), (ex, ey)], fill=lcol + (255,), width=lw_)
+        r = q.get("dot_r", 13)
+        d.ellipse((x - r, yy - r, x + r, yy + r), fill=lcol + (255,), outline=rgb(q.get("dot_ring", "#00B3A4")) + (255,),
+                  width=5)
+        P.shadow_rect(box, 30, q.get("shadow", 0.35))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle(box, int((box[3] - box[1]) / 2), fill=rgb(q.get("box", "#1B1F24")) + (255,),
+                            outline=rgb(q["border"]) + (255,) if q.get("border") else None, width=q.get("border_w", 4))
+        cap_box_text(img, P, lx - tw / 2, ly - lcap / 2, label, lf, q.get("text", "#FFFFFF"), key=False)
+        P.boxes += [box, (x - r, yy - r, x + r, yy + r)]
+    return img, P, plines
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -566,6 +766,9 @@ def main():
     ap.add_argument("--zoom", type=float, default=1.0)
     ap.add_argument("--focus", default="0.5,0.5")
     ap.add_argument("--debug-safe", action="store_true")
+    ap.add_argument("--key", help="layout C punch: the payoff word drawn in the accent colour (default: last word)")
+    ap.add_argument("--callout", action="append", default=[],
+                    help="layout C diagram, repeatable: 'x,y:LABEL' or 'x,y:LABEL@lx,ly' (label centre)")
     a = ap.parse_args()
 
     st = load_style(a.style)
