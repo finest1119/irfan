@@ -1,3 +1,5 @@
+> **Superseded by [DECISION.md](DECISION.md) on 27 November 2026.** Irfan selected two separate Pages, **Di Belakang Tabir** and **Kita Buat Dia**. The original single-Page proposal is retained below for reference.
+
 # A Malaysian explainer Page for Irfan
 
 **Decision for Irfan · 27 November 2026.** Launch one BM Page, provisionally **Selak Sekejap**, with two recognisable series. A viewer who shares a cutaway of a monsoon drain has a reason to come back for the next rain story: what happens when a builder tries to dry three school uniforms under one awning? One issue desk, narrator and neighbourhood can serve both stories.
