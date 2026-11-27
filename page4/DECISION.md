@@ -17,3 +17,6 @@ Next, after the 29 Nov reset, the chief:
 - **Kita Buat Dia** bio: "Inovasi Alam Sebalik Mata. Ikuti kisah Bar The Builder dalam siri animasi 3D" (76 chars).
 - **Kita Buat Dia** follows the SME style: **bizarre and rare builds** (unusual, surprising DIY engineering, like the self-made turbine) by the character "Bar The Builder", told with the "Tapi… Jadi…" chain and hooked to Malaysian isu semasa where it fits. Not just small home fixes. The TOPICS/PILOTS drafts must be re-angled toward rare/bizarre builds after the reset.
 - Character renamed (Irfan, 27 Nov): **Bar The Builder** (was Din). Bio: "Inovasi Alam Sebalik Mata. Ikuti kisah Bar The Builder dalam siri animasi 3D". Replace "Din" with "Bar" in all page4 drafts when they are revised.
+
+## Character approved (27 Nov 2026)
+- **Bar The Builder v3** approved by Irfan: Malay man ~34, light sawo matang skin, no moustache, short even beard, normal build, "BAR" tape on the apron, yellow folding ruler. Build: `page4/character_bar/build_bar_v3.py`, stills in `page4/character_bar/out_v3/`. Known polish items (later): beard reads as paint up close, neck seam/collar, plastic hair.
