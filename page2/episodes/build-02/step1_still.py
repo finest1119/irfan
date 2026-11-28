@@ -1,7 +1,7 @@
 """One creek-side commissioning still. Run with Blender 5.3 -b --factory-startup -P.
 
-Append `-- --step1b` for the electrician beside the inlet. With no argument the
-original workshop pose, materials, framing and Step 1 output path are used.
+Append `-- --step1b` for the electrician beside the inlet, or `-- --step1c`
+for the same shot on a sunny creek. With no argument the original Step 1 is used.
 """
 import math
 import random
@@ -13,7 +13,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 import bpy
 from bpy_extras.object_utils import world_to_camera_view
-from mathutils import Vector
+from mathutils import Quaternion, Vector
 from mathutils.bvhtree import BVHTree
 
 HERE = Path(__file__).resolve().parent
@@ -210,6 +210,296 @@ def creek(revised=False):
     for name, x, y, scale in ((rocks[0], -.91, -1.06, 1.0), (rocks[2], .98, -.60, .88),
                               (rocks[1], -1.52, .45, 1.4), (rocks[0], 1.46, .85, 1.15)):
         plant(name, x, y, scale, .06)
+
+
+def meadow_bank(x):
+    return 2.25 + .47*x + .38*math.sin(.81*x+.35)
+
+
+def meadow_ground(x, y):
+    bank_y = meadow_bank(x)
+    d = max(y-bank_y, bank_y-6.2-y)
+    rise = v3.ease(d, -.60, 1.06)
+    bars = .023*math.sin(3.7*x-1.5*y) + .016*math.sin(1.8*x+4.6*y)
+    ridge = v3.ease(y, 18, 49) * (1.20+.54*math.sin(.23*x+.09*y))
+    ridge += v3.ease(y, 49, 66) * (2.10+.72*math.sin(.18*x-.07*y))
+    lawn = .11*math.sin(.36*y+.21*x) + .08*math.cos(.50*x-.27*y) + ridge
+    return -.253 + .85*rise + (1-rise)*bars + rise*lawn
+
+
+def dappled_bed(nt, pos, base):
+    # At FAST's two transmission bounces, represent the sunlight focused by
+    # the ripples on the bed itself. World coordinates continue it over stones.
+    drift = nt.nodes.new("ShaderNodeTexNoise")
+    drift.inputs["Scale"].default_value, drift.inputs["Detail"].default_value = 3.8, 2
+    v3.into(nt, pos, drift.inputs["Vector"])
+    bend = v3.vector_op(nt, "MULTIPLY", drift.outputs["Color"], (.22, .22, 0))
+    coords = v3.vector_op(nt, "ADD", v3.vector_op(nt, "MULTIPLY", pos, (.83, 1.39, 0)), bend)
+    cells = nt.nodes.new("ShaderNodeTexVoronoi")
+    cells.voronoi_dimensions, cells.feature = "2D", "DISTANCE_TO_EDGE"
+    cells.inputs["Scale"].default_value = 5.0
+    v3.into(nt, coords, cells.inputs["Vector"])
+    light = v3.mapped(nt, cells.outputs["Distance"], .008, .12, 1.49, .87)
+    z = nt.nodes.new("ShaderNodeSeparateXYZ")
+    v3.into(nt, pos, z.inputs[0])
+    submerged = v3.mapped(nt, z.outputs["Z"], WATERLINE-.015, WATERLINE+.012, 1, 0)
+    return v3.mix(nt, submerged, base, light, "MULTIPLY")
+
+
+def summer_bank():
+    gravel = C.polyhaven("river_small_rocks", .69)
+    nt = gravel.node_tree
+    p = nt.nodes["Principled BSDF"]
+    pos = nt.nodes.new("ShaderNodeNewGeometry").outputs["Position"]
+    z = nt.nodes.new("ShaderNodeSeparateXYZ")
+    v3.into(nt, pos, z.inputs[0])
+    scan = p.inputs["Base Color"].links[0].from_socket
+    silt = v3.mix(nt, v3.mapped(nt, scan, .025, .30), C.color("505c56"), C.color("a8ad99"))
+    bed = dappled_bed(nt, pos, v3.mix(nt, .70, scan, silt))
+    grass = nt.nodes.new("ShaderNodeTexImage")
+    grass.image = C._image(C.ROOT / "assets/polyhaven/textures/aerial_grass_rock/aerial_grass_rock_diff_1k.jpg")
+    grass.projection, grass.projection_blend = "BOX", .18
+    v3.into(nt, v3.vector_op(nt, "MULTIPLY", pos, (.52, .52, .52)), grass.inputs["Vector"])
+    blades = v3.mapped(nt, grass.outputs["Color"], .032, .27)
+    lawn = v3.mix(nt, blades, C.color("487831"), C.color("a4bd57"))
+    growth = v3.mapped(nt, v3.noise(nt, pos, .38), .27, .73, .81, 1.11)
+    lawn = v3.mix(nt, 1, lawn, growth, "MULTIPLY")
+    wet_edge = v3.mapped(nt, v3.noise(nt, pos, 4.7), .23, .77, -.082, .082)
+    turf = v3.mapped(nt, v3.calc(nt, "ADD", z.outputs["Z"], wet_edge), WATERLINE+.045, .24)
+    v3.into(nt, v3.mix(nt, turf, bed, lawn), p.inputs["Base Color"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Distance"].default_value, bump.inputs["Strength"].default_value = .009, .27
+    v3.into(nt, v3.mix(nt, turf, scan, blades), bump.inputs["Height"])
+    v3.into(nt, bump.outputs[0], p.inputs["Normal"])
+    xs = sorted({i*.16 for i in range(-44, 39)} | {float(i) for i in range(-54, 51)})
+    ys = sorted({i*.16 for i in range(-38, 54)} | {float(i) for i in range(-12, 71)})
+    grid("Pebble beach and mown creek bank", xs, ys, meadow_ground, gravel)
+
+
+# Exposed cobbles split the current. The same centres drive their downstream wakes.
+RIFFLE_STONES = ((-.59, -.85, .37, .028), (.48, -1.31, .29, .019),
+                 (.73, .21, .42, .039), (-1.88, .47, .34, .025))
+
+
+def summer_water():
+    water = v3.dielectric("Clear creek water", "f9ffff", 1.333, .055)
+    nt = water.node_tree
+    p = nt.nodes["Principled BSDF"]
+    pos = nt.nodes.new("ShaderNodeNewGeometry").outputs["Position"]
+    grain = v3.noise(nt, v3.vector_op(nt, "MULTIPLY", pos, (2.1, 5.7, 1)), 7.5, 2, .38)
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Distance"].default_value, bump.inputs["Strength"].default_value = .0023, .19
+    v3.into(nt, grain, bump.inputs["Height"])
+    v3.into(nt, bump.outputs[0], p.inputs["Normal"])
+    output = nt.nodes["Material Output"]
+    absorption = nt.nodes.new("ShaderNodeVolumeAbsorption")
+    absorption.inputs["Color"].default_value = (.24, .78, .76, 1)
+    absorption.inputs["Density"].default_value = 1.75
+    v3.into(nt, absorption.outputs[0], output.inputs["Volume"])
+    # Let direct sunlight reach the gravel through the free surface at FAST settings.
+    shadow = nt.nodes.new("ShaderNodeMixShader")
+    v3.into(nt, nt.nodes.new("ShaderNodeLightPath").outputs["Is Shadow Ray"], shadow.inputs[0])
+    v3.into(nt, p.outputs[0], shadow.inputs[1])
+    v3.into(nt, nt.nodes.new("ShaderNodeBsdfTransparent").outputs[0], shadow.inputs[2])
+    v3.into(nt, shadow.outputs[0], output.inputs["Surface"])
+
+    def level(x, y):
+        along, cross = .93*x+.37*y, .93*y-.37*x
+        phase = 22*along + 2.4*math.sin(2.8*cross+1.3*along) + .66*math.sin(5.8*cross)
+        wave = .0058*math.sin(phase) + .0029*math.sin(39*along-12*cross+math.sin(5*y))
+        radius = math.hypot(x-IMPACT.x, y-IMPACT.y)
+        wave += .010*math.exp(-4.2*radius)*math.sin(73*radius)
+        for sx, sy, diameter, _ in RIFFLE_STONES:
+            dx, dy = x-sx, y-sy
+            downstream = .93*dx+.37*dy
+            if 0 < downstream < .85:
+                flank = abs(.93*dy-.37*dx) - .34*downstream - .23*diameter
+                wave += .007*math.exp(-2.9*downstream-38*flank**2)*math.cos(76*flank)
+        return WATERLINE + wave
+
+    xs = [-36, -16, -8, -4] + [i*.024 for i in range(-128, 113)] + [4, 8, 16, 36]
+    ys = [-25, -10, -5] + [i*.024 for i in range(-115, 160)] + [5, 9, 16, 28]
+    water_top = grid("Current, stone wakes and tailrace rings", xs, ys, level, water)
+    water_top.modifiers.new("Water volume below gravel", "SOLIDIFY").thickness = .80
+
+
+def stream_cobbles(rng):
+    schist = v3.surface("Water-worn schist", ("5b5a53", "c4b9a7"), (.39, .55),
+                        grain=(1.1, 3.4, 5.2), scale=5.4, height=.0012)
+    oval = C.sphere("Worn river oval", (0, 0, -50), (1, 1, 1), schist)
+    oval.hide_render = oval.hide_viewport = True
+    for vertex in oval.data.vertices:
+        x, y, z = vertex.co
+        vertex.co = (x*(1+.14*y-.08*z), y+.13*x*z, 1+z*(1+.09*x*y)+.08*x)
+    oval.data.update()
+    bpy.context.view_layer.update()
+    scans = [cc0_lib.get(n, haze=False) for n in ("cc0_pebble", "cc0_rock_b", "cc0_rock_d")]
+    sizes = {}
+    for ob in [oval, *scans]:
+        sizes[ob] = Vector(ob.bound_box[6])-Vector(ob.bound_box[0])
+        for mat in ob.data.materials:
+            nt = mat.node_tree
+            p = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+            scan = p.inputs["Base Color"].links[0].from_socket
+            palette = nt.nodes.new("ShaderNodeValToRGB")
+            ramp = palette.color_ramp
+            ramp.elements[0].color, ramp.elements[1].color = C.color("566863"), C.color("b6aa94")
+            for stop, tone in ((.27, "9a826c"), (.46, "758789"), (.67, "a3a192"), (.85, "76736e")):
+                ramp.elements.new(stop).color = C.color(tone)
+            v3.into(nt, nt.nodes.new("ShaderNodeObjectInfo").outputs["Random"], palette.inputs[0])
+            stone = v3.mix(nt, 1, palette.outputs[0], v3.mapped(nt, scan, .02, .42, .44, 1.24), "MULTIPLY")
+            pos = nt.nodes.new("ShaderNodeNewGeometry").outputs["Position"]
+            v3.into(nt, dappled_bed(nt, pos, stone), p.inputs["Base Color"])
+
+    cobbles = [oval, oval, oval, oval, *scans]
+
+    def cobble(x, y, length, width, height):
+        template = rng.choice(cobbles)
+        size = sizes[template]
+        stone = bpy.data.objects.new("Creek cobble", template.data)
+        bpy.context.scene.collection.objects.link(stone)
+        stone.location = (x, y, meadow_ground(x, y)-.014)
+        stone.scale = (width/size.x, length/size.y, height/size.z)
+        up = Vector((0, 0, 1))
+        normal = Vector((meadow_ground(x-.03, y)-meadow_ground(x+.03, y),
+                         meadow_ground(x, y-.03)-meadow_ground(x, y+.03), .06)).normalized()
+        stone.rotation_mode = "QUATERNION"
+        stone.rotation_quaternion = up.rotation_difference(normal) @ Quaternion(up, rng.uniform(0, math.tau))
+
+    for j in range(-17, 24):
+        for i in range(-24, 22):
+            x, y = (i+rng.random())*.14, (j+rng.random())*.14
+            if meadow_ground(x, y) > WATERLINE+.14:
+                continue
+            length = .041 + .119*rng.random()**1.55
+            cobble(x, y, length, length*rng.uniform(.58, .94), length*rng.uniform(.32, .63))
+    for x, y, diameter, freeboard in RIFFLE_STONES:
+        cobble(x, y, diameter, diameter*.76, WATERLINE+freeboard-meadow_ground(x, y)+.012)
+
+
+def grassy_margin(rng):
+    mat = C.material("Creekbank fescue", "77944b", rough=.64)
+    nt = mat.node_tree
+    p = nt.nodes["Principled BSDF"]
+    tint = nt.nodes.new("ShaderNodeAttribute")
+    tint.attribute_name = "blade_tone"
+    color = v3.mix(nt, tint.outputs["Fac"], C.color("3c7033"), C.color("a9c25c"))
+    v3.into(nt, color, p.inputs["Base Color"])
+    p.inputs["Subsurface Weight"].default_value, p.inputs["Subsurface Scale"].default_value = .07, .0004
+    verts, faces, tones = [], [], []
+    for i in range(2100):
+        x = rng.uniform(-7.8, 4.7)
+        y = meadow_bank(x)+rng.triangular(-.13, 2.7, .32)
+        height = rng.uniform(.053, .182)
+        for j in range(rng.randint(12, 23)):
+            a, radius = rng.uniform(0, math.tau), rng.uniform(.003, .054)
+            dx, dy = math.cos(a), math.sin(a)
+            bx, by = x+radius*dx, y+radius*dy
+            bz = meadow_ground(bx, by)-.009
+            h, w = height*rng.uniform(.57, 1.22), rng.uniform(.002, .0055)
+            lean = h*rng.uniform(.34, .92)
+            mx, my = bx+.27*lean*dx, by+.27*lean*dy
+            k = len(verts)
+            verts.extend(((bx-w*dy, by+w*dx, bz), (bx+w*dy, by-w*dx, bz),
+                          (mx+.70*w*dy, my-.70*w*dx, bz+.64*h),
+                          (mx-.70*w*dy, my+.70*w*dx, bz+.64*h),
+                          (bx+lean*dx+.013, by+lean*dy, bz+h)))
+            faces.extend(((k, k+1, k+2, k+3), (k+3, k+2, k+4)))
+            tip = rng.uniform(.50, 1)
+            tones.extend((.06, .06, .51*tip, .60*tip, tip))
+    verge = C.mesh("Tufted creekbank grass", verts, faces, mat)
+    verge.data.attributes.new("blade_tone", "FLOAT", "POINT").data.foreach_set("value", tones)
+
+
+def meadow_planting(rng):
+    trees = ("cc0_broadleaf_lod0", "cc0_broadleaf2_lod0")
+    grasses = ("cc0_grass_b", "cc0_tuft_a", "cc0_grass_d")
+    shrub = "cc0_bushtree_b"
+    root_footprints = {}
+    for name in (*trees, *grasses, shrub):
+        template = cc0_lib.get(name, haze=False)
+        if name in trees:
+            roots = [v.co for v in template.data.vertices if v.co.z < .23]
+            root_footprints[name] = [(x, y) for x in (min(v.x for v in roots), max(v.x for v in roots))
+                                            for y in (min(v.y for v in roots), max(v.y for v in roots))]
+        for mat in template.data.materials:
+            if "leaves" not in mat.name and name in trees:
+                continue
+            nt = mat.node_tree
+            p = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+            scan = p.inputs["Base Color"].links[0].from_socket
+            tones = ("3d7636", "93c25a") if name in trees else ("47783a", "a2bd5d")
+            green = v3.mix(nt, v3.mapped(nt, scan, .018, .25), *map(C.color, tones))
+            v3.into(nt, v3.mix(nt, .81, scan, green), p.inputs["Base Color"])
+            p.inputs["Subsurface Weight"].default_value, p.inputs["Subsurface Scale"].default_value = .065, .0006
+
+    def plant(name, x, y, scale):
+        angle = rng.uniform(0, math.tau)
+        z = meadow_ground(x, y)-.012
+        if name in root_footprints:
+            # Seat the full scanned root flare on the rolling bank, including
+            # the downhill edge of trees whose trunk is offset from the origin.
+            c, s = scale*math.cos(angle), scale*math.sin(angle)
+            z = min(meadow_ground(x+u*c-v*s, y+u*s+v*c) for u, v in root_footprints[name]) - .29*scale
+        cc0_lib.place(name, (x, y, z), angle, scale)
+
+    # The nearer broadleaves flank a window of sky above the runner.
+    for x, y, scale, kind in ((-9.1, 12.2, .50, 0), (-1.75, 17.6, .58, 1),
+                              (-8.4, 21.3, .41, 1), (1.5, 25.1, .52, 0)):
+        plant(trees[kind], x, y, scale)
+    for i in range(42):
+        x, y = rng.uniform(-33, 4), rng.uniform(34, 49)
+        plant(rng.choice(trees), x, y, rng.uniform(.32, .66))
+        plant(shrub, x+rng.uniform(-1.8, 1.8), y-2, rng.uniform(.15, .29))
+    for x, y, scale in ((-8.4, 9.4, .16), (-7.6, 10.5, .13), (-1.8, 13.5, .16),
+                        (-.5, 13.9, .21), (1.0, 14.2, .14)):
+        plant(shrub, x, y, scale)
+    for i in range(28):
+        x = -39+i*1.35+rng.uniform(-.6, .6)
+        plant(rng.choice(trees), x, rng.uniform(57, 66), rng.uniform(.24, .39))
+    grassy_margin(rng)
+    for i in range(270):
+        x = rng.uniform(-8.5, 5.7)
+        y = meadow_bank(x) + rng.uniform(.05, 3.5)**1.35
+        plant(rng.choice(grasses), x, y, rng.uniform(.32, .92))
+
+    weathered = v3.surface("Split cedar fence", ("695c47", "aa997b"), (.68, .89),
+                           grain=(19, 22, .8), scale=3.2, height=.0016)
+    previous = None
+    for i in range(9):
+        x, y = 3.6-1.43*i, 5.0+1.66*i
+        foot = Vector((x, y, meadow_ground(x, y)-.05))
+        post = v3.turned("Split cedar post", foot, foot+Vector((.025, -.012, .98)), .074, weathered, .061, 7)
+        post.rotation_euler.rotate_axis("Z", rng.uniform(-.35, .35))
+        if previous is not None:
+            for h in (.40, .76):
+                lift = Vector((0, 0, h))
+                v3.turned("Split cedar rail", previous+lift, foot+lift, .047, weathered, .039, 6)
+        previous = foot
+
+
+def morning_light(scene, foreground):
+    nt = scene.world.node_tree
+    env = next(n for n in nt.nodes if n.type == "TEX_ENVIRONMENT")
+    orient = env.inputs["Vector"].links[0].from_node
+    orient.inputs["Rotation"].default_value = (math.radians(9), 0, math.radians(18))
+    # The softboxes still shape the approved metal and character. Only the sky
+    # and sun reflect in the creek, avoiding isolated white rectangles.
+    for lamp in (o for o in scene.objects if o.type == "LIGHT" and o.data.type == "AREA"):
+        lamp.light_linking.receiver_collection = foreground
+    sky = nt.nodes.new("ShaderNodeHueSaturation")
+    sky.inputs["Saturation"].default_value = 1.15
+    v3.into(nt, env.outputs[0], sky.inputs["Color"])
+    daylight = v3.vector_op(nt, "MINIMUM", sky.outputs[0], (5, 5, 5))
+    daylight = v3.vector_op(nt, "MULTIPLY", daylight, (.98, 1.02, 1.06))
+    bg = nt.nodes["Background"]
+    v3.into(nt, daylight, bg.inputs["Color"])
+    bg.inputs["Strength"].default_value = 2.05
+    # Replace the panorama's clipped solar disc with one warm directional key.
+    sun = next(o for o in scene.objects if o.type == "LIGHT" and o.data.type == "SUN")
+    sun.rotation_euler = Vector((-.47, .42, -.78)).to_track_quat("-Z", "Y").to_euler()
+    sun.data.energy, sun.data.angle, sun.data.color = 2.8, math.radians(2.6), (1., .91, .77)
+    scene.view_settings.exposure = -.48
 
 
 def electrician(scene):
@@ -503,7 +793,7 @@ def camera(scene, hit, rig=None):
             raise ValueError(f"{label} outside portrait safe area")
 
 
-def build_scene(revised):
+def build_scene(revised, sunny=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     fast = render_profiles.get("fast")
     scene = C.render_settings("OPTIX", width=SIZE[0], samples=fast["samples"], frames=FRAME)
@@ -534,6 +824,11 @@ def build_scene(revised):
         hose[0].co = (-2.10, .88, ground(-2.10, .88)+.026)
         hose[1].co = (-1.42, .80, ground(-1.42, .80)+.026)
         hose[2].co = (-1.02, .62, .39)
+        if sunny:
+            # Bury the intake in the far bank and bring it around the rear of
+            # the side walk. Its cut end used to project into the left edge.
+            hose[0].co = (-1.54, 1.95, meadow_ground(-1.54, 1.95)-.095)
+            hose[1].co = (-1.36, 1.15, .070)
         pressure_gauge(m)
         m["water"] = moving_water("Pressurised creek jet", (32, 145, 104), (.90, .56))
         m["outflow"] = moving_water("Tailrace • aerated falling water", (114, 83, 12), (.79, .18))
@@ -542,7 +837,18 @@ def build_scene(revised):
     v3.finish_edges(m)
     scene.frame_set(FRAME)
     hit = turbine_water(m, wheel, nozzle, tray)
-    creek(revised)
+    if sunny:
+        foreground = bpy.data.collections.new("Turbine and electrician light receivers")
+        for obj in scene.objects:
+            if obj.type in {"MESH", "CURVE", "FONT"} and not obj.hide_render:
+                foreground.objects.link(obj)
+        rng = random.Random(2173)
+        summer_bank()
+        summer_water()
+        stream_cobbles(rng)
+        meadow_planting(rng)
+    else:
+        creek(revised)
     v3.lighting(scene)
     scene.world.node_tree.nodes["Background"].inputs["Strength"].default_value = .43
     if revised:
@@ -553,18 +859,23 @@ def build_scene(revised):
         scene.collection.objects.link(bounce)
         bounce.location = (1.02, -1.76, 1.26)
         bounce.rotation_euler = (Vector((.12, -.52, .71))-bounce.location).to_track_quat("-Z", "Y").to_euler()
+    if sunny:
+        morning_light(scene, foreground)
     camera(scene, hit, rig)
     render_profiles.apply_fast(scene, None, {}, "cycles")
     return scene
 
 
 def main():
-    revised = "--step1b" in sys.argv
-    output = OUTPUT.with_name("step1b_still.png") if revised else OUTPUT
+    sunny = "--step1c" in sys.argv
+    revised = sunny or "--step1b" in sys.argv
+    output = OUTPUT
+    if revised:
+        output = OUTPUT.with_name("step1c_still.png" if sunny else "step1b_still.png")
     if output.exists():
         raise FileExistsError(output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    scene = build_scene(revised)
+    scene = build_scene(revised, sunny)
     scene.render.filepath = str(output)
     devices = bpy.context.preferences.addons["cycles"].preferences.devices
     print("[step1] Rendering once on", [(d.name, d.type) for d in devices if d.use],
