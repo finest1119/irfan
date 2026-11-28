@@ -49,3 +49,24 @@ The [CPU previews](preview_v2/) contain four 270 × 480 stills at two samples an
 cd '/Users/irfan/Documents/Facebook & Youtube Monetisation/irfan'
 /Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup --python-exit-code 1 -P page4/di-belakang-tabir/pilot_ed01/build_ed01.py
 ```
+
+## Quality pass v3
+
+[Six-second hook](out_v3/preview/hook_6s.mp4) · [Gutter seam](out_v3/preview/beat1_hook.png) · [Inflow](out_v3/preview/beat2_inflow.png) · [High water](out_v3/preview/beat3_level.png) · [Outflow](out_v3/preview/beat4_outflow.png)
+
+The hook opens on a bead pinned to a soldered zinc lap. A 47 mm camera follows its release down the pipe to the open drain. The bead accelerates under gravity while runoff continues from the shoe. Two disturbances travel across the drain surface and the floating leaf drifts through the wake.
+
+The 1.50 m inlet and 330 mm outlet share the −1.08 m invert. The inlet water and reservoir share one closed mesh across the sill. The cut exposes bed sediment, sawn aggregate, reinforcing steel and compacted roadbase. A bolted flange, open bore, weld, enamel depth gauge and stamped outlet plate give the mechanism scale.
+
+The zinc combines spangle, uneven roughness and a partial handling print. Water uses IOR 1.333 and depth absorption. Glazing uses IOR 1.51. The leaves have subsurface shading. A cloudy HDRI, soft key, fill and rim light the scene with AgX Base Contrast. The cameras use 42–48 mm lenses, subject-focused depth of field and an eased hook path with a 0.45-frame shutter.
+
+**Preview verification.** Blender 5.3.0 used CPU for the four 360 × 640 stills at 18 samples and the 216 × 384 hook at six samples. The H.264 decoded to 144 distinct frames at 24 fps, exactly 6.000 seconds. The camera had an unobstructed view of the bead on frames 1–68. All four stills and seven decoded hook frames were visually checked. The original builder, stills, MP4 and v2 previews matched their starting SHA-256 hashes.
+
+**Full render on the chief’s Mac.** With FFmpeg on PATH, this writes four 1080 × 1920 PNGs and the 1080 × 1920 hook to `out_v3/`. Cycles uses adaptive sampling, 192 samples for stills, 64 for motion and OpenImageDenoise. The device helper enables Metal and CPU together when available and falls back to CPU.
+
+```sh
+cd '/Users/irfan/Documents/Facebook & Youtube Monetisation/irfan'
+/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup --python-exit-code 1 -P page4/di-belakang-tabir/pilot_ed01/build_ed01_v3.py
+```
+
+**Remaining gap to Mildly Elsewhere quality.** The jet, foam and ripples are authored effects. A fluid simulation would resolve finer breakup and air entrainment. The pond rise and drawdown still use three staged levels, and the distant planting uses simplified leaves. Fine specular detail and denoising stability at delivery resolution still need review on the chief’s render.
