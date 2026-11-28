@@ -20,3 +20,7 @@ Next, after the 29 Nov reset, the chief:
 
 ## Character approved (27 Nov 2026)
 - **Bar The Builder v3** approved by Irfan: Malay man ~34, light sawo matang skin, no moustache, short even beard, normal build, "BAR" tape on the apron, yellow folding ruler. Build: `page4/character_bar/build_bar_v3.py`, stills in `page4/character_bar/out_v3/`. Known polish items (later): beard reads as paint up close, neck seam/collar, plastic hair.
+
+## Branding choices (28 Nov 2026)
+- **Kita Buat Dia:** APPROVED v3 direction **C "Pelan Turbin"** (blue blueprint; `page4/kita-buat-dia/branding_v3/logo_C*`, `banner_C*`).
+- **Di Belakang Tabir:** logo A "Selak" (turned-page D) approved. Banner: remove the "Dalam Benda" label; final choice between C1 (meter) and C2 (receipt) is pending.
