@@ -86,3 +86,6 @@ Read memory first (dir `~/.claude/projects/-Users-irfan-Documents-Facebook---You
 
 ## CORRECTION 28 Nov (Irfan)
 "Mildly Elsewhere style" = its **3D video quality** (realistic, detailed models and materials, lighting, smooth cinematic camera and animation), NOT the cross-section/cutaway look. Cutaways only where they help explain. Tell ED/SME/WJH at the reset; the page2/page4 STYLE docs and pipeline/cutaway still say "cutaway" and need re-wording.
+
+## 28 Nov: reel length (HARD)
+Every FB reel must be > 60 s (target 70–100 s). All 17 earlier ED reels were 31–46 s (the episode.json qc duration_s was [30,60] and the TRACK-A narration ~35–45 s). Irfan: leave the scheduled ones; extend the 3 Codex reels + moka; every new reel is 75–90 s. At the reset, tell the ED Mac agent to fix its TRACK-A narration target and the duration_s default. The skill reel-3d-quality has the hard rule.
