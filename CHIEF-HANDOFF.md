@@ -83,3 +83,6 @@ Read memory first (dir `~/.claude/projects/-Users-irfan-Documents-Facebook---You
 - **GPU:** Blender Metal works on the M2 Pro, but the Codex sandbox hides the GPU. Codex writes the scripts plus `--preview` runs; the chief runs final renders outside the sandbox (memory codex-gpu-rendering).
 - Irfan said: keep doing everything possible with Codex until the reset.
 - Post-reset Claude work: resume ED/Asus/SME (per above), review the page4 per-Page plans, and turn the pilots into full reels (camera journey, animated water/drive, BM VO + captions).
+
+## CORRECTION 28 Nov (Irfan)
+"Mildly Elsewhere style" = its **3D video quality** (realistic, detailed models and materials, lighting, smooth cinematic camera and animation), NOT the cross-section/cutaway look. Cutaways only where they help explain. Tell ED/SME/WJH at the reset; the page2/page4 STYLE docs and pipeline/cutaway still say "cutaway" and need re-wording.
