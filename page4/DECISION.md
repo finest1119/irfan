@@ -24,3 +24,4 @@ Next, after the 29 Nov reset, the chief:
 ## Branding choices (28 Nov 2026)
 - **Kita Buat Dia:** APPROVED v3 direction **C "Pelan Turbin"** (blue blueprint; `page4/kita-buat-dia/branding_v3/logo_C*`, `banner_C*`).
 - **Di Belakang Tabir:** logo A "Selak" (turned-page D) approved. Banner: remove the "Dalam Benda" label; final choice between C1 (meter) and C2 (receipt) is pending.
+- DBT banner: Irfan chose **C4 (car)**, revised as C4b without the "Bedah kereta" caption and with simple part labels (arrow + name + function).
