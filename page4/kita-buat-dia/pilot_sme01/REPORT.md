@@ -34,3 +34,14 @@ Checked the four PNG headers at 270 × 480 and decoded the MP4 at 135 × 240, 14
 1. **Bar’s performance.** Animate feet on the moving pedals, the stop and two ruler taps, then the stopped-blade pour and glance from the full basket to his calves. The pilot poses Bar for loading and shows the finished glass.
 2. **The failed and successful tests.** Shoot both passes with the same load and cadence. Hold on the tyre and roller chalk marks long enough to see the first roller lag, show the sleeve change, then give the second test time to establish grip and draw chunks into the vortex.
 3. **The BM edit and mix.** Time the narration to the tyre hiss, ruler taps, blade spin-down and pour. Add the opening “Ilustrasi 3D” and verified issue line in the edit, then phone-check the two-line subtitles over the moving shot.
+
+## v2 changes
+
+Bar rides the adjusted saddle with both hands on the grips. His boots follow the level pedals through all 144 hook frames. The rear wheel turns 95/47 revolutions per crank turn. Beats 2 and 3 share a wider view of the roller, belt and blade shaft, with the yellow power path visible in both. The opening jug is loaded and lidded.
+
+The [CPU previews](preview_v2/) contain four 270 × 480 stills and a six-second 135 × 240 hook. On the chief’s Mac, check the `Cycles devices` line for both METAL and CPU. Run the full render with FFmpeg on PATH.
+
+```sh
+cd '/Users/irfan/Documents/Facebook & Youtube Monetisation/irfan'
+/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup --python-exit-code 1 -P page4/kita-buat-dia/pilot_sme01/build_sme01.py
+```

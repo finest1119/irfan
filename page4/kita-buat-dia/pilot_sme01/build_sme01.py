@@ -11,7 +11,8 @@ import tempfile
 import time
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
+from mathutils.bvhtree import BVHTree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -26,41 +27,210 @@ V = Vector
 box, tube, beam, mat = C.box, C.strand, C.beam, C.material
 
 
+# Local +X is Bar's left. He faces the front wheel along world -X.
+SADDLE_HIP = V((-.27, 0, 1.084))
+RIDER_ROT = Matrix.Rotation(-pi/2, 4, 'Z') @ Matrix.Rotation(.43, 4, 'X')
+CRANK_CENTRE = V((-.37, 0, .34))
+GRIP_CENTRE = (-.803, .207, 1.205)
+
+
+def limb_matrices(first, second, end, root, goal, bend):
+    """Two-link solve with an explicit elbow/knee plane, in armature space."""
+    axis = (goal-root).normalized()
+    pole = (bend-axis*bend.dot(axis)).normalized()
+    upper = (second.head_local-first.head_local).length
+    lower = (end.head_local-second.head_local).length
+    reach = (goal-root).length
+    if reach > upper+lower+.0001 or reach < abs(upper-lower):
+        raise ValueError(f"{first.name} target out of reach: {reach:.3f}")
+    along = (upper**2-lower**2+reach**2)/(2*reach)
+    joint = root+axis*along+pole*math.sqrt(max(0, upper**2-along**2))
+    def pose(bone, child, start, finish):
+        rot = (child.head_local-bone.head_local).rotation_difference(finish-start)
+        m = rot.to_matrix().to_4x4() @ bone.matrix_local
+        m.translation = start
+        return m
+    return pose(first, second, root, joint), pose(second, end, joint, goal)
+
+
+def set_chain(rig, names, matrices):
+    parent = rig.pose.bones[names[0]].parent.matrix
+    for name, matrix in zip(names, matrices):
+        bone = rig.data.bones[name]
+        rig.pose.bones[name].matrix_basis = bone.convert_local_to_pose(
+            matrix, bone.matrix_local, parent_matrix=parent,
+            parent_matrix_local=bone.parent.matrix_local, invert=True)
+        parent = matrix
+
+
+def fit_rider(rig):
+    global RIDER_WORLD, BIKE_TO_RIG
+    local_hip = rig.matrix_world @ rig.pose.bones["pelvis"].head
+    RIDER_WORLD = Matrix.Translation(SADDLE_HIP) @ RIDER_ROT @ Matrix.Translation(-local_hip)
+    BIKE_TO_RIG = (RIDER_WORLD @ rig.matrix_world).inverted()
+    # Level his gaze over the raised bars and turn slightly toward the near grip.
+    head = rig.pose.bones["Head"]
+    look = Matrix.Rotation(.42,4,'Z') @ Matrix.Rotation(-.32,4,'X') @ head.matrix
+    look.translation = head.head
+    head.matrix = look
+    for side, sign in (("l",1), ("r",-1)):
+        names = [part+"_"+side for part in ("upperarm","lowerarm","hand")]
+        shoulder, elbow, hand = [rig.data.bones[n] for n in names]
+        # Locate the grip inside the palm, forward of the wrist.
+        grip = V((GRIP_CENTRE[0], -sign*GRIP_CENTRE[1], GRIP_CENTRE[2]))
+        palm_rot = Matrix.Rotation(.72,4,'X') @ Matrix.Rotation(-sign*pi/2,4,'Z')
+        fingers = rig.data.bones["middle_01_"+side].head_local
+        wrist = BIKE_TO_RIG @ grip - palm_rot.to_3x3() @ ((fingers-hand.head_local)*.85)
+        arm = limb_matrices(shoulder, elbow, hand, rig.pose.bones[names[0]].head.copy(),
+                            wrist, V((sign*.38,1,-.45)))
+        palm = palm_rot @ hand.matrix_local
+        palm.translation = wrist
+        set_chain(rig, names, (*arm, palm))
+    bpy.context.view_layer.update()
+
+
+def rig_workwear(rig, bind):
+    """Return the v3 tailored leg panels to bind space so they follow the pedals."""
+    for ob in bpy.context.scene.objects:
+        if ob.name=="Trouser seat":
+            # Ease the tucked shirt's straight lower block around the seated hips.
+            for v in ob.data.vertices:
+                tuck = max(0,min(1,(.985-v.co.z)/.13))
+                v.co.x *= 1-.55*tuck
+                v.co.y = .04+(v.co.y-.04)*(1-.58*tuck)
+                v.co.z -= .044*tuck
+        trousers = ob.name.startswith("Straight cut trouser leg")
+        boot = ob.name.startswith(("Rubber outsole","Stitched welt","Leather upper","Waxed lace"))
+        if not (trousers or boot):
+            continue
+        points = (ob.data.vertices if ob.type=='MESH' else ob.data.splines[0].points)
+        side = "l" if points[0].co.x>0 else "r"
+        foot, thigh, calf = (part+"_"+side for part in ("foot","thigh","calf"))
+        if ob.type=='CURVE':
+            # Bone parenting includes the rest-bone tail offset.
+            b = rig.data.bones[foot]
+            ob.parent, ob.parent_type, ob.parent_bone = rig, 'BONE', foot
+            ob.matrix_parent_inverse = (bind[foot] @ b.matrix_local
+                                        @ Matrix.Translation((0,b.length,0))).inverted()
+            continue
+        groups = {n:ob.vertex_groups.new(name=n) for n in ((thigh,calf) if trousers else (foot,))}
+        for v in points:
+            # v3 emits sixty-four vertices per ring, first six rings on the calf.
+            source = (calf if v.index//64<6 else thigh) if trousers else foot
+            v.co = bind[source].inverted() @ v.co
+            if trousers:
+                w = min(1,max(0,(v.co.z-.46)/.12))
+                groups[thigh].add([v.index],w,'REPLACE')
+                groups[calf].add([v.index],1-w,'REPLACE')
+            else:
+                groups[foot].add([v.index],1,'REPLACE')
+        ob.parent = rig
+        mod = ob.modifiers.new("Follow rider", 'ARMATURE')
+        mod.object = rig
+
+
+def pedal_pose(angle):
+    flat = BIKE_TO_RIG.to_quaternion().to_matrix().to_4x4() @ Matrix.Rotation(-pi/2,4,'Z')
+    for side,sign in (("l",1),("r",-1)):
+        names = [part+"_"+side for part in ("thigh","calf","foot")]
+        thigh, calf, foot = [RIG.data.bones[n] for n in names]
+        platform = CRANK_CENTRE + Matrix.Rotation(angle,3,'Y') @ V((sign*.116,-sign*.13,-sign*.109))
+        # The contact is under the ball of the level boot, on the pedal's top face.
+        sole = V((sign*.114,-.080,.009))
+        ankle = BIKE_TO_RIG @ (platform+V((0,0,.011))) - flat.to_3x3() @ (sole-foot.head_local)
+        leg = limb_matrices(thigh, calf, foot, RIG.pose.bones[names[0]].head.copy(),
+                            ankle, V((sign*.09,-1,0)))
+        shoe = flat @ foot.matrix_local
+        shoe.translation = ankle
+        set_chain(RIG, names, (*leg, shoe))
+
+
+def lap_geometry():
+    panels = []
+    thighs = []
+    for ob in bpy.context.scene.objects:
+        if ob.name.startswith("Straight cut trouser leg"):
+            thighs.append(ob)
+        if ob.name.startswith(("Draped clay canvas apron","Bound apron edge","Topstitch")):
+            mesh = ob.type == 'MESH'
+            points = ob.data.vertices if mesh else ob.data.splines[0].points
+            for point in points:
+                rest = V(point.co[:3])
+                if rest.z < 1.12:
+                    normal = V((1.45*rest.x/.25,-.53,.84)).normalized()
+                    panels.append((point,rest,normal,mesh))
+    return panels,thighs
+
+
+def drape_lap():
+    # Project the original cloth and its matching stitches over this stroke's
+    # evaluated trousers. All three surfaces share the v3 model's local space.
+    graph = bpy.context.evaluated_depsgraph_get()
+    legs = [BVHTree.FromObject(ob,graph) for ob in THIGHS]
+    for point,rest,normal,mesh in LAP:
+        lift = 0
+        for leg in legs:
+            hit = leg.ray_cast(rest+normal*.48,-normal,.51)[0]
+            if hit is not None:
+                lift = max(lift,(hit-rest).dot(normal)+.014)
+        fitted = rest+normal*lift
+        point.co = fitted if mesh else (*fitted,1)
+
+
+def seated_apron(point):
+    # Fold the lower canvas across the lap along the same seam as its topstitch.
+    x,y,z = point
+    drop = max(0,1.10-z)
+    angle = min(1,drop/.27)*1.37
+    return (x*(1+.13*min(1,drop/.22)),y-drop*sin(angle),z+drop*(1-cos(angle)))
+
+
 def bar_figure():
-    # v3 is a turnaround script with top-level render calls. Reuse the modelling
-    # statements verbatim, stopping before its studio and omitting its outdir.
     path = ROOT / "page4/character_bar/build_bar_v3.py"
     tree = ast.parse(path.read_text(), filename=str(path))
-    end = next(i for i, n in enumerate(tree.body)
-               if isinstance(n, ast.FunctionDef) and n.name == "workshop")
-    tree.body = [n for n in tree.body[:end] if ast.unparse(n) != "OUT.mkdir(exist_ok=True)"]
-    # Pose his free arm before the original script fits the shirt and sleeves.
-    fit = next(i for i,n in enumerate(tree.body) if isinstance(n,ast.Assign)
-               and any(isinstance(t,ast.Name) and t.id=="bones" for t in n.targets))
-    tree.body[fit:fit] = ast.parse(
-        'orient("upperarm_r", (.03,-.98,.17))\norient("lowerarm_r", (.12,-.94,.32))'
-    ).body
-    exec(compile(tree, str(path), "exec"), {"__file__": str(path), "__name__": "bar_v3_model"})
-    roots = [o for o in bpy.context.scene.objects if o.parent is None]
-    figure = empty("Bar • v3 • at work", (0, 0, 0))
-    for o in roots:
-        o.parent = figure
-    return figure
+    # Park the folding rule on the stall. Both of Bar's hands hold the grips.
+    end = next(i for i,n in enumerate(tree.body) if isinstance(n,ast.FunctionDef) and n.name=="workshop")
+    tree.body = [n for n in tree.body[:end] if ast.unparse(n)!="OUT.mkdir(exist_ok=True)"]
+    for i,n in enumerate(tree.body):
+        if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="bones" for t in n.targets):
+            tree.body.insert(i,ast.parse("fit_rider(rig)").body[0])
+            break
+    apron = next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=="apronpoint")
+    apron.body[-1].value = ast.Call(ast.Name("seated_apron",ast.Load()),[apron.body[-1].value],[])
+    env = {"__file__":str(path),"__name__":"bar_v3_model","fit_rider":fit_rider,"seated_apron":seated_apron}
+    exec(compile(ast.fix_missing_locations(tree),str(path),"exec"),env)
+    rig = env["rig"]
+    rig_workwear(rig,env["bones"])
+    root = empty("Bar • v3 • riding", (0,0,0))
+    ruler = empty("Bar's folding rule on the counter", (.44,1.19,.930))
+    ruler.rotation_euler = Matrix((env["across"],env["up"],env["axis"])).to_euler()
+    for ob in list(bpy.context.scene.objects):
+        if ob.parent is None and ob not in (root,ruler):
+            if ob.name.startswith(("Yellow folding rule","Millimetre graduations","Scale numeral","Ruler pivot")):
+                ob.parent = ruler
+                ob.location -= env["grip"]
+            else:
+                ob.parent = root
+    root.matrix_world = RIDER_WORLD
+    return rig
 
 
 def device(scene):
     prefs = bpy.context.preferences.addons["cycles"].preferences
     try:
         prefs.compute_device_type = 'METAL'
-        prefs.refresh_devices()
-        for d in prefs.devices:
+        available = prefs.get_devices_for_type('METAL')
+    except (TypeError, RuntimeError):
+        available = []
+    if any(d.type == 'METAL' for d in available):
+        for d in available:
             d.use = d.type in {'METAL', 'CPU'}
-        metal = [d.name for d in prefs.devices if d.type == 'METAL']
-    except (TypeError, RuntimeError) as exc:
-        print("Metal enumeration:", exc, flush=True)
-        metal = []
-    scene.cycles.device = 'GPU' if metal else 'CPU'
-    print("Cycles device:", scene.cycles.device, metal, flush=True)
+        scene.cycles.device = 'GPU'
+        enabled = ", ".join(f"{d.type} ({d.name})" for d in available if d.use)
+    else:
+        scene.cycles.device = 'CPU'
+        enabled = "CPU"
+    print("Cycles devices:", enabled, flush=True)
 
 
 def empty(name, at):
@@ -140,6 +310,9 @@ def palette():
         "awning":mat("Petrol canvas","285e61","427778",38,.001),
         "linen":mat("Unbleached canvas","cfc5a7","ece1c4",48,.0007)
     }
+    yellow = p["trace"].node_tree.nodes["Principled BSDF"]
+    yellow.inputs["Emission Color"].default_value = C.color("f4ba49")
+    yellow.inputs["Emission Strength"].default_value = .55
     for key in ("red","juice"):
         bs=p[key].node_tree.nodes.get("Principled BSDF")
         bs.inputs["Subsurface Weight"].default_value=.10
@@ -325,14 +498,14 @@ def bike():
         for a,b in ((saddle,rear),(crank,rear),(head,front)):
             tube("Fork or stay",[(a[0],s*.018,a[1]),(b[0],s*.056,b[1])],.012,P["enamel"])
         tube("Axle nut",[(rear[0],s*.045,rear[1]),(rear[0],s*.093,rear[1])],.015,P["steel"])
-    tube("Seat post",[(saddle[0],0,.87),(-.26,0,1.016)],.017,P["steel"])
-    C.sphere("Leather sprung saddle",(-.28,0,1.018),(.135,.079,.034),P["rubber"])
-    tube("Quill stem",[(-.81,0,.805),(-.79,0,.97),(-.875,0,1.015)],.018,P["steel"])
-    tube("Swept handlebar",[(-.79,-.216,1.025),(-.865,-.152,1.022),(-.875,0,1.015),
-                             (-.865,.152,1.022),(-.79,.216,1.025)],.012,P["steel"])
+    tube("Seat post",[(saddle[0],0,.87),(-.26,0,.965)],.017,P["steel"])
+    C.sphere("Leather sprung saddle",(-.28,0,.967),(.135,.079,.034),P["rubber"])
+    tube("Quill stem",[(-.81,0,.805),(-.79,0,1.15),(-.875,0,1.195)],.018,P["steel"])
+    tube("Swept handlebar",[(-.79,-.216,1.205),(-.865,-.152,1.202),(-.875,0,1.195),
+                             (-.865,.152,1.202),(-.79,.216,1.205)],.012,P["steel"])
     for s in (-1,1):
-        tube("Rubber grip",[(-.835,s*.18,1.022),(-.771,s*.234,1.026)],.018,P["rubber"])
-    tube("Brake cable",[(-.81,-.17,1.01),(-.93,-.11,.95),(-.95,-.055,.79),(-.869,-.045,.63)],.003,P["iron"])
+        tube("Rubber grip",[(-.835,s*.18,1.202),(-.771,s*.234,1.206)],.018,P["rubber"])
+    tube("Brake cable",[(-.81,-.17,1.19),(-.93,-.11,.95),(-.95,-.055,.79),(-.869,-.045,.63)],.003,P["iron"])
     rotor=empty("Pedal spindle",(crank[0],0,crank[1]))
     for name,c,r,parent in (("Chainwheel",crank,.088,rotor),("Sprocket",rear,.042,rear_hub)):
         mount(disk(name,(c[0],-.065,c[1]),r,.011,P["iron"],teeth=20,sides=80),parent)
@@ -385,8 +558,10 @@ def drive():
         mount(disk("Hex socket",(cx,.036,cz),.012,.011,P["steel"],sides=6),o)
         mount(tube("Chalk timing witness",[(cx+.019,.036,cz),(cx+r-.002,.036,cz)],.004,P["chalk"]),o)
     belt=crank_loop((RX,RZ),(JX,GZ),.055,.045,.061)
+    belt_edge=mat("Exposed fabric ply in drive belt","938d7e",rough=.84)
     for y in (.052,.058,.064,.070):
-        tube("Flat transmission belt",[(x,y,z) for x,_,z in belt+[belt[0]]],.0047,P["rubber"])
+        tube("Flat transmission belt",[(x,y,z) for x,_,z in belt+[belt[0]]],.0047,
+             belt_edge if y==.052 else P["rubber"])
     mount(tube("Cross shaft",[(JX,-.192,GZ),(JX,.104,GZ)],.012,P["steel"]),pulley)
     # The mitre pair sits forward of the belt plane. Pitch cones share their
     # apex where the Y and Z shaft axes intersect.
@@ -446,12 +621,14 @@ def drive():
 def power_trace():
     # A single painted schematic follows the near crank, chain run, wheel,
     # roller, belt, right-angle transfer, vertical shaft and one blade.
-    path=[(-.254,-.176,.231),(-.254,-.095,.231),(-.37,-.095,.34),(-.38,-.077,.436),
+    near_crank=[(-.254,-.176,.231),(-.254,-.095,.231),(-.37,-.095,.34)]
+    stroke=mount(tube("Power at the crank",near_crank,.008,P["trace"]),CRANK)
+    path=[(-.37,-.095,.34),(-.38,-.077,.436),
           (.19,-.077,.440),(.19,-.032,.393),(.425,-.028,.630)]
     path+=arc(.19,-.028,.393,.342,.79,1.245,18)
     path += [(RX,-.114,RZ),(RX+.039,-.114,RZ-.041),(JX+.027,-.118,GZ-.034),
              (JX,-.121,GZ),(JX,-.196,GZ),(JX,-.196,1.130),(JX+.055,-.205,1.144)]
-    return tube("Section key • one power path",path,.0047,P["trace"])
+    return [stroke,tube("Section key • one power path",path,.008,P["trace"])]
 
 
 def glassware():
@@ -576,32 +753,27 @@ def shot(beat,progress=0):
     PULP.scale.z=(.09+.91*blend)*(.58 if beat==4 else 1)
     PULP.rotation_euler.z=progress*2*tau
     show([COVER],beat in (1,4) or (beat=="motion" and progress<.27))
-    show([TRACE],beat==3 or (beat=="motion" and progress>=.27))
+    show(TRACE,beat in (2,3) or (beat=="motion" and progress>=.27))
     show([CUP],beat==4)
-    show([FALL],beat==1)
-    show([LID],beat!=1)
-    LID.location.z=1.74 if beat==1 else 1.416
-    LID.location.x=JX+.045 if beat==1 else JX
-    BAR.location=(.065,.42,.003) if beat!=4 else (.15,.46,.003)
-    BAR.rotation_euler.z=1.00 if beat!=4 else .55
     REAR.rotation_euler.y=.34 if beat==2 else 0
-    CRANK.rotation_euler.y=0
+    CRANK.rotation_euler.y=2.4
     ROLLER.rotation_euler.y=1.38 if beat==2 else -1.48
     PULLEY.rotation_euler.y=0
     SHAFT.rotation_euler.z=0
     for pedal in PEDALS:
-        pedal.rotation_euler.y=0
+        pedal.rotation_euler.y=-CRANK.rotation_euler.y
     if beat=="motion":
         # A constant cadence and mechanically linked phases, evaluated at scene time.
         turns=progress*3.25
-        CRANK.rotation_euler.y=-turns*tau
-        REAR.rotation_euler.y=CRANK.rotation_euler.y*.095/.047
+        CRANK.rotation_euler.y=2.4-turns*tau
+        REAR.rotation_euler.y=-turns*tau*.095/.047
         ROLLER.rotation_euler.y=-REAR.rotation_euler.y*.353/.061
         PULLEY.rotation_euler.y=ROLLER.rotation_euler.y*.055/.045
         SHAFT.rotation_euler.z=-PULLEY.rotation_euler.y
         for pedal in PEDALS:
             pedal.rotation_euler.y=-CRANK.rotation_euler.y
-        ease=progress*progress*(3-2*progress)
+        push=min(1,max(0,(progress-.30)/.70))
+        ease=push*push*(3-2*push)
         pos=V(WIDE[0]).lerp(V(CLOSE[0]),ease)
         target=V(WIDE[1]).lerp(V(CLOSE[1]),ease)
         focus=V(WIDE[3]).lerp(V(CLOSE[3]),ease)
@@ -609,6 +781,10 @@ def shot(beat,progress=0):
         SCENE.camera=MOV
     else:
         SCENE.camera={1:HERO,2:PAIRED,3:PAIRED,4:PAYOFF}[beat]
+
+
+    pedal_pose(CRANK.rotation_euler.y)
+    drape_lap()
 
 
 def render(path):
@@ -619,7 +795,7 @@ def render(path):
 
 
 def deliver(preview,stills_only):
-    out=HERE/"preview" if preview else HERE
+    out=HERE/"preview_v2" if preview else HERE
     out.mkdir(exist_ok=True)
     SCENE.render.resolution_percentage=25 if preview else 100
     for i,name in enumerate(("hook","tapi_roller_tergelincir","jadi_pemacu","segelas_jus"),1):
@@ -656,7 +832,8 @@ if __name__=="__main__":
     args=parser.parse_args(sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else [])
     start=time.monotonic()
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    BAR=bar_figure()
+    RIG=bar_figure()
+    LAP,THIGHS=lap_geometry()
     SCENE=C.render_settings("CPU",1080,6 if args.preview else 48,144)
     device(SCENE)
     SCENE.render.fps=24
@@ -677,11 +854,10 @@ if __name__=="__main__":
     TRACE=power_trace()
     LID,CHUNKS,PULP,CUP=glassware()
     LOAD=[chunk.location.copy() for chunk in CHUNKS]
-    FALL=wedge("Watermelon segment falling into jar",(JX-.013,-.176,1.575),.139,.38)
-    WIDE=((.62,-4.25,1.55),(-.135,.02,.65),4.15,(.21,0,.96))
-    CLOSE=((1.34,-1.80,1.62),(.465,-.045,.84),1.32,(.47,-.11,.96))
+    WIDE=((-2.35,-4.35,1.65),(-.20,0,.97),3.72,(-.32,0,1.02))
+    CLOSE=((1.54,-1.20,1.65),(.15,-.04,1.02),2.06,(.45,-.10,.94))
     HERO=camera("01 • kayuh basikal",*WIDE,7.1)
-    PAIRED=camera("02–03 • fixed test lens",*CLOSE,6.3)
+    PAIRED=camera("02–03 • fixed test lens",*CLOSE,3.2)
     PAYOFF=camera("04 • segelas",(.98,-1.41,1.52),(.816,-.065,1.119),.68,(.85,-.115,1.16),2.8)
     MOV=camera("Motion • wheel to blade",*WIDE,7.1)
     print(f"TIMING scene assembly {time.monotonic()-start:.2f} s",flush=True)

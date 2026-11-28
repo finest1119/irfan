@@ -38,3 +38,14 @@ All four PNG dimensions were checked. The finished MP4 decoded to 144 distinct f
 1. **Complete the camera journey.** Connect the hook to the flashback, follow the leaf along the open drain and through the inlet, then return to the same mouth for the closing shot.
 2. **Animate the storage cycle.** The pond uses three authored water states. Join them into one rise and drawdown, keeping the floating leaf, inlet turbulence and residual outlet jet in sync with the gauge.
 3. **Finish the BM edit and sound.** Record the narration, time the drop and runoff sounds, and set Montserrat Bold captions against the voice. Add the dated issue line and “Ilustrasi 3D” opening label, then check readability with the Reel interface visible on a phone.
+
+## v2 changes
+
+The shared concrete shader’s high-water mark caused the dark diagonal across beat 4. The mark now sits on the inlet wall beside the gauge. Water-green `#32B8A5` follows the active route from the downpipe through the pond to the outlet jet.
+
+The [CPU previews](preview_v2/) contain four 270 × 480 stills at two samples and the six-second 135 × 240 hook at one sample. Append `-- --preview` to reproduce them. On the chief’s Mac, check the `Cycles devices` line for both METAL and CPU. Run the full render with FFmpeg on PATH.
+
+```sh
+cd '/Users/irfan/Documents/Facebook & Youtube Monetisation/irfan'
+/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup --python-exit-code 1 -P page4/di-belakang-tabir/pilot_ed01/build_ed01.py
+```

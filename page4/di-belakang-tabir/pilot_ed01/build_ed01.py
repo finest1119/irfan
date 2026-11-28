@@ -1,4 +1,4 @@
-"""ED-01. Run in Blender with --factory-startup. Optional -- --proof."""
+"""ED-01. Run in Blender with --factory-startup. Use -- --preview for quarter-size stills and motion."""
 import math
 import random
 import shutil
@@ -25,6 +25,24 @@ STILLS = ["beat1_hook", "beat2_inflow", "beat3_level", "beat4_outflow"]
 INVERT = -1.08
 
 
+def device(scene):
+    prefs = bpy.context.preferences.addons["cycles"].preferences
+    try:
+        prefs.compute_device_type = 'METAL'
+        available = prefs.get_devices_for_type('METAL')
+    except (TypeError, RuntimeError):
+        available = []
+    if any(d.type == 'METAL' for d in available):
+        for d in available:
+            d.use = d.type in {'METAL', 'CPU'}
+        scene.cycles.device = 'GPU'
+        enabled = ", ".join(f"{d.type} ({d.name})" for d in available if d.use)
+    else:
+        scene.cycles.device = 'CPU'
+        enabled = "CPU"
+    print("Cycles devices:", enabled, flush=True)
+
+
 def surface(name, rgb, light, scale, rough=.65, grain=.008, metal=0):
     return M(name, rgb, light, scale, grain, rough, metal)
 
@@ -39,7 +57,7 @@ def cast_material():
     link(base.links[0].from_socket, tint.inputs[1])
     tint.inputs[2].default_value = C.color("A29A88")
     link(tint.outputs[0], base)
-    return C.weathering(mat, -.495, .078, .98)
+    return mat
 
 
 def chip_faces(name, panels, density, materials):
@@ -319,6 +337,8 @@ def hole(wall, centre, axis, radius):
 
 def pond(p):
     wet=p["concrete"]
+    # The inlet gauge witnesses the high-water mark. Keep the outlet concrete clean.
+    gauge_wall=C.weathering(wet.copy(), -.495, .078, .68)
     C.ground((-24,24),(.0,8),-1.85,layers=(("Lateritic subsoil",1.12,"45382f","715b47"),
              ("Weathered parent rock",8.1,"423f3b","6c655b")),roots=False,grains=7)
     C.ground((-20,-2.97),(0,3.31),.28,layers=(("Topsoil",.37,"332923","584632"),
@@ -337,7 +357,7 @@ def pond(p):
     y=2.58
     for xa,xb,za,zb in ((-2.98,-2.22,-1.54,.34),(-.72,2.74,-1.54,.34),
                           (-2.22,-.72,-1.54,INVERT),(-2.22,-.72,-.08,.34)):
-        B("Inlet headwall",((xa+xb)/2,y,(za+zb)/2),(xb-xa,.29,zb-za),wet,.012)
+        B("Inlet headwall",((xa+xb)/2,y,(za+zb)/2),(xb-xa,.29,zb-za),gauge_wall,.012)
     for x in (-2.29,-.65):
         B("Cast inlet jamb",(x,2.36,-.562),(.14,.26,1.26),wet,.013)
     B("Cast inlet lintel",(-1.47,2.36,-.025),(1.78,.26,.17),wet,.015)
@@ -458,6 +478,19 @@ def water_state(p,level,stage,leaf_xy):
         x=-1.48+R.uniform(-.37,.37)*(1 if stage!="low" else .14)
         S("Aerated inlet streak",[(x,2.4,level+.094),(x+.024,2.25,level+.083),
           (x+.018,2.08,level+.060),(x-.025,1.90,level+.031)],.008,p["ripple"])
+    # One surface filament follows the tracked leaf in each successive pond view.
+    x,y=leaf_xy
+    if stage=="inflow":
+        path=[(-1.47,2.43,level+.116),(-1.46,2.22,level+.096),
+              (-1.43,1.98,level+.062),(x,y,level+.028)]
+    elif stage=="high":
+        path=[(-1.46,2.24,level+.096),(-1.40,2.02,level+.060),
+              (-1.11,1.83,level+.032),(-.76,1.75,level+.030),(x,y,level+.031)]
+    else:
+        path=[(x-.48,y+.10,level+.030),(x-.21,y+.05,level+.029),
+              (x,y,level+.030),(2.35,.87,level+.033)]
+    current("Tracked surface current",path,
+            [.007]+[.047]*(len(path)-2)+[.009], [.006]*len(path),p["tracer"])
     # Small discontinuous rafts of entrained air follow the turbulent inlet.
     vs,faces=[],[]
     for j in range(125 if stage!="low" else 19):
@@ -482,7 +515,7 @@ def water_state(p,level,stage,leaf_xy):
     scale=1 if stage!="low" else .63
     pts=[(end.x+t*.71*scale,end.y-t*.23*scale,end.z-.057-.41*t*t) for t in [i/(count-1) for i in range(count)]]
     current("Outflow falling to the lower channel",pts,[scale*(.123-.061*i/(count-1)) for i in range(count)],
-            [scale*(.079-.038*i/(count-1)) for i in range(count)],p["stream"])
+            [scale*(.079-.038*i/(count-1)) for i in range(count)],p["tracer"] if stage=="low" else p["stream"])
     for i in range(3):
         ring("Tailwater ripples",pts[-1][0],pts[-1][1],-1.273,.11+.11*i,.68,p["ripple"],.004)
     x,y=leaf_xy
@@ -511,6 +544,7 @@ def hook_water(p):
         pts=[(x+.012*math.sin(3*t),6.68-.31*t,.344-.17*t-.63*t*t) for t in ts]
         jet=current("Roof runoff",pts,[.061-.027*t for t in ts],[.038-.012*t for t in ts],p["stream"])
         if h==0:
+            tracked_jet=jet
             # Two quadrature modes travel down the jet, deforming its silhouette continuously.
             jet.shape_key_add(name="Mean flow")
             for mode in range(2):
@@ -566,6 +600,7 @@ def hook_water(p):
         drop.scale=(scale,scale,scale)
         drop.keyframe_insert(data_path="location",frame=frame)
         drop.keyframe_insert(data_path="scale",frame=frame)
+    return tracked_jet
 
 
 def lighting():
@@ -604,21 +639,30 @@ def build():
     jet.inputs["IOR"].default_value=1.333
     jet.inputs["Roughness"].default_value=.095
     jet.inputs["Coat Weight"].default_value=.32
+    tracer=p["stream"].copy()
+    tracer.name="Active water filament • #32B8A5"
+    shader=tracer.node_tree.nodes["Principled BSDF"]
+    shader.inputs["Base Color"].default_value=C.color("32B8A5")
+    shader.inputs["Transmission Weight"].default_value=.18
+    p["tracer"]=tracer
     pond(p)
     street(p)
-    hook_water(p)
+    tracked_jet=hook_water(p)
     states=[water_state(p,z,name,pos) for z,name,pos in [(-.973,"inflow",(-1.46,1.62)),
             (-.56,"high",(-.18,1.62)),(-.989,"low",(2.09,.97))]]
     lighting()
-    return states
+    return states,tracked_jet,p
 
 
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     proof="--proof" in sys.argv
-    scene=C.render_settings("CPU",width=270 if proof else 1080,samples=2 if proof else 10,frames=144)
+    preview="--preview" in sys.argv
+    scene=C.render_settings("CPU",width=1080,samples=2 if preview or proof else 10,frames=144)
+    scene.render.resolution_percentage=25 if preview or proof else 100
+    device(scene)
     scene.render.fps=24
-    states=build()
+    states,tracked_jet,p=build()
     def set_state(index):
         for i,group in enumerate(states):
             for ob in group:
@@ -636,11 +680,12 @@ def main():
         if "FINISHED" not in result or not path.is_file():
             raise RuntimeError(f"Missing render for {path.name}")
         return time.monotonic()-start
-    work=HERE/".work"
+    work=HERE/("preview_v2" if preview else ".work")
     work.mkdir(exist_ok=True)
-    target=work if proof else HERE
+    target=work if preview or proof else HERE
     if "--movie-only" not in sys.argv:
         for i,(stem,pose,state) in enumerate(zip(STILLS,shots,(0,0,1,2))):
+            tracked_jet.active_material=p["tracer"] if i==0 else p["stream"]
             set_state(state)
             C.portrait_camera(*pose,camera=cam)
             if i==1:
@@ -652,6 +697,7 @@ def main():
             scene.frame_set(37)
             seconds=render(target/(stem+".png"))
             print(f"TIMING {stem} {seconds:.2f}",flush=True)
+    tracked_jet.active_material=p["tracer"]
     set_state(0)
     for frame,pose in movie_keys:
         C.portrait_camera(*pose,camera=cam,frame=frame)
@@ -661,7 +707,7 @@ def main():
             render(work/f"motion{f}.png")
         return
     scene.render.resolution_x,scene.render.resolution_y=540,960
-    scene.cycles.samples=4
+    scene.cycles.samples=1 if preview else 4
     scene.cycles.max_bounces=3
     start=time.monotonic()
     with tempfile.TemporaryDirectory(dir=work) as tmp:
@@ -674,9 +720,9 @@ def main():
         subprocess.run([shutil.which("ffmpeg") or "ffmpeg","-hide_banner","-loglevel","error","-y",
                         "-framerate","24","-start_number","1","-i",str(tmp/"%04d.png"),"-frames:v","144",
                         "-vf","scale=out_color_matrix=bt709","-c:v","libx264","-preset","fast","-crf","17",
-                        "-pix_fmt","yuv420p","-color_primaries","bt709","-color_trc","bt709","-colorspace","bt709",
+                        "-pix_fmt","yuv444p" if preview else "yuv420p","-color_primaries","bt709","-color_trc","bt709","-colorspace","bt709",
                         "-movflags","+faststart",str(tmp/"hook_6s.mp4")],check=True)
-        (tmp/"hook_6s.mp4").replace(HERE/"hook_6s.mp4")
+        (tmp/"hook_6s.mp4").replace(target/"hook_6s.mp4")
         print(f"TIMING encode {time.monotonic()-start-elapsed:.2f}",flush=True)
 
 
