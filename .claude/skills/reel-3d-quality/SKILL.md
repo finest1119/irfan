@@ -10,6 +10,8 @@ Irfan's rule (28 Nov 2026): "Mildly Elsewhere style" means that channel's **3D r
 - **Cutaway / cross-section:** Irfan likes it ("cantik"). Use it **whenever a scene suits it**, i.e. when cutting something open genuinely explains how it works. It is **not mandatory** in every video or shot.
 - **Priority:** production quality in every shot.
 
+## HARD RULE: every FB reel must be > 60 s (target 70–100 s) for monetization. Check the duration first.
+
 ## Quality checklist (brief Codex/agents with this; QC against it)
 1. **Geometry:** bevels on hard edges, real thickness, no floating or interpenetrating parts, and secondary detail where the camera looks (screws, seams, welds, cables, labels, grime).
 2. **Materials:** PBR with variation (dirt, wear, roughness breakup, damp), correct glass/water IOR, and subsurface on skin, fruit and leaves. Never a flat single-colour "toy plastic" look.
