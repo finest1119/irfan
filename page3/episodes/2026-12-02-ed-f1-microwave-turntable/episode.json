@@ -1,0 +1,146 @@
+{
+ "id": "2026-12-02-ed-f1-microwave-turntable",
+ "page": "everyday_decoded",
+ "pipeline": "v2",
+ "keyword": "microwave turntable",
+ "slug": "microwave-turntable",
+ "title": "Why the Tray in Your Microwave Spins",
+ "fb_caption": "Ever get a hot spoonful and a lukewarm one from the same bowl of soup? Microwaves bounce around inside the oven. Some spots get more energy than others. The turntable carries food through those spots, but the very center of the tray stays put. A stir halfway through can help even out the heat. Which leftover do you always stop to stir?",
+ "hashtags": [
+  "#EverydayDecoded",
+  "#HowItWorks",
+  "#Explained",
+  "#Microwave",
+  "#KitchenScience"
+ ],
+ "engagement_comment": "Which leftover always gets a halfway stir at your house? Soup, chili, or something else?",
+ "sources": [
+  "U.S. Food and Drug Administration, Microwave Ovens. Reflection off metal walls and absorption of microwave energy by water in food. https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens",
+  "Delft University of Technology, Hot spots in the microwave. A standing-wave demonstration shows how food heats at different rates across the oven. https://interactivetextbooks.tudelft.nl/showthephysics/demos/demo49/demo49.html",
+  "U.S. Department of Energy, Technical Support Document, Chapter 5, Engineering Analysis, pp. 5-32 to 5-33. Turntables carry food through a nonuniform microwave field. https://downloads.regulations.gov/EERE-2006-STD-0127-0070/attachment_7.pdf",
+  "University of Nebraska-Lincoln Extension, Microwave Safety. Stirring midway through heating helps reduce cold spots. https://food.unl.edu/article/microwave-safety/"
+ ],
+ "style": {
+  "font_set": "montserrat",
+  "highlight_color": "#FFB000",
+  "twist_card": {
+   "bg": "#FFB000",
+   "fg": "#1B1F24"
+  }
+ },
+ "tts": {
+  "model": "gemini-3.8-flash-tts",
+  "fallback_model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sadaltager",
+  "director_notes": "",
+  "pause_between_beats": 0.3
+ },
+ "music": null,
+ "render": {
+  "resolution": [1080, 1920],
+  "fps": 30,
+  "samples": 24,
+  "parallel": 2,
+  "libs": ["scene_lib_v2_ed"]
+ },
+ "beats": [
+  {
+   "id": "hook",
+   "text": "Why can one spoonful of microwaved soup be piping hot when the next is barely warm?",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "hook",
+     "cam0": [-0.60, -1.72, 1.37], "tgt0": [-0.02, 0.0, 1.14],
+     "cam1": [-0.35, -1.40, 1.29], "tgt1": [-0.04, 0.0, 1.12],
+     "lens": 30, "_still": 0.65
+    },
+    "overlays": [
+     {"type": "card", "text": "ONE BOWL, TWO TEMPERATURES?", "at": 0.25}
+    ]
+   }
+  },
+  {
+   "id": "waves",
+   "text": "Microwaves bounce off the metal walls and overlap, so some spots get more energy than others.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "bounce",
+     "cam0": [-0.144, -0.085, 1.449], "tgt0": [-0.033, 0.085, 1.065],
+     "cam1": [-0.122, -0.070, 1.419], "tgt1": [-0.025, 0.081, 1.060],
+     "lens": 25, "_still": 0.55
+    },
+    "overlays": [
+     {"type": "chips", "items": ["REFLECTED WAVES"], "cues": ["bounce"]}
+    ]
+   }
+  },
+  {
+   "id": "soup",
+   "text": "Water molecules in your soup absorb that energy. Where they absorb more, the soup can heat up faster.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "water", "vib_cue": "absorb", "heat_cue": "heat",
+     "cam0": [-0.112, -0.158, 1.183], "tgt0": [-0.06, 0.029, 1.056],
+     "cam1": [-0.076, -0.141, 1.172], "tgt1": [-0.06, 0.024, 1.056],
+     "lens": 28, "_still": 0.78
+    },
+    "overlays": [
+     {"type": "chips", "items": ["WATER MOLECULES"], "cues": ["molecules"]}
+    ]
+   }
+  },
+  {
+   "id": "turntable",
+   "text": "The glass tray turns to carry different parts of your soup through stronger and weaker spots.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "mesh",
+     "cam0": [-0.71, -0.37, 1.17], "tgt0": [-0.088, -0.015, 1.09],
+     "cam1": [-0.63, -0.33, 1.15], "tgt1": [-0.085, -0.015, 1.09],
+     "lens": 30, "_still": 0.6
+    },
+    "overlays": [
+     {"type": "chips", "items": ["MORE EVEN HEATING"], "cues": ["turns"]}
+    ]
+   }
+  },
+  {
+   "id": "twist",
+   "text": "But watch the very center of that spinning tray. It stays in the same spot the whole time.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "bounce",
+     "cam0": [-0.103, -0.105, 1.58], "tgt0": [-0.06, 0.023, 1.047],
+     "cam1": [-0.079, -0.087, 1.55], "tgt1": [-0.06, 0.023, 1.047],
+     "lens": 30, "_still": 0.7
+    },
+    "overlays": [
+     {"type": "label", "text": "CENTER", "anchor": "food", "cue": "center", "color": "teal"},
+     {"type": "card", "style": "twist", "text": "THE CENTER STAYS PUT", "cue": "stays"}
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "text": "Stirring halfway through helps even out the heat. Which leftovers do you always stop to stir? Tell us below.",
+   "shot": {
+    "builder": "mw_kitchen_v2",
+    "params": {
+     "view": "outro",
+     "cam0": [-0.40, -1.48, 1.31], "tgt0": [-0.04, 0.0, 1.12],
+     "cam1": [-0.82, -2.32, 1.52], "tgt1": [0.03, 0.0, 1.17],
+     "lens": 31
+    },
+    "overlays": [
+     {"type": "card", "text": "WHAT DO YOU STIR?", "cue": "which", "sub": "Tell us below", "sub_cue": "tell"}
+    ]
+   }
+  }
+ ],
+ "qc": {"duration_s": [30, 60]}
+}
