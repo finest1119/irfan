@@ -999,3 +999,4 @@ Or set `"profile": "fast"` in episode.json `render`.
 Irfan approved it via the chief. `oneshot.py` now falls back to `fast` when neither `--profile` nor episode `render.profile` is set. Use `--profile default` for the old 32-spp full-res setup.
 Dell bench (Best performance mode), s/frame: default 10.65 | fast 4.30 + 0.60 post (about 3.5 h per 86 s episode) | EEVEE 12.9 (rejected) | fast 1 spp 2.15 + 0.64 (fixed per-frame cost).
 Next, after the 29 Nov reset: cut the per-frame scene re-sync to get to about 2 h.
+- 2026-11-28 16:56:12 MYT | Build 02 release revision is in page2/episodes/build-02-release. It reuses the approved Pelton bench, preserves the older active render, and tests the same lamp before and after seating a slipping coupling. Audio 82.96 s, 2490 planned frames. Preserve the post-reset per-frame scene re-sync optimisation proposal above. Booking pending visual/audio QC.
